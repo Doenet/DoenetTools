@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { Text, Icon, Box, Flex, Wrap } from "@chakra-ui/react";
+import { Text, Icon, Box, Flex } from "@chakra-ui/react";
 import Card, { CardContent } from "./Card";
 import { MdInfoOutline } from "react-icons/md";
 import { ContentDescription, LibraryRelations } from "../_utils/types";
@@ -10,13 +10,15 @@ export default function CardList({
   showAssignmentStatus = false,
   showPublicStatus = false,
   showActivityFeatures = false,
+  showAddButton = false,
   emptyMessage,
-  listView,
   selectedCards,
   setSelectedCards,
   disableSelectFor,
   disableAsSelectedFor,
   libraryRelations = [],
+  isAuthor = false,
+  addDocumentCallback,
 }: {
   content: (
     | CardContent
@@ -31,13 +33,15 @@ export default function CardList({
   showAssignmentStatus?: boolean;
   showPublicStatus?: boolean;
   showActivityFeatures?: boolean;
+  showAddButton?: boolean;
   emptyMessage: string;
-  listView: boolean;
   selectedCards?: ContentDescription[];
   setSelectedCards?: React.Dispatch<React.SetStateAction<ContentDescription[]>>;
   disableSelectFor?: string[];
   disableAsSelectedFor?: string[];
   libraryRelations?: LibraryRelations[];
+  isAuthor?: boolean;
+  addDocumentCallback?: (contentId: string) => void;
 }) {
   const selectedCardsFiltered = selectedCards?.filter((s) => s);
 
@@ -54,6 +58,7 @@ export default function CardList({
         width="100%"
         backgroundColor="transparent"
         textAlign="center"
+        borderTop="2px solid gray"
       >
         <Icon fontSize="48pt" as={MdInfoOutline} />
         <Text fontSize="36pt">{emptyMessage}</Text>
@@ -63,7 +68,6 @@ export default function CardList({
 
   // let headerRow: ReactElement | null = null;
 
-  // if (listView) {
   //   headerRow = (
   //     <Flex>
   //       <Box width="100%"></Box>
@@ -80,7 +84,6 @@ export default function CardList({
   //       <Box width="100%"></Box>
   //     </Flex>
   //   );
-  // }
 
   const selectCallback = setSelectedCards
     ? function ({
@@ -122,7 +125,7 @@ export default function CardList({
           color="GrayText"
         >
           {cardContent.empty
-            ? "(Above question bank is empty. Move documents to this slot to fill it.)"
+            ? "(Add documents to above empty question bank. Or, move documents up or down to this slot.)"
             : null}
         </Box>
       );
@@ -135,7 +138,7 @@ export default function CardList({
           showAssignmentStatus={showAssignmentStatus}
           showPublicStatus={showPublicStatus}
           showActivityFeatures={showActivityFeatures}
-          listView={listView}
+          showAddButton={showAddButton}
           indentLevel={cardContent.indentLevel}
           selectedCards={
             selectedCardsFiltered
@@ -143,6 +146,8 @@ export default function CardList({
               : undefined
           }
           selectCallback={selectCallback}
+          isAuthor={isAuthor}
+          addDocumentCallback={addDocumentCallback}
           disableSelect={disableSelectFor?.includes(
             cardContent.content.contentId,
           )}
@@ -156,27 +161,17 @@ export default function CardList({
     }
   });
 
-  if (listView) {
-    cards = (
-      <Box width="100%" borderTop={listView ? "2px solid gray" : "none"}>
-        {cards}
-      </Box>
-    );
-  } else {
-    cards = (
-      <Wrap p="10px" overflow="visible">
-        {cards}
-      </Wrap>
-    );
-  }
-
-  const flexDirection: "column" | "row" = listView ? "column" : "row";
+  cards = (
+    <Box width="100%" borderTop={"2px solid gray"}>
+      {cards}
+    </Box>
+  );
 
   const panel = (
     <Flex
       paddingLeft={[".1em", "1em"]}
       paddingRight={[".1em", "1em"]}
-      flexDirection={flexDirection}
+      flexDirection="column"
       justifyContent="center"
       alignItems="center"
       alignContent="center"

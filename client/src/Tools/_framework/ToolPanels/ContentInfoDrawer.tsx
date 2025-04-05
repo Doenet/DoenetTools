@@ -15,19 +15,12 @@ import {
   Text,
   Tooltip,
 } from "@chakra-ui/react";
-import {
-  ActivityHistoryItem,
-  ActivityRemixItem,
-  Content,
-} from "../../../_utils/types";
+import { ActivityRemixItem, Content } from "../../../_utils/types";
 import { GeneralContentInfo } from "./GeneralContentInfo";
 import { ClassificationInfo } from "./ClassificationInfo";
 import axios from "axios";
-import {
-  processContributorHistory,
-  processRemixes,
-} from "../../../_utils/processRemixes";
-import { RemixedFrom } from "./RemixedFrom";
+import { processRemixes } from "../../../_utils/processRemixes";
+import { RemixSources } from "./RemixSources";
 import { Remixes } from "./Remixes";
 
 export function ContentInfoDrawer({
@@ -65,7 +58,7 @@ export function ContentInfoDrawer({
   // Refactor to avoid code duplication
 
   const [contributorHistory, setContributorHistory] = useState<
-    ActivityHistoryItem[]
+    ActivityRemixItem[]
   >([]);
   const [haveChangedHistoryItem, setHaveChangedHistoryItem] = useState(false);
   const [remixes, setRemixes] = useState<ActivityRemixItem[]>([]);
@@ -73,13 +66,13 @@ export function ContentInfoDrawer({
   useEffect(() => {
     async function getHistoryAndRemixes() {
       const { data } = await axios.get(
-        `/api/remix/getContributorHistory/${contentData.contentId}`,
+        `/api/remix/getRemixSources/${contentData.contentId}`,
       );
 
-      const hist = await processContributorHistory(data);
+      const hist = processRemixes(data.remixSources);
       setContributorHistory(hist);
 
-      const haveChanged = hist.some((dhi) => dhi.prevChanged);
+      const haveChanged = hist.some((dhi) => dhi.originContent.changed);
 
       setHaveChangedHistoryItem(haveChanged);
 
@@ -87,7 +80,7 @@ export function ContentInfoDrawer({
         `/api/remix/getRemixes/${contentData.contentId}`,
       );
 
-      const remixes = processRemixes(data2);
+      const remixes = processRemixes(data2.remixes);
       setRemixes(remixes);
     }
 
@@ -128,8 +121,8 @@ export function ContentInfoDrawer({
               ) : null}
               {contentData.type !== "folder" ? (
                 <>
-                  <Tab data-test="Remixed From Tab">
-                    Remixed From{" "}
+                  <Tab data-test="Remix Sources Tab">
+                    Remix Sources{" "}
                     {contributorHistory !== null
                       ? `(${contributorHistory.length})`
                       : null}
@@ -153,7 +146,7 @@ export function ContentInfoDrawer({
                 ) : null}
                 {contentData.type !== "folder" ? (
                   <TabPanel>
-                    <RemixedFrom contributorHistory={contributorHistory} />
+                    <RemixSources contributorHistory={contributorHistory} />
                   </TabPanel>
                 ) : null}
                 {contentData.type !== "folder" ? (

@@ -19,7 +19,6 @@ import {
   VStack,
   Grid,
   GridItem,
-  Spacer,
   Button,
   Input,
   Show,
@@ -47,10 +46,6 @@ import {
 } from "../../../_utils/types";
 import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
 import CardList from "../../../Widgets/CardList";
-import {
-  ToggleViewButtonGroup,
-  toggleViewButtonGroupActions,
-} from "../ToolPanels/ToggleViewButtonGroup";
 import { intWithCommas } from "../../../_utils/formatting";
 import { MdFilterAlt, MdFilterAltOff } from "react-icons/md";
 import { clearQueryParameter } from "../../../_utils/explore";
@@ -74,11 +69,6 @@ import {
 export async function action({ request }) {
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
-
-  const resultTLV = await toggleViewButtonGroupActions({ formObj });
-  if (resultTLV) {
-    return resultTLV;
-  }
 
   const resultACM = await addContentToMenuActions({ formObj });
   if (resultACM) {
@@ -114,9 +104,6 @@ export async function loader({ params, request }) {
     isUnclassified = true;
   }
 
-  const prefData = await axios.get(`/api/contentList/getPreferredFolderView`);
-  const listViewPref = !prefData.data.cardView;
-
   const {
     data: { availableFeatures },
   }: { data: { availableFeatures: ContentFeature[] } } = await axios.get(
@@ -133,20 +120,6 @@ export async function loader({ params, request }) {
   }
 
   const authorId = url.searchParams.get("author") ?? undefined;
-
-  const addToId = url.searchParams.get("addTo");
-  let addTo: ContentDescription | undefined = undefined;
-
-  if (addToId) {
-    try {
-      const { data } = await axios.get(
-        `/api/info/getContentDescription/${addToId}`,
-      );
-      addTo = data;
-    } catch (_e) {
-      console.error(`Could not get description of ${addToId}`);
-    }
-  }
 
   const q = url.searchParams.get("q");
 
@@ -171,8 +144,6 @@ export async function loader({ params, request }) {
       ...searchData,
       features,
       availableFeatures,
-      listViewPref,
-      addTo,
     };
   } else {
     const { data: browseData } = await axios.post(
@@ -193,8 +164,6 @@ export async function loader({ params, request }) {
       content: browseData.recentContent,
       features,
       availableFeatures,
-      listViewPref,
-      addTo,
     };
   }
 }
@@ -220,8 +189,6 @@ export function Explore() {
     countByFeature,
     features,
     availableFeatures,
-    listViewPref,
-    addTo,
   } = useLoaderData() as {
     q?: string;
     topAuthors: UserInfo[] | null;
@@ -245,21 +212,19 @@ export function Explore() {
     >;
     features: Set<string>;
     availableFeatures: ContentFeature[];
-    listViewPref: boolean;
-    addTo?: ContentDescription;
   };
 
   const {
     user,
     exploreTab: currentTab,
     setExploreTab: setCurrentTab,
+    addTo,
+    setAddTo,
   } = useOutletContext<SiteContext>();
 
   const [searchString, setSearchString] = useState(q || "");
 
   const fetcher = useFetcher();
-
-  const [listView, setListView] = useState(listViewPref);
 
   const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
   const selectedCardsFiltered = selectedCards.filter((c) => c);
@@ -327,7 +292,7 @@ export function Explore() {
   } = useDisclosure();
 
   const copyContentModal =
-    addTo !== undefined ? (
+    addTo !== null ? (
       <CopyContentAndReportFinish
         fetcher={fetcher}
         isOpen={copyDialogIsOpen}
@@ -365,12 +330,12 @@ export function Explore() {
         base: `calc(100vh - ${q ? "250" : "210"}px)`,
         lg: `calc(100vh - ${q ? "210" : "170"}px)`,
       }),
-    [curatedContent, selectedCards, addTo, listView],
+    [curatedContent, selectedCards, addTo],
   );
 
   const trendingContentDisplay = useMemo(
     () => (trendingContent ? displayMatchingContent(trendingContent) : null),
-    [trendingContent, selectedCards, addTo, listView],
+    [trendingContent, selectedCards, addTo],
   );
 
   const contentDisplay = useMemo(
@@ -379,20 +344,19 @@ export function Explore() {
         base: `calc(100vh - ${q ? "250" : "210"}px)`,
         lg: `calc(100vh - ${q ? "210" : "170"}px)`,
       }),
-    [content, selectedCards, addTo, listView],
+    [content, selectedCards, addTo],
   );
 
   function displayMatchingContent(
     matches: Content[],
     minHeight?: string | { base: string; lg: string },
   ) {
-    const addToURLParams = addTo ? `?addTo=${addTo.contentId}` : "";
     const cardContent: CardContent[] = matches.map((itemObj) => {
       const { contentId, owner, type: contentType } = itemObj;
       const cardLink =
         contentType === "folder" && owner != undefined
-          ? `/sharedActivities/${owner.userId}/${contentId}${addToURLParams}`
-          : `/activityViewer/${contentId}${addToURLParams}`;
+          ? `/sharedActivities/${owner.userId}/${contentId}`
+          : `/activityViewer/${contentId}`;
 
       const menuItems = (
         <MenuItem
@@ -417,9 +381,7 @@ export function Explore() {
 
     return (
       <Box
-        background={
-          listView && cardContent.length > 0 ? "white" : "var(--lightBlue)"
-        }
+        background={"white"}
         paddingTop="16px"
         paddingBottom="16px"
         minHeight={minHeight}
@@ -431,7 +393,6 @@ export function Explore() {
           showOwnerName={true}
           content={cardContent}
           emptyMessage={"No Matches Found!"}
-          listView={listView}
           selectedCards={user ? selectedCards : undefined}
           setSelectedCards={setSelectedCards}
           disableSelectFor={addTo ? [addTo.contentId] : undefined}
@@ -820,17 +781,16 @@ export function Explore() {
             height="30px"
             width="100%"
             alignContent="center"
-            hidden={numSelected === 0 && addTo === undefined}
+            hidden={numSelected === 0 && addTo === null}
             backgroundColor="gray.100"
             justifyContent="center"
           >
-            {addTo !== undefined ? (
+            {addTo !== null ? (
               <HStack hidden={numSelected > 0}>
                 <CloseButton
                   size="sm"
                   onClick={() => {
-                    const newSearch = clearQueryParameter("addTo", search);
-                    navigate(`.${newSearch}`);
+                    setAddTo(null);
                   }}
                 />{" "}
                 <Text noOfLines={1}>
@@ -842,7 +802,7 @@ export function Explore() {
             <HStack hidden={numSelected === 0}>
               <CloseButton size="sm" onClick={() => setSelectedCards([])} />{" "}
               <Text>{numSelected} selected</Text>
-              <HStack hidden={addTo !== undefined}>
+              <HStack hidden={addTo !== null}>
                 <AddContentToMenu
                   fetcher={fetcher}
                   sourceContent={selectedCardsFiltered}
@@ -858,10 +818,9 @@ export function Explore() {
                   label="Create from selected"
                 />
               </HStack>
-              {addTo !== undefined ? (
+              {addTo !== null ? (
                 <Button
                   data-test="Add Selected To Button"
-                  hidden={addTo === undefined}
                   size="xs"
                   colorScheme="blue"
                   onClick={() => {
@@ -890,14 +849,6 @@ export function Explore() {
               Filter results {numActiveFiltersInfo}
             </Button>
           </Show>
-          <Spacer />
-          <Box marginRight=".5em">
-            <ToggleViewButtonGroup
-              listView={listView}
-              setListView={setListView}
-              fetcher={fetcher}
-            />
-          </Box>
         </Flex>
       </Box>
     </>

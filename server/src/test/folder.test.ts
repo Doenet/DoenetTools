@@ -1,12 +1,7 @@
 import { expect, test } from "vitest";
 import { createTestUser } from "./utils";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import {
-  getMyContent,
-  getPreferredFolderView,
-  getSharedContent,
-  setPreferredFolderView,
-} from "../query/content_list";
+import { getMyContent, getSharedContent } from "../query/content_list";
 import {
   createContent,
   deleteContent,
@@ -384,7 +379,7 @@ test(
     const {
       isAdmin: _isAdmin1,
       isAnonymous: _isAnonymous1,
-      cardView: _cardView1,
+      isAuthor: _isAuthor1,
       ...userFields1
     } = user1;
     let user2 = await createTestUser();
@@ -397,7 +392,7 @@ test(
     const {
       isAdmin: _isAdmin2,
       isAnonymous: _isAnonymous2,
-      cardView: _cardView2,
+      isAuthor: _isAuthor2,
       ...userFields2
     } = user2;
     const user3 = await createTestUser();
@@ -1652,11 +1647,11 @@ test("copyContent copies a public document to a new owner", async () => {
     loggedInUserId: newOwnerId,
   });
 
-  const contribHist = activityData.activityHistory.history;
-  expect(contribHist.length).eq(1);
+  const remixSources = activityData.remixSources;
+  expect(remixSources.length).eq(1);
 
-  expect(contribHist[0].prevContentId).eqls(contentId);
-  expect(contribHist[0].prevRevisionNum).eq(1);
+  expect(remixSources[0].originContent.contentId).eqls(contentId);
+  expect(remixSources[0].originContent.revisionNum).eq(1);
 });
 
 test("copyContent copies a shared document to a new owner", async () => {
@@ -1704,11 +1699,11 @@ test("copyContent copies a shared document to a new owner", async () => {
 
   expect(activityData.activity.isShared).eq(false);
 
-  const contribHist = activityData.activityHistory.history;
-  expect(contribHist.length).eq(1);
+  const remixSources = activityData.remixSources;
+  expect(remixSources.length).eq(1);
 
-  expect(contribHist[0].prevContentId).eqls(contentId);
-  expect(contribHist[0].prevRevisionNum).eq(1);
+  expect(remixSources[0].originContent.contentId).eqls(contentId);
+  expect(remixSources[0].originContent.revisionNum).eq(1);
 });
 
 test("copyContent remixes correct versions", async () => {
@@ -1757,10 +1752,10 @@ test("copyContent remixes correct versions", async () => {
     contentId: contentId2,
     loggedInUserId: ownerId2,
   });
-  const contribHist2 = activityData2.activityHistory.history;
-  expect(contribHist2.length).eq(1);
-  expect(contribHist2[0].prevContentId).eqls(contentId1);
-  expect(contribHist2[0].prevRevisionNum).eq(1);
+  const remixSources2 = activityData2.remixSources;
+  expect(remixSources2.length).eq(1);
+  expect(remixSources2[0].originContent.contentId).eqls(contentId1);
+  expect(remixSources2[0].originContent.revisionNum).eq(1);
 
   // modify activity 1 so that will have a new version
   const activity1ContentModified = "<p>Bye</p>";
@@ -1794,10 +1789,10 @@ test("copyContent remixes correct versions", async () => {
     contentId: contentId3,
     loggedInUserId: ownerId3,
   });
-  const contribHist3 = activityData3.activityHistory.history;
+  const contribHist3 = activityData3.remixSources;
   expect(contribHist3.length).eq(1);
-  expect(contribHist3[0].prevContentId).eqls(contentId1);
-  expect(contribHist3[0].prevRevisionNum).eq(2);
+  expect(contribHist3[0].originContent.contentId).eqls(contentId1);
+  expect(contribHist3[0].originContent.revisionNum).eq(2);
 });
 
 test("copyContent copies content classifications", async () => {
@@ -1906,23 +1901,6 @@ test("copyContent copies content features", async () => {
   expect(activityData2.activity!.contentFeatures).toHaveLength(2);
   expect(activityData2.activity!.contentFeatures[0].code).eq("isInteractive");
   expect(activityData2.activity!.contentFeatures[1].code).eq("containsVideo");
-});
-
-test("set and get preferred folder view", async () => {
-  const user = await createTestUser();
-  const userId = user.userId;
-
-  let result = await getPreferredFolderView({ loggedInUserId: userId });
-  expect(result).eqls({ cardView: false });
-
-  result = await setPreferredFolderView({
-    loggedInUserId: userId,
-    cardView: true,
-  });
-  expect(result).eqls({ cardView: true });
-
-  result = await getPreferredFolderView({ loggedInUserId: userId });
-  expect(result).eqls({ cardView: true });
 });
 
 test("check if content contains content type", async () => {

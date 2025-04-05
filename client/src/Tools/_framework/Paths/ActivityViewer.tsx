@@ -44,11 +44,10 @@ import { useFetcher } from "react-router";
 import axios from "axios";
 import {} from "../ToolPanels/ContentSettingsDrawer";
 import {
-  ContentDescription,
   Content,
   DoenetmlVersion,
-  ActivityHistoryItem,
   LibraryRelations,
+  ActivityRemixItem,
 } from "../../../_utils/types";
 import { ActivityDoenetMLEditor } from "../ToolPanels/ActivityDoenetMLEditor";
 import { CompoundActivityEditor } from "../ToolPanels/CompoundActivityEditor";
@@ -61,7 +60,7 @@ import {
   menuIcons,
 } from "../../../_utils/activity";
 import { ActivitySource, isActivitySource } from "../../../_utils/viewerTypes";
-import { processContributorHistory } from "../../../_utils/processRemixes";
+import { processRemixes } from "../../../_utils/processRemixes";
 import ContributorsMenu from "../ToolPanels/ContributorsMenu";
 import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
 import { createFullName } from "../../../_utils/names";
@@ -96,29 +95,14 @@ export async function action({ request }) {
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
 }
 
-export async function loader({ params, request }) {
+export async function loader({ params }) {
   const {
-    data: { activity: activityData, activityHistory },
+    data: { activity: activityData, remixSources },
   } = await axios.get(
     `/api/activityEditView/getActivityViewerData/${params.contentId}`,
   );
 
   const contentId = params.contentId;
-
-  const url = new URL(request.url);
-  const addToId = url.searchParams.get("addTo");
-  let addTo: ContentDescription | undefined = undefined;
-
-  if (addToId) {
-    try {
-      const { data } = await axios.get(
-        `/api/info/getContentDescription/${addToId}`,
-      );
-      addTo = data;
-    } catch (_e) {
-      console.error(`Could not get description of ${addToId}`);
-    }
-  }
 
   const { data: libraryRelations } = await axios.get(
     `/api/curate/getLibraryRelations/${params.contentId}`,
@@ -128,7 +112,7 @@ export async function loader({ params, request }) {
     const doenetML = activityData.doenetML;
     const doenetmlVersion: DoenetmlVersion = activityData.doenetmlVersion;
 
-    const contributorHistory = await processContributorHistory(activityHistory);
+    const contributorHistory = processRemixes(remixSources);
 
     return {
       type: activityData.type,
@@ -137,7 +121,6 @@ export async function loader({ params, request }) {
       doenetmlVersion,
       contentId,
       contributorHistory,
-      addTo,
       libraryRelations,
     };
   } else {
@@ -155,7 +138,6 @@ export async function loader({ params, request }) {
       activityJson,
       contentId,
       contributorHistory: [],
-      addTo,
       libraryRelations,
     };
   }
@@ -165,9 +147,8 @@ export function ActivityViewer() {
   const data = useLoaderData() as {
     contentId: string;
     activityData: Content;
-    contributorHistory: ActivityHistoryItem[];
-    addTo?: ContentDescription;
     libraryRelations: LibraryRelations;
+    contributorHistory: ActivityRemixItem[];
   } & (
     | {
         type: "singleDoc";
@@ -180,33 +161,25 @@ export function ActivityViewer() {
       }
   );
 
-  const {
-    contentId,
-    type: contentType,
-    activityData,
-    contributorHistory,
-    addTo,
-    libraryRelations,
-  } = data;
+  const { contentId, activityData, contributorHistory, libraryRelations } =
+    data;
 
-  const { user } = useOutletContext<SiteContext>();
+  const { user, addTo, setAddTo } = useOutletContext<SiteContext>();
   const navigate = useNavigate();
 
   const infoBtnRef = useRef<HTMLButtonElement>(null);
 
+  const authorMode = user?.isAuthor || data.type === "select";
+
   const [mode, setMode] = useState<"Edit" | "View">(
-    contentType === "select" ? "Edit" : "View",
+    authorMode ? "Edit" : "View",
   );
 
-  const fetcher = useFetcher();
-
   useEffect(() => {
-    if (contentType === "select") {
-      setMode("Edit");
-    } else {
-      setMode("View");
-    }
-  }, [contentType, contentId]);
+    setMode(authorMode ? "Edit" : "View");
+  }, [contentId]);
+
+  const fetcher = useFetcher();
 
   useEffect(() => {
     document.title = `${activityData.name} - Doenet`;
@@ -266,22 +239,33 @@ export function ActivityViewer() {
   } = useDisclosure();
 
   const copyContentModal =
-    addTo !== undefined ? (
+    addTo !== null ? (
       <CopyContentAndReportFinish
         fetcher={fetcher}
         isOpen={copyDialogIsOpen}
         onClose={copyDialogOnClose}
         contentIds={[activityData.contentId]}
-        desiredParent={addTo ?? null}
+        desiredParent={addTo}
         action="Add"
       />
     ) : null;
 
-  const [editLabel, editTooltip, editIcon] = [
-    "See Inside",
-    "See read-only view of source",
-    <MdOutlineEditOff />,
-  ];
+  let editLabel: string;
+  let editTooltip: string;
+
+  const editIcon = <MdOutlineEditOff size={20} />;
+  if (authorMode) {
+    if (data.type === "singleDoc") {
+      editLabel = "See source code";
+      editTooltip = "See read-only view of source code";
+    } else {
+      editLabel = "See list";
+      editTooltip = `See read-only view of documents ${data.type === "sequence" ? "and question banks in the problem set" : "in the question bank"}`;
+    }
+  } else {
+    editLabel = "See source code";
+    editTooltip = "Turn on author mode to see read-only view of source code";
+  }
 
   const haveClassifications = activityData.classifications.length > 0;
 
@@ -310,7 +294,6 @@ export function ActivityViewer() {
         setSettingsContentId={setSettingsContentId}
         settingsOnOpen={infoOnOpen}
         setSettingsDisplayTab={setDisplayInfoTab}
-        addTo={addTo}
       />
     );
   }
@@ -359,7 +342,7 @@ export function ActivityViewer() {
           as={Button}
           size="sm"
           colorScheme="blue"
-          leftIcon={<MdOutlineAdd />}
+          leftIcon={<MdOutlineAdd size={20} />}
           paddingRight={{ base: "0px", md: "10px" }}
           data-test="Add To"
         >
@@ -378,7 +361,7 @@ export function ActivityViewer() {
           </MenuItem>
           <MenuItem
             onClick={() => {
-              navigate(".");
+              setAddTo(null);
             }}
           >
             <CloseIcon marginRight="10px" />
@@ -399,7 +382,7 @@ export function ActivityViewer() {
         addRightPadding={true}
         colorScheme="blue"
         toolTip={`Add ${contentTypeName.toLowerCase()} to ${allowedParentsPhrase}`}
-        leftIcon={<MdOutlineAdd />}
+        leftIcon={<MdOutlineAdd size={20} />}
         addCopyToLibraryOption={
           user?.isAdmin && !libraryRelations.activity?.activityContentId
         }
@@ -440,6 +423,24 @@ export function ActivityViewer() {
             >
               <GridItem area="leftControls">
                 <HStack ml={{ base: "5px", sm: "10px" }} mt="4px">
+                  <Show above="md">
+                    <Box width="50px" marginLeft="5px">
+                      <ChakraLink
+                        as={ReactRouterLink}
+                        to={".."}
+                        style={{
+                          color: "var(--mainBlue)",
+                        }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          navigate(-1);
+                        }}
+                      >
+                        {" "}
+                        &lt; Back
+                      </ChakraLink>
+                    </Box>
+                  </Show>
                   <ButtonGroup size="sm" isAttached variant="outline">
                     <Tooltip hasArrow label="View Activity">
                       <Button
@@ -448,7 +449,7 @@ export function ActivityViewer() {
                         size="sm"
                         pr={{ base: "0px", md: "10px" }}
                         colorScheme="blue"
-                        leftIcon={<BsPlayBtnFill />}
+                        leftIcon={<BsPlayBtnFill size={18} />}
                         onClick={() => {
                           setMode("View");
                         }}
@@ -584,7 +585,7 @@ export function ActivityViewer() {
                         size="sm"
                         pr={{ base: "0px", md: "10px" }}
                         colorScheme="blue"
-                        leftIcon={<MdOutlineInfo />}
+                        leftIcon={<MdOutlineInfo size={20} />}
                         onClick={() => {
                           setDisplayInfoTab("general");
                           setSettingsContentId(activityData.contentId);

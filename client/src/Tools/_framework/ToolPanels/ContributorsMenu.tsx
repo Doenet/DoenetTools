@@ -15,13 +15,13 @@ import {
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router";
 import { createFullName } from "../../../_utils/names";
-import { Content, ActivityHistoryItem } from "../../../_utils/types";
+import { Content, ActivityRemixItem } from "../../../_utils/types";
 
 export default function ContributorsMenu({
   contributorHistory,
   activity,
 }: {
-  contributorHistory: ActivityHistoryItem[];
+  contributorHistory: ActivityRemixItem[];
   activity: Content;
 }) {
   if (!activity.owner) {
@@ -52,16 +52,16 @@ export default function ContributorsMenu({
       <>
         remixed from{" "}
         <Tooltip
-          label={`Go to ${contributorHistory[0].prevName}`}
+          label={`Go to ${contributorHistory[0].originContent.name}`}
           openDelay={1000}
         >
           <ChakraLink
             as={ReactRouterLink}
-            to={`/activityViewer/${contributorHistory[0].prevContentId}`}
-            aria-label={`Go to ${contributorHistory[0].prevName}`}
+            to={`/activityViewer/${contributorHistory[0].originContent.contentId}`}
+            aria-label={`Go to ${contributorHistory[0].originContent.name}`}
           >
-            {contributorHistory[0].prevName} by{" "}
-            {createFullName(contributorHistory[0].prevOwner)}
+            {contributorHistory[0].originContent.name} by{" "}
+            {createFullName(contributorHistory[0].originContent.owner)}
           </ChakraLink>
         </Tooltip>
       </>
@@ -85,7 +85,7 @@ export default function ContributorsMenu({
         margin="6px 12px"
         border="0"
         size="sm"
-        name={createFullName(contrib_hist.prevOwner)}
+        name={createFullName(contrib_hist.originContent.owner)}
       />
     )),
   );
@@ -131,11 +131,11 @@ export default function ContributorsMenu({
             </HStack>
           </MenuItem>
           {contributorHistory.map((contrib_hist, i) => {
-            const menuText = `${contrib_hist.prevName} by ${createFullName(contrib_hist.prevOwner)}`;
-            const activityRef = `/activityViewer/${contrib_hist.prevContentId}`;
-            const activityLabel = `Go to ${contrib_hist.prevName}`;
-            const userRef = `/sharedActivities/${contrib_hist.prevOwner.userId}`;
-            const userLabel = `Go to ${createFullName(contrib_hist.prevOwner)}'s shared activities`;
+            const menuText = `${contrib_hist.originContent.name} by ${createFullName(contrib_hist.originContent.owner)}`;
+            const activityRef = `/activityViewer/${contrib_hist.originContent.contentId}`;
+            const activityLabel = `Go to ${contrib_hist.originContent.name}`;
+            const userRef = `/sharedActivities/${contrib_hist.originContent.owner.userId}`;
+            const userLabel = `Go to ${createFullName(contrib_hist.originContent.owner)}'s shared activities`;
             return (
               <MenuItem
                 key={`mi${i}`}

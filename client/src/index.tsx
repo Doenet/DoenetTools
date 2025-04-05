@@ -24,6 +24,7 @@ import {
 
 import {
   loader as siteLoader,
+  action as siteAction,
   SiteHeader,
 } from "./Tools/_framework/Paths/SiteHeader";
 import {
@@ -53,27 +54,15 @@ import {
   Assigned,
 } from "./Tools/_framework/Paths/Assigned";
 import {
-  loader as assignmentDataLoader,
-  AssignmentData,
-} from "./Tools/_framework/Paths/AssignmentData";
+  loader as assignmentResponseOverviewLoader,
+  AssignmentData as AssignmentResponseOverview,
+} from "./Tools/_framework/Paths/AssignmentResponseOverview";
 import {
-  loader as assignmentAnswerResponsesLoader,
-  action as assignmentAnswerResponsesAction,
-  AssignmentAnswerResponses,
-} from "./Tools/_framework/Paths/AssignmentAnswerResponses";
+  loader as assignmentResponseStudentLoader,
+  AssignmentResponseStudent,
+  // assignedAssignmentDataloader,
+} from "./Tools/_framework/Paths/AssignmentResponseStudent";
 import {
-  loader as assignmentAnswerResponseHistoryLoader,
-  action as assignmentAnswerResponseHistoryAction,
-  AssignmentAnswerResponseHistory,
-} from "./Tools/_framework/Paths/AssignmentAnswerResponseHistory";
-import {
-  loader as assignmentStudentDataLoader,
-  action as assignmentStudentDataAction,
-  AssignmentStudentData,
-  assignedAssignmentDataloader,
-} from "./Tools/_framework/Paths/AssignmentStudentData";
-import {
-  loader as enterClassCodeLoader,
   action as enterClassCodeAction,
   EnterClassCode,
 } from "./Tools/_framework/Paths/EnterClassCode";
@@ -87,10 +76,10 @@ import {
   AllAssignmentScores,
 } from "./Tools/_framework/Paths/AllAssignmentScores";
 import {
-  loader as studentDataLoader,
-  StudentData,
+  loader as studentAssignmentScoresLoader,
+  StudentAssignmentScores,
   assignedDataloader,
-} from "./Tools/_framework/Paths/StudentData";
+} from "./Tools/_framework/Paths/StudentAssignmentScores";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 
 import ErrorPage from "./Tools/_framework/Paths/ErrorPage";
@@ -101,6 +90,11 @@ import {
   loader as activityEditorLoader,
   action as activityEditorAction,
 } from "./Tools/_framework/Paths/ActivityEditor";
+import {
+  DoenetMLComparison,
+  loader as doenetMLComparisonLoader,
+  action as doenetMLComparisonAction,
+} from "./Tools/_framework/Paths/DoenetMLComparison";
 import {
   CodeViewer,
   loader as codeViewerLoader,
@@ -201,6 +195,7 @@ const router = createBrowserRouter([
       {
         path: "/",
         loader: carouselLoader,
+        action: siteAction,
         // action: homeAction,
         errorElement: <ErrorPage />,
         element: <Home />,
@@ -315,6 +310,13 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
+        path: "activityCompare/:contentId/:compareId",
+        loader: doenetMLComparisonLoader,
+        action: doenetMLComparisonAction,
+        element: <DoenetMLComparison />,
+        errorElement: <ErrorPage />,
+      },
+      {
         path: "codeViewer",
         loader: codeViewerLoader,
         errorElement: <ErrorPage />,
@@ -336,41 +338,25 @@ const router = createBrowserRouter([
       {
         path: "assignedData",
         loader: assignedDataloader,
-        element: <StudentData />,
+        element: <StudentAssignmentScores />,
         errorElement: <ErrorPage />,
       },
       {
         path: "assignedData/:contentId",
-        action: assignmentStudentDataAction,
-        loader: assignedAssignmentDataloader,
-        element: <AssignmentStudentData />,
+        loader: assignmentResponseStudentLoader,
+        element: <AssignmentResponseStudent />,
         errorElement: <ErrorPage />,
       },
       {
         path: "assignmentData/:contentId",
-        loader: assignmentDataLoader,
-        element: <AssignmentData />,
+        loader: assignmentResponseOverviewLoader,
+        element: <AssignmentResponseOverview />,
         errorElement: <ErrorPage />,
       },
       {
-        path: "assignmentAnswerResponses/:contentId/:docId/:docVersionNum",
-        loader: assignmentAnswerResponsesLoader,
-        action: assignmentAnswerResponsesAction,
-        element: <AssignmentAnswerResponses />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "assignmentAnswerResponseHistory/:contentId/:docId/:docVersionNum/:userId",
-        loader: assignmentAnswerResponseHistoryLoader,
-        action: assignmentAnswerResponseHistoryAction,
-        element: <AssignmentAnswerResponseHistory />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "assignmentData/:contentId/:userId",
-        action: assignmentStudentDataAction,
-        loader: assignmentStudentDataLoader,
-        element: <AssignmentStudentData />,
+        path: "assignmentData/:contentId/:studentUserId",
+        loader: assignmentResponseStudentLoader,
+        element: <AssignmentResponseStudent />,
         errorElement: <ErrorPage />,
       },
       {
@@ -386,20 +372,19 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "studentData/:userId",
-        loader: studentDataLoader,
-        element: <StudentData />,
+        path: "studentAssignmentScores/:userId",
+        loader: studentAssignmentScoresLoader,
+        element: <StudentAssignmentScores />,
         errorElement: <ErrorPage />,
       },
       {
-        path: "studentData/:userId/:parentId",
-        loader: studentDataLoader,
-        element: <StudentData />,
+        path: "studentAssignmentScores/:userId/:parentId",
+        loader: studentAssignmentScoresLoader,
+        element: <StudentAssignmentScores />,
         errorElement: <ErrorPage />,
       },
       {
         path: "code",
-        loader: enterClassCodeLoader,
         action: enterClassCodeAction,
         element: <EnterClassCode />,
         errorElement: <ErrorPage />,

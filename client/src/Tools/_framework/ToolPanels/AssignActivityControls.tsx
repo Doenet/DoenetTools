@@ -36,7 +36,7 @@ export async function assignActivityActions({ formObj }: { [k: string]: any }) {
     return true;
   } else if (formObj._action == "update assignment close time") {
     const closeAt = DateTime.fromISO(formObj.closeAt);
-    await axios.post("/api/assign/updateAssignmentSettings", {
+    await axios.post("/api/assign/updateAssignmentCloseAt", {
       contentId: formObj.contentId,
       closeAt,
     });

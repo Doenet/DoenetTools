@@ -4,7 +4,6 @@ import {
   Heading,
   Tooltip,
   List,
-  Spacer,
   MenuItem,
   useDisclosure,
   HStack,
@@ -18,7 +17,6 @@ import {
   useFetcher,
   Link,
   useOutletContext,
-  useNavigate,
 } from "react-router";
 
 import { CardContent } from "../../../Widgets/Card";
@@ -28,10 +26,6 @@ import { ContentDescription, Content } from "../../../_utils/types";
 import { DisplayLicenseItem } from "../../../Widgets/Licenses";
 import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
 import CardList from "../../../Widgets/CardList";
-import {
-  ToggleViewButtonGroup,
-  toggleViewButtonGroupActions,
-} from "../ToolPanels/ToggleViewButtonGroup";
 import { menuIcons } from "../../../_utils/activity";
 import { SiteContext } from "./SiteHeader";
 import {
@@ -51,11 +45,6 @@ export async function action({ request }) {
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
 
-  const resultTLV = await toggleViewButtonGroupActions({ formObj });
-  if (resultTLV) {
-    return resultTLV;
-  }
-
   const resultACM = await addContentToMenuActions({ formObj });
   if (resultACM) {
     return resultACM;
@@ -74,58 +63,31 @@ export async function action({ request }) {
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
 }
 
-export async function loader({ params, request }) {
+export async function loader({ params }) {
   const { data } = await axios.get(
     `/api/contentList/getSharedContent/${params.ownerId}/${params.parentId ?? ""}`,
   );
-
-  const prefData = await axios.get(`/api/contentList/getPreferredFolderView`);
-  const listViewPref = !prefData.data.cardView;
-
-  const url = new URL(request.url);
-  const addToId = url.searchParams.get("addTo");
-  let addTo: ContentDescription | undefined = undefined;
-
-  if (addToId) {
-    try {
-      const { data } = await axios.get(
-        `/api/info/getContentDescription/${addToId}`,
-      );
-      addTo = data;
-    } catch (_e) {
-      console.error(`Could not get description of ${addToId}`);
-    }
-  }
 
   return {
     content: data.content,
     ownerId: params.ownerId,
     owner: data.owner,
     parent: data.parent,
-    listViewPref,
-    addTo,
   };
 }
 
 export function SharedActivities() {
-  const { content, ownerId, owner, parent, listViewPref, addTo } =
-    useLoaderData() as {
-      content: Content[];
-      ownerId: string;
-      owner: {
-        firstNames: string | null;
-        lastNames: string;
-      };
-      parent: Content | null;
-      listViewPref: boolean;
-      addTo?: ContentDescription;
+  const { content, ownerId, owner, parent } = useLoaderData() as {
+    content: Content[];
+    ownerId: string;
+    owner: {
+      firstNames: string | null;
+      lastNames: string;
     };
+    parent: Content | null;
+  };
 
-  const { user } = useOutletContext<SiteContext>();
-
-  const navigate = useNavigate();
-
-  const [listView, setListView] = useState(listViewPref);
+  const { user, addTo, setAddTo } = useOutletContext<SiteContext>();
 
   const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
   const selectedCardsFiltered = selectedCards.filter((c) => c);
@@ -156,8 +118,6 @@ export function SharedActivities() {
   }, [parent]);
 
   const fetcher = useFetcher();
-
-  const addToURLParams = addTo ? `?addTo=${addTo.contentId}` : "";
 
   const [infoContentId, setInfoContentId] = useState<string | null>(null);
 
@@ -193,7 +153,7 @@ export function SharedActivities() {
   } = useDisclosure();
 
   const copyContentModal =
-    addTo !== undefined ? (
+    addTo !== null ? (
       <CopyContentAndReportFinish
         fetcher={fetcher}
         isOpen={copyDialogIsOpen}
@@ -218,11 +178,34 @@ export function SharedActivities() {
       width="100%"
       textAlign="center"
     >
+      <Flex
+        width="100%"
+        paddingRight="0.5em"
+        paddingLeft="1em"
+        alignItems="middle"
+      >
+        <Box marginTop="5px" height="24px">
+          {parent ? (
+            <Link
+              to={`/sharedActivities/${ownerId}${parent.parent ? "/" + parent.parent.contentId : ""}`}
+              style={{
+                color: "var(--mainBlue)",
+              }}
+            >
+              {" "}
+              &lt; Back to{" "}
+              {parent.parent
+                ? parent.parent.name
+                : `Shared Activities of ${createFullName(owner)}`}
+            </Link>
+          ) : null}
+        </Box>
+      </Flex>
+
       <Tooltip label={headingText}>
         <Heading
           as="h2"
           size="lg"
-          paddingTop="10px"
           noOfLines={1}
           height="46px"
           data-test="Folder Heading"
@@ -241,16 +224,16 @@ export function SharedActivities() {
           height="30px"
           width="100%"
           alignContent="center"
-          hidden={numSelected === 0 && addTo === undefined}
+          hidden={numSelected === 0 && addTo === null}
           backgroundColor="gray.100"
           justifyContent="center"
         >
-          {addTo !== undefined ? (
+          {addTo !== null ? (
             <HStack hidden={numSelected > 0}>
               <CloseButton
                 size="sm"
                 onClick={() => {
-                  navigate(`.`);
+                  setAddTo(null);
                 }}
               />{" "}
               <Text noOfLines={1}>
@@ -262,7 +245,7 @@ export function SharedActivities() {
           <HStack hidden={numSelected === 0}>
             <CloseButton size="sm" onClick={() => setSelectedCards([])} />{" "}
             <Text>{numSelected} selected</Text>
-            <HStack hidden={addTo !== undefined}>
+            <HStack hidden={addTo !== null}>
               <AddContentToMenu
                 fetcher={fetcher}
                 sourceContent={selectedCardsFiltered}
@@ -278,10 +261,9 @@ export function SharedActivities() {
                 label="Create from selected"
               />
             </HStack>
-            {addTo !== undefined ? (
+            {addTo !== null ? (
               <Button
                 data-test="Add Selected To Button"
-                hidden={addTo === undefined}
                 size="xs"
                 colorScheme="blue"
                 onClick={() => {
@@ -297,29 +279,6 @@ export function SharedActivities() {
             ) : null}
           </HStack>
         </Flex>
-      </Flex>
-
-      <Flex marginRight=".5em" alignItems="center" paddingLeft="15px">
-        {parent ? (
-          <Link
-            to={`/sharedActivities/${ownerId}${parent.parent ? "/" + parent.parent.contentId : ""}${addToURLParams}`}
-            style={{
-              color: "var(--mainBlue)",
-            }}
-          >
-            {" "}
-            &lt; Back to{" "}
-            {parent.parent
-              ? parent.parent.name
-              : `Shared Activities of ${createFullName(owner)}`}
-          </Link>
-        ) : null}
-        <Spacer />
-        <ToggleViewButtonGroup
-          listView={listView}
-          setListView={setListView}
-          fetcher={fetcher}
-        />
       </Flex>
     </Box>
   );
@@ -343,8 +302,8 @@ export function SharedActivities() {
       content: activity,
       cardLink:
         activity.type == "folder"
-          ? `/sharedActivities/${activity.ownerId}/${activity.contentId}${addToURLParams}`
-          : `/activityViewer/${activity.contentId}${addToURLParams}`,
+          ? `/sharedActivities/${activity.ownerId}/${activity.contentId}`
+          : `/activityViewer/${activity.contentId}`,
       menuItems,
     };
   });
@@ -356,7 +315,6 @@ export function SharedActivities() {
       showPublicStatus={false}
       showActivityFeatures={true}
       emptyMessage={"No Activities Yet"}
-      listView={listView}
       content={cardContent}
       selectedCards={user ? selectedCards : undefined}
       setSelectedCards={setSelectedCards}
@@ -374,9 +332,7 @@ export function SharedActivities() {
         padding=".5em 10px"
         margin="0"
         width="100%"
-        background={
-          listView && content.length > 0 ? "white" : "var(--lightBlue)"
-        }
+        background={"white"}
         minHeight="calc(80vh - 130px)"
         flexDirection="column"
       >

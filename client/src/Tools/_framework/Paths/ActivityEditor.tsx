@@ -1,5 +1,5 @@
 import React, { ReactElement, useEffect, useRef, useState } from "react";
-import { redirect, useLoaderData } from "react-router";
+import { redirect, useLoaderData, useOutletContext } from "react-router";
 
 import {
   Box,
@@ -14,6 +14,7 @@ import {
   GridItem,
   HStack,
   Icon,
+  Link as ChakraLink,
   Show,
   Text,
   Tooltip,
@@ -23,13 +24,16 @@ import {
 import { BsPlayBtnFill } from "react-icons/bs";
 import {
   MdDataset,
+  MdHistory,
+  MdInfoOutline,
   MdModeEditOutline,
   MdOutlineAssignment,
+  MdOutlineContentCopy,
   MdOutlineEditOff,
   MdOutlineGroup,
 } from "react-icons/md";
 import { FaCog } from "react-icons/fa";
-import { useFetcher } from "react-router";
+import { useFetcher, Link as ReactRouterLink, useNavigate } from "react-router";
 import axios from "axios";
 import {
   contentSettingsActions,
@@ -38,9 +42,9 @@ import {
 import { InfoIcon } from "@chakra-ui/icons";
 import { AssignmentInvitation } from "../ToolPanels/AssignmentInvitation";
 import {
-  assignmentSettingsActions,
-  AssignmentSettingsDrawer,
-} from "../ToolPanels/AssignmentSettingsDrawer";
+  assignmentControlsActions,
+  AssignmentControlsDrawer,
+} from "../ToolPanels/AssignmentControlsDrawer";
 import { ShareDrawer, shareDrawerActions } from "../ToolPanels/ShareDrawer";
 import {
   ContentFeature,
@@ -49,8 +53,12 @@ import {
   License,
   ContentDescription,
   LibraryRelations,
+  ContentRevision,
 } from "../../../_utils/types";
-import { ActivityDoenetMLEditor } from "../ToolPanels/ActivityDoenetMLEditor";
+import {
+  ActivityDoenetMLEditor,
+  activityDoenetMLEditorActions,
+} from "../ToolPanels/ActivityDoenetMLEditor";
 import {
   CompoundActivityEditor,
   compoundActivityEditorActions,
@@ -61,23 +69,31 @@ import {
   getIconInfo,
 } from "../../../_utils/activity";
 import { ActivitySource } from "../../../_utils/viewerTypes";
+import { CopyContentAndReportFinish } from "../ToolPanels/CopyContentAndReportFinish";
+import { SiteContext } from "./SiteHeader";
+import {
+  AuthorModeModal,
+  authorModeModalActions,
+} from "../ToolPanels/AuthorModeModal";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
 
-  //Don't let name be blank
-  let name = formObj?.name?.trim();
-  if (name == "") {
-    name = "Untitled";
-  }
-
   if (formObj._action == "update name") {
+    //Don't let name be blank
+    let name = formObj?.name?.trim();
+    if (name === "") {
+      name = "Untitled";
+    }
+
     await axios.post(`/api/updateContent/updateContentSettings`, {
       contentId: params.contentId,
       name,
     });
     return true;
+  } else if (formObj._action === "go to data") {
+    return redirect(`/assignmentData/${params.contentId}`);
   }
 
   const resultCS = await contentSettingsActions({ formObj });
@@ -90,29 +106,37 @@ export async function action({ params, request }) {
     return resultSD;
   }
 
-  const resultAS = await assignmentSettingsActions({ formObj });
+  const resultAS = await assignmentControlsActions({ formObj });
   if (resultAS) {
     return resultAS;
   }
 
-  const resultNAE = await compoundActivityEditorActions(
-    { formObj },
-    { params },
-  );
+  const resultNAE = await compoundActivityEditorActions({ formObj });
   if (resultNAE) {
     return resultNAE;
   }
 
-  if (formObj._action == "go to data") {
-    return redirect(`/assignmentData/${params.contentId}`);
+  const resultDM = await authorModeModalActions({ formObj });
+  if (resultDM) {
+    return resultDM;
+  }
+
+  const resultADE = await activityDoenetMLEditorActions({ formObj });
+  if (resultADE) {
+    return resultADE;
   }
 
   return null;
 }
 
-export async function loader({ params, request }) {
+export async function loader({ params }) {
   const {
-    data: { editableByMe, activity: activityData, availableFeatures },
+    data: {
+      editableByMe,
+      activity: activityData,
+      availableFeatures,
+      revisions,
+    },
   } = await axios.get(
     `/api/activityEditView/getActivityEditorData/${params.contentId}`,
   );
@@ -122,25 +146,10 @@ export async function loader({ params, request }) {
   );
 
   if (!editableByMe) {
-    return redirect(`/codeViewer/${params.contentId}`);
+    return redirect(`/activityViewer/${params.contentId}`);
   }
 
   const contentId = params.contentId;
-
-  const url = new URL(request.url);
-  const addToId = url.searchParams.get("addTo");
-  let addTo: ContentDescription | undefined = undefined;
-
-  if (addToId) {
-    try {
-      const { data } = await axios.get(
-        `/api/info/getContentDescription/${addToId}`,
-      );
-      addTo = data;
-    } catch (_e) {
-      console.error(`Could not get description of ${addToId}`);
-    }
-  }
 
   // const supportingFileResp = await axios.get(
   //   `/api/loadSupportingFileInfo/${contentId}`,
@@ -179,8 +188,8 @@ export async function loader({ params, request }) {
       allDoenetmlVersions,
       allLicenses,
       availableFeatures,
-      addTo,
       libraryRelations,
+      revisions,
     };
   } else {
     const activityJson = compileActivityFromContent(activityData);
@@ -195,8 +204,8 @@ export async function loader({ params, request }) {
       allDoenetmlVersions,
       allLicenses,
       availableFeatures,
-      addTo,
       libraryRelations,
+      revisions,
     };
   }
 }
@@ -243,7 +252,7 @@ function EditableName({ dataTest }) {
       </Tooltip>
       <EditableInput
         maxLength={191}
-        width={{ base: "100%", md: "350px", lg: "450px" }}
+        width={{ base: "100%", lg: "450px" }}
         data-test="Editable Input"
       />
     </Editable>
@@ -259,6 +268,7 @@ export function ActivityEditor() {
     activityData: Content;
     addTo: ContentDescription | undefined;
     libraryRelations: LibraryRelations;
+    revisions: ContentRevision[];
   } & (
     | {
         type: "singleDoc";
@@ -277,8 +287,8 @@ export function ActivityEditor() {
     allDoenetmlVersions,
     allLicenses,
     availableFeatures,
-    addTo,
     libraryRelations,
+    revisions,
   } = data;
 
   const finalFocusRef = useRef<HTMLElement | null>(null);
@@ -311,24 +321,45 @@ export function ActivityEditor() {
     onClose: invitationOnClose,
   } = useDisclosure();
 
+  const {
+    isOpen: copyDialogIsOpen,
+    onOpen: copyDialogOnOpen,
+    onClose: copyDialogOnClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: authorModePromptIsOpen,
+    onOpen: authorModePromptOnOpen,
+    onClose: authorModePromptOnClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: historyIsOpen,
+    onOpen: historyOnOpen,
+    onClose: historyOnClose,
+  } = useDisclosure();
+
+  const { user } = useOutletContext<SiteContext>();
+
   const assignmentInfo = activityData.assignmentInfo;
   const assignmentStatus = assignmentInfo?.assignmentStatus ?? "Unassigned";
+  const isSubActivity = (activityData.parent?.type ?? "folder") !== "folder";
 
   const readOnly = assignmentStatus !== "Unassigned";
   const readOnlyRef = useRef(readOnly);
   readOnlyRef.current = readOnly;
 
-  const [mode, setMode] = useState<"Edit" | "View">(readOnly ? "View" : "Edit");
+  const authorMode = user?.isAuthor || data.type !== "singleDoc";
 
   const isLibraryActivity = Boolean(libraryRelations.source);
 
+  const [mode, setMode] = useState<"Edit" | "View">(
+    authorMode ? "Edit" : "View",
+  );
+
   useEffect(() => {
-    if (readOnly) {
-      setMode("View");
-    } else {
-      setMode("Edit");
-    }
-  }, [readOnly, contentId]);
+    setMode(authorMode ? "Edit" : "View");
+  }, [contentId]);
 
   useEffect(() => {
     document.title = `${activityData.name} - Doenet`;
@@ -339,11 +370,35 @@ export function ActivityEditor() {
   const [highlightRename, setHighlightRename] = useState(false);
 
   const fetcher = useFetcher();
+  const navigate = useNavigate();
 
-  const [editLabel, editTooltip, editIcon] =
-    assignmentStatus === "Unassigned"
-      ? ["Edit", "Edit activity", <MdModeEditOutline />]
-      : ["See Inside", "See read-only view of source", <MdOutlineEditOff />];
+  let editLabel: string;
+  let editTooltip: string;
+  let editIcon: ReactElement;
+
+  if (assignmentStatus === "Unassigned") {
+    editIcon = <MdModeEditOutline size={20} />;
+    editLabel = "Edit";
+    if (authorMode) {
+      editTooltip = "Edit activity";
+    } else {
+      editTooltip = "Turn on author mode to edit";
+    }
+  } else {
+    editIcon = <MdOutlineEditOff size={20} />;
+    if (authorMode) {
+      if (data.type === "singleDoc") {
+        editLabel = "See source code";
+        editTooltip = "See read-only view of source code";
+      } else {
+        editLabel = "See list";
+        editTooltip = `See read-only view of documents ${data.type === "sequence" ? "and question banks in the problem set" : "in the question bank"}`;
+      }
+    } else {
+      editLabel = "See source code";
+      editTooltip = "Turn on author mode to see read-only view of source code";
+    }
+  }
 
   const [settingsContentId, setSettingsContentId] = useState<string | null>(
     null,
@@ -384,6 +439,11 @@ export function ActivityEditor() {
         mode={mode}
         contentId={contentId}
         headerHeight={`${readOnly ? 120 : 80}px`}
+        historyIsOpen={historyIsOpen}
+        historyOnClose={historyOnClose}
+        fetcher={fetcher}
+        activityName={activityData.name}
+        revisions={revisions}
       />
     );
   } else {
@@ -400,7 +460,6 @@ export function ActivityEditor() {
         setSettingsDisplayTab={setSettingsDisplayTab}
         setHighlightRename={setHighlightRename}
         headerHeight={`${readOnly ? 120 : 80}px`}
-        addTo={addTo}
       />
     );
   }
@@ -433,7 +492,7 @@ export function ActivityEditor() {
 
   const assignmentDrawers = !isLibraryActivity ? (
     <>
-      <AssignmentSettingsDrawer
+      <AssignmentControlsDrawer
         isOpen={assignmentSettingsAreOpen}
         onClose={assignmentSettingsOnClose}
         finalFocusRef={finalFocusRef}
@@ -449,25 +508,56 @@ export function ActivityEditor() {
     </>
   ) : null;
 
+  const copyContentModal = (
+    <CopyContentAndReportFinish
+      fetcher={fetcher}
+      isOpen={copyDialogIsOpen}
+      onClose={copyDialogOnClose}
+      contentIds={[activityData.contentId]}
+      desiredParent={
+        activityData.parent ? { parent: null, ...activityData.parent } : null
+      }
+      action="Copy"
+      prependCopy={true}
+    />
+  );
+
+  const authorModeModal = (
+    <AuthorModeModal
+      isOpen={authorModePromptIsOpen}
+      onClose={authorModePromptOnClose}
+      desiredAction="edit"
+      assignmentStatus={assignmentStatus}
+      user={user!}
+      proceedCallback={() => {
+        setMode("Edit");
+      }}
+      allowNo={true}
+      fetcher={fetcher}
+    />
+  );
+
   const contentTypeName = contentTypeToName[data.type];
 
   const { iconImage, iconColor } = getIconInfo(data.type);
 
   const typeIcon = (
-    <Tooltip label={contentTypeName}>
-      <Box>
-        <Icon
-          as={iconImage}
-          color={iconColor}
-          boxSizing="content-box"
-          width="24px"
-          height="24px"
-          paddingRight="10px"
-          verticalAlign="middle"
-          aria-label={contentTypeName}
-        />
-      </Box>
-    </Tooltip>
+    <Show above="sm">
+      <Tooltip label={contentTypeName}>
+        <Box>
+          <Icon
+            as={iconImage}
+            color={iconColor}
+            boxSizing="content-box"
+            width="24px"
+            height="24px"
+            paddingRight="10px"
+            verticalAlign="middle"
+            aria-label={contentTypeName}
+          />
+        </Box>
+      </Tooltip>
+    </Show>
   );
 
   return (
@@ -475,6 +565,8 @@ export function ActivityEditor() {
       {settingsDrawer}
       {shareDrawer}
       {assignmentDrawers}
+      {copyContentModal}
+      {authorModeModal}
 
       <Grid
         background="doenet.lightBlue"
@@ -498,28 +590,46 @@ export function ActivityEditor() {
           <Grid
             templateAreas={`"leftControls label rightControls"`}
             templateColumns={{
-              base: "82px calc(100% - 197px) 115px",
-              sm: "87px calc(100% - 217px) 120px",
-              md: "1fr 350px 1fr",
-              lg: "1fr 450px 1fr",
+              base: "95px 1fr 165px",
+              sm: "100px 1fr 170px",
+              md: "170px 1fr 170px",
+              lg: "370px 1fr 370px",
             }}
             width="100%"
           >
             <GridItem area="leftControls">
               <HStack ml={{ base: "5px", sm: "10px" }} mt="4px">
+                <Show above="md">
+                  <Box width="50px" marginLeft="5px">
+                    <ChakraLink
+                      as={ReactRouterLink}
+                      to={".."}
+                      style={{
+                        color: "var(--mainBlue)",
+                      }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigate(-1);
+                      }}
+                    >
+                      {" "}
+                      &lt; Back
+                    </ChakraLink>
+                  </Box>
+                </Show>
                 <ButtonGroup size="sm" isAttached variant="outline">
                   <Tooltip hasArrow label="View Activity">
                     <Button
                       data-test="View Mode Button"
                       isActive={mode == "View"}
                       size="sm"
-                      pr={{ base: "0px", md: "10px" }}
-                      leftIcon={<BsPlayBtnFill />}
+                      pr={{ base: "0px", lg: "10px" }}
+                      leftIcon={<BsPlayBtnFill size={18} />}
                       onClick={() => {
                         setMode("View");
                       }}
                     >
-                      <Show above="md">View</Show>
+                      <Show above="lg">View</Show>
                     </Button>
                   </Tooltip>
                   <Tooltip hasArrow label={editTooltip}>
@@ -527,13 +637,19 @@ export function ActivityEditor() {
                       isActive={mode == "Edit"}
                       data-test="Edit Mode Button"
                       size="sm"
-                      pr={{ base: "0px", md: "10px" }}
+                      pr={{ base: "0px", lg: "10px" }}
                       leftIcon={editIcon}
                       onClick={() => {
-                        setMode("Edit");
+                        if (mode !== "Edit") {
+                          if (authorMode) {
+                            setMode("Edit");
+                          } else {
+                            authorModePromptOnOpen();
+                          }
+                        }
                       }}
                     >
-                      <Show above="md">{editLabel}</Show>
+                      <Show above="lg">{editLabel}</Show>
                     </Button>
                   </Tooltip>
                 </ButtonGroup>
@@ -550,31 +666,38 @@ export function ActivityEditor() {
               display="flex"
               justifyContent="flex-end"
             >
-              <HStack mr={{ base: "5px", sm: "10px" }}>
-                <ButtonGroup size="sm" isAttached variant="outline">
-                  {isLibraryActivity ? (
-                    <Tooltip
-                      hasArrow
-                      label="Open Curation Controls"
-                      placement="bottom-end"
+              <ButtonGroup
+                size="sm"
+                isAttached
+                variant="outline"
+                mt="4px"
+                mr={{ base: "5px", sm: "10px" }}
+              >
+                {isLibraryActivity ? (
+                  <Tooltip
+                    hasArrow
+                    label="Open Curation Controls"
+                    placement="bottom-end"
+                  >
+                    <Button
+                      data-test="Curate Button"
+                      size="sm"
+                      pr={{ base: "0px", lg: "10px" }}
+                      leftIcon={<MdOutlineGroup size={20} />}
+                      aria-label="open curation controls"
+                      onClick={() => {
+                        finalFocusRef.current = curateBtnRef.current;
+                        setSettingsContentId(activityData.contentId);
+                        sharingOnOpen();
+                      }}
+                      ref={curateBtnRef}
                     >
-                      <Button
-                        data-test="Curate Button"
-                        size="sm"
-                        pr={{ base: "0px", md: "10px" }}
-                        leftIcon={<MdOutlineGroup />}
-                        onClick={() => {
-                          finalFocusRef.current = curateBtnRef.current;
-                          setSettingsContentId(activityData.contentId);
-                          sharingOnOpen();
-                        }}
-                        ref={curateBtnRef}
-                      >
-                        <Show above="md">Curate</Show>
-                      </Button>
-                    </Tooltip>
-                  ) : (
-                    <>
+                      <Show above="lg">Curate</Show>
+                    </Button>
+                  </Tooltip>
+                ) : (
+                  <>
+                    {isSubActivity ? null : (
                       <Tooltip
                         hasArrow
                         label={
@@ -587,63 +710,86 @@ export function ActivityEditor() {
                         <Button
                           data-test="Assign Activity Button"
                           size="sm"
-                          pr={{ base: "0px", md: "10px" }}
-                          leftIcon={<MdOutlineAssignment />}
+                          pr={{ base: "0px", lg: "10px" }}
+                          leftIcon={<MdOutlineAssignment size={20} />}
+                          aria-label="assign activity"
                           onClick={() => {
                             finalFocusRef.current = assignBtnRef.current;
                             assignmentSettingsOnOpen();
                           }}
                           ref={assignBtnRef}
                         >
-                          <Show above="md">Assign</Show>
+                          <Show above="lg">
+                            {assignmentStatus === "Unassigned"
+                              ? "Assign"
+                              : "Assigned"}
+                          </Show>
                         </Button>
                       </Tooltip>
+                    )}
 
-                      <Tooltip
-                        hasArrow
-                        label="Open Sharing Controls"
-                        placement="bottom-end"
+                    <Tooltip
+                      hasArrow
+                      label="Open Sharing Controls"
+                      placement="bottom-end"
+                    >
+                      <Button
+                        data-test="Sharing Button"
+                        size="sm"
+                        pr={{ base: "0px", lg: "10px" }}
+                        leftIcon={<MdOutlineGroup size={20} />}
+                        aria-label="Open sharing controls"
+                        onClick={() => {
+                          finalFocusRef.current = sharingBtnRef.current;
+                          setSettingsContentId(activityData.contentId);
+                          sharingOnOpen();
+                        }}
+                        ref={sharingBtnRef}
                       >
-                        <Button
-                          data-test="Sharing Button"
-                          size="sm"
-                          pr={{ base: "0px", md: "10px" }}
-                          leftIcon={<MdOutlineGroup />}
-                          onClick={() => {
-                            finalFocusRef.current = sharingBtnRef.current;
-                            setSettingsContentId(activityData.contentId);
-                            sharingOnOpen();
-                          }}
-                          ref={sharingBtnRef}
-                        >
-                          <Show above="md">Share</Show>
-                        </Button>
-                      </Tooltip>
-                    </>
-                  )}
+                        <Show above="lg">Share</Show>
+                      </Button>
+                    </Tooltip>
+                  </>
+                )}
+                {data.type === "singleDoc" && authorMode && (
                   <Tooltip
                     hasArrow
-                    label="Open Settings"
+                    label="Open document history"
                     placement="bottom-end"
                   >
                     <Button
-                      data-test="Settings Button"
+                      data-test="History Button"
                       size="sm"
-                      pr={{ base: "0px", md: "10px" }}
-                      leftIcon={<FaCog />}
+                      pr={{ base: "0px", lg: "10px" }}
+                      leftIcon={<MdHistory size={20} />}
+                      aria-label="Open document history"
                       onClick={() => {
-                        finalFocusRef.current = settingsBtnRef.current;
-                        setSettingsDisplayTab("general");
-                        setSettingsContentId(activityData.contentId);
-                        settingsOnOpen();
+                        historyOnOpen();
                       }}
-                      ref={settingsBtnRef}
                     >
-                      <Show above="md">Settings</Show>
+                      <Show above="lg">History</Show>
                     </Button>
                   </Tooltip>
-                </ButtonGroup>
-              </HStack>
+                )}
+                <Tooltip hasArrow label="Open Settings" placement="bottom-end">
+                  <Button
+                    data-test="Settings Button"
+                    size="sm"
+                    pr={{ base: "0px", lg: "10px" }}
+                    leftIcon={<FaCog size={16} />}
+                    aria-label="Open setting"
+                    onClick={() => {
+                      finalFocusRef.current = settingsBtnRef.current;
+                      setSettingsDisplayTab("general");
+                      setSettingsContentId(activityData.contentId);
+                      settingsOnOpen();
+                    }}
+                    ref={settingsBtnRef}
+                  >
+                    <Show above="lg">Settings</Show>
+                  </Button>
+                </Tooltip>
+              </ButtonGroup>
             </GridItem>
           </Grid>
         </GridItem>
@@ -654,36 +800,47 @@ export function ActivityEditor() {
               <Center
                 background="orange.100"
                 width="100%"
-                height="40px"
+                height={{ base: "60px", sm: "40px" }}
                 pl="4px"
                 pr="4px"
               >
                 <InfoIcon color="orange.500" mr="6px" />
 
                 {assignmentInfo?.assignmentStatus === "Open" ? (
-                  <>
+                  isSubActivity ? (
                     <Text size="xs">
-                      {` Assignment is open with code ${assignmentInfo.classCode}. ${mode == "Edit" ? "It cannot be edited." : ""}`}
+                      {`Activity is part of an open assignment. ${mode == "Edit" ? "It cannot be edited." : ""}`}
                     </Text>
-                    <Button
-                      onClick={invitationOnOpen}
-                      colorScheme="blue"
-                      mt="4px"
-                      ml="4px"
-                      size="xs"
-                    >
-                      Activity Invitation
-                    </Button>
-                  </>
+                  ) : (
+                    <>
+                      <Text size="xs">
+                        {`Assignment is open with code ${assignmentInfo.classCode}. ${mode == "Edit" ? "Make a copy to create an editable version." : ""}`}
+                      </Text>
+
+                      <Tooltip label="Activity Invitation">
+                        <Button
+                          onClick={invitationOnOpen}
+                          colorScheme="blue"
+                          mt="4px"
+                          ml="4px"
+                          size="xs"
+                          leftIcon={<MdInfoOutline />}
+                          pr={{ base: "0px", md: "10px" }}
+                        >
+                          <Show above="md">Activity Invitation</Show>
+                        </Button>
+                      </Tooltip>
+                    </>
+                  )
                 ) : (
                   <Text size="xs">
-                    {`Activity is a closed assignment${mode == "Edit" ? " and cannot be edited." : "."}`}
+                    {`Activity is ${isSubActivity ? "part of " : ""}a closed assignment. ${mode == "Edit" ? "Make a copy to create an editable version." : "."}`}
                   </Text>
                 )}
                 {assignmentInfo?.hasScoreData ? (
                   <Tooltip label="View data">
                     <Button
-                      data-test="Assignment Setting Button"
+                      data-test="View Data Button"
                       colorScheme="blue"
                       mt="4px"
                       ml="4px"
@@ -701,11 +858,29 @@ export function ActivityEditor() {
                     </Button>
                   </Tooltip>
                 ) : null}
+                {isSubActivity ? null : (
+                  <Tooltip label="Make a copy">
+                    <Button
+                      data-test="Make Copy Button"
+                      colorScheme="blue"
+                      mt="4px"
+                      ml="4px"
+                      size="xs"
+                      leftIcon={<MdOutlineContentCopy />}
+                      pr={{ base: "0px", md: "10px" }}
+                      onClick={() => {
+                        copyDialogOnOpen();
+                      }}
+                    >
+                      <Show above="md">Make a copy</Show>
+                    </Button>
+                  </Tooltip>
+                )}
               </Center>
             ) : null}
             {editor}
             <Box
-              hidden={mode === "Edit"}
+              hidden={mode !== "View"}
               maxWidth="850px"
               width="100%"
               height="30vh"

@@ -165,7 +165,7 @@ describe("Add to compound activity tests", () => {
 
     cy.get('[data-test="Activities"]').should(
       "contain.text",
-      "Above question bank is empty.",
+      "Add documents to above empty question bank.",
     );
 
     cy.get('[data-test="Card Menu Button"]').eq(0).click();
@@ -180,7 +180,7 @@ describe("Add to compound activity tests", () => {
 
     cy.get('[data-test="Activities"]').should(
       "not.contain.text",
-      "Above question bank is empty.",
+      "Add documents to above empty question bank.",
     );
 
     cy.get('[data-test="Card Menu Button"]').eq(1).click();
@@ -188,7 +188,7 @@ describe("Add to compound activity tests", () => {
 
     cy.get('[data-test="Activities"]').should(
       "contain.text",
-      "Above question bank is empty.",
+      "Add documents to above empty question bank.",
     );
 
     cy.get(`[data-test="Content Card"]`)

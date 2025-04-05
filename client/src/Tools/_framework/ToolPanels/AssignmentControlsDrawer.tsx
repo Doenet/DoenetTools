@@ -22,20 +22,20 @@ import {
 } from "./AssignActivityControls";
 import { Content } from "../../../_utils/types";
 
-export async function assignmentSettingsActions({
+export async function assignmentControlsActions({
   formObj,
 }: {
   [k: string]: any;
 }) {
-  const result = await assignActivityActions({ formObj });
-  if (result) {
-    return result;
+  const resultAA = await assignActivityActions({ formObj });
+  if (resultAA) {
+    return resultAA;
   }
 
   return null;
 }
 
-export function AssignmentSettingsDrawer({
+export function AssignmentControlsDrawer({
   isOpen,
   onClose,
   finalFocusRef,
@@ -81,7 +81,7 @@ export function AssignmentSettingsDrawer({
       <DrawerContent>
         <DrawerCloseButton data-test="Close Settings Button" />
         <DrawerHeader textAlign="center" height="70px">
-          Assignment Settings
+          Assignment Controls
           <Tooltip label={contentData.name}>
             <Text fontSize="smaller" noOfLines={1}>
               {contentData.name}
@@ -92,27 +92,23 @@ export function AssignmentSettingsDrawer({
         <DrawerBody>
           <Tabs index={tabIndex} onChange={(index) => setTabIndex(index)}>
             <TabList>
-              {contentData.type !== "folder" ? (
-                <Tab data-test="Assignment Tab">
-                  {(contentData.assignmentInfo?.assignmentStatus ??
-                  "Unassigned" === "Unassigned")
-                    ? "Assign Activity"
-                    : "Manage Assignment"}
-                </Tab>
-              ) : null}
+              <Tab data-test="Assign Activity">
+                {(contentData.assignmentInfo?.assignmentStatus ??
+                  "Unassigned") === "Unassigned"
+                  ? "Assign Activity"
+                  : "Manage Assignment"}
+              </Tab>
             </TabList>
             <Box overflowY="auto" height="calc(100vh - 130px)">
               <TabPanels>
-                {contentData.type !== "folder" ? (
-                  <TabPanel>
-                    <AssignActivityControls
-                      fetcher={fetcher}
-                      contentId={contentId}
-                      activityData={contentData}
-                      openTabIndex={tabIndex}
-                    />
-                  </TabPanel>
-                ) : null}
+                <TabPanel>
+                  <AssignActivityControls
+                    fetcher={fetcher}
+                    contentId={contentId}
+                    activityData={contentData}
+                    openTabIndex={tabIndex}
+                  />
+                </TabPanel>
               </TabPanels>
             </Box>
           </Tabs>

@@ -1,7 +1,5 @@
 import axios from "axios";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useDropzone } from "react-dropzone";
-import { Alert, AlertQueue } from "./AlertQueue";
+import React, { useEffect, useRef, useState } from "react";
 import { FetcherWithComponents, Form } from "react-router";
 import {
   Box,
@@ -10,84 +8,85 @@ import {
   Icon,
   VStack,
   Text,
-  Card,
-  Image,
   Input,
   FormErrorMessage,
   Select,
   Checkbox,
   Heading,
   Tooltip,
-  RadioGroup,
-  HStack,
-  Radio,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
 } from "@chakra-ui/react";
-import { FaFileImage } from "react-icons/fa";
-import { readAndCompressImage } from "browser-image-resizer";
 import {
   ContentFeature,
   Content,
   DoenetmlVersion,
 } from "../../../_utils/types";
 import { activityFeatureIcons } from "../../../_utils/activity";
+import { MdError } from "react-icons/md";
 
 export async function generalContentActions({ formObj }: { [k: string]: any }) {
-  if (formObj._action == "update general") {
-    let activityLevelAttempts: boolean | undefined = undefined;
-    let itemLevelAttempts: boolean | undefined = undefined;
-    if (formObj.attemptButtons) {
-      if (formObj.attemptButtons === "none") {
-        activityLevelAttempts = itemLevelAttempts = false;
-      } else if (formObj.attemptButtons === "activity") {
-        activityLevelAttempts = true;
-        itemLevelAttempts = false;
-      } else if (formObj.attemptButtons === "item") {
-        itemLevelAttempts = true;
-        activityLevelAttempts = false;
-      }
+  try {
+    if (formObj._action === "update name in settings") {
+      await axios.post("/api/updateContent/updateContentSettings", {
+        contentId: formObj.contentId,
+        name: formObj.name,
+      });
+      return { updatedSettingMessage: `updated name to: ${formObj.name}` };
+    } else if (formObj._action === "update doenetmlVersionId") {
+      await axios.post("/api/updateContent/updateContentSettings", {
+        contentId: formObj.contentId,
+        doenetmlVersionId: Number(formObj.doenetmlVersionId),
+      });
+      return { updatedSettingMessage: "updated DoenetML version" };
+    } else if (formObj._action === "update numToSelect") {
+      await axios.post("/api/updateContent/updateContentSettings", {
+        contentId: formObj.contentId,
+        numToSelect: Number(formObj.numToSelect),
+      });
+      return {
+        updatedSettingMessage: `updated Number to Select to ${formObj.numToSelect}`,
+      };
+    } else if (formObj._action === "update selectByVariant") {
+      await axios.post("/api/updateContent/updateContentSettings", {
+        contentId: formObj.contentId,
+        selectByVariant: formObj.selectByVariant === "true",
+      });
+      return {
+        updatedSettingMessage: `updated Select by Variant to ${formObj.selectByVariant}`,
+      };
+    } else if (formObj._action === "update shuffle") {
+      await axios.post("/api/updateContent/updateContentSettings", {
+        contentId: formObj.contentId,
+        shuffle: formObj.shuffle === "true",
+      });
+      return {
+        updatedSettingMessage: `updated Shuffle Items to ${formObj.shuffle}`,
+      };
+    } else if (formObj._action === "update paginate") {
+      await axios.post("/api/updateContent/updateContentSettings", {
+        contentId: formObj.contentId,
+        paginate: formObj.paginate === "true",
+      });
+      return {
+        updatedSettingMessage: `updated Paginate to ${formObj.paginate}`,
+      };
+    } else if (formObj?._action === "update feature") {
+      const addFeature = formObj.value === "true";
+      await axios.post("/api/updateContent/updateContentFeatures", {
+        contentId: formObj.contentId,
+        features: { [formObj.code]: addFeature },
+      });
+      return {
+        updatedSettingMessage: `${addFeature ? "added" : "removed"} activity feature: ${formObj.term}`,
+      };
     }
-    await axios.post("/api/updateContent/updateContentSettings", {
-      name: formObj.name,
-      imagePath: formObj.imagePath,
-      contentId: formObj.contentId,
-      doenetmlVersionId: formObj.doenetmlVersionId
-        ? Number(formObj.doenetmlVersionId)
-        : undefined,
-      shuffle: formObj.shuffle ? formObj.shuffle === "true" : undefined,
-      numToSelect: formObj.numToSelect
-        ? Number(formObj.numToSelect)
-        : undefined,
-      selectByVariant: formObj.selectByVariant
-        ? formObj.selectByVariant === "true"
-        : undefined,
-      paginate: formObj.paginate ? formObj.paginate === "true" : undefined,
-      activityLevelAttempts,
-      itemLevelAttempts,
-    });
-
-    return true;
-  } else if (formObj?._action === "update features") {
-    const features: Record<string, boolean> = {};
-
-    const {
-      contentId: _contentId,
-      _action: __action,
-      ...formFeatures
-    } = formObj;
-
-    for (const feature in formFeatures) {
-      features[feature] = formFeatures[feature] === "true";
-    }
-
-    await axios.post("/api/updateContent/updateContentFeatures", {
-      contentId: formObj.contentId,
-      features,
-    });
-    return true;
-  } else if (formObj?._action == "noop") {
-    return true;
+  } catch (_e) {
+    return { updatedSettingError: true };
   }
-
   return null;
 }
 
@@ -97,18 +96,16 @@ export function GeneralContentControls({
   allDoenetmlVersions,
   availableFeatures,
   highlightRename = false,
+  isOpen,
 }: {
   fetcher: FetcherWithComponents<any>;
   contentData: Content;
   allDoenetmlVersions: DoenetmlVersion[];
   availableFeatures: ContentFeature[];
   highlightRename?: boolean;
+  isOpen: boolean;
 }) {
-  const { name, imagePath: dataImagePath } = contentData;
-
-  const numberOfFilesUploading = useRef(0);
-  const [imagePath, setImagePath] = useState(dataImagePath);
-  const [alerts, setAlerts] = useState<Alert[]>([]);
+  const { name } = contentData;
 
   // TODO: if saveDataToServer is unsuccessful, then doenetmlVersion from the server
   // will not match doenetmlVersion on the client and the client will not be notified.
@@ -117,6 +114,26 @@ export function GeneralContentControls({
   // should the optimism be unmerited.
   const doenetmlVersionInit: DoenetmlVersion | null =
     contentData.type === "singleDoc" ? contentData.doenetmlVersion : null;
+
+  const [statusText, setStatusText] = useState("");
+  const [statusStyleIdx, setStatusStyleIdx] = useState(0);
+  const [errMsg, setErrMsg] = useState("");
+
+  useEffect(() => {
+    if (typeof fetcher.data === "object" && fetcher.data !== null) {
+      if ("updatedSettingMessage" in fetcher.data) {
+        setStatusStyleIdx((x) => x + 1);
+        setStatusText(`Successfully ${fetcher.data.updatedSettingMessage}`);
+      } else if (fetcher.data.updatedSettingError === true) {
+        setErrMsg("An error occurred attempting to update setting!");
+      }
+    }
+  }, [fetcher.data]);
+
+  useEffect(() => {
+    setStatusText("");
+    setErrMsg("");
+  }, [isOpen]);
 
   const [nameValue, setName] = useState(name);
   const lastAcceptedNameValue = useRef(name);
@@ -140,15 +157,6 @@ export function GeneralContentControls({
   const [paginate, setPaginate] = useState(
     contentData.type === "sequence" ? contentData.paginate : false,
   );
-  const [attemptButtons, setAttemptButtons] = useState<string>(
-    contentData.type === "sequence"
-      ? contentData.activityLevelAttempts
-        ? "activity"
-        : contentData.itemLevelAttempts
-          ? "item"
-          : "none"
-      : "none",
-  );
 
   const nameInput = useRef<HTMLInputElement>(null);
 
@@ -163,25 +171,7 @@ export function GeneralContentControls({
   const contentTypeLower =
     contentData.type === "folder" ? "folder" : "activity";
 
-  function saveDataToServer({
-    nextDoenetmlVersionId,
-    isQuestion,
-    isInteractive,
-    containsVideo,
-  }: {
-    nextDoenetmlVersionId?: number;
-    isQuestion?: boolean;
-    isInteractive?: boolean;
-    containsVideo?: boolean;
-  } = {}) {
-    const data: {
-      name?: string;
-      doenetmlVersionId?: number;
-      isQuestion?: boolean;
-      isInteractive?: boolean;
-      containsVideo?: boolean;
-    } = { isQuestion, isInteractive, containsVideo };
-
+  function saveName() {
     // Turn on/off name error messages and
     // use the latest valid name
     let nameToSubmit = nameValue;
@@ -195,111 +185,25 @@ export function GeneralContentControls({
     }
     lastAcceptedNameValue.current = nameToSubmit;
 
-    data.name = nameToSubmit;
-
-    if (nextDoenetmlVersionId) {
-      data.doenetmlVersionId = nextDoenetmlVersionId;
-    }
-
     fetcher.submit(
       {
-        _action: "update general",
+        _action: "update name in settings",
         contentId: contentData.contentId,
-        ...data,
+        name: nameToSubmit,
       },
       { method: "post" },
     );
   }
 
-  const onDrop = useCallback(
-    async (files: File[]) => {
-      let success = true;
-      const file = files[0];
-      if (files.length > 1) {
-        success = false;
-        //Should we just grab the first one and ignore the rest
-        console.log("Only one file upload allowed!");
-      }
-
-      //Only upload one batch at a time
-      if (numberOfFilesUploading.current > 0) {
-        console.log(
-          "Already uploading files.  Please wait before sending more.",
-        );
-        success = false;
-      }
-
-      //If any settings aren't right then abort
-      if (!success) {
-        return;
-      }
-
-      numberOfFilesUploading.current = 1;
-
-      const image = await readAndCompressImage(file, {
-        quality: 0.9,
-        maxWidth: 350,
-        maxHeight: 234,
-        debug: true,
-      });
-
-      //Upload files
-      const reader = new FileReader();
-      reader.readAsDataURL(image); //This one could be used with image source to preview image
-
-      reader.onabort = () => {};
-      reader.onerror = () => {};
-      reader.onload = () => {
-        const uploadData = new FormData();
-        // uploadData.append('file',file);
-        uploadData.append("file", image);
-        uploadData.append("contentId", contentData.contentId.toString());
-
-        axios.post("/api/activityThumbnailUpload", uploadData).then((resp) => {
-          const { data } = resp;
-
-          //uploads are finished clear it out
-          numberOfFilesUploading.current = 0;
-          const { success, cid, msg } = data;
-          if (success) {
-            setImagePath(`/media/${cid}.jpg`);
-            //Refresh images in activities
-            fetcher.submit(
-              {
-                _action: "noop",
-              },
-              { method: "post" },
-            );
-            setAlerts([
-              {
-                type: "success",
-                id: cid,
-                title: "Activity thumbnail updated!",
-                description: "",
-              },
-            ]);
-          } else {
-            setAlerts([
-              { type: "error", id: cid, title: msg, description: "" },
-            ]);
-          }
-        });
-      };
-    },
-    [contentData.contentId],
-  );
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
-
   function saveNumToSelect(text: string) {
     let num = Math.round(Number(text));
-    if (!Number.isInteger(num) && num >= 1) {
+    if (!(Number.isInteger(num) && num >= 1)) {
       num = 1;
     }
     setNumToSelectText(num.toString());
     fetcher.submit(
       {
-        _action: "update general",
+        _action: "update numToSelect",
         contentId: contentData.contentId,
         numToSelect: num,
       },
@@ -309,53 +213,36 @@ export function GeneralContentControls({
 
   return (
     <>
-      <AlertQueue alerts={alerts} />
-      <Form method="post">
-        {contentData.type === "singleDoc" ? (
-          <FormControl>
-            <FormLabel>Thumbnail</FormLabel>
-            <Box>
-              {isDragActive ? (
-                <VStack
-                  spacing={4}
-                  p="24px"
-                  border="2px dashed #949494"
-                  borderRadius="lg"
-                  width="90%"
-                  {...getRootProps()}
-                >
-                  <input {...getInputProps()} />
-
-                  <Icon fontSize="24pt" color="#949494" as={FaFileImage} />
-                  <Text color="#949494" fontSize="24pt">
-                    Drop Image Here
-                  </Text>
-                </VStack>
-              ) : (
-                <Card
-                  width="180px"
-                  height="120px"
-                  p="0"
-                  m="0"
-                  cursor="pointer"
-                  {...getRootProps()}
-                >
-                  <input {...getInputProps()} />
-
-                  <Image
-                    height="120px"
-                    maxWidth="180px"
-                    src={imagePath ?? ""}
-                    alt="Content Card Image"
-                    borderTopRadius="md"
-                    objectFit="cover"
-                  />
-                </Card>
-              )}
-            </Box>
-          </FormControl>
+      <Box height="35px">
+        {statusText !== "" || errMsg !== "" ? (
+          <Box
+            data-test="Status message"
+            border="solid 1px lightgray"
+            borderRadius="5px"
+            padding="5px 10px"
+            backgroundColor={
+              errMsg !== ""
+                ? "red.100"
+                : ["green.100", "green.200"][statusStyleIdx % 2]
+            }
+          >
+            {errMsg !== "" ? (
+              <Text>
+                <Icon
+                  fontSize="24pt"
+                  color="red.800"
+                  as={MdError}
+                  verticalAlign="middle"
+                  marginRight="5px"
+                />
+                {errMsg}
+              </Text>
+            ) : null}
+            {statusText}
+          </Box>
         ) : null}
-
+      </Box>
+      <Form method="post">
         <FormControl isInvalid={nameIsInvalid}>
           <FormLabel mt="16px">Name</FormLabel>
 
@@ -372,10 +259,10 @@ export function GeneralContentControls({
             onChange={(e) => {
               setName(e.target.value);
             }}
-            onBlur={() => saveDataToServer()}
+            onBlur={() => saveName()}
             onKeyDown={(e) => {
               if (e.key == "Enter") {
-                saveDataToServer();
+                saveName();
               }
             }}
           />
@@ -383,14 +270,10 @@ export function GeneralContentControls({
             Error - A name for the {contentTypeLower} is required.
           </FormErrorMessage>
         </FormControl>
-
-        <input type="hidden" name="imagePath" value={imagePath ?? undefined} />
-        <input type="hidden" name="_action" value="update general" />
-        <input type="hidden" name="contentId" value={contentData.contentId} />
       </Form>
 
       {contentData.type !== "folder" ? (
-        <Box backgroundColor="#F5F5F5" padding="10px" marginTop="20px">
+        <Box padding="10px" marginTop="20px">
           <Heading size="sm">Activity features</Heading>
           <VStack alignItems="flex-start" gap={0}>
             {availableFeatures.map((feature) => {
@@ -414,9 +297,11 @@ export function GeneralContentControls({
                     });
                     fetcher.submit(
                       {
-                        _action: "update features",
+                        _action: "update feature",
                         contentId: contentData.contentId,
-                        [feature.code]: !isPresent,
+                        code: feature.code,
+                        value: !isPresent,
+                        term: feature.term,
                       },
                       { method: "post" },
                     );
@@ -440,51 +325,58 @@ export function GeneralContentControls({
       ) : null}
 
       {contentData.type === "singleDoc" ? (
-        <FormControl>
-          <FormLabel mt="16px">DoenetML version</FormLabel>
-          <Select
-            value={doenetmlVersion?.id}
-            disabled={
-              (contentData.assignmentInfo?.assignmentStatus ?? "Unassigned") !==
-              "Unassigned"
-            }
-            onChange={(e) => {
-              // TODO: do we worry about this pattern?
-              // If saveDataToServer is unsuccessful, the client doenetmlVersion
-              // will no match what's on the server.
-              // (See TODO from near where doenetmlVersion is defined)
-              const nextDoenetmlVersionId = Number(e.target.value);
-              const nextDoenetmlVersion = allDoenetmlVersions.find(
-                (v) => v.id == nextDoenetmlVersionId,
-              );
-              if (nextDoenetmlVersion) {
-                setDoenetmlVersion(nextDoenetmlVersion);
-                saveDataToServer({ nextDoenetmlVersionId });
+        <>
+          <FormControl>
+            <FormLabel mt="16px">DoenetML version</FormLabel>
+            <Select
+              value={doenetmlVersion?.id}
+              isDisabled={
+                (contentData.assignmentInfo?.assignmentStatus ??
+                  "Unassigned") !== "Unassigned"
               }
-            }}
-          >
-            {allDoenetmlVersions.map((version) => (
-              <option value={version.id} key={version.id}>
-                {version.displayedVersion}
-              </option>
-            ))}
-          </Select>
-        </FormControl>
+              onChange={(e) => {
+                const nextDoenetmlVersionId = Number(e.target.value);
+                const nextDoenetmlVersion = allDoenetmlVersions.find(
+                  (v) => v.id == nextDoenetmlVersionId,
+                );
+                if (nextDoenetmlVersion) {
+                  setDoenetmlVersion(nextDoenetmlVersion);
+
+                  fetcher.submit(
+                    {
+                      _action: "update doenetmlVersionId",
+                      contentId: contentData.contentId,
+                      doenetmlVersionId: nextDoenetmlVersionId,
+                    },
+                    { method: "post" },
+                  );
+                }
+              }}
+            >
+              {allDoenetmlVersions.map((version) => (
+                <option value={version.id} key={version.id}>
+                  {version.displayedVersion}
+                </option>
+              ))}
+            </Select>
+          </FormControl>
+
+          {(contentData.assignmentInfo?.assignmentStatus ?? "Unassigned") !==
+          "Unassigned" ? (
+            <p>
+              <strong>Note</strong>: Cannot modify DoenetML version since
+              activity is assigned.
+            </p>
+          ) : null}
+          {doenetmlVersion?.deprecated && (
+            <p>
+              <strong>Warning</strong>: DoenetML version{" "}
+              {doenetmlVersion.displayedVersion} is deprecated.{" "}
+              {doenetmlVersion.deprecationMessage}
+            </p>
+          )}
+        </>
       ) : null}
-      {(contentData.assignmentInfo?.assignmentStatus ?? "Unassigned") !==
-      "Unassigned" ? (
-        <p>
-          <strong>Note</strong>: Cannot modify DoenetML version since activity
-          is assigned.
-        </p>
-      ) : null}
-      {doenetmlVersion?.deprecated && (
-        <p>
-          <strong>Warning</strong>: DoenetML version{" "}
-          {doenetmlVersion.displayedVersion} is deprecated.{" "}
-          {doenetmlVersion.deprecationMessage}
-        </p>
-      )}
 
       {contentData.type === "singleDoc" && contentData.numVariants > 1 ? (
         <Box marginTop="20px">
@@ -496,17 +388,41 @@ export function GeneralContentControls({
         <Box marginTop="20px">
           <Heading size="sm">Problem set settings</Heading>
 
+          <Checkbox
+            marginTop="10px"
+            isChecked={paginate}
+            data-test={`Paginate Checkbox`}
+            onChange={() => {
+              setPaginate(!paginate);
+
+              fetcher.submit(
+                {
+                  _action: "update paginate",
+                  contentId: contentData.contentId,
+                  paginate: !paginate,
+                },
+                { method: "post" },
+              );
+            }}
+          >
+            Paginate
+          </Checkbox>
+
           <VStack alignItems="flex-start" gap={0}>
             <Checkbox
               marginTop="10px"
               isChecked={shuffle}
+              isDisabled={
+                (contentData.assignmentInfo?.assignmentStatus ??
+                  "Unassigned") !== "Unassigned"
+              }
               data-test={`Shuffle Checkbox`}
               onChange={() => {
                 setShuffle(!shuffle);
 
                 fetcher.submit(
                   {
-                    _action: "update general",
+                    _action: "update shuffle",
                     contentId: contentData.contentId,
                     shuffle: !shuffle,
                   },
@@ -514,51 +430,8 @@ export function GeneralContentControls({
                 );
               }}
             >
-              shuffle items
+              Shuffle items
             </Checkbox>
-
-            <Checkbox
-              marginTop="10px"
-              isChecked={paginate}
-              data-test={`Paginate Checkbox`}
-              onChange={() => {
-                setPaginate(!paginate);
-
-                fetcher.submit(
-                  {
-                    _action: "update general",
-                    contentId: contentData.contentId,
-                    paginate: !paginate,
-                  },
-                  { method: "post" },
-                );
-              }}
-            >
-              Paginate
-            </Checkbox>
-
-            <RadioGroup
-              marginTop="10px"
-              onChange={(v) => {
-                setAttemptButtons(v);
-                fetcher.submit(
-                  {
-                    _action: "update general",
-                    contentId: contentData.contentId,
-                    attemptButtons: v,
-                  },
-                  { method: "post" },
-                );
-              }}
-              value={attemptButtons}
-            >
-              <HStack>
-                <Text>Show new attempt buttons:</Text>
-                <Radio value="none">None</Radio>
-                <Radio value="activity">Activity</Radio>
-                <Radio value="item">Item</Radio>
-              </HStack>
-            </RadioGroup>
           </VStack>
         </Box>
       ) : null}
@@ -569,36 +442,53 @@ export function GeneralContentControls({
           </Heading>
 
           <VStack alignItems="flex-start" gap={0}>
-            <p>
-              Number to select:{" "}
-              <Input
-                name="numToSelect"
-                size="sm"
-                width="50px"
-                data-test="Number To Select"
+            <FormLabel marginTop="10px">
+              Number to select
+              <NumberInput
+                width="80px"
                 value={numToSelectText}
-                onChange={(e) => {
-                  setNumToSelectText(e.target.value);
+                onChange={(valueString) => {
+                  const numValue = parseInt(valueString);
+                  let strValue = numValue.toString();
+                  if (!Number.isInteger(numValue) || numValue === 0) {
+                    strValue = "";
+                  }
+                  setNumToSelectText(strValue);
                 }}
-                onBlur={() => saveNumToSelect(numToSelectText)}
                 onKeyDown={(e) => {
                   if (e.key == "Enter") {
-                    saveNumToSelect(numToSelectText);
+                    const target = e.target as HTMLInputElement;
+                    saveNumToSelect(target.value);
                   }
                 }}
-              />
-            </p>
+                min={1}
+                onBlur={(e) => {
+                  const valueString = e.target.value;
+                  saveNumToSelect(valueString);
+                }}
+              >
+                <NumberInputField />
+                <NumberInputStepper>
+                  <NumberIncrementStepper />
+                  <NumberDecrementStepper />
+                </NumberInputStepper>
+              </NumberInput>
+            </FormLabel>
 
             <Checkbox
               marginTop="10px"
               isChecked={selectByVariant}
               data-test={`Select By Variant Checkbox`}
+              isDisabled={
+                (contentData.assignmentInfo?.assignmentStatus ??
+                  "Unassigned") !== "Unassigned"
+              }
               onChange={() => {
                 setSelectByVariant(!selectByVariant);
 
                 fetcher.submit(
                   {
-                    _action: "update general",
+                    _action: "update selectByVariant",
                     contentId: contentData.contentId,
                     selectByVariant: !selectByVariant,
                   },
@@ -610,6 +500,14 @@ export function GeneralContentControls({
             </Checkbox>
           </VStack>
         </Box>
+      ) : null}
+      {contentData.type !== "singleDoc" &&
+      (contentData.assignmentInfo?.assignmentStatus ?? "Unassigned") !==
+        "Unassigned" ? (
+        <Text marginTop="10px">
+          <strong>Note</strong>: Cannot modify some settings since activity is
+          assigned.
+        </Text>
       ) : null}
     </>
   );

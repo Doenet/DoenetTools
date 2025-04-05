@@ -28,7 +28,6 @@ export const updateContentSettingsSchema = z.object({
   paginate: z.boolean().optional(),
   activityLevelAttempts: z.boolean().optional(),
   itemLevelAttempts: z.boolean().optional(),
-  imagePath: z.string().optional(),
 });
 
 export const updateContentFeaturesSchema = z.object({
@@ -41,11 +40,27 @@ export const updateContentDoenetMLSchema = z
     contentId: uuidSchema,
     doenetML: z.string(),
     numVariants: z.number().int(),
-    baseComponentCounts: z.string(),
   })
-  .transform(({ contentId, doenetML, numVariants, baseComponentCounts }) => ({
+  .transform(({ contentId, doenetML, numVariants }) => ({
     contentId,
     source: doenetML,
     numVariants,
-    baseComponentCounts,
   }));
+
+export const createContentRevisionScheme = z.object({
+  contentId: uuidSchema,
+  revisionName: z.string(),
+  note: z.string(),
+});
+
+export const updateContentRevisionScheme = z.object({
+  contentId: uuidSchema,
+  revisionNum: z.number().int(),
+  revisionName: z.string(),
+  note: z.string(),
+});
+
+export const revertToRevisionScheme = z.object({
+  contentId: uuidSchema,
+  revisionNum: z.number().int(),
+});

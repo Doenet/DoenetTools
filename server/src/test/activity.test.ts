@@ -12,6 +12,8 @@ import {
   getContentSource,
   updateContent,
   getContentDescription,
+  createContentRevision,
+  revertToRevision,
 } from "../query/activity";
 import {
   getActivityEditorData,
@@ -26,11 +28,12 @@ import {
   setContentLicense,
 } from "../query/share";
 import {
+  assignActivity,
   closeAssignmentWithCode,
   openAssignmentWithCode,
   unassignActivity,
 } from "../query/assign";
-import { saveScoreAndState } from "../query/scores";
+import { createNewAttempt, saveScoreAndState } from "../query/scores";
 import { moveContent } from "../query/copy_move";
 import { prisma } from "../model";
 
@@ -40,7 +43,7 @@ import { prisma } from "../model";
 const currentDoenetmlVersion = {
   id: 2,
   displayedVersion: "0.7",
-  fullVersion: "0.7.0-alpha31",
+  fullVersion: "0.7.0-alpha39",
   default: true,
   deprecated: false,
   removed: false,
@@ -68,12 +71,10 @@ test("New activity starts out private, then delete it", async () => {
     contentId: contentId,
     name: "Untitled Document",
     ownerId: userId,
-    imagePath: "/activity_default.jpg",
     isPublic: false,
     isShared: false,
     contentFeatures: [],
     sharedWith: [],
-    baseComponentCounts: "{}",
     numVariants: 1,
     license: null,
     type: "singleDoc",
@@ -120,6 +121,31 @@ test("New activity starts out private, then delete it", async () => {
     throw Error("shouldn't happen");
   }
   expect(dataAfterDelete.content.length).toBe(0);
+});
+
+test("Cannot create new content inside assigned content", async () => {
+  const { userId } = await createTestUser();
+  const { contentId: sequenceId } = await createContent({
+    loggedInUserId: userId,
+    contentType: "sequence",
+    parentId: null,
+  });
+
+  await createContent({
+    loggedInUserId: userId,
+    contentType: "singleDoc",
+    parentId: sequenceId,
+  });
+
+  await assignActivity({ contentId: sequenceId, loggedInUserId: userId });
+
+  await expect(
+    createContent({
+      loggedInUserId: userId,
+      contentType: "singleDoc",
+      parentId: sequenceId,
+    }),
+  ).rejects.toThrow("Cannot add content to an assigned activity");
 });
 
 test("Test updating various activity properties", async () => {
@@ -211,7 +237,36 @@ test("only owner can delete an activity", async () => {
   await deleteContent({ contentId: contentId, loggedInUserId: ownerId });
 });
 
-test("updateDoc updates document properties", async () => {
+test("Cannot delete content from inside assigned content", async () => {
+  const { userId } = await createTestUser();
+  const { contentId: sequenceId } = await createContent({
+    loggedInUserId: userId,
+    contentType: "sequence",
+    parentId: null,
+  });
+
+  const { contentId: doc1Id } = await createContent({
+    loggedInUserId: userId,
+    contentType: "singleDoc",
+    parentId: sequenceId,
+  });
+
+  const { contentId: doc2Id } = await createContent({
+    loggedInUserId: userId,
+    contentType: "singleDoc",
+    parentId: sequenceId,
+  });
+
+  await deleteContent({ contentId: doc1Id, loggedInUserId: userId });
+
+  await assignActivity({ contentId: sequenceId, loggedInUserId: userId });
+
+  await expect(
+    deleteContent({ contentId: doc2Id, loggedInUserId: userId }),
+  ).rejects.toThrow("Cannot delete content from an assigned activity");
+});
+
+test("updateContent updates document properties", async () => {
   const user = await createTestUser();
   const userId = user.userId;
   const { contentId: contentId } = await createContent({
@@ -266,6 +321,127 @@ test("updateContent does not update properties when passed undefined values", as
     where: { id: contentId },
   });
   expect(updatedActivity).toEqual(originalActivity);
+});
+
+test("Cannot update most content settings when assigned", async () => {
+  const { userId } = await createTestUser();
+  const { contentId: sequenceId } = await createContent({
+    loggedInUserId: userId,
+    contentType: "sequence",
+    parentId: null,
+  });
+
+  const { contentId: selectId } = await createContent({
+    loggedInUserId: userId,
+    contentType: "select",
+    parentId: sequenceId,
+  });
+
+  const { contentId: docId } = await createContent({
+    loggedInUserId: userId,
+    contentType: "singleDoc",
+    parentId: selectId,
+  });
+
+  const { allDoenetmlVersions: allVersions } = await getAllDoenetmlVersions();
+  const oldVersion = allVersions.find((v) => v.displayedVersion === "0.6")!.id;
+
+  await updateContent({
+    contentId: docId,
+    loggedInUserId: userId,
+    name: "Doc 1",
+    source: "Doc source",
+    doenetmlVersionId: oldVersion,
+    numVariants: 3,
+  });
+
+  await updateContent({
+    contentId: selectId,
+    loggedInUserId: userId,
+    name: "Select 1",
+    numToSelect: 2,
+    selectByVariant: true,
+  });
+
+  await updateContent({
+    contentId: sequenceId,
+    loggedInUserId: userId,
+    name: "Sequence 1",
+    shuffle: true,
+    paginate: true,
+  });
+
+  await assignActivity({ contentId: sequenceId, loggedInUserId: userId });
+
+  // can change name
+  await updateContent({
+    contentId: docId,
+    loggedInUserId: userId,
+    name: "Doc 2",
+  });
+
+  // cannot change source
+  await expect(
+    updateContent({
+      contentId: docId,
+      loggedInUserId: userId,
+      source: "Doc source 2",
+    }),
+  ).rejects.toThrow("Cannot change assigned content");
+
+  // cannot change doenetMLVersion
+  await expect(
+    updateContent({
+      contentId: docId,
+      loggedInUserId: userId,
+      doenetmlVersionId: currentDoenetmlVersion.id,
+    }),
+  ).rejects.toThrow("Cannot change assigned content");
+
+  // cannot change number of variants
+  await expect(
+    updateContent({
+      contentId: docId,
+      loggedInUserId: userId,
+      numVariants: 5,
+    }),
+  ).rejects.toThrow("Cannot change assigned content");
+
+  // cannot change number to select
+  await expect(
+    updateContent({
+      contentId: selectId,
+      loggedInUserId: userId,
+      numToSelect: 3,
+    }),
+  ).rejects.toThrow("Cannot change assigned content");
+
+  // cannot change select by variant
+  await expect(
+    updateContent({
+      contentId: selectId,
+      loggedInUserId: userId,
+      name: "Select 1",
+      numToSelect: 2,
+      selectByVariant: false,
+    }),
+  ).rejects.toThrow("Cannot change assigned content");
+
+  // can change paginate
+  await updateContent({
+    contentId: sequenceId,
+    loggedInUserId: userId,
+    paginate: false,
+  });
+
+  // cannot change shuffle
+  await expect(
+    updateContent({
+      contentId: sequenceId,
+      loggedInUserId: userId,
+      shuffle: false,
+    }),
+  ).rejects.toThrow("Cannot change assigned content");
 });
 
 test("get activity/document data only if owner or limited data for public/shared", async () => {
@@ -479,12 +655,10 @@ test("activity editor data and my folder contents before and after assigned", as
     contentId: contentId,
     name: "Untitled Document",
     ownerId,
-    imagePath: "/activity_default.jpg",
     isPublic: false,
     contentFeatures: [],
     isShared: false,
     sharedWith: [],
-    baseComponentCounts: "{}",
     numVariants: 1,
     license: null,
     type: "singleDoc",
@@ -527,12 +701,10 @@ test("activity editor data and my folder contents before and after assigned", as
     contentId: contentId,
     name: "Untitled Document",
     ownerId,
-    imagePath: "/activity_default.jpg",
     isPublic: false,
     contentFeatures: [],
     isShared: false,
     sharedWith: [],
-    baseComponentCounts: "{}",
     numVariants: 1,
     license: null,
     type: "singleDoc",
@@ -545,6 +717,9 @@ test("activity editor data and my folder contents before and after assigned", as
       classCode,
       codeValidUntil: closeAt.toJSDate(),
       hasScoreData: false,
+      maxAttempts: 1,
+      mode: "formative",
+      individualizeByStudent: false,
     },
   };
 
@@ -580,12 +755,10 @@ test("activity editor data and my folder contents before and after assigned", as
     contentId: contentId,
     name: "Untitled Document",
     ownerId,
-    imagePath: "/activity_default.jpg",
     isPublic: false,
     contentFeatures: [],
     isShared: false,
     sharedWith: [],
-    baseComponentCounts: "{}",
     numVariants: 1,
     license: null,
     type: "singleDoc",
@@ -593,6 +766,15 @@ test("activity editor data and my folder contents before and after assigned", as
     doenetML: "",
     doenetmlVersion: currentDoenetmlVersion,
     parent: null,
+    assignmentInfo: {
+      assignmentStatus: "Unassigned",
+      classCode,
+      codeValidUntil: null,
+      hasScoreData: false,
+      maxAttempts: 1,
+      mode: "formative",
+      individualizeByStudent: false,
+    },
   };
   if (closedData === undefined) {
     throw Error("shouldn't happen");
@@ -612,7 +794,7 @@ test("activity editor data and my folder contents before and after assigned", as
   folderData.content[0].license = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
-  // re-opening, re-assigns with different code
+  // re-opening, re-assigns with same code
   closeAt = DateTime.now().plus({ days: 1 });
   const { classCode: newClassCode } = await openAssignmentWithCode({
     contentId: contentId,
@@ -620,7 +802,7 @@ test("activity editor data and my folder contents before and after assigned", as
     loggedInUserId: ownerId,
   });
 
-  expect(newClassCode).not.eq(classCode);
+  expect(newClassCode).eq(classCode);
 
   const { activity: openedData2 } = await getActivityEditorData({
     contentId: contentId,
@@ -630,12 +812,10 @@ test("activity editor data and my folder contents before and after assigned", as
     contentId: contentId,
     name: "Untitled Document",
     ownerId,
-    imagePath: "/activity_default.jpg",
     isPublic: false,
     contentFeatures: [],
     isShared: false,
     sharedWith: [],
-    baseComponentCounts: "{}",
     numVariants: 1,
     license: null,
     type: "singleDoc",
@@ -645,9 +825,12 @@ test("activity editor data and my folder contents before and after assigned", as
     parent: null,
     assignmentInfo: {
       assignmentStatus: "Open",
-      classCode: newClassCode,
+      classCode,
       codeValidUntil: closeAt.toJSDate(),
       hasScoreData: false,
+      maxAttempts: 1,
+      mode: "formative",
+      individualizeByStudent: false,
     },
   };
 
@@ -670,13 +853,23 @@ test("activity editor data and my folder contents before and after assigned", as
   folderData.content[0].license = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
+  // create initial attempt
+  await createNewAttempt({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+    code: classCode,
+    variant: 1,
+    state: null,
+  });
+
   // just add some data (doesn't matter that it is owner themselves)
   await saveScoreAndState({
     contentId,
     loggedInUserId: ownerId,
+    attemptNumber: 1,
     score: 0.5,
-    onSubmission: true,
     state: "document state 1",
+    code: classCode,
   });
 
   const { activity: openedData3 } = await getActivityEditorData({
@@ -687,12 +880,10 @@ test("activity editor data and my folder contents before and after assigned", as
     contentId: contentId,
     name: "Untitled Document",
     ownerId,
-    imagePath: "/activity_default.jpg",
     isPublic: false,
     contentFeatures: [],
     isShared: false,
     sharedWith: [],
-    baseComponentCounts: "{}",
     numVariants: 1,
     license: null,
     type: "singleDoc",
@@ -702,9 +893,12 @@ test("activity editor data and my folder contents before and after assigned", as
     parent: null,
     assignmentInfo: {
       assignmentStatus: "Open",
-      classCode: newClassCode,
+      classCode,
       codeValidUntil: closeAt.toJSDate(),
       hasScoreData: true,
+      maxAttempts: 1,
+      mode: "formative",
+      individualizeByStudent: false,
     },
   };
   if (openedData3 === undefined) {
@@ -739,12 +933,10 @@ test("activity editor data and my folder contents before and after assigned", as
     contentId: contentId,
     name: "Untitled Document",
     ownerId,
-    imagePath: "/activity_default.jpg",
     isPublic: false,
     contentFeatures: [],
     isShared: false,
     sharedWith: [],
-    baseComponentCounts: "{}",
     numVariants: 1,
     license: null,
     type: "singleDoc",
@@ -754,9 +946,12 @@ test("activity editor data and my folder contents before and after assigned", as
     parent: null,
     assignmentInfo: {
       assignmentStatus: "Closed",
-      classCode: newClassCode,
+      classCode,
       codeValidUntil: null,
       hasScoreData: true,
+      maxAttempts: 1,
+      mode: "formative",
+      individualizeByStudent: false,
     },
   };
 
@@ -780,9 +975,9 @@ test("activity editor data and my folder contents before and after assigned", as
   expect(folderData.content).eqls([expectedData]);
 
   // explicitly unassigning fails due to the presence of data
-  await expect(
-    unassignActivity({ contentId: contentId, loggedInUserId: ownerId }),
-  ).rejects.toThrow("not found");
+  expect(
+    await unassignActivity({ contentId: contentId, loggedInUserId: ownerId }),
+  ).eqls({ success: false });
 });
 
 test("activity editor data shows its parent folder is public", async () => {
@@ -1125,4 +1320,518 @@ test("get compound activity", async () => {
     contentId1,
     contentId2,
   ]);
+});
+
+test("manual createContentRevision overwrites autoGenerated, but not vice-versa", async () => {
+  const { userId: ownerId } = await createTestUser();
+
+  const { contentId: contentId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+
+  await updateContent({
+    contentId,
+    source: "Content",
+    loggedInUserId: ownerId,
+  });
+
+  const { allDoenetmlVersions: allVersions } = await getAllDoenetmlVersions();
+  const currentVersion = allVersions.find((v) => v.default)!.fullVersion;
+
+  // create autoGenerated revision
+  await createContentRevision({
+    contentId,
+    loggedInUserId: ownerId,
+    revisionName: "Auto generated 1",
+    note: "The first autogenerated revision",
+    autoGenerated: true,
+  });
+
+  let revision = await getContentSource({
+    contentId,
+    loggedInUserId: ownerId,
+    fromRevisionNum: 1,
+  });
+
+  expect(revision).eqls({
+    source: "Content",
+    revisionNum: 1,
+    revisionName: "Auto generated 1",
+    note: "The first autogenerated revision",
+    doenetMLVersion: currentVersion,
+  });
+
+  // manual revision overwrites
+  await createContentRevision({
+    contentId,
+    loggedInUserId: ownerId,
+    revisionName: "Manual name",
+    note: "Manual note",
+  });
+
+  revision = await getContentSource({
+    contentId,
+    loggedInUserId: ownerId,
+    fromRevisionNum: 1,
+  });
+
+  expect(revision).eqls({
+    source: "Content",
+    revisionNum: 1,
+    revisionName: "Manual name",
+    note: "Manual note",
+    doenetMLVersion: currentVersion,
+  });
+
+  // auto generated revision does not overwrite
+  await createContentRevision({
+    contentId,
+    loggedInUserId: ownerId,
+    revisionName: "Auto generated 2",
+    note: "The second, ignored, autogenerated revision",
+    autoGenerated: true,
+  });
+
+  revision = await getContentSource({
+    contentId,
+    loggedInUserId: ownerId,
+    fromRevisionNum: 1,
+  });
+
+  expect(revision).eqls({
+    source: "Content",
+    revisionNum: 1,
+    revisionName: "Manual name",
+    note: "Manual note",
+    doenetMLVersion: currentVersion,
+  });
+});
+
+test("manual createContentRevision updates if no later manual revisions, else creates new", async () => {
+  const { userId: ownerId } = await createTestUser();
+
+  const { contentId: contentId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+
+  await updateContent({
+    contentId,
+    source: "Initial content",
+    loggedInUserId: ownerId,
+  });
+
+  const { allDoenetmlVersions: allVersions } = await getAllDoenetmlVersions();
+  const currentVersion = allVersions.find((v) => v.default)!.fullVersion;
+
+  // create autoGenerated revision
+  let createResult = await createContentRevision({
+    contentId,
+    loggedInUserId: ownerId,
+    revisionName: "Auto generated 1",
+    note: "The first autogenerated revision",
+    autoGenerated: true,
+  });
+
+  expect(createResult.createdNew).eq(true);
+  expect(createResult.revisionNum).eq(1);
+
+  let revision = await getContentSource({
+    contentId,
+    loggedInUserId: ownerId,
+    fromRevisionNum: 1,
+  });
+
+  expect(revision).eqls({
+    source: "Initial content",
+    revisionNum: 1,
+    revisionName: "Auto generated 1",
+    note: "The first autogenerated revision",
+    doenetMLVersion: currentVersion,
+  });
+
+  // change content and make auto generated revision
+  await updateContent({
+    contentId,
+    source: "Updated content",
+    loggedInUserId: ownerId,
+  });
+
+  createResult = await createContentRevision({
+    contentId,
+    loggedInUserId: ownerId,
+    revisionName: "Auto generated 2",
+    note: "The second autogenerated revision",
+    autoGenerated: true,
+  });
+
+  expect(createResult.createdNew).eq(true);
+  expect(createResult.revisionNum).eq(2);
+
+  // change content back to original
+  await updateContent({
+    contentId,
+    source: "Initial content",
+    loggedInUserId: ownerId,
+  });
+
+  // manual revision overwrites the first content revision
+  createResult = await createContentRevision({
+    contentId,
+    loggedInUserId: ownerId,
+    revisionName: "Manual name",
+    note: "Manual note",
+  });
+  expect(createResult.createdNew).eq(false);
+  expect(createResult.revisionNum).eq(1);
+
+  revision = await getContentSource({
+    contentId,
+    loggedInUserId: ownerId,
+    fromRevisionNum: 1,
+  });
+
+  expect(revision).eqls({
+    source: "Initial content",
+    revisionNum: 1,
+    revisionName: "Manual name",
+    note: "Manual note",
+    doenetMLVersion: currentVersion,
+  });
+
+  // the second auto generated one is still revision 2
+  revision = await getContentSource({
+    contentId,
+    loggedInUserId: ownerId,
+    fromRevisionNum: 2,
+  });
+  expect(revision).eqls({
+    source: "Updated content",
+    revisionNum: 2,
+    revisionName: "Auto generated 2",
+    note: "The second autogenerated revision",
+    doenetMLVersion: currentVersion,
+  });
+
+  // change content back to updated and make a manual revision
+  await updateContent({
+    contentId,
+    source: "Updated content",
+    loggedInUserId: ownerId,
+  });
+
+  createResult = await createContentRevision({
+    contentId,
+    loggedInUserId: ownerId,
+    revisionName: "Manual name 2",
+    note: "Manual note 2",
+  });
+  expect(createResult.createdNew).eq(false);
+  expect(createResult.revisionNum).eq(2);
+
+  // now a manual revision revision of original content creates a new revision
+  await updateContent({
+    contentId,
+    source: "Initial content",
+    loggedInUserId: ownerId,
+  });
+
+  // manual revision overwrites the first content revision
+  createResult = await createContentRevision({
+    contentId,
+    loggedInUserId: ownerId,
+    revisionName: "Manual name 3",
+    note: "Manual note 3",
+  });
+  expect(createResult.createdNew).eq(true);
+  expect(createResult.revisionNum).eq(3);
+
+  // can get all three manual revision
+  revision = await getContentSource({
+    contentId,
+    loggedInUserId: ownerId,
+    fromRevisionNum: 1,
+  });
+  expect(revision).eqls({
+    source: "Initial content",
+    revisionNum: 1,
+    revisionName: "Manual name",
+    note: "Manual note",
+    doenetMLVersion: currentVersion,
+  });
+
+  revision = await getContentSource({
+    contentId,
+    loggedInUserId: ownerId,
+    fromRevisionNum: 2,
+  });
+  expect(revision).eqls({
+    source: "Updated content",
+    revisionNum: 2,
+    revisionName: "Manual name 2",
+    note: "Manual note 2",
+    doenetMLVersion: currentVersion,
+  });
+
+  revision = await getContentSource({
+    contentId,
+    loggedInUserId: ownerId,
+    fromRevisionNum: 3,
+  });
+  expect(revision).eqls({
+    source: "Initial content",
+    revisionNum: 3,
+    revisionName: "Manual name 3",
+    note: "Manual note 3",
+    doenetMLVersion: currentVersion,
+  });
+});
+
+test("manual createContentRevision with `renameMatching` only renames autoGenerated", async () => {
+  const { userId: ownerId } = await createTestUser();
+
+  const { contentId: contentId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+
+  await updateContent({
+    contentId,
+    source: "Initial content",
+    loggedInUserId: ownerId,
+  });
+
+  const { allDoenetmlVersions: allVersions } = await getAllDoenetmlVersions();
+  const currentVersion = allVersions.find((v) => v.default)!.fullVersion;
+
+  // create autoGenerated revision
+  let createResult = await createContentRevision({
+    contentId,
+    loggedInUserId: ownerId,
+    revisionName: "Auto generated 1",
+    note: "The first autogenerated revision",
+    autoGenerated: true,
+  });
+
+  expect(createResult.createdNew).eq(true);
+  expect(createResult.revisionNum).eq(1);
+
+  let revision = await getContentSource({
+    contentId,
+    loggedInUserId: ownerId,
+    fromRevisionNum: 1,
+  });
+
+  expect(revision).eqls({
+    source: "Initial content",
+    revisionNum: 1,
+    revisionName: "Auto generated 1",
+    note: "The first autogenerated revision",
+    doenetMLVersion: currentVersion,
+  });
+
+  // manual revision overwrites the first content revision even if renameMatching is `false`
+  createResult = await createContentRevision({
+    contentId,
+    loggedInUserId: ownerId,
+    revisionName: "Manual name",
+    note: "Manual note",
+    renameMatching: false,
+  });
+  expect(createResult.createdNew).eq(false);
+  expect(createResult.revisionNum).eq(1);
+
+  revision = await getContentSource({
+    contentId,
+    loggedInUserId: ownerId,
+    fromRevisionNum: 1,
+  });
+
+  expect(revision).eqls({
+    source: "Initial content",
+    revisionNum: 1,
+    revisionName: "Manual name",
+    note: "Manual note",
+    doenetMLVersion: currentVersion,
+  });
+
+  // manual revision with renameMatching `false` won't overwrite the name and note of the manual revision
+  createResult = await createContentRevision({
+    contentId,
+    loggedInUserId: ownerId,
+    revisionName: "New manual name",
+    note: "New manual note",
+    renameMatching: false,
+  });
+  expect(createResult.createdNew).eq(false);
+  expect(createResult.revisionNum).eq(1);
+
+  revision = await getContentSource({
+    contentId,
+    loggedInUserId: ownerId,
+    fromRevisionNum: 1,
+  });
+
+  expect(revision).eqls({
+    source: "Initial content",
+    revisionNum: 1,
+    revisionName: "Manual name",
+    note: "Manual note",
+    doenetMLVersion: currentVersion,
+  });
+
+  // manual revision with renameMatching `true` will overwrite the name and note of the manual revision
+  createResult = await createContentRevision({
+    contentId,
+    loggedInUserId: ownerId,
+    revisionName: "Even newer manual name",
+    note: "Even newer manual note",
+  });
+  expect(createResult.createdNew).eq(false);
+  expect(createResult.revisionNum).eq(1);
+
+  revision = await getContentSource({
+    contentId,
+    loggedInUserId: ownerId,
+    fromRevisionNum: 1,
+  });
+
+  expect(revision).eqls({
+    source: "Initial content",
+    revisionNum: 1,
+    revisionName: "Even newer manual name",
+    note: "Even newer manual note",
+    doenetMLVersion: currentVersion,
+  });
+});
+
+test("revert to revision", async () => {
+  const { userId: ownerId } = await createTestUser();
+
+  const { contentId: contentId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+
+  await updateContent({
+    contentId,
+    source: "Initial content",
+    loggedInUserId: ownerId,
+  });
+
+  const { allDoenetmlVersions: allVersions } = await getAllDoenetmlVersions();
+  const currentVersion = allVersions.find((v) => v.default)!.fullVersion;
+
+  // create first revision
+  const createResult = await createContentRevision({
+    contentId,
+    loggedInUserId: ownerId,
+    revisionName: "Initial save point",
+    note: "Got to start somewhere",
+  });
+
+  expect(createResult.createdNew).eq(true);
+  expect(createResult.revisionNum).eq(1);
+
+  // update content
+  await updateContent({
+    contentId,
+    source: "Updated content",
+    loggedInUserId: ownerId,
+  });
+  let contentSource = await getContentSource({
+    contentId,
+    loggedInUserId: ownerId,
+  });
+  expect(contentSource).eqls({
+    source: "Updated content",
+    doenetMLVersion: currentVersion,
+  });
+
+  // revert back to initial content
+  await revertToRevision({
+    contentId,
+    loggedInUserId: ownerId,
+    revisionNum: 1,
+  });
+  contentSource = await getContentSource({
+    contentId,
+    loggedInUserId: ownerId,
+  });
+  expect(contentSource).eqls({
+    source: "Initial content",
+    doenetMLVersion: currentVersion,
+  });
+
+  // Created two new revisions
+  contentSource = await getContentSource({
+    contentId,
+    loggedInUserId: ownerId,
+    fromRevisionNum: 2,
+  });
+  expect(contentSource).eqls({
+    source: "Updated content",
+    doenetMLVersion: currentVersion,
+    revisionNum: 2,
+    revisionName: "Before changing to save point",
+    note: "Before using the save point: Initial save point",
+  });
+  contentSource = await getContentSource({
+    contentId,
+    loggedInUserId: ownerId,
+    fromRevisionNum: 3,
+  });
+  expect(contentSource).eqls({
+    source: "Initial content",
+    doenetMLVersion: currentVersion,
+    revisionNum: 3,
+    revisionName: "Changed to save point",
+    note: "Used the save point: Initial save point",
+  });
+
+  // revert back to updated content
+  await revertToRevision({
+    contentId,
+    loggedInUserId: ownerId,
+    revisionNum: 2,
+  });
+  contentSource = await getContentSource({
+    contentId,
+    loggedInUserId: ownerId,
+  });
+  expect(contentSource).eqls({
+    source: "Updated content",
+    doenetMLVersion: currentVersion,
+  });
+
+  // Created only one more revision
+  contentSource = await getContentSource({
+    contentId,
+    loggedInUserId: ownerId,
+    fromRevisionNum: 3,
+  });
+  expect(contentSource).eqls({
+    source: "Initial content",
+    doenetMLVersion: currentVersion,
+    revisionNum: 3,
+    revisionName: "Changed to save point",
+    note: "Used the save point: Initial save point",
+  });
+  contentSource = await getContentSource({
+    contentId,
+    loggedInUserId: ownerId,
+    fromRevisionNum: 4,
+  });
+  expect(contentSource).eqls({
+    source: "Updated content",
+    doenetMLVersion: currentVersion,
+    revisionNum: 4,
+    revisionName: "Changed to save point",
+    note: "Used the save point: Before changing to save point",
+  });
 });

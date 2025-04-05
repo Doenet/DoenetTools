@@ -1,6 +1,6 @@
 import React, { RefObject, useEffect, useState } from "react";
 import { sharingActions, ShareSettings } from "./ShareSettings";
-import { remixedFromActions, RemixedFrom } from "./RemixedFrom";
+import { remixSourcesActions, RemixSources } from "./RemixSources";
 import { FetcherWithComponents } from "react-router";
 import {
   Box,
@@ -20,7 +20,6 @@ import {
 } from "@chakra-ui/react";
 import { Remixes } from "./Remixes";
 import {
-  ActivityHistoryItem,
   ActivityRemixItem,
   Content,
   LibraryRelations,
@@ -28,10 +27,7 @@ import {
   LicenseCode,
 } from "../../../_utils/types";
 import axios from "axios";
-import {
-  processContributorHistory,
-  processRemixes,
-} from "../../../_utils/processRemixes";
+import { processRemixes } from "../../../_utils/processRemixes";
 import { curateActions, CurateSettings } from "./CurateSettings";
 import { LibraryRequest, libraryRequestActions } from "./LibraryRequest";
 
@@ -46,9 +42,9 @@ export async function shareDrawerActions({ formObj }: { [k: string]: any }) {
     return curateDrawerActionsResult;
   }
 
-  const remixedFromResult = await remixedFromActions({ formObj });
-  if (remixedFromResult) {
-    return remixedFromResult;
+  const remixSourcesResult = await remixSourcesActions({ formObj });
+  if (remixSourcesResult) {
+    return remixSourcesResult;
   }
 
   const libraryRequestResult = await libraryRequestActions({ formObj });
@@ -61,8 +57,8 @@ export async function shareDrawerActions({ formObj }: { [k: string]: any }) {
 
 /**
  * A side menu drawer that controls sharing settings for a content item.
- * Includes up to four tabs: `Share`, `Remixed From`, `Remixes`, and `Library`.
- * The `Remixed From` and `Remixes` tabs are only shown for non-folder content.
+ * Includes up to four tabs: `Share`, `Remixed Sources`, `Remixes`, and `Library`.
+ * The `Remixed Sources` and `Remixes` tabs are only shown for non-folder content.
  * The `Library` tab is only shown if the content is public.
  * Additionally, if the activity belongs to the library, this component will replace the `Share` tab with a `Curate` tab.
  *
@@ -85,39 +81,40 @@ export function ShareDrawer({
   libraryRelations: LibraryRelations;
   allLicenses: License[];
 }) {
-  const [contributorHistory, setContributorHistory] = useState<
-    ActivityHistoryItem[]
-  >([]);
-  const [haveChangedHistoryItem, setHaveChangedHistoryItem] = useState(false);
+  const [remixSources, setRemixSources] = useState<ActivityRemixItem[]>([]);
+  const [haveChangedSource, setHaveChangedSource] = useState(false);
   const [remixes, setRemixes] = useState<ActivityRemixItem[]>([]);
+  const [haveChangedRemix, setHaveChangedRemix] = useState(false);
   const [remixedWithLicense, setRemixedWithLicense] =
     useState<LicenseCode | null>(null);
 
   useEffect(() => {
-    async function getHistoryAndRemixes() {
+    async function getRemixesAndSources() {
       const { data } = await axios.get(
-        `/api/remix/getContributorHistory/${contentData.contentId}`,
+        `/api/remix/getRemixSources/${contentData.contentId}`,
       );
 
-      const hist = await processContributorHistory(data);
-      setContributorHistory(hist);
+      const sources = processRemixes(data.remixSources);
+      setRemixSources(sources);
 
-      const haveChanged = hist.some((dhi) => dhi.prevChanged);
+      setHaveChangedSource(
+        sources.some((source) => source.originContent.changed),
+      );
 
-      setHaveChangedHistoryItem(haveChanged);
-
-      setRemixedWithLicense(hist[0]?.withLicenseCode || null);
+      setRemixedWithLicense(sources[0]?.withLicenseCode || null);
 
       const { data: data2 } = await axios.get(
         `/api/remix/getRemixes/${contentData.contentId}`,
       );
 
-      const remixes = processRemixes(data2);
+      const remixes = processRemixes(data2.remixes);
       setRemixes(remixes);
+
+      setHaveChangedRemix(remixes.some((remix) => remix.remixContent.changed));
     }
 
     if (contentData.type !== "folder") {
-      getHistoryAndRemixes();
+      getRemixesAndSources();
     }
   }, [contentData]);
 
@@ -144,16 +141,31 @@ export function ShareDrawer({
     />
   );
 
-  // Remixed From Tab
-  const contributorHistoryAddon = contributorHistory
-    ? `(${contributorHistory.length})`
-    : "";
-  const changedHistoryAddon = haveChangedHistoryItem ? "*" : "";
-  const remixedFromTabTitle = `Remixed From ${contributorHistoryAddon}${changedHistoryAddon}`;
+  // Remix Sources Tab
+  const sourceCounter = remixSources ? `(${remixSources.length})` : "";
+  const changedSourceBadge = haveChangedSource ? (
+    <Text fontSize="small" marginRight="5px">
+      &#x1f534;
+    </Text>
+  ) : null;
+  const remixSourcesTabTitle = (
+    <>
+      {changedSourceBadge} Remix Sources {sourceCounter}
+    </>
+  );
 
   // Remixed Tab
-  const remixesTabTitle = remixes ? `Remixes (${remixes.length})` : "Remixes";
-
+  const remixCounter = remixes ? `(${remixes.length})` : "";
+  const changedRemixBadge = haveChangedRemix ? (
+    <Text fontSize="small" marginRight="5px">
+      &#x1f534;
+    </Text>
+  ) : null;
+  const remixesTabTitle = (
+    <>
+      {changedRemixBadge} Remixes {remixCounter}
+    </>
+  );
   return (
     <Drawer
       isOpen={isOpen}
@@ -179,7 +191,7 @@ export function ShareDrawer({
             <TabList>
               <Tab data-test="Share Tab">{shareOrCurateTabTitle}</Tab>
               {contentData.type === "folder" ? null : (
-                <Tab data-test="Remixed From Tab">{remixedFromTabTitle}</Tab>
+                <Tab data-test="Remix Sources Tab">{remixSourcesTabTitle}</Tab>
               )}
               {contentData.type === "folder" ? null : (
                 <Tab data-test="Remixes Tab">{remixesTabTitle}</Tab>
@@ -189,16 +201,24 @@ export function ShareDrawer({
               )}
             </TabList>
             <Box overflowY="auto" height="calc(100vh - 130px)">
-              <TabPanels>
-                <TabPanel>{shareOrCurateTabPanel}</TabPanel>
+              <TabPanels height="100%">
+                <TabPanel paddingTop="5px">{shareOrCurateTabPanel}</TabPanel>
                 {contentData.type === "folder" ? null : (
-                  <TabPanel>
-                    <RemixedFrom contributorHistory={contributorHistory} />
+                  <TabPanel height="100%">
+                    <RemixSources
+                      contributorHistory={remixSources}
+                      onClose={onClose}
+                      haveChangedSource={haveChangedSource}
+                    />
                   </TabPanel>
                 )}
                 {contentData.type === "folder" ? null : (
-                  <TabPanel>
-                    <Remixes remixes={remixes} />
+                  <TabPanel height="100%">
+                    <Remixes
+                      remixes={remixes}
+                      onClose={onClose}
+                      haveChangedRemix={haveChangedRemix}
+                    />
                   </TabPanel>
                 )}
                 {!contentData.isPublic || inCurationLibrary ? null : (

@@ -6,6 +6,7 @@ import { filterEditableContent } from "../utils/permissions";
 import { getIsAdmin } from "./curate";
 import { isEqualUUID } from "../utils/uuid";
 import { InvalidRequestError } from "../utils/error";
+import { getDescendantIds } from "./activity";
 
 export async function getLicense(code: string) {
   const preliminary_license = await prisma.licenses.findUniqueOrThrow({
@@ -88,12 +89,13 @@ export async function setContentIsPublic({
   loggedInUserId: Uint8Array;
   isPublic: boolean;
 }) {
-  if (!isPublic) {
-    const content = await prisma.content.findUniqueOrThrow({
-      where: { id: contentId, ...filterEditableContent(loggedInUserId) },
-      select: { parent: { select: { isPublic: true } } },
-    });
+  // select content to make sure it is exists and is editable by loggedInUserId
+  const content = await prisma.content.findUniqueOrThrow({
+    where: { id: contentId, ...filterEditableContent(loggedInUserId) },
+    select: { parent: { select: { isPublic: true } } },
+  });
 
+  if (!isPublic) {
     if (content.parent !== null && content.parent.isPublic) {
       throw new InvalidRequestError(
         "Content has a public parent -- cannot make it private.",
@@ -101,21 +103,11 @@ export async function setContentIsPublic({
     }
   }
 
-  await prisma.$executeRaw(Prisma.sql`
-    WITH RECURSIVE content_tree(id) AS (
-      SELECT id FROM content
-      WHERE id = ${contentId} AND ownerId = ${loggedInUserId} AND isDeleted = FALSE
-      UNION ALL
-      SELECT content.id FROM content
-      INNER JOIN content_tree AS ct
-      ON content.parentId = ct.id
-      WHERE content.isDeleted = FALSE
-    )
-
-    UPDATE content
-      SET content.isPublic = ${isPublic}
-      WHERE content.id IN (SELECT id from content_tree);
-    `);
+  const descendantIds = await getDescendantIds(contentId);
+  await prisma.content.updateMany({
+    where: { id: { in: [contentId, ...descendantIds] } },
+    data: { isPublic },
+  });
 }
 
 export function unshareContent({

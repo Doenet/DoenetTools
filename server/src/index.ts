@@ -40,6 +40,7 @@ import { infoRouter } from "./routes/infoRoutes";
 import { copyMoveRouter } from "./routes/copyMoveRoutes";
 import { testRouter } from "./test/testRoutes";
 import { curateRouter } from "./routes/curateRoutes";
+import { compareRouter } from "./routes/compareRoutes";
 
 const client = new SESClient({ region: "us-east-2" });
 
@@ -121,7 +122,7 @@ passport.use(
         },
         Message: {
           Subject: {
-            Data: "Finish log into Doenet",
+            Data: "Finish logging into Doenet",
           },
           Body: {
             Text: {
@@ -278,7 +279,7 @@ app.use("/api/oldAdmin", oldAdminRouter);
 app.use("/api/assign", assignRouter);
 app.use("/api/updateContent", updateContentRouter);
 app.use("/api/share", shareRouter);
-app.use("/api/scores", scoreRouter);
+app.use("/api/score", scoreRouter);
 app.use("/api/classifications", classificationRouter);
 app.use("/api/activityEditView", activityEditViewRouter);
 app.use("/api/explore", exploreRouter);
@@ -287,6 +288,7 @@ app.use("/api/contentList", contentListRouter);
 app.use("/api/info", infoRouter);
 app.use("/api/copyMove", copyMoveRouter);
 app.use("/api/curate", curateRouter);
+app.use("/api/compare", compareRouter);
 
 if (
   process.env.ADD_TEST_APIS &&
@@ -298,10 +300,10 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server" + JSON.stringify(req?.user));
 });
 
-app.get(
-  "/api/auth/google",
-  passport.authenticate("google", { scope: ["profile", "email"] }),
-);
+// app.get(
+//   "/api/auth/google",
+//   passport.authenticate("google", { scope: ["profile", "email"] }),
+// );
 
 app.post(
   "/api/auth/magiclink",

@@ -14,13 +14,14 @@ import {
   Thead,
   Tr,
   VStack,
+  Tooltip,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router";
 import { createFullName } from "../../../_utils/names";
 import { DateTime } from "luxon";
-import { ActivityHistoryItem } from "../../../_utils/types";
+import { ActivityRemixItem } from "../../../_utils/types";
 
-export async function remixedFromActions({
+export async function remixSourcesActions({
   formObj: _formObj,
 }: {
   [k: string]: any;
@@ -28,10 +29,14 @@ export async function remixedFromActions({
   return null;
 }
 
-export function RemixedFrom({
+export function RemixSources({
   contributorHistory,
+  onClose,
+  haveChangedSource = false,
 }: {
-  contributorHistory: ActivityHistoryItem[];
+  contributorHistory: ActivityRemixItem[];
+  onClose?: () => void;
+  haveChangedSource?: boolean;
 }) {
   if (contributorHistory === null) {
     return (
@@ -49,7 +54,7 @@ export function RemixedFrom({
 
   const historyTable = (
     <TableContainer
-      maxHeight="200px"
+      maxHeight="calc(100% - 32px)"
       overflowY="auto"
       marginBottom="20px"
       marginTop="20px"
@@ -78,41 +83,37 @@ export function RemixedFrom({
         </Thead>
         <Tbody>
           {contributorHistory.map((ch, i) => {
-            let changeText = "";
-            if (ch.prevChanged) {
-              // The previous doc changed since it was remixed.
-              changeText = "*Changed since copied";
-
-              // TODO: do we want want to prompt to copy over changes if this activity's doc
-              // has not changed since remixing?
-              // I.e., if thisCid === ch.prevCid;
-            } else {
-              changeText = "";
-            }
+            const compareLabel =
+              `Compare activity with remix source` +
+              (ch.originContent.changed
+                ? `, update activity to match source, or ignore change in source.`
+                : ".");
             return (
-              <Tr key={`ch${i}`} data-test={`Remixed from ${i + 1}`}>
+              <Tr key={`ch${i}`} data-test={`Remix source ${i + 1}`}>
                 <Show above="sm">
                   <Td>
                     <ChakraLink
                       as={ReactRouterLink}
-                      to={`/activityViewer/${ch.prevContentId}`}
+                      to={`/activityViewer/${ch.originContent.contentId}`}
+                      textDecoration="underline"
                     >
                       <Text wordBreak="break-word" whiteSpace="normal">
-                        {ch.prevName}
+                        {ch.originContent.name}
                       </Text>
                     </ChakraLink>
                   </Td>
                   <Td>
                     <ChakraLink
                       as={ReactRouterLink}
-                      to={`/sharedActivities/${ch.prevOwner.userId}`}
+                      to={`/sharedActivities/${ch.originContent.owner.userId}`}
+                      textDecoration="underline"
                     >
                       <Text
                         wordBreak="break-word"
                         whiteSpace="normal"
                         minWidth="50px"
                       >
-                        {createFullName(ch.prevOwner)}
+                        {createFullName(ch.originContent.owner)}
                       </Text>
                     </ChakraLink>
                   </Td>
@@ -121,33 +122,57 @@ export function RemixedFrom({
                   <Td>
                     <VStack alignItems="left">
                       <Text wordBreak="break-word" whiteSpace="normal">
-                        {ch.prevName}
+                        {ch.originContent.name}
                       </Text>
                       <Text wordBreak="break-word" whiteSpace="normal">
-                        {createFullName(ch.prevOwner)}
+                        {createFullName(ch.originContent.owner)}
                       </Text>
                     </VStack>
                   </Td>
                 </Hide>
                 <Td>{ch.withLicenseCode}</Td>
                 <Show above="sm">
-                  {/* Note: use timestampPrevActivity as what the timestamp from when the previous was mixed, not when this doc was created */}
+                  {/* Note: use timestampOriginContent as what the timestamp from when the previous was mixed, not when this doc was created */}
                   <Td>
-                    {ch.timestampPrevActivity.toLocaleString(DateTime.DATE_MED)}
+                    {ch.originContent.timestamp.toLocaleString(
+                      DateTime.DATE_MED,
+                    )}
                   </Td>
                 </Show>
-                <Td>
-                  <Text
-                    width="100px"
-                    wordBreak="break-word"
-                    whiteSpace="normal"
-                  >
-                    {changeText}
-                  </Text>
-                </Td>
+                {onClose && (
+                  <Td>
+                    {ch.originContent.changed && (
+                      <Text fontSize="small" marginRight="5px" as="span">
+                        &#x1f534;
+                      </Text>
+                    )}
+                    <Tooltip
+                      label={compareLabel}
+                      openDelay={500}
+                      placement="bottom-end"
+                    >
+                      <ChakraLink
+                        as={ReactRouterLink}
+                        to={`/activityCompare/${ch.remixContent.contentId}/${ch.originContent.contentId}`}
+                        textDecoration="underline"
+                        onClick={onClose}
+                        aria-label={compareLabel}
+                      >
+                        Compare
+                      </ChakraLink>
+                    </Tooltip>
+                  </Td>
+                )}
               </Tr>
             );
           })}
+          {haveChangedSource && (
+            <Tr>
+              <Td colSpan={5} borderBottom="none" paddingTop="20px">
+                &#x1f534; Indicates remix source has changed
+              </Td>
+            </Tr>
+          )}
         </Tbody>
       </Table>
     </TableContainer>

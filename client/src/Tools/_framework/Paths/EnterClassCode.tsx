@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Form } from "react-router";
-import { redirect, useLoaderData } from "react-router";
+import { redirect } from "react-router";
 import {
   Box,
   Button,
@@ -36,21 +36,13 @@ export async function action({
   return null;
 }
 
-export async function loader() {
-  return {
-    invalidClassCode: "",
-  };
-}
-
-export function EnterClassCode() {
-  const { invalidClassCode } = useLoaderData() as { invalidClassCode: string };
-
+export function EnterClassCode({ invalidCode }: { invalidCode?: string }) {
   useEffect(() => {
     document.title = `Enter class code - Doenet`;
   }, []);
 
-  const [classCode, setClassCode] = useState(invalidClassCode);
-  const haveInvalidClassCode = Boolean(invalidClassCode);
+  const [classCode, setClassCode] = useState(invalidCode ?? "");
+  const haveInvalidClassCode = Boolean(invalidCode);
 
   return (
     <Center>
@@ -69,7 +61,7 @@ export function EnterClassCode() {
               width={40}
             />
             <FormErrorMessage>
-              Class code {invalidClassCode} not found
+              Class code {invalidCode} not found
             </FormErrorMessage>
           </FormControl>
           <Button type="submit" colorScheme="blue" mt="8px" mr="12px" size="xs">

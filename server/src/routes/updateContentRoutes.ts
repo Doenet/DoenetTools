@@ -3,15 +3,21 @@ import { requireLoggedIn } from "../middleware/validationMiddleware";
 import {
   contentCreateSchema,
   contentIdSchema,
+  createContentRevisionScheme,
+  revertToRevisionScheme,
   updateContentDoenetMLSchema,
   updateContentFeaturesSchema,
+  updateContentRevisionScheme,
   updateContentSettingsSchema,
 } from "../schemas/contentSchema";
 import {
   createContent,
+  createContentRevision,
   deleteContent,
+  revertToRevision,
   updateContent,
   updateContentFeatures,
+  updateContentRevision,
 } from "../query/activity";
 import { queryLoggedIn } from "../middleware/queryMiddleware";
 
@@ -42,4 +48,19 @@ updateContentRouter.post(
 updateContentRouter.post(
   "/saveDoenetML",
   queryLoggedIn(updateContent, updateContentDoenetMLSchema),
+);
+
+updateContentRouter.post(
+  "/createContentRevision",
+  queryLoggedIn(createContentRevision, createContentRevisionScheme),
+);
+
+updateContentRouter.post(
+  "/updateContentRevision",
+  queryLoggedIn(updateContentRevision, updateContentRevisionScheme),
+);
+
+updateContentRouter.post(
+  "/revertToRevision",
+  queryLoggedIn(revertToRevision, revertToRevisionScheme),
 );

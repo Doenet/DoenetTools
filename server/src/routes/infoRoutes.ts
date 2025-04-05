@@ -3,9 +3,10 @@ import { getAvailableContentFeatures } from "../query/classification";
 import {
   getAllDoenetmlVersions,
   getContentDescription,
+  getContentHistory,
 } from "../query/activity";
 import { getAllLicenses } from "../query/share";
-import { getAssignmentDataFromCode } from "../query/assign";
+import { getAssignmentViewerDataFromCode } from "../query/assign";
 import {
   queryLoggedIn,
   queryOptionalLoggedIn,
@@ -37,7 +38,7 @@ infoRouter.get(
 // Putting this in `info` for now, as it doesn't require log in.
 // TODO: how to organize this?
 infoRouter.get(
-  "/getAssignmentDataFromCode/:code",
+  "/getAssignmentViewerDataFromCode/:code",
   async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
       // If not logged in, then redirect to log in anonymously,
@@ -47,7 +48,7 @@ infoRouter.get(
     }
     next();
   },
-  queryLoggedIn(getAssignmentDataFromCode, codeSchema),
+  queryLoggedIn(getAssignmentViewerDataFromCode, codeSchema),
 );
 
 infoRouter.get(
@@ -59,4 +60,10 @@ infoRouter.get(
   "/getRecentContent",
   requireLoggedIn,
   queryLoggedIn(getRecentContent, getRecentContentSchema),
+);
+
+infoRouter.get(
+  "/getContentHistory/:contentId",
+  requireLoggedIn,
+  queryLoggedIn(getContentHistory, contentIdSchema),
 );

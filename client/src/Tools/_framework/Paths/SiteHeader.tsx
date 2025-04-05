@@ -20,15 +20,19 @@ import {
   SkipNavLink,
   SkipNavContent,
   Hide,
+  Checkbox,
+  Box,
+  Tooltip,
 } from "@chakra-ui/react";
 import { HiOutlineMail } from "react-icons/hi";
 import { BsDiscord } from "react-icons/bs";
-import { Outlet, useLoaderData } from "react-router";
+import { Outlet, useFetcher, useLoaderData } from "react-router";
 import { NavLink } from "react-router";
 import RouterLogo from "../RouterLogo";
 import { ExternalLinkIcon, HamburgerIcon } from "@chakra-ui/icons";
 import axios from "axios";
 import { createFullName } from "../../../_utils/names";
+import { ContentDescription } from "../../../_utils/types";
 
 export type User =
   | {
@@ -38,6 +42,7 @@ export type User =
       lastNames: string;
       isAnonymous: boolean;
       isAdmin: boolean;
+      isAuthor: boolean;
     }
   | undefined;
 
@@ -45,7 +50,22 @@ export type SiteContext = {
   user?: User;
   exploreTab: number | null;
   setExploreTab: (arg: number | null) => void;
+  addTo: ContentDescription | null;
+  setAddTo: (arg: ContentDescription | null) => void;
 };
+
+export async function action({ request }) {
+  const formData = await request.formData();
+  const formObj = Object.fromEntries(formData);
+
+  if (formObj?._action == "set is author") {
+    await axios.post("/api/user/setIsAuthor", {
+      isAuthor: formObj.isAuthor === "true",
+    });
+  }
+
+  return null;
+}
 
 export async function loader() {
   const {
@@ -132,12 +152,22 @@ export function SiteHeader() {
 
   const [exploreTab, setExploreTab] = useState<number | null>(null);
 
-  const siteContext: SiteContext = { user, exploreTab, setExploreTab };
+  const [addTo, setAddTo] = useState<ContentDescription | null>(null);
+
+  const siteContext: SiteContext = {
+    user,
+    exploreTab,
+    setExploreTab,
+    addTo,
+    setAddTo,
+  };
 
   const helpMenuShouldFocusFirst = useBreakpointValue(
     { base: false, md: true },
     { ssr: false },
   );
+
+  const fetcher = useFetcher();
 
   return (
     <>
@@ -246,7 +276,7 @@ export function SiteHeader() {
                     </Link>
 
                     <Link
-                      href="https://www.doenet.org/activityViewer/_7KL7tiBBS2MhM6k1OrPt4"
+                      href="https://docs.doenet.org"
                       isExternal
                       data-test="Documentation Link"
                     >
@@ -276,12 +306,45 @@ export function SiteHeader() {
                           {user.isAnonymous ? (
                             <Link href={`/signIn`}>Sign in to save work</Link>
                           ) : null}
+                          {!user.isAnonymous ? (
+                            <Box
+                              height="30px"
+                              alignContent="center"
+                              marginTop="20px"
+                            >
+                              <Tooltip
+                                label="In author mode, activities default to displaying with their source code"
+                                openDelay={500}
+                                placement="bottom-end"
+                              >
+                                <label>
+                                  Author mode:{" "}
+                                  <Checkbox
+                                    marginTop="3px"
+                                    isChecked={user.isAuthor}
+                                    onChange={() => {
+                                      fetcher.submit(
+                                        {
+                                          _action: "set is author",
+                                          userId: user.userId,
+                                          isAuthor: !user.isAuthor,
+                                        },
+                                        { method: "post" },
+                                      );
+                                    }}
+                                  />
+                                </label>
+                              </Tooltip>
+                            </Box>
+                          ) : null}
                         </VStack>
                         <MenuItem as={Link} href="/changeName">
                           Update name
                         </MenuItem>
                         <MenuItem as="a" href="/api/login/logout">
-                          Log Out
+                          {user.isAnonymous
+                            ? "Clear anonymous data"
+                            : "Log Out"}
                         </MenuItem>
                       </MenuList>
                     </Menu>
@@ -289,7 +352,7 @@ export function SiteHeader() {
                 ) : (
                   <Center h="40px" mr="10px">
                     <NavLinkTab to="/signIn" dataTest="signIn">
-                      Log In
+                      Sign up/Log In
                     </NavLinkTab>
                   </Center>
                 )}

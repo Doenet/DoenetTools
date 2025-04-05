@@ -169,7 +169,7 @@ export function AddContentToMenu({
                 mode: "edit",
                 restrictToTypes: restrictToAllowedParents
                   ? allowedParents
-                  : null,
+                  : ["select", "sequence", "folder"],
               },
             },
           );

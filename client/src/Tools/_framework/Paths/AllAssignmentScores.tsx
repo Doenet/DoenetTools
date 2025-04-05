@@ -9,6 +9,7 @@ import {
   Th,
   Tbody,
   Td,
+  Text,
   Link as ChakraLink,
   Tooltip,
   Box,
@@ -20,18 +21,21 @@ import { lastNameFirst } from "../../../_utils/names";
 
 type AssignmentScore = {
   contentId: string;
-  score: number;
-  user: {
-    userId: string;
-    firstNames: string | null;
-    lastNames: string;
-    email: string;
-  };
+  userScores: {
+    score: number;
+    user: {
+      userId: string;
+      firstNames: string | null;
+      lastNames: string;
+      email: string;
+    };
+  }[];
 };
 
 type OrderedActivity = {
-  id: string;
+  contentId: string;
   name: string;
+  hasScores: boolean;
 };
 
 type StudentStructure = {
@@ -43,23 +47,30 @@ type StudentStructure = {
 };
 
 type Folder = {
-  id: string;
+  contentId: string;
   name: string;
 };
 
 export async function loader({ params }) {
   const { data } = await axios.get(
-    `/api/assign/getAllAssignmentScores/${params.folderId ?? ""}`,
+    `/api/assign/getAllAssignmentScores/${params.parentId ?? ""}`,
   );
 
   const assignmentScores: AssignmentScore[] = data.assignmentScores;
 
+  const assignmentHasScores = new Set<string>([]);
+
   const studentData: Record<string, StudentStructure> = {};
-  assignmentScores.forEach((score) => {
-    if (!(score.user.userId in studentData)) {
-      studentData[score.user.userId] = { ...score.user, scores: {} };
+  assignmentScores.forEach((scoreObj) => {
+    if (scoreObj.userScores.length > 0) {
+      assignmentHasScores.add(scoreObj.contentId);
     }
-    studentData[score.user.userId].scores[score.contentId] = score.score;
+    scoreObj.userScores.forEach((score) => {
+      if (!(score.user.userId in studentData)) {
+        studentData[score.user.userId] = { ...score.user, scores: {} };
+      }
+      studentData[score.user.userId].scores[scoreObj.contentId] = score.score;
+    });
   });
 
   // list of student ids (keys to studentData) ordered based on corresponding student name
@@ -76,8 +87,14 @@ export async function loader({ params }) {
     return 0;
   });
 
+  const assignments = data.orderedActivities.map((activity) => ({
+    contentId: activity.contentId,
+    name: activity.name,
+    hasScores: assignmentHasScores.has(activity.contentId),
+  }));
+
   return {
-    assignments: data.orderedActivities,
+    assignments,
     students: studentData,
     studentIdsOrdered,
     folder: data.folder,
@@ -94,130 +111,189 @@ export function AllAssignmentScores() {
     };
 
   useEffect(() => {
-    document.title = "My Assignments";
+    document.title = "Assignment Scores";
   });
 
   const navigate = useNavigate();
 
-  const linkStyle = {
-    display: "block",
-    color: "var(--mainBlue)",
-  };
+  const nameWidth = 150;
+  const itemWidth = 50;
 
   return (
     <>
-      <Box style={{ marginTop: 15, marginLeft: 15 }}>
-        <ChakraLink
-          as={ReactRouterLink}
-          to={".."}
-          style={{
-            color: "var(--mainBlue)",
-          }}
-          onClick={(e) => {
-            e.preventDefault();
-            navigate(-1);
-          }}
-        >
-          {" "}
-          &lt; Back
-        </ChakraLink>
+      <Box height="100px" marginTop="15px">
+        <Box marginLeft="15px">
+          <ChakraLink
+            as={ReactRouterLink}
+            to={".."}
+            style={{
+              color: "var(--mainBlue)",
+            }}
+            onClick={(e) => {
+              e.preventDefault();
+              navigate(-1);
+            }}
+          >
+            {" "}
+            &lt; Back
+          </ChakraLink>
+        </Box>
+        {folder ? (
+          <>
+            <Heading heading={"Assignment Scores"} />
+            <Heading subheading={`${folder.name}`} />
+          </>
+        ) : (
+          <>
+            <Heading heading={"Assignment Scores"} />
+            <Heading subheading="My Activities" />
+          </>
+        )}
       </Box>
-      {folder ? (
-        <>
-          <Heading heading={"Assignment Scores"} />
-          <Heading subheading={`${folder.name}`} />
-        </>
-      ) : (
-        <>
-          <Heading heading={"My Assignments"} />
-          <Heading subheading="Score summary" />
-        </>
-      )}
-
-      <TableContainer>
-        <Table>
-          <Thead>
-            <Tr verticalAlign={"bottom"}>
-              <Th textTransform={"none"}>Student</Th>
-              {assignments.map((assignment) => {
-                return (
-                  <Th key={`assignment${assignment.id}`} textTransform={"none"}>
-                    <ChakraLink
-                      as={ReactRouterLink}
-                      to={`/assignmentData/${assignment.id}`}
-                      style={linkStyle}
-                      height="14em"
-                      width="1em"
-                      transform="rotate(315deg) translate(-4em, 11em)"
-                      fontSize={14}
-                    >
-                      {assignment.name.length < 30 ? (
-                        assignment.name
-                      ) : (
-                        <Tooltip label={assignment.name}>
-                          {assignment.name.substring(
+      <Box
+        overflowX="scroll"
+        height="calc(100vh - 155px)"
+        paddingLeft="20px"
+        boxSizing="content-box"
+      >
+        <Box width={`${nameWidth + itemWidth * assignments.length + 100}px`}>
+          <TableContainer
+            width={`${nameWidth + itemWidth * assignments.length + 100}px`}
+            overflowX="hidden"
+          >
+            <Table
+              size="sm"
+              className="score-table"
+              layout="fixed"
+              width={`${nameWidth + itemWidth * assignments.length}px`}
+            >
+              <Thead>
+                <Tr verticalAlign={"bottom"}>
+                  <Th
+                    textTransform={"none"}
+                    fontSize="large"
+                    width={`${nameWidth}px`}
+                  >
+                    Student
+                  </Th>
+                  {assignments.map((assignment) => {
+                    const assignmentNameShortened =
+                      assignment.name.length < 30
+                        ? assignment.name
+                        : assignment.name.substring(
                             0,
                             assignment.name.substring(0, 27).lastIndexOf(" "),
-                          ) + "..."}
-                        </Tooltip>
-                      )}
-                    </ChakraLink>
-                  </Th>
-                );
-              })}
-            </Tr>
-          </Thead>
-          <Tbody>
-            {studentIdsOrdered.map((studentId: string) => (
-              <Tr
-                key={`student${studentId}`}
-                borderTopWidth={2}
-                borderTopColor={"#bbb"}
-              >
-                <Td>
-                  <ChakraLink
-                    as={ReactRouterLink}
-                    to={`/studentData/${studentId}${folder ? "/" + folder.id : ""}`}
-                    style={linkStyle}
-                  >
-                    {lastNameFirst(students[studentId])}
-                  </ChakraLink>
-                </Td>
-                {
-                  // if student has a score for this assignment, display it
-                  assignments.map(function (assignment) {
-                    if (assignment.id in students[studentId].scores) {
-                      return (
-                        <Td
-                          key={`student${studentId}_assignment${assignment.id}`}
-                        >
+                          ) + "...";
+                    return (
+                      <Th
+                        key={`assignment${assignment.contentId}`}
+                        textTransform={"none"}
+                      >
+                        {assignment.hasScores ? (
                           <ChakraLink
                             as={ReactRouterLink}
-                            to={`/assignmentData/${assignment.id}/${studentId}`}
-                            style={linkStyle}
+                            to={`/assignmentData/${assignment.contentId}`}
+                            display="block"
+                            textDecoration="underline"
+                            height="14em"
+                            width="1em"
+                            transform="rotate(315deg) translate(-4em, 11em)"
+                            fontSize={14}
                           >
-                            {Math.round(
-                              students[studentId].scores[assignment.id] * 100,
-                            ) / 100}
+                            <Tooltip
+                              label={assignment.name}
+                              placement="bottom-end"
+                              openDelay={500}
+                            >
+                              <Text textDecoration="underline">
+                                {assignmentNameShortened}
+                              </Text>
+                            </Tooltip>
                           </ChakraLink>
-                        </Td>
-                      );
-                    } else {
-                      return (
-                        <Td
-                          key={`student${studentId}_assignment${assignment.id}`}
-                        >
-                          &#8212;
-                        </Td>
-                      );
+                        ) : (
+                          <Text
+                            display="block"
+                            height="14em"
+                            width="1em"
+                            transform="rotate(315deg) translate(-4em, 11em)"
+                            fontSize={14}
+                          >
+                            <Tooltip
+                              label={assignment.name}
+                              placement="bottom-end"
+                              openDelay={500}
+                            >
+                              {assignmentNameShortened}{" "}
+                            </Tooltip>
+                          </Text>
+                        )}
+                      </Th>
+                    );
+                  })}
+                </Tr>
+              </Thead>
+              <Tbody>
+                {studentIdsOrdered.map((studentId: string) => (
+                  <Tr
+                    key={`student${studentId}`}
+                    borderTopWidth={2}
+                    borderTopColor={"#bbb"}
+                  >
+                    <Td>
+                      <ChakraLink
+                        as={ReactRouterLink}
+                        to={`/studentAssignmentScores/${studentId}${folder ? "/" + folder.contentId : ""}`}
+                        textDecoration="underline"
+                      >
+                        {lastNameFirst(students[studentId])}
+                      </ChakraLink>
+                    </Td>
+                    {
+                      // if student has a score for this assignment, display it
+                      assignments.map(function (assignment) {
+                        if (
+                          assignment.contentId in students[studentId].scores
+                        ) {
+                          return (
+                            <Td
+                              key={`student${studentId}_assignment${assignment.contentId}`}
+                            >
+                              <ChakraLink
+                                as={ReactRouterLink}
+                                to={`/assignmentData/${assignment.contentId}/${studentId}`}
+                                textDecoration="underline"
+                              >
+                                &nbsp;
+                                {Math.round(
+                                  students[studentId].scores[
+                                    assignment.contentId
+                                  ] * 1000,
+                                ) / 10}
+                                &nbsp;
+                              </ChakraLink>
+                            </Td>
+                          );
+                        } else {
+                          return (
+                            <Td
+                              key={`student${studentId}_assignment${assignment.contentId}`}
+                            >
+                              &#8212;
+                            </Td>
+                          );
+                        }
+                      })
                     }
-                  })
-                }
-              </Tr>
-            ))}
-          </Tbody>
-        </Table>
-      </TableContainer>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+          </TableContainer>
+        </Box>
+        {studentIdsOrdered.length === 0 ? (
+          <Box marginTop="20px">No students have taken assignments yet</Box>
+        ) : null}
+      </Box>
     </>
   );
 }

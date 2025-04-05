@@ -1,7 +1,7 @@
 import express from "express";
 import { requireLoggedIn } from "../middleware/validationMiddleware";
-import { getUserInfoIfLoggedIn, updateUser } from "../query/user";
-import { userNamesSchema } from "../schemas/userSchemas";
+import { getUserInfoIfLoggedIn, setIsAuthor, updateUser } from "../query/user";
+import { setIsAuthorSchema, userNamesSchema } from "../schemas/userSchemas";
 import {
   queryLoggedIn,
   queryOptionalLoggedInNoArguments,
@@ -18,4 +18,10 @@ userRouter.post(
 userRouter.get(
   "/getUser",
   queryOptionalLoggedInNoArguments(getUserInfoIfLoggedIn),
+);
+
+userRouter.post(
+  "/setIsAuthor",
+  requireLoggedIn,
+  queryLoggedIn(setIsAuthor, setIsAuthorSchema),
 );

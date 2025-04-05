@@ -1,4 +1,4 @@
-import { ContentType, LibraryStatus } from "@prisma/client";
+import { ContentType, LibraryStatus, AssignmentMode } from "@prisma/client";
 import { prisma } from "./model";
 
 export type DoenetmlVersion = {
@@ -32,6 +32,7 @@ export type UserInfo = {
   firstNames: string | null;
   lastNames: string;
   email: string;
+  isAuthor?: boolean;
   numLibrary?: number;
   numCommunity?: number;
 };
@@ -120,7 +121,6 @@ export type ContentBase = {
   ownerId: Uint8Array;
   owner?: UserInfo;
   name: string;
-  imagePath: string | null;
   isPublic: boolean;
   isShared: boolean;
   sharedWith: UserInfo[];
@@ -149,7 +149,6 @@ export type ContentBase = {
 export type Doc = ContentBase & {
   type: "singleDoc";
   numVariants: number;
-  baseComponentCounts: string;
   revisionNum?: number;
   doenetML: string;
   doenetmlVersion: DoenetmlVersion;
@@ -170,8 +169,6 @@ export type ProblemSet = ContentBase & {
   revisionNum?: number;
   shuffle: boolean;
   paginate: boolean;
-  activityLevelAttempts: boolean;
-  itemLevelAttempts: boolean;
   children: Content[];
 };
 
@@ -189,7 +186,15 @@ export type AssignmentInfo = {
   assignmentStatus: AssignmentStatus;
   classCode: string;
   codeValidUntil: Date | null;
+  otherRoot?: {
+    rootContentId: Uint8Array;
+    rootName: string;
+    rootType: ContentType;
+  };
   hasScoreData: boolean;
+  mode: AssignmentMode;
+  individualizeByStudent: boolean;
+  maxAttempts: number;
 };
 
 export async function createContentInfo({
@@ -205,7 +210,6 @@ export async function createContentInfo({
     contentId: contentId,
     name: "",
     ownerId: ownerId,
-    imagePath: null,
     isPublic: false,
     isShared: false,
     sharedWith: [],
@@ -224,7 +228,6 @@ export async function createContentInfo({
       return {
         type: "singleDoc",
         numVariants: 1,
-        baseComponentCounts: "{}",
         doenetML: "",
         doenetmlVersion: defaultDoenetmlVersion,
         ...contentBase,
@@ -244,8 +247,6 @@ export async function createContentInfo({
         type: "sequence",
         shuffle: false,
         paginate: false,
-        activityLevelAttempts: false,
-        itemLevelAttempts: false,
         children: [],
         ...contentBase,
       };
@@ -280,29 +281,24 @@ export type License = {
   }[];
 };
 
-export type ActivityHistoryItem = {
-  contentId: Uint8Array;
-  prevContentId: Uint8Array;
-  prevRevisionNum: number;
+export type ActivityRemixItem = {
+  originContent: RemixContent;
+  remixContent: RemixContent;
   withLicenseCode: LicenseCode | null;
-  timestampActivity: Date;
-  timestampPrevActivity: Date;
-  prevName: string;
-  prevOwner: UserInfo;
-  prevCidAtRemix: string;
-  prevChanged: boolean;
+  directCopy: boolean;
 };
 
-export type ActivityRemixItem = {
-  prevContentId: Uint8Array;
-  prevRevisionNum: number;
-  withLicenseCode: LicenseCode | null;
+export type RemixContent = {
   contentId: Uint8Array;
+  revisionNum: number;
+  timestamp: Date;
   name: string;
   owner: UserInfo;
-  timestampActivity: Date;
-  timestampPrevActivity: Date;
-  directCopy: boolean;
+  cidAtLastUpdate: string;
+  currentCid: string;
+  changed: boolean;
+  source?: string;
+  doenetmlVersion?: string;
 };
 
 export type ClassificationCategoryTree = {

@@ -28,6 +28,7 @@ import {
   useFetcher,
   Link,
   Form,
+  useOutletContext,
 } from "react-router";
 
 import { CardContent } from "../../../Widgets/Card";
@@ -42,9 +43,9 @@ import {
   ContentSettingsDrawer,
 } from "../ToolPanels/ContentSettingsDrawer";
 import {
-  assignmentSettingsActions,
-  AssignmentSettingsDrawer,
-} from "../ToolPanels/AssignmentSettingsDrawer";
+  assignmentControlsActions,
+  AssignmentControlsDrawer,
+} from "../ToolPanels/AssignmentControlsDrawer";
 import {
   AssignmentStatus,
   ContentDescription,
@@ -59,15 +60,7 @@ import {
 import { MdClose, MdOutlineSearch } from "react-icons/md";
 import { ShareDrawer, shareDrawerActions } from "../ToolPanels/ShareDrawer";
 import { formatTime } from "../../../_utils/dateUtilityFunction";
-import {
-  ToggleViewButtonGroup,
-  toggleViewButtonGroupActions,
-} from "../ToolPanels/ToggleViewButtonGroup";
-import {
-  contentTypeToName,
-  getAllowedParentTypes,
-  menuIcons,
-} from "../../../_utils/activity";
+import { getAllowedParentTypes, menuIcons } from "../../../_utils/activity";
 import {
   CreateLocalContentModal,
   createLocalContentModalActions,
@@ -82,6 +75,11 @@ import {
   createContentMenuActions,
 } from "../ToolPanels/CreateContentMenu";
 import { CopyContentAndReportFinish } from "../ToolPanels/CopyContentAndReportFinish";
+import { SiteContext } from "./SiteHeader";
+import {
+  AuthorModeModal,
+  authorModeModalActions,
+} from "../ToolPanels/AuthorModeModal";
 
 export async function action({ request, params }) {
   const formData = await request.formData();
@@ -96,7 +94,7 @@ export async function action({ request, params }) {
   if (resultSD) {
     return resultSD;
   }
-  const resultAS = await assignmentSettingsActions({ formObj });
+  const resultAS = await assignmentControlsActions({ formObj });
   if (resultAS) {
     return resultAS;
   }
@@ -104,11 +102,6 @@ export async function action({ request, params }) {
   const resultMC = await moveCopyContentActions({ formObj });
   if (resultMC) {
     return resultMC;
-  }
-
-  const resultTLV = await toggleViewButtonGroupActions({ formObj });
-  if (resultTLV) {
-    return resultTLV;
   }
 
   const resultCF = await createLocalContentModalActions({ formObj });
@@ -129,6 +122,11 @@ export async function action({ request, params }) {
   const resultCCM = await createContentMenuActions({ formObj });
   if (resultCCM) {
     return resultCCM;
+  }
+
+  const resultDMM = await authorModeModalActions({ formObj });
+  if (resultDMM) {
+    return resultDMM;
   }
 
   if (formObj?._action == "Add Activity") {
@@ -182,23 +180,6 @@ export async function loader({ params, request }) {
     );
   }
 
-  const prefData = await axios.get(`/api/contentList/getPreferredFolderView`);
-  const listViewPref = !prefData.data.cardView;
-
-  const addToId = url.searchParams.get("addTo");
-  let addTo: ContentDescription | undefined = undefined;
-
-  if (addToId) {
-    try {
-      const { data } = await axios.get(
-        `/api/info/getContentDescription/${addToId}`,
-      );
-      addTo = data;
-    } catch (_e) {
-      console.error(`Could not get description of ${addToId}`);
-    }
-  }
-
   return {
     parentId: params.parentId ? params.parentId : null,
     content: data.content,
@@ -207,9 +188,7 @@ export async function loader({ params, request }) {
     availableFeatures: data.availableFeatures,
     userId: params.userId,
     parent: data.parent,
-    listViewPref,
     query: q,
-    addTo,
   };
 }
 
@@ -222,9 +201,7 @@ export function Activities() {
     availableFeatures,
     userId,
     parent,
-    listViewPref,
     query,
-    addTo,
   } = useLoaderData() as {
     parentId: string | null;
     content: Content[];
@@ -233,9 +210,7 @@ export function Activities() {
     availableFeatures: ContentFeature[];
     userId: string;
     parent: Content | null;
-    listViewPref: boolean;
     query: string | null;
-    addTo: ContentDescription | undefined;
   };
   const [settingsContentId, setSettingsContentId] = useState<string | null>(
     null,
@@ -270,6 +245,8 @@ export function Activities() {
     onClose: deleteContentOnClose,
   } = useDisclosure();
 
+  const { addTo, setAddTo, user } = useOutletContext<SiteContext>();
+
   // refs to the menu button of each content card,
   // which should be given focus when drawers are closed
   const cardMenuRefs = useRef<HTMLButtonElement[]>([]);
@@ -298,8 +275,6 @@ export function Activities() {
 
   const navigate = useNavigate();
 
-  const [listView, setListView] = useState(listViewPref);
-
   const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
   const selectedCardsFiltered = selectedCards.filter((c) => c);
   const numSelected = selectedCardsFiltered.length;
@@ -322,7 +297,7 @@ export function Activities() {
     });
   }, [content]);
 
-  const [moveToParentData, setMoveToParentData] = useState<{
+  const [moveCopyData, setMoveCopyData] = useState<{
     contentId: string;
     name: string;
     type: ContentType;
@@ -356,8 +331,6 @@ export function Activities() {
 
   const fetcher = useFetcher();
 
-  const addToURLParams = addTo ? `?addTo=${addTo.contentId}` : "";
-
   function getCardMenuList({
     contentId,
     name,
@@ -383,8 +356,6 @@ export function Activities() {
     licenseCode: LicenseCode | null;
     parentId: string | null;
   }) {
-    const contentTypeName = contentTypeToName[contentType];
-
     return (
       <>
         <MenuItem
@@ -411,7 +382,16 @@ export function Activities() {
             );
           }}
         >
-          Duplicate {contentTypeName}
+          Make a copy
+        </MenuItem>
+        <MenuItem
+          data-test="Delete Menu Item"
+          onClick={() => {
+            setSettingsContentId(contentId);
+            deleteContentOnOpen();
+          }}
+        >
+          Delete
         </MenuItem>
         {position > 0 && !haveQuery ? (
           <MenuItem
@@ -428,7 +408,7 @@ export function Activities() {
               );
             }}
           >
-            {listView ? "Move Up" : "Move Left"}
+            Move up
           </MenuItem>
         ) : null}
         {position < numCards - 1 && !haveQuery ? (
@@ -446,14 +426,14 @@ export function Activities() {
               );
             }}
           >
-            {listView ? "Move Down" : "Move Right"}
+            Move down
           </MenuItem>
         ) : null}
         {haveQuery ? null : (
           <MenuItem
-            data-test="Move to Parent"
+            data-test="Move to"
             onClick={() => {
-              setMoveToParentData({
+              setMoveCopyData({
                 contentId,
                 name,
                 type: contentType,
@@ -465,18 +445,9 @@ export function Activities() {
               moveCopyContentOnOpen();
             }}
           >
-            Move&hellip;
+            Move to&hellip;
           </MenuItem>
         )}
-        <MenuItem
-          data-test="Delete Menu Item"
-          onClick={() => {
-            setSettingsContentId(contentId);
-            deleteContentOnOpen();
-          }}
-        >
-          Delete
-        </MenuItem>
         {contentType !== "folder" ? (
           <MenuItem
             data-test="Assign Activity Menu Item"
@@ -486,8 +457,8 @@ export function Activities() {
             }}
           >
             {assignmentStatus === "Unassigned"
-              ? "Assign Activity"
-              : "Manage Assignment"}
+              ? "Assign activity"
+              : "Manage assignment"}
           </MenuItem>
         ) : null}
         <MenuItem
@@ -560,6 +531,14 @@ export function Activities() {
     }
   }
 
+  function createNewDocument() {
+    setHaveContentSpinner(true);
+    fetcher.submit(
+      { _action: "Add Activity", type: "singleDoc" },
+      { method: "post" },
+    );
+  }
+
   const settingsDrawer =
     contentData && settingsContentId ? (
       <ContentSettingsDrawer
@@ -588,7 +567,7 @@ export function Activities() {
     ) : null;
   const assignmentDrawer =
     contentData && settingsContentId ? (
-      <AssignmentSettingsDrawer
+      <AssignmentControlsDrawer
         isOpen={assignmentSettingsAreOpen}
         onClose={assignmentSettingsOnClose}
         contentId={settingsContentId}
@@ -602,11 +581,11 @@ export function Activities() {
     <MoveCopyContent
       isOpen={moveCopyContentIsOpen}
       onClose={moveCopyContentOnClose}
-      sourceContent={[moveToParentData]}
+      sourceContent={[moveCopyData]}
       userId={userId}
       currentParentId={parentId}
       finalFocusRef={finalFocusRef}
-      allowedParentTypes={getAllowedParentTypes([moveToParentData.type])}
+      allowedParentTypes={getAllowedParentTypes([moveCopyData.type])}
       action="Move"
     />
   );
@@ -640,7 +619,7 @@ export function Activities() {
   } = useDisclosure();
 
   const copyContentModal =
-    addTo !== undefined ? (
+    addTo !== null ? (
       <CopyContentAndReportFinish
         fetcher={fetcher}
         isOpen={copyDialogIsOpen}
@@ -651,6 +630,23 @@ export function Activities() {
       />
     ) : null;
 
+  const {
+    isOpen: authorModePromptIsOpen,
+    onOpen: authorModePromptOnOpen,
+    onClose: authorModePromptOnClose,
+  } = useDisclosure();
+
+  const authorModeModal = (
+    <AuthorModeModal
+      isOpen={authorModePromptIsOpen}
+      onClose={authorModePromptOnClose}
+      desiredAction="create doc"
+      user={user!}
+      proceedCallback={createNewDocument}
+      fetcher={fetcher}
+    />
+  );
+
   const heading = (
     <Box
       backgroundColor="#fff"
@@ -659,10 +655,41 @@ export function Activities() {
       width="100%"
       textAlign="center"
     >
+      <Flex
+        width="100%"
+        paddingRight="0.5em"
+        paddingLeft="1em"
+        alignItems="middle"
+      >
+        <Box marginTop="5px" height="24px">
+          {parent && !haveQuery ? (
+            <Link
+              data-test="Back Link"
+              to={`/activities/${userId}${parent.parent ? "/" + parent.parent.contentId : ""}`}
+              style={{
+                color: "var(--mainBlue)",
+              }}
+            >
+              <Text
+                noOfLines={1}
+                maxWidth={{ sm: "200px", md: "300px" }}
+                textAlign="left"
+              >
+                <Show above="sm">
+                  &lt; Back to:{" "}
+                  {parent.parent ? parent.parent.name : `My Activities`}
+                </Show>
+                <Hide above="sm">&lt; Back</Hide>
+              </Text>
+            </Link>
+          ) : null}
+        </Box>
+      </Flex>
+
       <Heading
         as="h2"
         size="lg"
-        margin=".5em"
+        marginBottom=".5em"
         noOfLines={1}
         maxHeight="1.5em"
         lineHeight="normal"
@@ -681,17 +708,17 @@ export function Activities() {
             height="30px"
             width="100%"
             alignContent="center"
-            hidden={numSelected === 0 && addTo === undefined}
+            hidden={numSelected === 0 && addTo === null}
             backgroundColor="gray.100"
             justifyContent="center"
           >
-            {addTo !== undefined ? (
+            {addTo !== null ? (
               <HStack hidden={numSelected > 0}>
                 <CloseButton
                   data-test="Stop Adding Items"
                   size="sm"
                   onClick={() => {
-                    navigate(`.`);
+                    setAddTo(null);
                   }}
                 />{" "}
                 <Text noOfLines={1} data-test="Adding Items Message">
@@ -707,7 +734,7 @@ export function Activities() {
                 onClick={() => setSelectedCards([])}
               />{" "}
               <Text>{numSelected} selected</Text>
-              <HStack hidden={addTo !== undefined}>
+              <HStack hidden={addTo !== null}>
                 <AddContentToMenu
                   fetcher={fetcher}
                   sourceContent={selectedCardsFiltered}
@@ -723,10 +750,9 @@ export function Activities() {
                   label="Create from selected"
                 />
               </HStack>
-              {addTo !== undefined ? (
+              {addTo !== null ? (
                 <Button
                   data-test="Add Selected To Button"
-                  hidden={addTo === undefined}
                   size="xs"
                   colorScheme="blue"
                   onClick={() => {
@@ -743,7 +769,7 @@ export function Activities() {
             </HStack>
           </Flex>
         </Flex>
-        <Flex marginRight="1em" width="100%">
+        <Flex paddingRight="26px" width="100%">
           <Spacer />
           <HStack>
             <Flex>
@@ -808,20 +834,8 @@ export function Activities() {
               </MenuButton>
               <MenuList>
                 <MenuItem
-                  data-test="Add Document Button"
-                  onClick={async () => {
-                    setHaveContentSpinner(true);
-                    fetcher.submit(
-                      { _action: "Add Activity", type: "singleDoc" },
-                      { method: "post" },
-                    );
-                  }}
-                >
-                  Document
-                </MenuItem>
-                <MenuItem
                   data-test="Add Problem Set Button"
-                  onClick={async () => {
+                  onClick={() => {
                     setHaveContentSpinner(true);
                     fetcher.submit(
                       { _action: "Add Activity", type: "sequence" },
@@ -841,7 +855,7 @@ export function Activities() {
                 </MenuItem>
                 <MenuItem
                   data-test="Add Question Bank Button"
-                  onClick={async () => {
+                  onClick={() => {
                     setHaveContentSpinner(true);
                     fetcher.submit(
                       { _action: "Add Activity", type: "select" },
@@ -850,6 +864,18 @@ export function Activities() {
                   }}
                 >
                   Question Bank
+                </MenuItem>
+                <MenuItem
+                  data-test="Add Document Button"
+                  onClick={() => {
+                    if (user?.isAuthor) {
+                      createNewDocument();
+                    } else {
+                      authorModePromptOnOpen();
+                    }
+                  }}
+                >
+                  Document {!user?.isAuthor && <>(with source code)</>}
                 </MenuItem>
               </MenuList>
             </Menu>
@@ -882,39 +908,6 @@ export function Activities() {
             </Button>
           </HStack>
         </Flex>
-
-        <Flex
-          width="100%"
-          paddingRight="0.5em"
-          paddingLeft="1em"
-          alignItems="middle"
-        >
-          {parent && !haveQuery ? (
-            <Box>
-              <Link
-                data-test="Back Link"
-                to={`/activities/${userId}${parent.parent ? "/" + parent.parent.contentId : ""}${addToURLParams}`}
-                style={{
-                  color: "var(--mainBlue)",
-                }}
-              >
-                <Text noOfLines={1} maxWidth={{ sm: "200px", md: "400px" }}>
-                  <Show above="sm">
-                    &lt; Back to{" "}
-                    {parent.parent ? parent.parent.name : `My Activities`}
-                  </Show>
-                  <Hide above="sm">&lt; Back</Hide>
-                </Text>
-              </Link>
-            </Box>
-          ) : null}
-          <Spacer />
-          <ToggleViewButtonGroup
-            listView={listView}
-            setListView={setListView}
-            fetcher={fetcher}
-          />
-        </Flex>
       </VStack>
     </Box>
   );
@@ -946,7 +939,9 @@ export function Activities() {
     </Flex>
   ) : null;
 
-  const emptyMessage = haveQuery ? "No Results Found" : "No Activities Yet";
+  const emptyMessage = haveQuery
+    ? "No Results Found"
+    : "Find activities from the Explore tab or create your own with the New button";
 
   const cardContent: CardContent[] = content.map((activity, position) => {
     const getCardMenuRef = (element: HTMLButtonElement) => {
@@ -973,8 +968,8 @@ export function Activities() {
       }),
       cardLink:
         activity.type === "folder"
-          ? `/activities/${activity.ownerId}/${activity.contentId}${addToURLParams}`
-          : `/activityEditor/${activity.contentId}${addToURLParams}`,
+          ? `/activities/${activity.ownerId}/${activity.contentId}`
+          : `/activityEditor/${activity.contentId}`,
     };
   });
 
@@ -985,7 +980,6 @@ export function Activities() {
       showPublicStatus={true}
       showActivityFeatures={true}
       emptyMessage={emptyMessage}
-      listView={listView}
       content={cardContent}
       selectedCards={selectedCards}
       setSelectedCards={setSelectedCards}
@@ -1002,6 +996,7 @@ export function Activities() {
       {createFolderModal}
       {deleteModal}
       {copyContentModal}
+      {authorModeModal}
 
       {heading}
 
@@ -1012,9 +1007,7 @@ export function Activities() {
         padding="0 10px"
         margin="0px"
         width="100%"
-        background={
-          listView && content.length > 0 ? "white" : "var(--lightBlue)"
-        }
+        background={"white"}
         minHeight={{ base: "calc(100vh - 225px)", md: "calc(100vh - 235px)" }}
         direction="column"
       >

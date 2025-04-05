@@ -12,9 +12,3 @@ export const searchMyContentSchema = z.object({
   isLibrary: z.boolean().optional(),
   query: z.string(),
 });
-
-export const getPreferredFolderViewSchema = z.object({});
-
-export const setPreferredFolderViewSchema = z.object({
-  cardView: z.boolean(),
-});

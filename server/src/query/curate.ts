@@ -3,7 +3,7 @@ import { prisma } from "../model";
 import { Content, LibraryRelations } from "../types";
 import { InvalidRequestError } from "../utils/error";
 import { fromUUID } from "../utils/uuid";
-import { createContent, deleteContentNoCheck } from "./activity";
+import { createContent, getDescendantIds } from "./activity";
 import { copyContent } from "./copy_move";
 import {
   filterEditableActivity,
@@ -477,7 +477,6 @@ export async function deleteDraftFromLibrary({
   loggedInUserId: Uint8Array;
 }) {
   await mustBeAdmin(loggedInUserId);
-  const libraryId = await getLibraryAccountId();
   const { sourceId } = await prisma.libraryActivityInfos.findUniqueOrThrow({
     where: {
       contentId,
@@ -499,15 +498,16 @@ export async function deleteDraftFromLibrary({
     select: { id: true },
   });
 
-  const deleteDraft = deleteContentNoCheck(contentId, libraryId);
+  const draftDescendants = await getDescendantIds(contentId);
+
+  const deleteDraft = prisma.content.updateMany({
+    where: { id: { in: [contentId, ...draftDescendants] } },
+    data: { isDeleted: true },
+  });
 
   const removeLibraryIdRef = prisma.libraryActivityInfos.update({
-    where: {
-      contentId,
-    },
-    data: {
-      contentId: null,
-    },
+    where: { contentId },
+    data: { contentId: null },
   });
 
   const logDeletion = prisma.libraryEvents.create({

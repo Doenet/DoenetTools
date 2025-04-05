@@ -11,8 +11,9 @@ import { getAvailableContentFeatures } from "./classification";
 import { processContent, returnContentSelect } from "../utils/contentStructure";
 import { getIsAdmin } from "./curate";
 import { isEqualUUID } from "../utils/uuid";
-import { getContributorHistory } from "./remix";
+import { getRemixSources } from "./remix";
 import { recordContentView, recordRecentContent } from "./stats";
+import { getContentRevisions } from "./activity";
 
 /**
  * Get the data needed to edit `contentId` of `ownerId`.
@@ -50,16 +51,17 @@ export async function getActivityEditorData({
     contentId,
     loggedInUserId,
     includeAssignInfo: true,
-    countAssignmentScores: true,
     includeClassifications: true,
     includeShareDetails: true,
     includeLibraryInfo: true,
     isAdmin,
   });
 
+  const revisions = await getContentRevisions({ contentId, loggedInUserId });
+
   await recordRecentContent(loggedInUserId, "edit", contentId);
 
-  return { editableByMe: true, activity, availableFeatures };
+  return { editableByMe: true, activity, availableFeatures, revisions };
 }
 
 /**
@@ -103,7 +105,7 @@ export async function getActivityViewerData({
     await recordContentView(contentId, loggedInUserId);
   }
 
-  const activityHistory = await getContributorHistory({
+  const { remixSources } = await getRemixSources({
     contentId,
     loggedInUserId,
     isAdmin,
@@ -111,7 +113,7 @@ export async function getActivityViewerData({
 
   return {
     activity,
-    activityHistory,
+    remixSources,
   };
 }
 
@@ -126,7 +128,6 @@ export async function getContent({
   contentId,
   loggedInUserId,
   includeAssignInfo = false,
-  countAssignmentScores = false,
   includeClassifications = false,
   includeShareDetails = false,
   includeOwnerDetails = false,
@@ -136,7 +137,6 @@ export async function getContent({
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
   includeAssignInfo?: boolean;
-  countAssignmentScores?: boolean;
   includeLibraryInfo?: boolean;
   includeClassifications?: boolean;
   includeShareDetails?: boolean;
@@ -182,7 +182,6 @@ export async function getContent({
 
   const contentSelect = returnContentSelect({
     includeAssignInfo,
-    countAssignmentScores,
     includeClassifications,
     includeShareDetails,
     includeOwnerDetails,

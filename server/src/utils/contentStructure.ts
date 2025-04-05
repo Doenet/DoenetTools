@@ -1,4 +1,4 @@
-import { ContentType } from "@prisma/client";
+import { AssignmentMode, ContentType } from "@prisma/client";
 import {
   AssignmentStatus,
   ContentClassification,
@@ -142,8 +142,6 @@ export function processLicense(
 
 export function returnContentSelect({
   includeAssignInfo = false,
-  countAssignmentScores = false,
-  // includeLibraryInfo = false,
   includeClassifications = false,
   includeShareDetails = false,
   includeOwnerDetails = false,
@@ -188,17 +186,12 @@ export function returnContentSelect({
       }
     : false;
 
-  const _count = countAssignmentScores
-    ? { select: { assignmentScores: true } }
-    : false;
-
   const baseSelect = {
     id: true,
     name: true,
     type: true,
     ownerId: true,
     owner,
-    imagePath: true,
     isPublic: true,
     contentFeatures: true,
     sharedWith,
@@ -220,21 +213,44 @@ export function returnContentSelect({
       },
     },
     ...classificationsObj,
-    _count,
   };
 
-  const assignment = includeAssignInfo
+  const rootAssignment = includeAssignInfo
     ? {
         select: {
+          assigned: true,
           classCode: true,
           codeValidUntil: true,
+          mode: true,
+          individualizeByStudent: true,
+          maxAttempts: true,
+          _count: { select: { contentState: true } },
+        },
+      }
+    : false;
+
+  const nonRootAssignment = includeAssignInfo
+    ? {
+        select: {
+          assigned: true,
+          classCode: true,
+          codeValidUntil: true,
+          mode: true,
+          individualizeByStudent: true,
+          maxAttempts: true,
+          rootContent: {
+            select: {
+              name: true,
+              id: true,
+              type: true,
+            },
+          },
         },
       }
     : false;
 
   const docSelect = {
     numVariants: true,
-    baseComponentCounts: true,
     source: true,
     doenetmlVersion: true,
   };
@@ -247,12 +263,11 @@ export function returnContentSelect({
   const problemSetSelect = {
     shuffle: true,
     paginate: true,
-    activityLevelAttempts: true,
-    itemLevelAttempts: true,
   };
 
   return {
-    assignment,
+    rootAssignment,
+    nonRootAssignment,
     ...baseSelect,
     ...docSelect,
     ...questionBankSelect,
@@ -304,7 +319,6 @@ type PreliminaryContent = {
   name: string;
   ownerId: Uint8Array;
   owner?: UserInfo;
-  imagePath: string | null;
   isPublic: boolean;
   contentFeatures: {
     id: number;
@@ -325,14 +339,33 @@ type PreliminaryContent = {
   classifications?: {
     classification: ContentClassification;
   }[];
-  _count?: {
-    assignmentScores: number;
-  };
+  activityLevelAttempts: boolean;
+  itemLevelAttempts: boolean;
 
-  // if `includeAssignedRevision` specified
-  assignment?: {
+  // if `includeAssignInfo` is specified
+  rootAssignment?: {
+    assigned: boolean;
     classCode: string;
     codeValidUntil: Date | null;
+    mode: AssignmentMode;
+    individualizeByStudent: boolean;
+    maxAttempts: number;
+    _count?: {
+      contentState: number;
+    };
+  } | null;
+  nonRootAssignment?: {
+    assigned: boolean;
+    classCode: string;
+    codeValidUntil: Date | null;
+    mode: AssignmentMode;
+    individualizeByStudent: boolean;
+    maxAttempts: number;
+    rootContent: {
+      name: string;
+      id: Uint8Array;
+      type: ContentType;
+    };
   } | null;
 
   // from document select
@@ -347,7 +380,6 @@ type PreliminaryContent = {
     deprecationMessage: string;
   } | null;
   numVariants?: number;
-  baseComponentCounts?: string | null;
 
   // from question bank select
   numToSelect: number;
@@ -356,8 +388,6 @@ type PreliminaryContent = {
   // from problem bank select
   shuffle: boolean;
   paginate: boolean;
-  activityLevelAttempts: boolean;
-  itemLevelAttempts: boolean;
 };
 
 export function processContent(
@@ -367,17 +397,18 @@ export function processContent(
   const {
     id,
     type,
-    _count,
+    activityLevelAttempts,
+    itemLevelAttempts,
     sharedWith: sharedWithOrig,
     license,
     parent,
     classifications,
-    assignment,
+    rootAssignment,
+    nonRootAssignment,
 
     // from doc select
     source: sourceOrig,
     numVariants: numVariantsOrig,
-    baseComponentCounts: baseComponentCountsOrig,
     doenetmlVersion: doenetmlVersionOrig,
 
     // from question bank select
@@ -387,25 +418,70 @@ export function processContent(
     // from problem set select
     shuffle,
     paginate,
-    activityLevelAttempts,
-    itemLevelAttempts,
 
     ...preliminaryContent2
   } = preliminaryContent;
 
   const assignmentInfoObj: { assignmentInfo?: AssignmentInfo } = {};
 
-  if (assignment) {
-    const { codeValidUntil, classCode } = assignment;
+  if (rootAssignment) {
+    const {
+      codeValidUntil,
+      classCode,
+      assigned,
+      maxAttempts,
+      mode,
+      individualizeByStudent,
+      _count,
+    } = rootAssignment;
     const isOpen = codeValidUntil
       ? DateTime.now() <= DateTime.fromJSDate(codeValidUntil)
       : false;
-    const assignmentStatus: AssignmentStatus = isOpen ? "Open" : "Closed";
+    const assignmentStatus: AssignmentStatus = assigned
+      ? isOpen
+        ? "Open"
+        : "Closed"
+      : "Unassigned";
     assignmentInfoObj.assignmentInfo = {
       assignmentStatus,
       classCode,
       codeValidUntil,
-      hasScoreData: _count ? _count.assignmentScores > 0 : false,
+      mode,
+      individualizeByStudent,
+      maxAttempts,
+      hasScoreData: _count ? _count.contentState > 0 : false,
+    };
+  } else if (nonRootAssignment) {
+    const {
+      codeValidUntil,
+      classCode,
+      assigned,
+      maxAttempts,
+      mode,
+      individualizeByStudent,
+      rootContent,
+    } = nonRootAssignment;
+    const isOpen = codeValidUntil
+      ? DateTime.now() <= DateTime.fromJSDate(codeValidUntil)
+      : false;
+    const assignmentStatus: AssignmentStatus = assigned
+      ? isOpen
+        ? "Open"
+        : "Closed"
+      : "Unassigned";
+    assignmentInfoObj.assignmentInfo = {
+      assignmentStatus,
+      classCode,
+      codeValidUntil,
+      mode,
+      individualizeByStudent,
+      maxAttempts,
+      otherRoot: {
+        rootContentId: rootContent.id,
+        rootName: rootContent.name,
+        rootType: rootContent.type,
+      },
+      hasScoreData: false,
     };
   }
 
@@ -429,7 +505,6 @@ export function processContent(
       let docInfo: {
         doenetML: string;
         numVariants: number;
-        baseComponentCounts: string;
         doenetmlVersion: DoenetmlVersion;
         revisionNum?: number;
       };
@@ -437,13 +512,11 @@ export function processContent(
       if (
         sourceOrig != null &&
         numVariantsOrig !== undefined &&
-        baseComponentCountsOrig != null &&
         doenetmlVersionOrig != null
       ) {
         docInfo = {
           doenetML: sourceOrig,
           numVariants: numVariantsOrig,
-          baseComponentCounts: baseComponentCountsOrig,
           doenetmlVersion: doenetmlVersionOrig,
         };
       } else {
@@ -470,8 +543,6 @@ export function processContent(
         type: "sequence",
         shuffle,
         paginate,
-        activityLevelAttempts,
-        itemLevelAttempts,
         children: [],
         ...baseContent,
       };
@@ -530,97 +601,18 @@ export function returnClassificationListSelect() {
   };
 }
 
-// /**
-//  * Assumes that source info's `reviewRequestDate` field is undefined. This field is filled in during {@link processLibraryRelations}
-//  */
-// type PreliminaryLibraryRelations = {
-//   librarySourceInfo: LibraryInfo | null;
-//   libraryActivityInfo: LibraryInfo | null;
-//   librarySourceEvents?: { dateTime: Date }[];
-// };
-
-// export function returnLibraryRelationsSelect({
-//   isAdmin,
-// }: {
-//   isAdmin: boolean;
-// }) {
-//   const librarySourceInfo = {
-//     select: {
-//       status: true,
-//       sourceId: true,
-//       contentId: true,
-//       comments: isAdmin,
-//       ownerRequested: isAdmin,
-//     },
-//   };
-
-//   const librarySourceEvents = isAdmin
-//     ? {
-//         // Admins can see date of most recent submission request
-//         take: 1,
-//         orderBy: { dateTime: "desc" as const },
-//         where: {
-//           eventType: LibraryEventType.SUBMIT_REQUEST,
-//         },
-//         select: {
-//           dateTime: true,
-//         },
-//       }
-//     : false;
-
-//   const libraryActivityInfo = {
-//     select: {
-//       status: true,
-//       sourceId: true,
-//       contentId: true,
-//       comments: isAdmin,
-//       ownerRequested: isAdmin,
-//     },
-//   };
-
-//   return {
-//     librarySourceInfo,
-//     librarySourceEvents,
-//     libraryActivityInfo,
-//   };
-// }
-
-// export function processLibraryRelations({
-//   preliminaryLibraryRelations,
-//   isAdmin,
-// }: {
-//   preliminaryLibraryRelations: PreliminaryLibraryRelations;
-//   isAdmin: boolean;
-// }): LibraryRelations {
-//   const {
-//     libraryActivityInfo: activityInfo,
-//     librarySourceInfo: sourceInfo,
-//     librarySourceEvents: sourceEvents,
-//   } = preliminaryLibraryRelations;
-
-//   if (sourceInfo) {
-//     let reviewRequestDate: Date | undefined = undefined;
-//     if (sourceEvents) {
-//       reviewRequestDate = sourceEvents[0].dateTime;
-//     }
-//     sourceInfo.reviewRequestDate = reviewRequestDate;
-
-//     // Owner cannot see library draft for their activity
-//     if (sourceInfo.status !== "PUBLISHED" && !isAdmin) {
-//       sourceInfo.contentId = null;
-//     }
-//   }
-
-//   // TODO: check elsewhere to make sure that a source content id is not passed on
-//   // if it is not public anymore
-
-//   return {
-//     sourceInfo,
-//     activityInfo,
-//   };
-// }
-
-export function compileActivityFromContent(activity: Content): ActivitySource {
+/**
+ * Compile an `activity` into the activity json used for viewing composite activities.
+ *
+ * If `useVersionId` is `true`, then compile the activity json where use doenetmlVersionId
+ * rather than the full doenetml version. Useful for generating a cid from the source
+ * that won't change if we upgrade the minor version for all documents (though it does not
+ * produce a valid source for viewing the activity).
+ */
+export function compileActivityFromContent(
+  activity: Content,
+  useVersionIds = false,
+): ActivitySource {
   switch (activity.type) {
     case "singleDoc": {
       return {
@@ -628,11 +620,10 @@ export function compileActivityFromContent(activity: Content): ActivitySource {
         type: activity.type,
         isDescription: false,
         doenetML: activity.doenetML!,
-        version: activity.doenetmlVersion.fullVersion,
+        version: useVersionIds
+          ? activity.doenetmlVersion.id.toString()
+          : activity.doenetmlVersion.fullVersion,
         numVariants: activity.numVariants,
-        baseComponentCounts: activity.baseComponentCounts
-          ? JSON.parse(activity.baseComponentCounts)
-          : undefined,
       };
     }
     case "select": {
@@ -642,7 +633,9 @@ export function compileActivityFromContent(activity: Content): ActivitySource {
         title: activity.name,
         numToSelect: activity.numToSelect,
         selectByVariant: activity.selectByVariant,
-        items: activity.children.map(compileActivityFromContent),
+        items: activity.children.map((child) =>
+          compileActivityFromContent(child, useVersionIds),
+        ),
       };
     }
     case "sequence": {
@@ -651,7 +644,9 @@ export function compileActivityFromContent(activity: Content): ActivitySource {
         type: activity.type,
         title: activity.name,
         shuffle: activity.shuffle,
-        items: activity.children.map(compileActivityFromContent),
+        items: activity.children.map((child) =>
+          compileActivityFromContent(child, useVersionIds),
+        ),
       };
     }
     case "folder": {

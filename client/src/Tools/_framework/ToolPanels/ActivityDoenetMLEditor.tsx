@@ -1,9 +1,30 @@
 import { Box, Grid, GridItem } from "@chakra-ui/react";
 import { DoenetEditor, DoenetViewer } from "@doenet/doenetml-iframe";
 import React, { useCallback, useEffect, useRef } from "react";
-import { AssignmentStatus, DoenetmlVersion } from "../../../_utils/types";
-import { useLocation, useNavigate } from "react-router";
+import {
+  AssignmentStatus,
+  ContentRevision,
+  DoenetmlVersion,
+} from "../../../_utils/types";
+import { FetcherWithComponents, useLocation, useNavigate } from "react-router";
 import axios from "axios";
+import {
+  doenetMLHistoryActions,
+  DoenetMLHistoryDrawer,
+} from "./DoenetMLHistoryDrawer";
+
+export async function activityDoenetMLEditorActions({
+  formObj,
+}: {
+  [k: string]: any;
+}) {
+  const resultDMLH = await doenetMLHistoryActions({ formObj });
+  if (resultDMLH) {
+    return resultDMLH;
+  }
+
+  return null;
+}
 
 export function ActivityDoenetMLEditor({
   doenetML,
@@ -13,6 +34,11 @@ export function ActivityDoenetMLEditor({
   contentId,
   mode,
   headerHeight,
+  historyIsOpen = false,
+  historyOnClose,
+  fetcher,
+  activityName = "",
+  revisions = [],
 }: {
   doenetML: string;
   doenetmlVersion: DoenetmlVersion;
@@ -21,6 +47,11 @@ export function ActivityDoenetMLEditor({
   contentId: string;
   mode: "Edit" | "View";
   headerHeight: string;
+  historyIsOpen?: boolean;
+  historyOnClose?: () => void;
+  fetcher?: FetcherWithComponents<any>;
+  activityName?: string;
+  revisions?: ContentRevision[];
 }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -29,7 +60,6 @@ export function ActivityDoenetMLEditor({
   const savedDoenetML = useRef(doenetML);
 
   const numVariants = useRef(1);
-  const baseComponentCounts = useRef<string>("{}");
   const documentStructureChanged = useRef(false);
 
   const readOnly = asViewer || assignmentStatus !== "Unassigned";
@@ -75,7 +105,6 @@ export function ActivityDoenetMLEditor({
           doenetML: newDoenetML,
           contentId,
           numVariants: numVariants.current,
-          baseComponentCounts: baseComponentCounts.current,
         };
         await axios.post("/api/updateContent/saveDoenetML", params);
         savedDoenetML.current = newDoenetML;
@@ -103,8 +132,32 @@ export function ActivityDoenetMLEditor({
     };
   }, [handleSaveDoc]);
 
+  const doenetmlHistoryDrawer = historyOnClose && fetcher && revisions && (
+    <DoenetMLHistoryDrawer
+      doenetML={textEditorDoenetML.current}
+      doenetmlChangeCallback={handleSaveDoc}
+      immediateDoenetmlChangeCallback={(newDoenetML: string) => {
+        textEditorDoenetML.current = newDoenetML;
+      }}
+      documentStructureCallback={(x: any) => {
+        if (Array.isArray(x.args?.allPossibleVariants)) {
+          numVariants.current = x.args.allPossibleVariants.length;
+        }
+        documentStructureChanged.current = true;
+      }}
+      doenetmlVersion={doenetmlVersion}
+      isOpen={historyIsOpen}
+      onClose={historyOnClose}
+      fetcher={fetcher}
+      activityName={activityName}
+      contentId={contentId}
+      revisions={revisions}
+    />
+  );
+
   return (
     <>
+      {doenetmlHistoryDrawer}
       {mode == "Edit" && (
         <DoenetEditor
           height={`calc(100vh - ${headerHeight})`}
@@ -117,11 +170,6 @@ export function ActivityDoenetMLEditor({
           documentStructureCallback={(x: any) => {
             if (Array.isArray(x.args?.allPossibleVariants)) {
               numVariants.current = x.args.allPossibleVariants.length;
-            }
-            if (typeof x.args?.baseComponentCounts === "object") {
-              baseComponentCounts.current = JSON.stringify(
-                x.args.baseComponentCounts,
-              );
             }
             documentStructureChanged.current = true;
           }}

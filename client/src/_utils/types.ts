@@ -1,5 +1,4 @@
 import { DateTime } from "luxon";
-import { ActivitySource } from "./viewerTypes";
 
 export type DoenetmlVersion = {
   id: number;
@@ -60,6 +59,7 @@ export type UserInfo = {
   firstNames: string | null;
   lastNames: string;
   email: string;
+  isAuthor?: boolean;
   numLibrary?: number;
   numCommunity?: number;
 };
@@ -128,13 +128,13 @@ export type PartialContentClassification = {
 };
 
 export type ContentType = "singleDoc" | "select" | "sequence" | "folder";
+export type AssignmentMode = "formative" | "summative";
 
 export type ContentBase = {
   contentId: string;
   ownerId: string;
   owner?: UserInfo;
   name: string;
-  imagePath: string | null;
   isPublic: boolean;
   isShared: boolean;
   sharedWith: UserInfo[];
@@ -163,7 +163,6 @@ export type ContentBase = {
 export type Doc = ContentBase & {
   type: "singleDoc";
   numVariants: number;
-  baseComponentCounts: string;
   revisionNum?: number;
   doenetML: string;
   doenetmlVersion: DoenetmlVersion;
@@ -171,7 +170,7 @@ export type Doc = ContentBase & {
 
 export type QuestionBank = ContentBase & {
   type: "select";
-  activityJson?: ActivitySource;
+  activityJson?: string;
   revisionNum?: number;
   numToSelect: number;
   selectByVariant: boolean;
@@ -180,12 +179,10 @@ export type QuestionBank = ContentBase & {
 
 export type ProblemSet = ContentBase & {
   type: "sequence";
-  activityJson?: ActivitySource;
+  activityJson?: string;
   revisionNum?: number;
   shuffle: boolean;
   paginate: boolean;
-  activityLevelAttempts: boolean;
-  itemLevelAttempts: boolean;
   children: Content[];
 };
 
@@ -203,32 +200,35 @@ export type AssignmentInfo = {
   assignmentStatus: AssignmentStatus;
   classCode: string | null;
   codeValidUntil: string | null;
+  otherRoot?: {
+    rootContentId: string;
+    rootName: string;
+    rootType: ContentType;
+  };
   hasScoreData: boolean;
-};
-
-export type ActivityHistoryItem = {
-  contentId: Uint8Array;
-  prevContentId: Uint8Array;
-  prevRevisionNum: number;
-  withLicenseCode: LicenseCode | null;
-  timestampActivity: DateTime;
-  timestampPrevActivity: DateTime;
-  prevName: string;
-  prevOwner: UserInfo;
-  prevCidAtRemix: string;
-  prevChanged: boolean;
+  mode: AssignmentMode;
+  individualizeByStudent: boolean;
+  maxAttempts: number;
 };
 
 export type ActivityRemixItem = {
-  prevContentId: Uint8Array;
-  prevRevisionNum: number;
+  originContent: RemixContent;
+  remixContent: RemixContent;
   withLicenseCode: LicenseCode | null;
-  contentId: Uint8Array;
+  directCopy: boolean;
+};
+
+export type RemixContent = {
+  contentId: string;
+  revisionNum: number;
+  timestamp: DateTime;
   name: string;
   owner: UserInfo;
-  timestampActivity: DateTime;
-  timestampPrevActivity: DateTime;
-  directCopy: boolean;
+  cidAtLastUpdate: string;
+  currentCid: string;
+  changed: boolean;
+  source?: string;
+  doenetmlVersion?: string;
 };
 
 export type ClassificationCategoryTree = {
@@ -275,3 +275,13 @@ export function isContentDescription(obj: unknown): obj is ContentDescription {
         )))
   );
 }
+
+export type ContentRevision = {
+  revisionNum: number;
+  revisionName: string;
+  note: string;
+  source: string;
+  doenetmlVersion: string | null;
+  cid: string;
+  createdAt: string;
+};
