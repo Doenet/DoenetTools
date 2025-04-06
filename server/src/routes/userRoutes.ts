@@ -1,5 +1,4 @@
 import express from "express";
-import { requireLoggedIn } from "../middleware/validationMiddleware";
 import { getUserInfoIfLoggedIn, setIsAuthor, updateUser } from "../query/user";
 import { setIsAuthorSchema, userNamesSchema } from "../schemas/userSchemas";
 import {
@@ -11,7 +10,6 @@ export const userRouter = express.Router();
 
 userRouter.post(
   "/updateUser",
-  requireLoggedIn,
   queryLoggedIn(updateUser, userNamesSchema),
 );
 
@@ -22,6 +20,5 @@ userRouter.get(
 
 userRouter.post(
   "/setIsAuthor",
-  requireLoggedIn,
   queryLoggedIn(setIsAuthor, setIsAuthorSchema),
 );

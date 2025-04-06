@@ -1,5 +1,4 @@
 import express from "express";
-import { requireLoggedIn } from "../middleware/validationMiddleware";
 import {
   queryLoggedIn,
   queryLoggedInNoArguments,
@@ -31,8 +30,6 @@ import {
 import { contentIdSchema } from "../schemas/contentSchema";
 
 export const curateRouter = express.Router();
-
-curateRouter.use(requireLoggedIn);
 
 curateRouter.get(
   "/getCurationPendingRequests",

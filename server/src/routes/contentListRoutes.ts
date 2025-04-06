@@ -12,8 +12,6 @@ import {
 
 export const contentListRouter = express.Router();
 
-// contentListRouter.use(requireLoggedIn);
-
 contentListRouter.get(
   "/getMyContent/:ownerId",
   queryOptionalLoggedIn(getMyContent, getContentSchema),
