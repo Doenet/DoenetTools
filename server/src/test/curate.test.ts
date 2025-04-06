@@ -12,6 +12,7 @@ import {
   deleteDraftFromLibrary,
   getPendingCurationRequests,
   getMultipleLibraryRelations,
+  getSingleLibraryRelations,
 } from "../query/curate";
 import { createContent, deleteContent } from "../query/activity";
 import { setContentIsPublic } from "../query/share";
@@ -905,6 +906,122 @@ test("List of pending requests updates", async () => {
   expect(requests.libraryRelations.length).eqls(1);
   expectRequestsOldestToNewest();
   expectAtItemNum(0, sourceIds[0], null);
+});
+
+test("getSingleLibraryRelations works with visitor not signed in", async () => {
+
+  const { userId } = await createTestUser();
+  const { contentId } = await createContent({
+    loggedInUserId: userId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  // make public
+  await setContentIsPublic({
+    contentId,
+    loggedInUserId: userId,
+    isPublic: true,
+  });
+  
+  // No `loggedInUserId` provided
+  const results = await getSingleLibraryRelations({contentId});
+  expect(results).toEqual({});
+
+  // curate activity
+  const { userId : adminId } = await createTestAdminUser();
+  const { draftId } = await addDraftToLibrary({
+    contentId,
+    loggedInUserId: adminId,
+  });
+  await publishActivityToLibrary({draftId, loggedInUserId: adminId, comments: ""});
+
+  // No `loggedInUserId` provided
+  const results2 = await getSingleLibraryRelations({contentId});
+  const published: LibraryRelations = {
+    activity: {
+      status: "PUBLISHED",
+      activityContentId: draftId,
+    }
+  };
+  expect(results2).toEqual(published);
+});
+
+test("getMultipleLibraryRelations works with visitor not signed in", async () => {
+
+  const { userId } = await createTestUser();
+  const { contentId } = await createContent({
+    loggedInUserId: userId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: contentId2 } = await createContent({
+    loggedInUserId: userId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: contentId3 } = await createContent({
+    loggedInUserId: userId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+
+  // make public
+  await setContentIsPublic({
+    contentId,
+    loggedInUserId: userId,
+    isPublic: true,
+  });
+  await setContentIsPublic({
+    contentId: contentId2,
+    loggedInUserId: userId,
+    isPublic: true,
+  });
+  await setContentIsPublic({
+    contentId: contentId3,
+    loggedInUserId: userId,
+    isPublic: true,
+  });
+  
+  // curate activity
+  const { userId : adminId } = await createTestAdminUser();
+  const { draftId } = await addDraftToLibrary({
+    contentId,
+    loggedInUserId: adminId,
+  });
+  const { draftId: draftId2 } = await addDraftToLibrary({
+    contentId: contentId2,
+    loggedInUserId: adminId,
+  });
+  const { draftId: draftId3 } = await addDraftToLibrary({
+    contentId: contentId3,
+    loggedInUserId: adminId,
+  });
+  await publishActivityToLibrary({draftId, loggedInUserId: adminId, comments: ""});
+  await publishActivityToLibrary({draftId: draftId2, loggedInUserId: adminId, comments: ""});
+  await publishActivityToLibrary({draftId: draftId3, loggedInUserId: adminId, comments: ""});
+
+  // No `loggedInUserId` provided
+  const results = await getMultipleLibraryRelations({contentIds: [contentId, contentId2, contentId3]});
+
+  const expectedResults: LibraryRelations[] = [{
+    activity: {
+      status: "PUBLISHED",
+      activityContentId: draftId,
+    }
+  },
+  {
+    activity: {
+      status: "PUBLISHED",
+      activityContentId: draftId2,
+    }
+  },
+  {
+    activity: {
+      status: "PUBLISHED",
+      activityContentId: draftId3,
+    }
+  }];
+  expect(results).toEqual(expectedResults);
 });
 
 test.todo("getCurationContent and all its variations (and search!)");

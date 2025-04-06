@@ -2,6 +2,7 @@ import express from "express";
 import {
   queryLoggedIn,
   queryLoggedInNoArguments,
+  queryOptionalLoggedIn,
 } from "../middleware/queryMiddleware";
 import {
   addDraftToLibrary,
@@ -25,7 +26,6 @@ import {
   searchCurationFolderContentSchema,
   createCurationFolderSchema,
   curationParentIdSchema,
-  contentIdArraySchema,
 } from "../schemas/curateSchema";
 import { contentIdSchema } from "../schemas/contentSchema";
 
@@ -58,12 +58,7 @@ curateRouter.get(
 
 curateRouter.get(
   "/getLibraryRelations/:contentId",
-  queryLoggedIn(getSingleLibraryRelations, contentIdSchema),
-);
-
-curateRouter.get(
-  "/getMultipleLibraryRelations",
-  queryLoggedIn(getMultipleLibraryRelations, contentIdArraySchema),
+  queryOptionalLoggedIn(getSingleLibraryRelations, contentIdSchema),
 );
 
 curateRouter.post(

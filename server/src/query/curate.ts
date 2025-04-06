@@ -75,10 +75,10 @@ async function redactInvisibleContentIds({
  */
 export async function getMultipleLibraryRelations({
   contentIds,
-  loggedInUserId,
+  loggedInUserId = new Uint8Array(16),
 }: {
   contentIds: Uint8Array[];
-  loggedInUserId: Uint8Array;
+  loggedInUserId?: Uint8Array;
 }): Promise<LibraryRelations[]> {
   const isAdmin = await getIsAdmin(loggedInUserId);
 
@@ -226,10 +226,10 @@ export async function getMultipleLibraryRelations({
 
 export async function getSingleLibraryRelations({
   contentId,
-  loggedInUserId,
+  loggedInUserId = new Uint8Array(16),
 }: {
   contentId: Uint8Array;
-  loggedInUserId: Uint8Array;
+  loggedInUserId?: Uint8Array;
 }) {
   return (
     await getMultipleLibraryRelations({

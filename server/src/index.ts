@@ -26,7 +26,6 @@ import {
 } from "./query/user";
 import { userRouter } from "./routes/userRoutes";
 import { loginRouter } from "./routes/loginRoutes";
-import { oldAdminRouter } from "./routes/oldAdminRoutes";
 import { assignRouter } from "./routes/assignRoutes";
 import { updateContentRouter } from "./routes/updateContentRoutes";
 import { shareRouter } from "./routes/shareRoutes";
@@ -275,7 +274,6 @@ app.use(express.static(path.resolve(__dirname, "../public")));
 
 app.use("/api/user", userRouter);
 app.use("/api/login", loginRouter);
-app.use("/api/oldAdmin", oldAdminRouter);
 app.use("/api/assign", assignRouter);
 app.use("/api/updateContent", updateContentRouter);
 app.use("/api/share", shareRouter);

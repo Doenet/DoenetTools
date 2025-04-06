@@ -30,11 +30,11 @@ import { Content } from "../../../_utils/types";
 import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
 
 export async function loader() {
-  const { data: promotedContent } = await axios.get(
-    "/api/oldAdmin/loadPromotedContent",
-  );
-  const favorites = promotedContent.find((content) => content.homepage);
-  return { favorites };
+  // const { data: promotedContent } = await axios.get(
+  //   "/api/oldAdmin/loadPromotedContent",
+  // );
+  // const favorites = promotedContent.find((content) => content.homepage);
+  return { favorites: [] };
 }
 
 const HomeIntroVideo = lazy(() => import("./HomeIntroVideo"));

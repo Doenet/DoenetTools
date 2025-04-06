@@ -11,11 +11,6 @@ import {
   action as exploreAction,
   Explore,
 } from "./Tools/_framework/Paths/Explore";
-import { action as communityAdminAction } from "./Tools/_framework/Paths/CommunityAdmin";
-import {
-  loader as adminLoader,
-  OldAdmin,
-} from "./Tools/_framework/Paths/OldAdmin";
 import {
   loader as curationLoader,
   action as curationAction,
@@ -233,18 +228,6 @@ const router = createBrowserRouter([
         loader: exploreLoader,
         action: exploreAction,
         element: <Explore />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "oldAdmin",
-        loader: adminLoader,
-        // sharing an action with the explore page is somewhat intentional
-        // as it shows cards and admins have the same actions that they can perform
-        // on cards as they can on the explore page
-        // TODO - determine if this is an okay way to share functionality across
-        // pages or a bad idea
-        action: communityAdminAction,
-        element: <OldAdmin />,
         errorElement: <ErrorPage />,
       },
       {
