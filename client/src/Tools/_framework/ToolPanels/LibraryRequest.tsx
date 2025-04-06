@@ -1,6 +1,6 @@
 import React from "react";
 import { FetcherWithComponents } from "react-router";
-import { Box, Button, Heading, Text, VStack } from "@chakra-ui/react";
+import { Box, Button, Text, VStack } from "@chakra-ui/react";
 import axios from "axios";
 import { Content, LibraryRelations } from "../../../_utils/types";
 
