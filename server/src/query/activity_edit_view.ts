@@ -128,7 +128,6 @@ export async function getContent({
   contentId,
   loggedInUserId,
   includeAssignInfo = false,
-  includeLibraryInfo = false,
   includeClassifications = false,
   includeShareDetails = false,
   includeOwnerDetails = false,
@@ -183,11 +182,9 @@ export async function getContent({
 
   const contentSelect = returnContentSelect({
     includeAssignInfo,
-    includeLibraryInfo,
     includeClassifications,
     includeShareDetails,
     includeOwnerDetails,
-    isAdmin,
   });
 
   const preliminaryList = await prisma.content.findMany({
@@ -204,7 +201,6 @@ export async function getContent({
     //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
     preliminaryList[idx],
     loggedInUserId,
-    isAdmin,
   );
 
   preliminaryList.splice(idx, 1);

@@ -11,11 +11,6 @@ import {
   action as exploreAction,
   Explore,
 } from "./Tools/_framework/Paths/Explore";
-import { action as communityAdminAction } from "./Tools/_framework/Paths/CommunityAdmin";
-import {
-  loader as adminLoader,
-  OldAdmin,
-} from "./Tools/_framework/Paths/OldAdmin";
 import {
   loader as curationLoader,
   action as curationAction,
@@ -114,6 +109,10 @@ import {
   loader as changeNameLoader,
   action as changeNameAction,
 } from "./Tools/_framework/Paths/ChangeName";
+import {
+  CurationRequests,
+  loader as curationRequestsLoader,
+} from "./Tools/_framework/Paths/CurationRequests";
 
 const theme = extendTheme({
   fonts: {
@@ -232,18 +231,6 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "oldAdmin",
-        loader: adminLoader,
-        // sharing an action with the explore page is somewhat intentional
-        // as it shows cards and admins have the same actions that they can perform
-        // on cards as they can on the explore page
-        // TODO - determine if this is an okay way to share functionality across
-        // pages or a bad idea
-        action: communityAdminAction,
-        element: <OldAdmin />,
-        errorElement: <ErrorPage />,
-      },
-      {
         path: "curation",
         loader: curationLoader,
         action: curationAction,
@@ -255,6 +242,12 @@ const router = createBrowserRouter([
         loader: curationLoader,
         action: curationAction,
         element: <Curation />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "curationRequests",
+        loader: curationRequestsLoader,
+        element: <CurationRequests />,
         errorElement: <ErrorPage />,
       },
       {

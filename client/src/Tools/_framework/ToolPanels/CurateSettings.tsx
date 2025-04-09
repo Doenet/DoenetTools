@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { FetcherWithComponents } from "react-router";
-import { Box, List, Button, Text, Textarea, Heading } from "@chakra-ui/react";
+import { Box, List, Button, Text, Textarea } from "@chakra-ui/react";
 import axios from "axios";
-import { Content } from "../../../_utils/types";
+import { Content, LibraryRelations } from "../../../_utils/types";
 import { DisplayLicenseItem } from "../../../Widgets/Licenses";
 
 export async function curateActions({ formObj }: { [k: string]: any }) {
@@ -34,66 +34,42 @@ export async function curateActions({ formObj }: { [k: string]: any }) {
   return null;
 }
 
+/**
+ * This component is used to display the curation settings for an activity in the library.
+ * It is the library's equivalent of the `ShareSettings` component panel.
+ */
 export function CurateSettings({
   fetcher,
   contentData,
+  libraryRelations,
 }: {
   fetcher: FetcherWithComponents<any>;
   contentData: Content;
+  libraryRelations: LibraryRelations;
 }) {
   const license = contentData.license!;
-  const sourceId = contentData.libraryActivityInfo!.sourceId;
-  const contentId = contentData.contentId;
-  const existingComments = contentData.libraryActivityInfo?.comments ?? "";
-  const status = contentData.libraryActivityInfo!.status;
-  // const userRequested = contentData;
 
-  const [comments, setComments] = useState<string>(existingComments);
+  // Must have library source if in library
+  const librarySource = libraryRelations.source!;
+
+  const sourceIdIsPublic = librarySource.sourceContentId !== null;
+
+  const [comments, setComments] = useState<string>(
+    librarySource.comments || "",
+  );
   const [unsavedComments, setUnsavedComments] = useState<boolean>(false);
 
   return (
     <>
-      <Box>
-        <Heading
-          size="small"
-          // marginTop="10px"
-          padding="10px"
-        >
-          Status: {status}
-        </Heading>
-      </Box>
+      {!sourceIdIsPublic ? (
+        <Text>The source activity for this content is no longer public.</Text>
+      ) : null}
 
-      <Box>
-        <Box
-          marginTop="10px"
-          border="2px solid lightgray"
-          background="lightgray"
-          padding="10px"
-        >
-          <>
-            {license.isComposition ? (
-              <>
-                <p>Activity is shared with these licenses:</p>
-                <List spacing="20px" marginTop="10px">
-                  {license.composedOf.map((comp) => (
-                    <DisplayLicenseItem licenseItem={comp} key={comp.code} />
-                  ))}
-                </List>
-                <p style={{ marginTop: "10px" }}>
-                  (You authorize reuse under any of these licenses.)
-                </p>
-              </>
-            ) : (
-              <>
-                <p>Activity is shared using the license:</p>
-                <List marginTop="10px">
-                  <DisplayLicenseItem licenseItem={license} />
-                </List>
-              </>
-            )}
-          </>
-        </Box>
-      </Box>
+      <Text>Status: {librarySource.status}</Text>
+
+      <Text>
+        Owner-requested: {librarySource.ownerRequested ? "Yes" : "No"}
+      </Text>
 
       <Box marginTop="30px">
         <Text>Comments</Text>
@@ -116,13 +92,13 @@ export function CurateSettings({
         />
       </Box>
 
-      {status === "PUBLISHED" ? (
+      {librarySource.status === "PUBLISHED" ? (
         <Button
           onClick={() => {
             fetcher.submit(
               {
                 _action: "unpublish",
-                id: contentId,
+                id: contentData.contentId,
               },
               { method: "post" },
             );
@@ -138,7 +114,7 @@ export function CurateSettings({
               fetcher.submit(
                 {
                   _action: "publish",
-                  id: contentId,
+                  id: contentData.contentId,
                   comments,
                 },
                 { method: "post" },
@@ -150,15 +126,17 @@ export function CurateSettings({
         </>
       )}
 
-      {/* {status === "PENDING_REVIEW" &&
-      contentData.libraryActivityInfo!.onwerRequested ? (
+      {librarySource.status === "PENDING_REVIEW" &&
+      librarySource.ownerRequested &&
+      sourceIdIsPublic ? (
         <Button
+          isDisabled={comments === ""}
           onClick={() => {
             setUnsavedComments(false);
             fetcher.submit(
               {
                 _action: "return for revision",
-                sourceId: sourceId,
+                sourceId: librarySource.sourceContentId,
                 comments,
               },
               { method: "post" },
@@ -167,24 +145,57 @@ export function CurateSettings({
         >
           Return for revision
         </Button>
-      ) : null} */}
+      ) : null}
 
-      <Button
-        isDisabled={!unsavedComments}
-        onClick={() => {
-          setUnsavedComments(false);
-          fetcher.submit(
-            {
-              _action: "modify comments",
-              sourceId,
-              comments,
-            },
-            { method: "post" },
-          );
-        }}
+      {librarySource.ownerRequested ||
+      (librarySource.status === "PUBLISHED" && sourceIdIsPublic) ? (
+        <Button
+          isDisabled={!unsavedComments}
+          onClick={() => {
+            setUnsavedComments(false);
+            fetcher.submit(
+              {
+                _action: "modify comments",
+                sourceId: librarySource.sourceContentId,
+                comments,
+              },
+              { method: "post" },
+            );
+          }}
+        >
+          Save comments
+        </Button>
+      ) : null}
+
+      <Box
+        marginTop="30px"
+        border="2px solid lightgray"
+        background="lightgray"
+        padding="10px"
       >
-        Save comments
-      </Button>
+        <>
+          {license.isComposition ? (
+            <>
+              <p>Activity is shared with these licenses:</p>
+              <List spacing="20px" marginTop="10px">
+                {license.composedOf.map((comp) => (
+                  <DisplayLicenseItem licenseItem={comp} key={comp.code} />
+                ))}
+              </List>
+              <p style={{ marginTop: "10px" }}>
+                (You authorize reuse under any of these licenses.)
+              </p>
+            </>
+          ) : (
+            <>
+              <p>Activity is shared using the license:</p>
+              <List marginTop="10px">
+                <DisplayLicenseItem licenseItem={license} />
+              </List>
+            </>
+          )}
+        </>
+      </Box>
     </>
   );
 }

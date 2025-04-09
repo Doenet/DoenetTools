@@ -1,5 +1,4 @@
 import express from "express";
-import { requireLoggedIn } from "../middleware/validationMiddleware";
 import {
   contentCreateSchema,
   contentIdSchema,
@@ -22,8 +21,6 @@ import {
 import { queryLoggedIn } from "../middleware/queryMiddleware";
 
 export const updateContentRouter = express.Router();
-
-updateContentRouter.use(requireLoggedIn);
 
 updateContentRouter.post(
   "/deleteContent",

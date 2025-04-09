@@ -32,17 +32,38 @@ export type License = {
 
 export type AssignmentStatus = "Unassigned" | "Closed" | "Open";
 
-export type LibraryInfo = {
-  sourceId: string;
-  contentId: string | null;
-  onwerRequested?: boolean;
-  status:
-    | "none"
-    | "PENDING_REVIEW"
-    | "REQUEST_REMOVED"
-    | "PUBLISHED"
-    | "NEEDS_REVISION";
-  comments?: string;
+/** This type must match the Prisma-defined enum `LibraryStatus` */
+type LibraryStatus =
+  | "PENDING_REVIEW"
+  | "REQUEST_REMOVED"
+  | "PUBLISHED"
+  | "NEEDS_REVISION";
+
+/**
+ * This type represents the library status of a provided content id in both directions.
+ * The `activity` field contains info about an activity revised from provided content .
+ * The `source` fields refers an activity that uses the provied content as a source.
+ *
+ * Optional fields are only included for certain users:
+ * - `activity.comments` - must be owner or admin
+ * - `activity.reviewRequestDate` - must be owner or admin
+ * - `source.comments` - must be admin
+ * - `source.ownerRequested` - must be admin
+ */
+export type LibraryRelations = {
+  activity?: {
+    status: LibraryStatus;
+    activityContentId: string | null;
+    comments?: string;
+    // This field is a Date in the server code but a string in the client code.
+    reviewRequestDate?: string;
+  };
+  source?: {
+    status: LibraryStatus;
+    sourceContentId: string | null;
+    comments?: string;
+    ownerRequested?: boolean;
+  };
 };
 
 export type UserInfo = {
@@ -140,8 +161,6 @@ export type ContentBase = {
     sortIndex: number;
   }[];
   classifications: ContentClassification[];
-  librarySourceInfo?: LibraryInfo;
-  libraryActivityInfo?: LibraryInfo;
   parent: {
     contentId: string;
     name: string;

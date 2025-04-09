@@ -241,11 +241,6 @@ export function SiteHeader() {
                           Curation
                         </NavLinkTab>
                       )}
-                      {user.isAdmin && (
-                        <NavLinkTab to="oldAdmin" dataTest="Admin">
-                          Old Admin
-                        </NavLinkTab>
-                      )}
                     </>
                   )}
                 </HStack>
@@ -396,14 +391,6 @@ export function SiteHeader() {
                                 dataTest="Curation"
                               >
                                 Curation
-                              </NavLinkDropdownTab>
-                            )}
-                            {user.isAdmin && (
-                              <NavLinkDropdownTab
-                                to="oldAdmin"
-                                dataTest="Admin"
-                              >
-                                Old Admin
                               </NavLinkDropdownTab>
                             )}
                           </>

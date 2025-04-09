@@ -14,7 +14,6 @@ import {
   updateOriginContentToRemixSchema,
   updateRemixedContentToOriginSchema,
 } from "../schemas/remixSchema";
-import { requireLoggedIn } from "../middleware/validationMiddleware";
 
 export const remixRouter = express.Router();
 
@@ -30,7 +29,6 @@ remixRouter.get(
 
 remixRouter.post(
   "/updateRemixedContentToOrigin",
-  requireLoggedIn,
   queryLoggedIn(
     updateRemixedContentToOrigin,
     updateRemixedContentToOriginSchema,
@@ -39,6 +37,5 @@ remixRouter.post(
 
 remixRouter.post(
   "/updateOriginContentToRemix",
-  requireLoggedIn,
   queryLoggedIn(updateOriginContentToRemix, updateOriginContentToRemixSchema),
 );
