@@ -499,7 +499,7 @@ test("admin publishes to library without owner request", async () => {
     },
   };
   await expectStatusIs(contentId, statusWithDraft, adminId);
-  await expectStatusIs(contentId, statusPending, ownerId);
+  await expectStatusIs(contentId, {}, ownerId);
 
   const draftStatusPending: LibraryRelations = {
     source: {
@@ -909,7 +909,6 @@ test("List of pending requests updates", async () => {
 });
 
 test("getSingleLibraryRelations works with visitor not signed in", async () => {
-
   const { userId } = await createTestUser();
   const { contentId } = await createContent({
     loggedInUserId: userId,
@@ -922,32 +921,35 @@ test("getSingleLibraryRelations works with visitor not signed in", async () => {
     loggedInUserId: userId,
     isPublic: true,
   });
-  
+
   // No `loggedInUserId` provided
-  const results = await getSingleLibraryRelations({contentId});
+  const results = await getSingleLibraryRelations({ contentId });
   expect(results).toEqual({});
 
   // curate activity
-  const { userId : adminId } = await createTestAdminUser();
+  const { userId: adminId } = await createTestAdminUser();
   const { draftId } = await addDraftToLibrary({
     contentId,
     loggedInUserId: adminId,
   });
-  await publishActivityToLibrary({draftId, loggedInUserId: adminId, comments: ""});
+  await publishActivityToLibrary({
+    draftId,
+    loggedInUserId: adminId,
+    comments: "",
+  });
 
   // No `loggedInUserId` provided
-  const results2 = await getSingleLibraryRelations({contentId});
+  const results2 = await getSingleLibraryRelations({ contentId });
   const published: LibraryRelations = {
     activity: {
       status: "PUBLISHED",
       activityContentId: draftId,
-    }
+    },
   };
   expect(results2).toEqual(published);
 });
 
 test("getMultipleLibraryRelations works with visitor not signed in", async () => {
-
   const { userId } = await createTestUser();
   const { contentId } = await createContent({
     loggedInUserId: userId,
@@ -981,9 +983,9 @@ test("getMultipleLibraryRelations works with visitor not signed in", async () =>
     loggedInUserId: userId,
     isPublic: true,
   });
-  
+
   // curate activity
-  const { userId : adminId } = await createTestAdminUser();
+  const { userId: adminId } = await createTestAdminUser();
   const { draftId } = await addDraftToLibrary({
     contentId,
     loggedInUserId: adminId,
@@ -996,32 +998,149 @@ test("getMultipleLibraryRelations works with visitor not signed in", async () =>
     contentId: contentId3,
     loggedInUserId: adminId,
   });
-  await publishActivityToLibrary({draftId, loggedInUserId: adminId, comments: ""});
-  await publishActivityToLibrary({draftId: draftId2, loggedInUserId: adminId, comments: ""});
-  await publishActivityToLibrary({draftId: draftId3, loggedInUserId: adminId, comments: ""});
+  await publishActivityToLibrary({
+    draftId,
+    loggedInUserId: adminId,
+    comments: "",
+  });
+  await publishActivityToLibrary({
+    draftId: draftId2,
+    loggedInUserId: adminId,
+    comments: "",
+  });
+  await publishActivityToLibrary({
+    draftId: draftId3,
+    loggedInUserId: adminId,
+    comments: "",
+  });
 
   // No `loggedInUserId` provided
-  const results = await getMultipleLibraryRelations({contentIds: [contentId, contentId2, contentId3]});
+  const results = await getMultipleLibraryRelations({
+    contentIds: [contentId, contentId2, contentId3],
+  });
 
-  const expectedResults: LibraryRelations[] = [{
-    activity: {
-      status: "PUBLISHED",
-      activityContentId: draftId,
-    }
-  },
-  {
-    activity: {
-      status: "PUBLISHED",
-      activityContentId: draftId2,
-    }
-  },
-  {
-    activity: {
-      status: "PUBLISHED",
-      activityContentId: draftId3,
-    }
-  }];
+  const expectedResults: LibraryRelations[] = [
+    {
+      activity: {
+        status: "PUBLISHED",
+        activityContentId: draftId,
+      },
+    },
+    {
+      activity: {
+        status: "PUBLISHED",
+        activityContentId: draftId2,
+      },
+    },
+    {
+      activity: {
+        status: "PUBLISHED",
+        activityContentId: draftId3,
+      },
+    },
+  ];
   expect(results).toEqual(expectedResults);
+});
+
+test("Cannot modify comments if not owner-requested and not published", async () => {
+  const { userId: adminId } = await createTestAdminUser();
+  const { userId: ownerId } = await createTestUser();
+
+  const { contentId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  await setContentIsPublic({
+    contentId,
+    loggedInUserId: ownerId,
+    isPublic: true,
+  });
+
+  const { draftId } = await addDraftToLibrary({
+    contentId,
+    loggedInUserId: adminId,
+  });
+
+  await expect(() =>
+    modifyCommentsOfLibraryRequest({
+      sourceId: contentId,
+      comments: "some comments",
+      loggedInUserId: adminId,
+    }),
+  ).rejects.toThrowError();
+
+  // Publish and change comments
+  await publishActivityToLibrary({
+    draftId,
+    loggedInUserId: adminId,
+    comments: "some comments",
+  });
+
+  await modifyCommentsOfLibraryRequest({
+    sourceId: contentId,
+    comments: "comments while published",
+    loggedInUserId: adminId,
+  });
+  const relationsPublished = await getSingleLibraryRelations({
+    contentId,
+    loggedInUserId: adminId,
+  });
+  expect(relationsPublished.activity?.comments).toEqual(
+    "comments while published",
+  );
+
+  // Unpublish and try to change comments. Should fail
+  await unpublishActivityFromLibrary({
+    contentId: draftId,
+    loggedInUserId: adminId,
+  });
+  await expect(() =>
+    modifyCommentsOfLibraryRequest({
+      sourceId: contentId,
+      comments: "comments after unpublished",
+      loggedInUserId: adminId,
+    }),
+  ).rejects.toThrowError();
+
+  // Owner decides to request review
+  await submitLibraryRequest({ loggedInUserId: ownerId, contentId });
+
+  await modifyCommentsOfLibraryRequest({
+    sourceId: contentId,
+    comments: "comments after owner requested review",
+    loggedInUserId: adminId,
+  });
+  const relationsOwnerRequested = await getSingleLibraryRelations({
+    contentId,
+    loggedInUserId: adminId,
+  });
+  expect(relationsOwnerRequested.activity?.comments).toEqual(
+    "comments after owner requested review",
+  );
+});
+
+test("Owner does not see pending review status if they did not submit request", async () => {
+  const { userId: adminId } = await createTestAdminUser();
+  const { userId: ownerId } = await createTestUser();
+
+  const { contentId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  await setContentIsPublic({
+    contentId,
+    loggedInUserId: ownerId,
+    isPublic: true,
+  });
+
+  await addDraftToLibrary({
+    contentId,
+    loggedInUserId: adminId,
+  });
+
+  await expectStatusIs(contentId, {}, ownerId);
 });
 
 test.todo("getCurationContent and all its variations (and search!)");

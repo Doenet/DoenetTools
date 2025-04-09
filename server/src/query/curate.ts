@@ -104,6 +104,7 @@ export async function getMultipleLibraryRelations({
       status: true,
       comments: true,
       contentId: true,
+      ownerRequested: true,
       source: {
         select: {
           librarySourceEvents: {
@@ -136,18 +137,27 @@ export async function getMultipleLibraryRelations({
       },
       select: { id: true },
     });
-    const isOwner = new Set(isOwnerList.map((v) => fromUUID(v.id)));
+    const isOwnerOf = new Set(isOwnerList.map((v) => fromUUID(v.id)));
 
     for (let i = 0; i < infos.length; i++) {
-      const isAdminOrOwner = isAdmin || isOwner.has(fromUUID(contentIds[i]));
-      const sourceEvents = infos[i].source.librarySourceEvents;
+      // Three possible conditions for this relation to be visible.
+      // 1. Curated activity is published
+      // 2. You are admin
+      // 3. You are owner, provided that either you requested the review or it's not pending anymore
+      //      - owners don't want to see "pending" status when they didn't request it
+      const isPublished = infos[i].status === LibraryStatus.PUBLISHED;
+      const isOwner = isOwnerOf.has(fromUUID(contentIds[i]));
+      const requestedOrNotPending =
+        infos[i].ownerRequested || infos[i].status !== "PENDING_REVIEW";
 
-      if (isAdminOrOwner || infos[i].status === LibraryStatus.PUBLISHED) {
+      if (isPublished || isAdmin || (isOwner && requestedOrNotPending)) {
+        const sourceEvents = infos[i].source.librarySourceEvents;
+
         meRelations[fromUUID(contentIds[i])] = {
           activityContentId: revisedIds[i],
           status: infos[i].status,
         };
-        if (isAdminOrOwner) {
+        if (isAdmin || isOwner) {
           meRelations[fromUUID(contentIds[i])].comments = infos[i].comments;
           if (sourceEvents.length > 0) {
             meRelations[fromUUID(contentIds[i])].reviewRequestDate =
@@ -282,6 +292,11 @@ export async function submitLibraryRequest({
         },
         {
           status: LibraryStatus.REQUEST_REMOVED,
+        },
+        {
+          // If admin adds draft to library on their own, owner can stil submit library request
+          status: LibraryStatus.PENDING_REVIEW,
+          ownerRequested: false,
         },
       ],
     },
@@ -735,6 +750,16 @@ export async function modifyCommentsOfLibraryRequest({
       NOT: {
         type: ContentType.folder,
         librarySourceInfo: null,
+      },
+      librarySourceInfo: {
+        OR: [
+          {
+            ownerRequested: true,
+          },
+          {
+            status: LibraryStatus.PUBLISHED,
+          },
+        ],
       },
     },
     data: {

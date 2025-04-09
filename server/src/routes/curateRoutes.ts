@@ -10,7 +10,6 @@ import {
   createCurationFolder,
   deleteDraftFromLibrary,
   getCurationFolderContent,
-  getMultipleLibraryRelations,
   getPendingCurationRequests,
   getSingleLibraryRelations,
   markLibraryRequestNeedsRevision,

@@ -8,17 +8,11 @@ import {
 
 export const userRouter = express.Router();
 
-userRouter.post(
-  "/updateUser",
-  queryLoggedIn(updateUser, userNamesSchema),
-);
+userRouter.post("/updateUser", queryLoggedIn(updateUser, userNamesSchema));
 
 userRouter.get(
   "/getUser",
   queryOptionalLoggedInNoArguments(getUserInfoIfLoggedIn),
 );
 
-userRouter.post(
-  "/setIsAuthor",
-  queryLoggedIn(setIsAuthor, setIsAuthorSchema),
-);
+userRouter.post("/setIsAuthor", queryLoggedIn(setIsAuthor, setIsAuthorSchema));
