@@ -1,9 +1,18 @@
-import { ContentType, LibraryEventType, LibraryStatus } from "@prisma/client";
+import {
+  ContentType,
+  LibraryEventType,
+  LibraryStatus,
+  Prisma,
+} from "@prisma/client";
 import { prisma } from "../model";
-import { Content, LibraryRelations } from "../types";
+import { Content, LibraryRelations, UserInfo } from "../types";
 import { InvalidRequestError } from "../utils/error";
-import { fromUUID } from "../utils/uuid";
-import { createContent, getDescendantIds } from "./activity";
+import { compareUUID, fromUUID, isEqualUUID } from "../utils/uuid";
+import {
+  createContent,
+  getAllDoenetmlVersions,
+  getDescendantIds,
+} from "./activity";
 import { copyContent } from "./copy_move";
 import {
   filterEditableActivity,
@@ -15,6 +24,8 @@ import {
   searchMyContentOrLibraryContent,
 } from "./content_list";
 import { processContent, returnContentSelect } from "../utils/contentStructure";
+import { getAvailableContentFeatures } from "./classification";
+import { getAllLicenses } from "./share";
 
 export async function mustBeAdmin(
   userId: Uint8Array,
@@ -33,6 +44,19 @@ export async function getIsAdmin(userId: Uint8Array) {
     isAdmin = user.isAdmin;
   }
   return isAdmin;
+}
+
+export async function getLibraryAccountId() {
+  const library = await prisma.users.findFirstOrThrow({
+    where: {
+      isLibrary: true,
+    },
+    select: {
+      userId: true,
+    },
+  });
+  const libraryId = library!.userId;
+  return libraryId;
 }
 
 /**
@@ -88,8 +112,9 @@ export async function getMultipleLibraryRelations({
     [index: string]: {
       status: LibraryStatus;
       activityContentId: Uint8Array | null;
-      comments?: string;
       reviewRequestDate?: Date;
+      primaryEditor?: UserInfo;
+      iAmPrimaryEditor?: boolean;
     };
   } = {};
 
@@ -102,22 +127,14 @@ export async function getMultipleLibraryRelations({
     },
     select: {
       status: true,
-      comments: true,
       contentId: true,
       ownerRequested: true,
-      source: {
+      requestedOn: true,
+      primaryEditor: {
         select: {
-          librarySourceEvents: {
-            // Date of most recent submission
-            take: 1,
-            orderBy: { dateTime: "desc" as const },
-            where: {
-              eventType: LibraryEventType.SUBMIT_REQUEST,
-            },
-            select: {
-              dateTime: true,
-            },
-          },
+          userId: true,
+          firstNames: true,
+          lastNames: true,
         },
       },
     },
@@ -140,30 +157,31 @@ export async function getMultipleLibraryRelations({
     const isOwnerOf = new Set(isOwnerList.map((v) => fromUUID(v.id)));
 
     for (let i = 0; i < infos.length; i++) {
+      const isPublished = infos[i].status === LibraryStatus.PUBLISHED;
+      const isOwner = isOwnerOf.has(fromUUID(contentIds[i]));
+
       // Three possible conditions for this relation to be visible.
       // 1. Curated activity is published
       // 2. You are admin
-      // 3. You are owner, provided that either you requested the review or it's not pending anymore
-      //      - owners don't want to see "pending" status when they didn't request it
-      const isPublished = infos[i].status === LibraryStatus.PUBLISHED;
-      const isOwner = isOwnerOf.has(fromUUID(contentIds[i]));
-      const requestedOrNotPending =
-        infos[i].ownerRequested || infos[i].status !== "PENDING_REVIEW";
-
-      if (isPublished || isAdmin || (isOwner && requestedOrNotPending)) {
-        const sourceEvents = infos[i].source.librarySourceEvents;
-
+      // 3. You are owner and you suggested the review
+      if (isPublished || isAdmin || (isOwner && infos[i].ownerRequested)) {
         meRelations[fromUUID(contentIds[i])] = {
           activityContentId: revisedIds[i],
           status: infos[i].status,
         };
-        if (isAdmin || isOwner) {
-          meRelations[fromUUID(contentIds[i])].comments = infos[i].comments;
-          if (sourceEvents.length > 0) {
-            meRelations[fromUUID(contentIds[i])].reviewRequestDate =
-              sourceEvents[0].dateTime;
-          }
+
+        if (isAdmin || (isOwner && infos[i].ownerRequested)) {
+          meRelations[fromUUID(contentIds[i])].reviewRequestDate =
+            infos[i].requestedOn;
         }
+
+        // if (isAdmin || isOwner) {
+        //   const sourceEvents = infos[i].events;
+        //   if (sourceEvents.length > 0) {
+        //     meRelations[fromUUID(contentIds[i])].reviewRequestDate =
+        //       sourceEvents[0].dateTime;
+        //   }
+        // }
       }
     }
   }
@@ -174,8 +192,10 @@ export async function getMultipleLibraryRelations({
     [index: string]: {
       status: LibraryStatus;
       sourceContentId: Uint8Array | null;
-      comments?: string;
       ownerRequested?: boolean;
+      reviewRequestDate?: Date;
+      primaryEditor?: UserInfo;
+      iAmPrimaryEditor?: boolean;
     };
   } = {};
 
@@ -188,9 +208,16 @@ export async function getMultipleLibraryRelations({
     },
     select: {
       status: true,
-      comments: true,
       sourceId: true,
       ownerRequested: true,
+      requestedOn: true,
+      primaryEditor: {
+        select: {
+          userId: true,
+          firstNames: true,
+          lastNames: true,
+        },
+      },
     },
   });
 
@@ -208,11 +235,26 @@ export async function getMultipleLibraryRelations({
       };
       if (isAdmin) {
         // Only admins see comments. Owners of original activity must look up comments using their own source id
-        sourceRelations[fromUUID(contentIds[i])].comments =
-          sourceInfos[i].comments;
-        // Only admins can see if owner requested review
+        // sourceRelations[fromUUID(contentIds[i])].comments =
+        //   sourceInfos[i].comments;
+
+        // Only admins can see if owner requested review and the date requested on
         sourceRelations[fromUUID(contentIds[i])].ownerRequested =
           sourceInfos[i].ownerRequested;
+        sourceRelations[fromUUID(contentIds[i])].reviewRequestDate =
+          sourceInfos[i].requestedOn;
+
+        const primaryEditor = sourceInfos[i].primaryEditor;
+        if (primaryEditor) {
+          sourceRelations[fromUUID(contentIds[i])].primaryEditor = {
+            email: "",
+            ...primaryEditor,
+          };
+          sourceRelations[fromUUID(contentIds[i])].iAmPrimaryEditor =
+            isEqualUUID(loggedInUserId, primaryEditor.userId);
+        } else {
+          sourceRelations[fromUUID(contentIds[i])].iAmPrimaryEditor = false;
+        }
       }
     }
   }
@@ -250,244 +292,95 @@ export async function getSingleLibraryRelations({
 }
 
 /**
- * Set library status to `PENDING_REVIEW`. Also logs event in library history.
+ * Add activity with id `contentId` to the list of `pending` activities.
+ * If the activity has not been suggested before, this function creates a private remix inside the library account.
+ * If suggesting this activity is meaningless (already `pending`, `under_review`, or `published`), this function does nothing.
  * @param contentId - must be existing public activity
- * @param loggedInUserId - must be owner of contentId
+ * @param loggedInUserId
  */
-export async function submitLibraryRequest({
+export async function suggestToBeCurated({
   contentId,
   loggedInUserId,
 }: {
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
 }) {
-  const isOwner = await prisma.content.findUnique({
+  const content = await prisma.content.findUniqueOrThrow({
     where: {
       id: contentId,
       isPublic: true,
-      ownerId: loggedInUserId,
-    },
-    select: { id: true },
-  });
-  if (!isOwner) {
-    throw new InvalidRequestError(
-      "Activity does not exist, is not public, or is not owned by you.",
-    );
-  }
-
-  const updateLibInfo = prisma.libraryActivityInfos.upsert({
-    where: {
-      sourceId: contentId,
-      source: {
-        isPublic: true,
-        NOT: {
-          type: ContentType.folder,
-        },
-        isDeleted: false,
-        ownerId: loggedInUserId,
-      },
-      OR: [
-        {
-          status: LibraryStatus.NEEDS_REVISION,
-        },
-        {
-          status: LibraryStatus.REQUEST_REMOVED,
-        },
-        {
-          // If admin adds draft to library on their own, owner can stil submit library request
-          status: LibraryStatus.PENDING_REVIEW,
-          ownerRequested: false,
-        },
-      ],
-    },
-    update: {
-      status: LibraryStatus.PENDING_REVIEW,
-      ownerRequested: true,
-    },
-    create: {
-      sourceId: contentId,
-      status: LibraryStatus.PENDING_REVIEW,
-      comments: "",
-      ownerRequested: true,
-    },
-  });
-
-  const newEvent = prisma.libraryEvents.create({
-    data: {
-      sourceId: contentId,
-      eventType: LibraryEventType.SUBMIT_REQUEST,
-      dateTime: new Date(),
-      comments: "",
-      userId: loggedInUserId,
-    },
-  });
-
-  await prisma.$transaction([updateLibInfo, newEvent]);
-}
-/**
- * Set library status to `REQUEST_REMOVED`. Also logs event in library history.
- * @param contentId - must be existing public activity
- * @param loggedInUserId - must be owner of contentId
- *
- */
-export async function cancelLibraryRequest({
-  contentId,
-  loggedInUserId,
-}: {
-  contentId: Uint8Array;
-  loggedInUserId: Uint8Array;
-}) {
-  const updateLibInfo = prisma.libraryActivityInfos.update({
-    where: {
-      sourceId: contentId,
-      source: {
-        isPublic: true,
-        NOT: {
-          type: ContentType.folder,
-        },
-        isDeleted: false,
-        ownerId: loggedInUserId,
-      },
-      status: LibraryStatus.PENDING_REVIEW,
-    },
-    data: {
-      status: LibraryStatus.REQUEST_REMOVED,
-    },
-  });
-
-  const newEvent = prisma.libraryEvents.create({
-    data: {
-      sourceId: contentId,
-      eventType: LibraryEventType.CANCEL_REQUEST,
-      dateTime: new Date(),
-      comments: "",
-      userId: loggedInUserId,
-    },
-  });
-
-  await prisma.$transaction([updateLibInfo, newEvent]);
-}
-
-export async function getLibraryAccountId() {
-  const library = await prisma.users.findFirstOrThrow({
-    where: {
-      isLibrary: true,
+      ...filterViewableActivity(loggedInUserId, false),
     },
     select: {
-      userId: true,
-    },
-  });
-  const libraryId = library!.userId;
-  return libraryId;
-}
-
-/**
- * Remix activity into library account.
- * Error if a draft already exists in the library
- * @param contentId - must be existing public activity not owned by library
- * @param loggedInUserId - must be admin
- */
-export async function addDraftToLibrary({
-  contentId,
-  loggedInUserId,
-}: {
-  contentId: Uint8Array;
-  loggedInUserId: Uint8Array;
-}) {
-  await mustBeAdmin(loggedInUserId);
-
-  const sourceIsInvalid = await prisma.libraryActivityInfos.findFirst({
-    where: {
-      OR: [
-        {
-          // Source activity already has remixed version in library
-          sourceId: contentId,
-          NOT: { contentId: null },
-        },
-        {
-          // Source activity is library activity
-          contentId: contentId,
-          activity: {
-            owner: {
-              isLibrary: true,
-            },
-          },
-        },
-        {
-          // Source id is folder
-          sourceId: contentId,
-          activity: {
-            type: "folder",
-          },
-        },
-      ],
-    },
-    select: {
-      contentId: true,
-      activity: {
+      ownerId: true,
+      librarySourceInfo: {
         select: {
-          type: true,
+          status: true,
         },
       },
     },
   });
+  const ownerRequested = content
+    ? isEqualUUID(loggedInUserId, content.ownerId)
+    : false;
 
-  if (sourceIsInvalid) {
-    if (sourceIsInvalid.contentId !== null) {
-      throw new InvalidRequestError(
-        `Already included in library, see activity ${fromUUID(sourceIsInvalid.contentId!)}`,
-      );
-    } else if (sourceIsInvalid.activity?.type === "folder") {
-      throw new InvalidRequestError(`Cannot add folder to library`);
-    } else {
-      throw new InvalidRequestError(`Cannot add draft of curated activity`);
-    }
+  // If this activity is already pending or under review, we will silently do nothing. No need to update the database.
+
+  if (content.librarySourceInfo?.status === LibraryStatus.REJECTED) {
+    await prisma.libraryActivityInfos.update({
+      where: {
+        sourceId: contentId,
+      },
+      data: {
+        ownerRequested,
+        requestedOn: new Date(),
+        status: LibraryStatus.PENDING,
+        events: {
+          create: {
+            eventType: LibraryEventType.SUGGEST_REVIEW,
+            dateTime: new Date(),
+            userId: loggedInUserId,
+          },
+        },
+      },
+    });
+  } else if (!content.librarySourceInfo) {
+    const libraryId = await getLibraryAccountId();
+
+    const {
+      newContentIds: [remixedId],
+    } = await copyContent({
+      contentIds: [contentId],
+      loggedInUserId: libraryId,
+      parentId: null,
+    });
+
+    await prisma.libraryActivityInfos.create({
+      data: {
+        sourceId: contentId,
+        contentId: remixedId,
+        status: LibraryStatus.PENDING,
+        ownerRequested,
+        requestedOn: new Date(),
+        events: {
+          create: {
+            dateTime: new Date(),
+            eventType: LibraryEventType.SUGGEST_REVIEW,
+            userId: loggedInUserId,
+          },
+        },
+      },
+    });
   }
-
-  const libraryId = await getLibraryAccountId();
-
-  const {
-    newContentIds: [draftId],
-  } = await copyContent({
-    contentIds: [contentId],
-    loggedInUserId: libraryId,
-    parentId: null,
-  });
-
-  await prisma.libraryActivityInfos.upsert({
-    where: {
-      sourceId: contentId,
-    },
-    update: {
-      contentId: draftId,
-    },
-    create: {
-      sourceId: contentId,
-      contentId: draftId,
-      ownerRequested: false,
-      status: LibraryStatus.PENDING_REVIEW,
-    },
-  });
-
-  await prisma.libraryEvents.create({
-    data: {
-      sourceId: contentId,
-      contentId: draftId,
-      dateTime: new Date(),
-      eventType: LibraryEventType.ADD_DRAFT,
-      userId: loggedInUserId,
-      comments: "",
-    },
-  });
-
-  return { draftId };
 }
+
 /**
- * Soft delete draft and log event.
- * @param draftId - must be existing draft (private activity) in library account
+ * Claim ownership of a `pending` activity in the library. This marks you as the primary editor for this activity and changes status to `under_review`.
+ * You can also claim ownership of an activity that's already `under_review`, in which case you replace the existing editor.
+ * @param contentId - id of the library-owned remix, not the source content id
  * @param loggedInUserId - must be admin
  */
-export async function deleteDraftFromLibrary({
+export async function claimOwnershipOfReview({
   contentId,
   loggedInUserId,
 }: {
@@ -495,92 +388,53 @@ export async function deleteDraftFromLibrary({
   loggedInUserId: Uint8Array;
 }) {
   await mustBeAdmin(loggedInUserId);
-  const { sourceId } = await prisma.libraryActivityInfos.findUniqueOrThrow({
+  await prisma.libraryActivityInfos.update({
     where: {
       contentId,
+      OR: [
+        {
+          status: LibraryStatus.PENDING,
+        },
+        {
+          status: LibraryStatus.UNDER_REVIEW,
+        },
+      ],
     },
-    select: {
-      sourceId: true,
-    },
-  });
-
-  const ensureDraftExists = prisma.content.findUniqueOrThrow({
-    where: {
-      id: contentId,
-      isPublic: false,
-      owner: {
-        isLibrary: true,
-      },
-      ...filterEditableActivity(loggedInUserId, true),
-    },
-    select: { id: true },
-  });
-
-  const draftDescendants = await getDescendantIds(contentId);
-
-  const deleteDraft = prisma.content.updateMany({
-    where: { id: { in: [contentId, ...draftDescendants] } },
-    data: { isDeleted: true },
-  });
-
-  const removeLibraryIdRef = prisma.libraryActivityInfos.update({
-    where: { contentId },
-    data: { contentId: null },
-  });
-
-  const logDeletion = prisma.libraryEvents.create({
     data: {
-      sourceId,
-      contentId,
-      eventType: LibraryEventType.DELETE_DRAFT,
-      dateTime: new Date(),
-      userId: loggedInUserId,
+      primaryEditorId: loggedInUserId,
+      status: LibraryStatus.UNDER_REVIEW,
+      events: {
+        create: {
+          eventType: LibraryEventType.TAKE_OWNERSHIP,
+          userId: loggedInUserId,
+          dateTime: new Date(),
+        },
+      },
     },
   });
-
-  await prisma.$transaction([
-    ensureDraftExists,
-    deleteDraft,
-    removeLibraryIdRef,
-    logDeletion,
-  ]);
 }
 
 /**
  * Make library activity public and log event.
- * @param draftId - must be existing draft (private activity) in library account
+ * @param contentId - activity in library account with status `under_review`
  * @param loggedInUserId - must be admin
  * @todo notify owner
  */
 export async function publishActivityToLibrary({
-  draftId,
+  contentId,
   loggedInUserId,
-  comments,
 }: {
-  draftId: Uint8Array;
+  contentId: Uint8Array;
   loggedInUserId: Uint8Array;
-  comments: string;
 }) {
   await mustBeAdmin(loggedInUserId);
-  const libraryId = await getLibraryAccountId();
-  const { sourceId } = await prisma.libraryActivityInfos.findUniqueOrThrow({
-    where: {
-      contentId: draftId,
-    },
-    select: {
-      sourceId: true,
-    },
-  });
-
   await prisma.content.update({
     where: {
-      id: draftId,
-      isPublic: false,
-      isDeleted: false,
-      NOT: {
-        type: ContentType.folder,
+      id: contentId,
+      ...filterEditableActivity(loggedInUserId, true),
+      libraryActivityInfo: {
+        status: LibraryStatus.UNDER_REVIEW,
       },
-      ownerId: libraryId,
       license: {
         isNot: null,
       },
@@ -588,21 +442,18 @@ export async function publishActivityToLibrary({
     data: {
       // Publish
       isPublic: true,
-      // Update status
       libraryActivityInfo: {
         update: {
+          // Update status
           status: LibraryStatus.PUBLISHED,
-          comments,
-        },
-      },
-      // Log publication
-      libraryActivityEvents: {
-        create: {
-          sourceId,
-          eventType: LibraryEventType.PUBLISH,
-          dateTime: new Date(),
-          userId: loggedInUserId,
-          comments,
+          // Log publication
+          events: {
+            create: {
+              eventType: LibraryEventType.PUBLISH,
+              dateTime: new Date(),
+              userId: loggedInUserId,
+            },
+          },
         },
       },
     },
@@ -610,7 +461,7 @@ export async function publishActivityToLibrary({
 }
 
 /**
- * Make library activity private and log event.
+ * Return library activity to `under_review` category and log event.
  * @param contentId - must be existing published (public) activity in library account
  * @param loggedInUserId - must be admin
  */
@@ -622,25 +473,11 @@ export async function unpublishActivityFromLibrary({
   loggedInUserId: Uint8Array;
 }) {
   await mustBeAdmin(loggedInUserId);
-  const libraryId = await getLibraryAccountId();
-  const { sourceId } = await prisma.libraryActivityInfos.findUniqueOrThrow({
-    where: {
-      contentId: contentId,
-    },
-    select: {
-      sourceId: true,
-    },
-  });
-
   await prisma.content.update({
     where: {
       id: contentId,
       isPublic: true,
-      NOT: {
-        type: ContentType.folder,
-      },
-      isDeleted: false,
-      ownerId: libraryId,
+      ...filterEditableActivity(loggedInUserId, true),
       libraryActivityInfo: {
         status: LibraryStatus.PUBLISHED,
       },
@@ -649,16 +486,14 @@ export async function unpublishActivityFromLibrary({
       isPublic: false,
       libraryActivityInfo: {
         update: {
-          // TODO: should we use the pending review status here or another status?
-          status: LibraryStatus.PENDING_REVIEW,
-        },
-      },
-      libraryActivityEvents: {
-        create: {
-          sourceId,
-          eventType: LibraryEventType.UNPUBLISH,
-          dateTime: new Date(),
-          userId: loggedInUserId,
+          status: LibraryStatus.UNDER_REVIEW,
+          events: {
+            create: {
+              eventType: LibraryEventType.UNPUBLISH,
+              dateTime: new Date(),
+              userId: loggedInUserId,
+            },
+          },
         },
       },
     },
@@ -666,49 +501,30 @@ export async function unpublishActivityFromLibrary({
 }
 
 /**
- * Set library status to `NEEDS_REVISION` and log event.
- * @param sourceId - original activity, must exist and be public, must have status `PENDING REVIEW`
- * @param comments - will be displayed to original owner
- * @param userId - must be admin
- * @todo notify owner
+ * Reject activity's request for curation and log event.
+ * @param contentId - activity in library account with status `under_review`
+ * @param loggedInUserId - must be admin
  */
-export async function markLibraryRequestNeedsRevision({
-  sourceId,
-  comments,
+export async function rejectActivity({
+  contentId,
   loggedInUserId,
 }: {
-  sourceId: Uint8Array;
-  comments: string;
+  contentId: Uint8Array;
   loggedInUserId: Uint8Array;
 }) {
   await mustBeAdmin(loggedInUserId);
-
-  await prisma.content.update({
+  await prisma.libraryActivityInfos.update({
     where: {
-      id: sourceId,
-      isPublic: true,
-      NOT: {
-        type: ContentType.folder,
-      },
-      isDeleted: false,
-      librarySourceInfo: {
-        status: LibraryStatus.PENDING_REVIEW,
-        ownerRequested: true,
-      },
+      contentId,
+      status: LibraryStatus.UNDER_REVIEW,
     },
     data: {
-      librarySourceInfo: {
-        update: {
-          status: LibraryStatus.NEEDS_REVISION,
-          comments,
-        },
-      },
-      librarySourceEvents: {
+      status: LibraryStatus.REJECTED,
+      events: {
         create: {
-          eventType: LibraryEventType.MARK_NEEDS_REVISION,
-          dateTime: new Date(),
+          eventType: LibraryEventType.REJECT,
           userId: loggedInUserId,
-          comments,
+          dateTime: new Date(),
         },
       },
     },
@@ -716,65 +532,92 @@ export async function markLibraryRequestNeedsRevision({
 }
 
 /**
- * Change comments to owner and log event.
- * @param sourceId - original activity, must be public and have library status
- * @param comments - updated comments sent to owner
- * @param userId - must be admin
- * @todo notify owner
+ * Post a comment to chat between activity author and editors.
+ * @param contentId - source id for author, revised id for editor
+ * @param loggedInUserId - must be author or an editor
  */
-export async function modifyCommentsOfLibraryRequest({
-  sourceId,
-  comments,
+export async function addComment({
+  contentId,
   loggedInUserId,
+  comment,
+  asEditor = false,
 }: {
-  sourceId: Uint8Array;
-  comments: string;
+  contentId: Uint8Array;
   loggedInUserId: Uint8Array;
+  comment: string;
+  asEditor?: boolean;
 }) {
-  await mustBeAdmin(loggedInUserId);
-
-  const { contentId } = await prisma.libraryActivityInfos.findUniqueOrThrow({
+  if (asEditor) {
+    await mustBeAdmin(loggedInUserId);
+  }
+  await prisma.libraryActivityInfos.update({
     where: {
-      sourceId,
+      sourceId: contentId,
+      source: {
+        ownerId: asEditor ? undefined : loggedInUserId,
+      },
+      OR: [
+        {
+          ownerRequested: true,
+        },
+        {
+          status: LibraryStatus.PUBLISHED,
+        },
+      ],
+    },
+    data: {
+      events: {
+        create: {
+          eventType: LibraryEventType.ADD_COMMENT,
+          userId: loggedInUserId,
+          dateTime: new Date(),
+          comment,
+        },
+      },
+    },
+  });
+}
+
+/**
+ * Get a list of all comments about this library review
+ * @param contentId - source id for author, revised id for editor
+ * @param loggedInUserId - must be author or an editor
+ */
+export async function getComments({
+  contentId,
+  loggedInUserId,
+  asEditor = false,
+}: {
+  contentId: Uint8Array;
+  loggedInUserId: Uint8Array;
+  asEditor?: boolean;
+}) {
+  if (asEditor) {
+    await mustBeAdmin(loggedInUserId);
+  } else {
+    // Must be owner
+    await prisma.content.findUniqueOrThrow({
+      where: { id: contentId, ownerId: loggedInUserId },
+      select: { id: true },
+    });
+  }
+
+  return await prisma.libraryEvents.findMany({
+    where: {
+      eventType: LibraryEventType.ADD_COMMENT,
+      info: {
+        contentId: asEditor ? contentId : undefined,
+        sourceId: asEditor ? undefined : contentId,
+      },
     },
     select: {
-      contentId: true,
-    },
-  });
-
-  await prisma.content.update({
-    where: {
-      id: sourceId,
-      isPublic: true,
-      isDeleted: false,
-      NOT: {
-        type: ContentType.folder,
-        librarySourceInfo: null,
-      },
-      librarySourceInfo: {
-        OR: [
-          {
-            ownerRequested: true,
-          },
-          {
-            status: LibraryStatus.PUBLISHED,
-          },
-        ],
-      },
-    },
-    data: {
-      librarySourceInfo: {
-        update: {
-          comments,
-        },
-      },
-      librarySourceEvents: {
-        create: {
-          contentId,
-          eventType: LibraryEventType.MODIFY_COMMENTS,
-          dateTime: new Date(),
-          comments,
-          userId: loggedInUserId,
+      comment: true,
+      dateTime: true,
+      userId: true,
+      user: {
+        select: {
+          firstNames: true,
+          lastNames: true,
         },
       },
     },
@@ -834,55 +677,100 @@ export async function createCurationFolder({
  * Get all pending curation requests, sorted by submission date oldest to newest.
  * Must be admin to call function.
  */
-export async function getPendingCurationRequests({
+export async function getCurationQueue({
   loggedInUserId,
 }: {
   loggedInUserId: Uint8Array;
 }) {
   await mustBeAdmin(loggedInUserId);
 
-  const preliminaryContent = await prisma.content.findMany({
-    where: {
-      ...filterViewableContent(loggedInUserId, true),
-      librarySourceInfo: {
-        ownerRequested: true,
-        status: LibraryStatus.PENDING_REVIEW,
+  async function getLibraryContentWithStatus({
+    status,
+    cap,
+  }: {
+    status: LibraryStatus;
+    cap?: number;
+  }): Promise<[Content[], LibraryRelations[]]> {
+    const results = await prisma.libraryEvents.findMany({
+      where: {
+        info: {
+          status,
+          activity: {
+            ...filterViewableContent(loggedInUserId, true),
+          },
+        },
       },
-    },
-    select: returnContentSelect({
-      includeOwnerDetails: true,
-      includeClassifications: true,
-    }),
-  });
+      orderBy: {
+        dateTime: "desc",
+      },
+      select: {
+        info: {
+          select: {
+            activity: {
+              select: returnContentSelect({
+                includeOwnerDetails: true,
+                includeClassifications: true,
+              }),
+            },
+          },
+        },
+      },
+      distinct: "infoId",
+      take: cap ?? undefined,
+    });
 
-  //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
-  const unsortedContent: Content[] = preliminaryContent.map(processContent);
+    const content: Content[] = results
+      .map((result) => result.info.activity)
+      //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
+      .map(processContent);
+    const library = await getMultipleLibraryRelations({
+      contentIds: content.map((c) => c.contentId),
+      loggedInUserId,
+    });
 
-  const unsortedLibraryRelations = await getMultipleLibraryRelations({
-    contentIds: unsortedContent.map((c) => c.contentId),
-    loggedInUserId,
-  });
+    console.assert(
+      content.length === library.length,
+      "Content length %i should be equal to library relations length %i",
+      content.length,
+      library.length,
+    );
 
-  if (unsortedContent.length !== unsortedLibraryRelations.length) {
-    throw new Error("Content and library relations do not match in length.");
+    return [content, library];
   }
 
-  // Zip and sort in ascending order by submit date
-  const contentAndLibrary = unsortedContent.map((c, i) => {
-    return { content: c, library: unsortedLibraryRelations[i] };
-  });
-  contentAndLibrary.sort(
-    (a, b) =>
-      a.library.activity!.reviewRequestDate!.getTime() -
-      b.library.activity!.reviewRequestDate!.getTime(),
-  );
+  const [pendingContent, pendingLibraryRelations] =
+    await getLibraryContentWithStatus({ status: LibraryStatus.PENDING });
 
-  // Unzip
-  const content = contentAndLibrary.map((v) => v.content);
-  const libraryRelations = contentAndLibrary.map((v) => v.library);
+  const [underReviewContent, underReviewLibraryRelations] =
+    await getLibraryContentWithStatus({ status: LibraryStatus.UNDER_REVIEW });
+
+  const [rejectedContent, rejectedLibraryRelations] =
+    await getLibraryContentWithStatus({
+      status: LibraryStatus.REJECTED,
+      cap: 100,
+    });
+
+  const [publishedContent, publishedLibraryRelations] =
+    await getLibraryContentWithStatus({
+      status: LibraryStatus.PUBLISHED,
+      cap: 100,
+    });
+
+  const { availableFeatures } = await getAvailableContentFeatures();
+  const { allDoenetmlVersions } = await getAllDoenetmlVersions();
+  const { allLicenses } = await getAllLicenses();
 
   return {
-    content,
-    libraryRelations,
+    pendingContent,
+    pendingLibraryRelations,
+    underReviewContent,
+    underReviewLibraryRelations,
+    rejectedContent,
+    rejectedLibraryRelations,
+    publishedContent,
+    publishedLibraryRelations,
+    availableFeatures,
+    allDoenetmlVersions,
+    allLicenses,
   };
 }

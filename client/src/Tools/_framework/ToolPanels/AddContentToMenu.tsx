@@ -52,7 +52,7 @@ export function AddContentToMenu({
   addRightPadding = false,
   toolTip,
   restrictToAllowedParents = false,
-  addCopyToLibraryOption = false,
+  suggestToBeCuratedOption = false,
   fetcher,
 }: {
   sourceContent: ContentDescription[];
@@ -76,7 +76,7 @@ export function AddContentToMenu({
   addRightPadding?: boolean;
   toolTip?: string;
   restrictToAllowedParents?: boolean;
-  addCopyToLibraryOption?: boolean;
+  suggestToBeCuratedOption?: boolean;
   fetcher: FetcherWithComponents<any>;
 }) {
   const { user } = useOutletContext<SiteContext>();
@@ -201,15 +201,15 @@ export function AddContentToMenu({
       >
         {menuButton}
         <MenuList>
-          {addCopyToLibraryOption ? (
+          {suggestToBeCuratedOption ? (
             <MenuItem
-              data-test="Add Draft To Library"
+              data-test="Suggest this to be curated"
               onClick={() => {
                 setCopyToLibrary(true);
                 copyDialogOnOpen();
               }}
             >
-              Add Draft to Library
+              Suggest this to be curated
             </MenuItem>
           ) : null}
           <Tooltip

@@ -112,6 +112,7 @@ import {
 import {
   CurationRequests,
   loader as curationRequestsLoader,
+  action as curationRequestsAction,
 } from "./Tools/_framework/Paths/CurationRequests";
 
 const theme = extendTheme({
@@ -232,24 +233,24 @@ const router = createBrowserRouter([
       },
       {
         path: "curation",
-        loader: curationLoader,
-        action: curationAction,
-        element: <Curation />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "curation/:parentId",
-        loader: curationLoader,
-        action: curationAction,
-        element: <Curation />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "curationRequests",
         loader: curationRequestsLoader,
+        action: curationRequestsAction,
         element: <CurationRequests />,
         errorElement: <ErrorPage />,
       },
+      // {
+      //   path: "curation/:parentId",
+      //   loader: curationLoader,
+      //   action: curationAction,
+      //   element: <Curation />,
+      //   errorElement: <ErrorPage />,
+      // },
+      // {
+      //   path: "curationRequests",
+      //   loader: curationRequestsLoader,
+      //   element: <CurationRequests />,
+      //   errorElement: <ErrorPage />,
+      // },
       {
         path: "activities/:userId",
         loader: activitiesLoader,

@@ -14,14 +14,9 @@ export const sourceIdSchema = z.object({
   sourceId: uuidSchema,
 });
 
-export const publishSchema = z.object({
-  draftId: uuidSchema,
-  comments: z.string(),
-});
-
-export const updateLibraryInfoSchema = z.object({
-  sourceId: uuidSchema,
-  comments: z.string(),
+export const addCommentSchema = z.object({
+  contentId: uuidSchema,
+  comment: z.string(),
 });
 
 export const createCurationFolderSchema = z.object({

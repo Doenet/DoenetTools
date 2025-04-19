@@ -35,7 +35,10 @@ export type LibraryRelations = {
     status: LibraryStatus;
     sourceContentId: Uint8Array | null;
     comments?: string;
+    reviewRequestDate?: Date;
     ownerRequested?: boolean;
+    primaryEditor?: UserInfo;
+    iAmPrimaryEditor?: boolean;
   };
 };
 

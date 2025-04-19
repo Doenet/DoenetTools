@@ -2,7 +2,7 @@ import { expect, test } from "vitest";
 import { createTestAdminUser, createTestUser } from "./utils";
 import { Content, LibraryRelations } from "../types";
 import {
-  submitLibraryRequest,
+  suggestToBeCurated,
   addDraftToLibrary,
   cancelLibraryRequest,
   markLibraryRequestNeedsRevision,
@@ -10,7 +10,7 @@ import {
   publishActivityToLibrary,
   unpublishActivityFromLibrary,
   deleteDraftFromLibrary,
-  getPendingCurationRequests,
+  getCurationQueue,
   getMultipleLibraryRelations,
   getSingleLibraryRelations,
 } from "../query/curate";
@@ -75,7 +75,7 @@ test("user privileges for library", async () => {
   // owner
   async function expectSubmitRequestFails(userId: Uint8Array) {
     await expect(() =>
-      submitLibraryRequest({ contentId: sourceId, loggedInUserId: userId }),
+      suggestToBeCurated({ contentId: sourceId, loggedInUserId: userId }),
     ).rejects.toThrowError();
   }
   await expectSubmitRequestFails(ownerId);
@@ -95,8 +95,7 @@ test("user privileges for library", async () => {
 
   const statusPending: LibraryRelations = {
     activity: {
-      status: "PENDING_REVIEW",
-      comments: "",
+      status: "PENDING",
       activityContentId: null,
       reviewRequestDate: approximateReviewRequestDate,
     },
@@ -108,8 +107,8 @@ test("user privileges for library", async () => {
   await expectSubmitRequestFails(randomUserId);
   await expectStatusIs(sourceId, statusNone, randomUserId);
 
-  await submitLibraryRequest({ loggedInUserId: ownerId, contentId: sourceId });
-  await expectStatusIs(sourceId, statusPending, ownerId);
+  await suggestToBeCurated({ loggedInUserId: ownerId, contentId: sourceId });
+  await expectStatusIs(sourceId, statusPending, ownerId);  
 
   // Only admin can add draft
   async function expectAddDraftFails(userId: Uint8Array) {
@@ -183,7 +182,7 @@ test("user privileges for library", async () => {
   await expectStatusIs(sourceId, statusCancelledWithDraft, adminId);
 
   // Add request back
-  await submitLibraryRequest({ loggedInUserId: ownerId, contentId: sourceId });
+  await suggestToBeCurated({ loggedInUserId: ownerId, contentId: sourceId });
 
   // Only admin can return for revision
   async function expectSendBackFails(userId: Uint8Array) {
@@ -263,7 +262,7 @@ test("user privileges for library", async () => {
   async function expectPublishFails(userId: Uint8Array) {
     await expect(() =>
       publishActivityToLibrary({
-        draftId,
+        contentId: draftId,
         loggedInUserId: userId,
         comments: "Awesome problem set!",
       }),
@@ -307,7 +306,7 @@ test("user privileges for library", async () => {
   };
 
   await publishActivityToLibrary({
-    draftId,
+    contentId: draftId,
     loggedInUserId: adminId,
     comments: "Awesome problem set!",
   });
@@ -390,14 +389,14 @@ test("activity must be draft to be published in library", async () => {
     isPublic: true,
     // licenseCode: "CCDUAL",
   });
-  await submitLibraryRequest({ loggedInUserId: ownerId, contentId });
+  await suggestToBeCurated({ loggedInUserId: ownerId, contentId });
 
   const admin = await createTestAdminUser();
   const adminId = admin.userId;
   // Immediately trying to publish fails
   await expect(() =>
     publishActivityToLibrary({
-      draftId: contentId,
+      contentId: contentId,
       loggedInUserId: adminId,
       comments: "aa",
     }),
@@ -430,7 +429,7 @@ test("owner requests library review, admin publishes", async () => {
     },
   };
 
-  await submitLibraryRequest({ loggedInUserId: ownerId, contentId });
+  await suggestToBeCurated({ loggedInUserId: ownerId, contentId });
   await expectStatusIs(contentId, statusPending, ownerId);
 
   const { draftId } = await addDraftToLibrary({
@@ -451,7 +450,7 @@ test("owner requests library review, admin publishes", async () => {
   await expectStatusIs(draftId, sourceStatusPending, adminId);
 
   await publishActivityToLibrary({
-    draftId,
+    contentId: draftId,
     loggedInUserId: adminId,
     comments: "some feedback",
   });
@@ -514,7 +513,7 @@ test("admin publishes to library without owner request", async () => {
   await expectStatusIs(draftId, {}, ownerId);
 
   await publishActivityToLibrary({
-    draftId,
+    contentId: draftId,
     loggedInUserId: adminId,
     comments: "some feedback",
   });
@@ -567,7 +566,7 @@ test("published activity in library with unavailable source activity", async () 
     loggedInUserId: adminId,
   });
   await publishActivityToLibrary({
-    draftId,
+    contentId: draftId,
     loggedInUserId: adminId,
     comments: "some feedback",
   });
@@ -688,7 +687,7 @@ test("Cannot add draft of curated activity", async () => {
     loggedInUserId: adminId,
   });
   await publishActivityToLibrary({
-    draftId: curatedId,
+    contentId: curatedId,
     loggedInUserId: adminId,
     comments: "",
   });
@@ -754,20 +753,20 @@ test("List of pending requests updates", async () => {
 
   // Non-admin cannot access pending requests
   await expect(() =>
-    getPendingCurationRequests({ loggedInUserId: ownerId }),
+    getCurationQueue({ loggedInUserId: ownerId }),
   ).rejects.toThrowError();
 
   // No pending requests
-  let requests = await getPendingCurationRequests({ loggedInUserId: adminId });
+  let requests = await getCurationQueue({ loggedInUserId: adminId });
   requests = onlyRelevant(requests);
   expect(requests).eqls({ content: [], libraryRelations: [] });
 
   // Owner requests review for activity #1
-  await submitLibraryRequest({
+  await suggestToBeCurated({
     loggedInUserId: ownerId,
     contentId: sourceIds[0],
   });
-  requests = await getPendingCurationRequests({ loggedInUserId: adminId });
+  requests = await getCurationQueue({ loggedInUserId: adminId });
   requests = onlyRelevant(requests);
 
   function expectAtItemNum(
@@ -802,16 +801,16 @@ test("List of pending requests updates", async () => {
   expectAtItemNum(0, sourceIds[0], null);
 
   // Owner requests review for 3rd activity and then 2nd
-  await submitLibraryRequest({
+  await suggestToBeCurated({
     loggedInUserId: ownerId,
     contentId: sourceIds[2],
   });
-  await submitLibraryRequest({
+  await suggestToBeCurated({
     loggedInUserId: ownerId,
     contentId: sourceIds[1],
   });
 
-  requests = await getPendingCurationRequests({ loggedInUserId: adminId });
+  requests = await getCurationQueue({ loggedInUserId: adminId });
   requests = onlyRelevant(requests);
 
   // The order should be the one in which they were requested, not the order they were made
@@ -833,7 +832,7 @@ test("List of pending requests updates", async () => {
     comments: "No, 1+1 does not equal 3.",
   });
 
-  requests = await getPendingCurationRequests({ loggedInUserId: adminId });
+  requests = await getCurationQueue({ loggedInUserId: adminId });
   requests = onlyRelevant(requests);
 
   expect(requests.content.length).eqls(2);
@@ -844,7 +843,7 @@ test("List of pending requests updates", async () => {
 
   // Publish activity #3, user removes request for #2
   await publishActivityToLibrary({
-    draftId: draft3Id,
+    contentId: draft3Id,
     loggedInUserId: adminId,
     comments: "Looks good.",
   });
@@ -853,7 +852,7 @@ test("List of pending requests updates", async () => {
     loggedInUserId: ownerId,
   });
 
-  requests = await getPendingCurationRequests({ loggedInUserId: adminId });
+  requests = await getCurationQueue({ loggedInUserId: adminId });
   requests = onlyRelevant(requests);
   expect(requests).eqls({ content: [], libraryRelations: [] });
 
@@ -863,7 +862,7 @@ test("List of pending requests updates", async () => {
     loggedInUserId: adminId,
   });
 
-  requests = await getPendingCurationRequests({ loggedInUserId: adminId });
+  requests = await getCurationQueue({ loggedInUserId: adminId });
   requests = onlyRelevant(requests);
 
   expect(requests.content.length).eqls(1);
@@ -872,16 +871,16 @@ test("List of pending requests updates", async () => {
   expectAtItemNum(0, sourceIds[2], draft3Id);
 
   // Owner re-requests review for #2 (cancelled) and #1 (needs revision)
-  await submitLibraryRequest({
+  await suggestToBeCurated({
     loggedInUserId: ownerId,
     contentId: sourceIds[1],
   });
-  await submitLibraryRequest({
+  await suggestToBeCurated({
     loggedInUserId: ownerId,
     contentId: sourceIds[0],
   });
 
-  requests = await getPendingCurationRequests({ loggedInUserId: adminId });
+  requests = await getCurationQueue({ loggedInUserId: adminId });
   requests = onlyRelevant(requests);
 
   // New order: #3, #2, #1
@@ -900,7 +899,7 @@ test("List of pending requests updates", async () => {
   });
   await deleteContent({ contentId: sourceIds[2], loggedInUserId: ownerId });
 
-  requests = await getPendingCurationRequests({ loggedInUserId: adminId });
+  requests = await getCurationQueue({ loggedInUserId: adminId });
   requests = onlyRelevant(requests);
   expect(requests.content.length).eqls(1);
   expect(requests.libraryRelations.length).eqls(1);
@@ -933,7 +932,7 @@ test("getSingleLibraryRelations works with visitor not signed in", async () => {
     loggedInUserId: adminId,
   });
   await publishActivityToLibrary({
-    draftId,
+    contentId: draftId,
     loggedInUserId: adminId,
     comments: "",
   });
@@ -999,17 +998,17 @@ test("getMultipleLibraryRelations works with visitor not signed in", async () =>
     loggedInUserId: adminId,
   });
   await publishActivityToLibrary({
-    draftId,
+    contentId: draftId,
     loggedInUserId: adminId,
     comments: "",
   });
   await publishActivityToLibrary({
-    draftId: draftId2,
+    contentId: draftId2,
     loggedInUserId: adminId,
     comments: "",
   });
   await publishActivityToLibrary({
-    draftId: draftId3,
+    contentId: draftId3,
     loggedInUserId: adminId,
     comments: "",
   });
@@ -1072,7 +1071,7 @@ test("Cannot modify comments if not owner-requested and not published", async ()
 
   // Publish and change comments
   await publishActivityToLibrary({
-    draftId,
+    contentId: draftId,
     loggedInUserId: adminId,
     comments: "some comments",
   });
@@ -1104,7 +1103,7 @@ test("Cannot modify comments if not owner-requested and not published", async ()
   ).rejects.toThrowError();
 
   // Owner decides to request review
-  await submitLibraryRequest({ loggedInUserId: ownerId, contentId });
+  await suggestToBeCurated({ loggedInUserId: ownerId, contentId });
 
   await modifyCommentsOfLibraryRequest({
     sourceId: contentId,

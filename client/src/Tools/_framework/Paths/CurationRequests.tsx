@@ -9,45 +9,160 @@ import {
   Spacer,
   HStack,
   VStack,
+  Tabs,
+  TabList,
+  Tab,
+  TabPanels,
+  TabPanel,
 } from "@chakra-ui/react";
-import React, { useRef, useState } from "react";
-import { useLoaderData, Link } from "react-router";
+import React, { useState } from "react";
+import { useLoaderData, Link, useFetcher } from "react-router";
 
 import { CardContent } from "../../../Widgets/Card";
 import CardList from "../../../Widgets/CardList";
 import axios from "axios";
-import { Content, LibraryRelations } from "./../../../_utils/types";
+import {
+  Content,
+  ContentFeature,
+  DoenetmlVersion,
+  LibraryRelations,
+  License,
+} from "./../../../_utils/types";
 import { createFullName } from "../../../_utils/names";
-import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
+import { intWithCommas } from "../../../_utils/formatting";
+import { contentSettingsActions, ContentSettingsDrawer } from "../ToolPanels/ContentSettingsDrawer";
+import { ShareDrawer, shareDrawerActions } from "../ToolPanels/ShareDrawer";
+
+export async function action({ request, params }) {
+  const formData = await request.formData();
+  const formObj = Object.fromEntries(formData);
+
+  const resultCS = await contentSettingsActions({ formObj });
+  if (resultCS) {
+    return resultCS;
+  }
+
+  const resultSD = await shareDrawerActions({ formObj });
+  if (resultSD) {
+    return resultSD;
+  }
+
+  throw Error(`Action "${formObj?._action}" not defined or not handled.`);
+}
 
 export async function loader() {
   const { data: pendingRequests } = await axios.get(
-    `/api/curate/getCurationPendingRequests`,
+    `/api/curate/getCurationQueue`,
   );
   return pendingRequests;
 }
 
 export function CurationRequests() {
-  const { content, libraryRelations } = useLoaderData() as {
-    content: Content[];
-    libraryRelations: LibraryRelations[];
+  const {
+    pendingContent,
+    pendingLibraryRelations,
+    underReviewContent,
+    underReviewLibraryRelations,
+    rejectedContent,
+    rejectedLibraryRelations,
+    publishedContent,
+    publishedLibraryRelations,
+    allDoenetmlVersions,
+    availableFeatures,
+    allLicenses,
+  } = useLoaderData() as {
+    pendingContent: Content[];
+    pendingLibraryRelations: LibraryRelations[];
+    underReviewContent: Content[];
+    underReviewLibraryRelations: LibraryRelations[];
+    rejectedContent: Content[];
+    rejectedLibraryRelations: LibraryRelations[];
+    publishedContent: Content[];
+    publishedLibraryRelations: LibraryRelations[];
+    allDoenetmlVersions: DoenetmlVersion[];
+    availableFeatures: ContentFeature[];
+    allLicenses: License[];
   };
 
-  const [infoContentData, setInfoContentData] = useState<Content | null>(null);
+  const fetcher = useFetcher();
 
+  const [tabIndex, setTabIndex] = useState(0);
+
+  const [activeContentId, setActiveContentId] = useState<string | null>(null);
   const {
-    isOpen: infoIsOpen,
-    onOpen: infoOnOpen,
-    onClose: infoOnClose,
+    isOpen: settingsAreOpen,
+    onOpen: settingsOnOpen,
+    onClose: settingsOnClose,
+  } = useDisclosure();
+  const {
+    isOpen: curateIsOpen,
+    onOpen: curateOnOpen,
+    onClose: curateOnClose,
   } = useDisclosure();
 
-  const infoDrawer = infoContentData ? (
-    <ContentInfoDrawer
-      isOpen={infoIsOpen}
-      onClose={infoOnClose}
-      contentData={infoContentData}
-    />
-  ) : null;
+  function displayCardList(
+    content: Content[],
+    libraryRelations: LibraryRelations[],
+    minHeight?: string | { base: string; lg: string },
+  ) {
+    const cardContent: CardContent[] = content.map((contentData) => {
+      const cardLink = `/activityEditor/${contentData.contentId}`;
+
+      const menuItems = (
+        <>
+          <MenuItem
+            data-test="Curate Menu Item"
+            onClick={() => {
+              setActiveContentId(contentData.contentId);
+              curateOnOpen();
+            }}
+          >
+            Curate
+          </MenuItem>
+
+          <MenuItem
+            data-test="Setings Menu Item"
+            onClick={() => {
+              setActiveContentId(contentData.contentId);
+              settingsOnOpen();
+            }}
+          >
+            Settings
+          </MenuItem>
+        </>
+      );
+
+      return {
+        contentId: contentData.contentId,
+        content: contentData,
+        ownerName:
+          contentData.owner !== undefined
+            ? createFullName(contentData.owner)
+            : "",
+        cardLink,
+        menuItems,
+      };
+    });
+
+    return (
+      <Box
+        background={"white"}
+        paddingTop="16px"
+        paddingBottom="16px"
+        minHeight={minHeight}
+      >
+        <CardList
+          showPublicStatus={false}
+          showAssignmentStatus={false}
+          showActivityFeatures={true}
+          showOwnerName={true}
+          content={cardContent}
+          emptyMessage={"No Matches Found!"}
+          libraryRelations={libraryRelations}
+        />
+      </Box>
+    );
+  }
 
   const heading = (
     <Box
@@ -90,54 +205,101 @@ export function CurationRequests() {
     </Box>
   );
 
-  // refs to the menu button of each content card,
-  // which should be given focus when drawers are closed
-  const cardMenuRefs = useRef<HTMLButtonElement[]>([]);
+  let tabContent: Content[];
+  let tabLibrary: LibraryRelations[];
+  if (tabIndex === 0) {
+    tabContent = pendingContent;
+    tabLibrary = pendingLibraryRelations;
+  } else if (tabIndex === 1) {
+    tabContent = underReviewContent;
+    tabLibrary = underReviewLibraryRelations;
+  } else if (tabIndex === 2) {
+    tabContent = rejectedContent;
+    tabLibrary = rejectedLibraryRelations;
+  } else {
+    tabContent = publishedContent;
+    tabLibrary = publishedLibraryRelations;
+  }
 
-  const cardContent: CardContent[] = content.map((activity, position) => {
-    const getCardMenuRef = (element: HTMLButtonElement) => {
-      cardMenuRefs.current[position] = element;
-    };
-    const { owner } = activity;
-
-    const menuItems = (
-      <MenuItem
-        data-test={`Activity Information`}
-        onClick={() => {
-          setInfoContentData(activity);
-          infoOnOpen();
-        }}
-      >
-        Activity information
-      </MenuItem>
+  let activeContent: Content | undefined;
+  let activeLibraryRelations: LibraryRelations = {};
+  if (activeContentId) {
+    const index = tabContent.findIndex(
+      (obj) => obj.contentId == activeContentId,
     );
+    if (index != -1) {
+      activeContent = tabContent[index];
+      activeLibraryRelations = tabLibrary[index];
+    } else {
+      //Throw error not found
+    }
+  }
 
-    return {
-      menuRef: getCardMenuRef,
-      content: activity,
-      menuItems,
-      ownerName: owner !== undefined ? createFullName(owner) : "",
-      cardLink: `/activityViewer/${activity.contentId}`,
-    };
-  });
-
-  const cardList = (
-    <CardList
-      showOwnerName={true}
-      showAssignmentStatus={false}
-      showPublicStatus={true}
-      showActivityFeatures={true}
-      emptyMessage={"No Pending Requests"}
-      content={cardContent}
-      libraryRelations={libraryRelations}
+  const settingsDrawer = activeContent && (
+    <ContentSettingsDrawer
+      isOpen={settingsAreOpen}
+      onClose={settingsOnClose}
+      contentData={activeContent}
+      allDoenetmlVersions={allDoenetmlVersions}
+      availableFeatures={availableFeatures}
+      fetcher={fetcher}
+      isInLibrary={true}
     />
+  );
+
+  const curateDrawer = activeContent && (
+    <ShareDrawer
+      isOpen={curateIsOpen}
+      onClose={curateOnClose}
+      contentData={activeContent}
+      libraryRelations={activeLibraryRelations}
+      allLicenses={allLicenses}
+      // finalFocusRef={finalFocusRef}
+      fetcher={fetcher}
+    />
+  );
+
+  const results = (
+    <Tabs variant="enclosed-colored" onChange={(index) => setTabIndex(index)}>
+      <TabList>
+        <Tab data-test="Pending Tab">
+          Pending ({intWithCommas(pendingContent.length || 0)})
+        </Tab>
+        <Tab data-test="Under Review Tab">
+          Under Review ({intWithCommas(underReviewContent.length || 0)})
+        </Tab>
+        <Tab data-test="Rejected Tab">
+          Rejected ({intWithCommas(rejectedContent.length || 0)})
+        </Tab>
+        <Tab data-test="Published Tab">
+          Published ({intWithCommas(publishedContent.length || 0)})
+        </Tab>
+      </TabList>
+
+      <TabPanels data-test="Curation">
+        <TabPanel padding={0} data-test="Pending Results">
+          {displayCardList(pendingContent, pendingLibraryRelations)}
+        </TabPanel>
+        <TabPanel padding={0} data-test="Under Review Results">
+          {displayCardList(underReviewContent, underReviewLibraryRelations)}
+        </TabPanel>
+        <TabPanel padding={0} data-test="Rejected Results">
+          {displayCardList(rejectedContent, rejectedLibraryRelations)}
+        </TabPanel>
+        <TabPanel padding={0} data-test="Published Results">
+          {displayCardList(publishedContent, publishedLibraryRelations)}
+        </TabPanel>
+      </TabPanels>
+    </Tabs>
   );
 
   return (
     <>
+      {settingsDrawer}
+      {curateDrawer}
       {heading}
-      {cardList}
-      {infoDrawer}
+      {settingsDrawer}
+      {results}
     </>
   );
 }

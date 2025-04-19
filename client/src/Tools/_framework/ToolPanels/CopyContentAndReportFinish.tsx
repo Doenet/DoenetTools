@@ -34,7 +34,7 @@ export async function copyContentAndReportFinishActions({
       const contentIds = JSON.parse(formObj.contentIds);
       if (formObj.copyToLibrary === "true") {
         for (const c of contentIds) {
-          const { data } = await axios.post(`/api/curate/addDraftToLibrary`, {
+          const { data } = await axios.post(`/api/curate/suggestToBeCurated`, {
             contentId: c,
           });
           newContentIds.push(data.newContentId);

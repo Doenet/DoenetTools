@@ -383,8 +383,8 @@ export function ActivityViewer() {
         colorScheme="blue"
         toolTip={`Add ${contentTypeName.toLowerCase()} to ${allowedParentsPhrase}`}
         leftIcon={<MdOutlineAdd size={20} />}
-        addCopyToLibraryOption={
-          user?.isAdmin && !libraryRelations.activity?.activityContentId
+        suggestToBeCuratedOption={
+          !libraryRelations.activity
         }
       />
     );

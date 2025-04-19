@@ -4,6 +4,7 @@ import { Box, List, Button, Text, Textarea } from "@chakra-ui/react";
 import axios from "axios";
 import { Content, LibraryRelations } from "../../../_utils/types";
 import { DisplayLicenseItem } from "../../../Widgets/Licenses";
+import { createFullName } from "../../../_utils/names";
 
 export async function curateActions({ formObj }: { [k: string]: any }) {
   if (formObj._action == "modify comments") {
@@ -14,8 +15,8 @@ export async function curateActions({ formObj }: { [k: string]: any }) {
     return true;
   } else if (formObj._action == "publish") {
     await axios.post("/api/curate/publishActivityToLibrary", {
-      draftId: formObj.id,
-      comments: formObj.comments,
+      contentId: formObj.id,
+      // comments: formObj.comments,
     });
     return true;
   } else if (formObj._action == "unpublish") {
@@ -23,10 +24,15 @@ export async function curateActions({ formObj }: { [k: string]: any }) {
       contentId: formObj.id,
     });
     return true;
-  } else if (formObj._action == "return for revision") {
-    await axios.post("/api/curate/markLibraryRequestNeedsRevision", {
-      sourceId: formObj.sourceId,
-      comments: formObj.comments,
+  } else if (formObj._action == "reject") {
+    await axios.post("/api/curate/rejectActivity", {
+      contentId: formObj.id,
+      // comments: formObj.comments,
+    });
+    return true;
+  } else if (formObj?._action == "claim") {
+    await axios.post(`/api/curate/claimOwnershipOfReview`, {
+      contentId: formObj.id,
     });
     return true;
   }
@@ -37,6 +43,8 @@ export async function curateActions({ formObj }: { [k: string]: any }) {
 /**
  * This component is used to display the curation settings for an activity in the library.
  * It is the library's equivalent of the `ShareSettings` component panel.
+ *
+ * Only meant to be used by admins.
  */
 export function CurateSettings({
   fetcher,
@@ -52,7 +60,7 @@ export function CurateSettings({
   // Must have library source if in library
   const librarySource = libraryRelations.source!;
 
-  const sourceIdIsPublic = librarySource.sourceContentId !== null;
+  const sourceIdIsVisible = librarySource.sourceContentId !== null;
 
   const [comments, setComments] = useState<string>(
     librarySource.comments || "",
@@ -61,7 +69,7 @@ export function CurateSettings({
 
   return (
     <>
-      {!sourceIdIsPublic ? (
+      {!sourceIdIsVisible ? (
         <Text>The source activity for this content is no longer public.</Text>
       ) : null}
 
@@ -71,7 +79,30 @@ export function CurateSettings({
         Owner-requested: {librarySource.ownerRequested ? "Yes" : "No"}
       </Text>
 
-      <Box marginTop="30px">
+      <Text>
+        Current primary editor:{" "}
+        {librarySource.primaryEditor
+          ? createFullName(librarySource.primaryEditor)
+          : "None"}{librarySource.iAmPrimaryEditor && " (you)"}
+      </Text>
+
+      {!librarySource.iAmPrimaryEditor && (
+        <Button
+          onClick={() => {
+            fetcher.submit(
+              {
+                _action: "claim",
+                id: contentData.contentId,
+              },
+              { method: "post" },
+            );
+          }}
+        >
+          Claim
+        </Button>
+      )}
+
+      {/* <Box marginTop="30px">
         <Text>Comments</Text>
 
         <Textarea
@@ -90,9 +121,44 @@ export function CurateSettings({
             }
           }}
         />
-      </Box>
+      </Box> */}
+      {librarySource.status === "UNDER_REVIEW" && (
+        <Button
+          onClick={() => {
+            setUnsavedComments(false);
+            fetcher.submit(
+              {
+                _action: "publish",
+                id: contentData.contentId,
+                comments,
+              },
+              { method: "post" },
+            );
+          }}
+        >
+          Publish
+        </Button>
+      )}
 
-      {librarySource.status === "PUBLISHED" ? (
+      {librarySource.status === "UNDER_REVIEW" && (
+        <Button
+          onClick={() => {
+            setUnsavedComments(false);
+            fetcher.submit(
+              {
+                _action: "reject",
+                id: contentData.contentId,
+                comments,
+              },
+              { method: "post" },
+            );
+          }}
+        >
+          Reject
+        </Button>
+      )}
+
+      {librarySource.status === "PUBLISHED" && (
         <Button
           onClick={() => {
             fetcher.submit(
@@ -106,27 +172,9 @@ export function CurateSettings({
         >
           Unpublish
         </Button>
-      ) : (
-        <>
-          <Button
-            onClick={() => {
-              setUnsavedComments(false);
-              fetcher.submit(
-                {
-                  _action: "publish",
-                  id: contentData.contentId,
-                  comments,
-                },
-                { method: "post" },
-              );
-            }}
-          >
-            Publish
-          </Button>
-        </>
       )}
 
-      {librarySource.status === "PENDING_REVIEW" &&
+      {/* {librarySource.status === "PENDING_REVIEW" &&
       librarySource.ownerRequested &&
       sourceIdIsPublic ? (
         <Button
@@ -145,8 +193,8 @@ export function CurateSettings({
         >
           Return for revision
         </Button>
-      ) : null}
-
+      ) : null} */}
+      {/* 
       {librarySource.ownerRequested ||
       (librarySource.status === "PUBLISHED" && sourceIdIsPublic) ? (
         <Button
@@ -165,7 +213,7 @@ export function CurateSettings({
         >
           Save comments
         </Button>
-      ) : null}
+      ) : null} */}
 
       <Box
         marginTop="30px"
