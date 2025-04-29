@@ -203,7 +203,7 @@ export function SiteHeader(props) {
                   mt="4px"
                   h="32px"
                   bg="#EDF2F7"
-                  href="https://doenet-ml.vercel.app"
+                  href="https://docs.doenet.org"
                   isExternal
                   data-test="Documentation Link"
                 >
