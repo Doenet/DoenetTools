@@ -171,7 +171,7 @@ export function CopyContentAndReportFinish({
       ? "Go to the library"
       : "Go to My Activities";
     destinationUrl = copyToLibrary
-      ? "/curation"
+      ? "/curate"
       : `/activities/${user?.userId}`;
   }
 

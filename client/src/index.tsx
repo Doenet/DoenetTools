@@ -12,10 +12,10 @@ import {
   Explore,
 } from "./Tools/_framework/Paths/Explore";
 import {
-  loader as curationLoader,
-  action as curationAction,
-  Curation,
-} from "./Tools/_framework/Paths/Curation";
+  loader as curateLoader,
+  action as curateAction,
+  Curate,
+} from "./Tools/_framework/Paths/Curate";
 
 import {
   loader as siteLoader,
@@ -110,10 +110,10 @@ import {
   action as changeNameAction,
 } from "./Tools/_framework/Paths/ChangeName";
 import {
-  CurationRequests,
-  loader as curationRequestsLoader,
-  action as curationRequestsAction,
-} from "./Tools/_framework/Paths/CurationRequests";
+  LibraryActivities,
+  loader as libraryActivitiesLoader,
+  action as libraryActivitiesAction,
+} from "./Tools/_framework/Paths/LibraryActivities";
 
 const theme = extendTheme({
   fonts: {
@@ -232,25 +232,26 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "curation",
-        loader: curationRequestsLoader,
-        action: curationRequestsAction,
-        element: <CurationRequests />,
+        path: "curate",
+        loader: curateLoader,
+        action: curateAction,
+        element: <Curate />,
         errorElement: <ErrorPage />,
       },
-      // {
-      //   path: "curation/:parentId",
-      //   loader: curationLoader,
-      //   action: curationAction,
-      //   element: <Curation />,
-      //   errorElement: <ErrorPage />,
-      // },
-      // {
-      //   path: "curationRequests",
-      //   loader: curationRequestsLoader,
-      //   element: <CurationRequests />,
-      //   errorElement: <ErrorPage />,
-      // },
+      {
+        path: "libraryActivities",
+        loader: libraryActivitiesLoader,
+        action: libraryActivitiesAction,
+        element: <LibraryActivities />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "libraryActivities/:parentId",
+        loader: libraryActivitiesLoader,
+        action: libraryActivitiesAction,
+        element: <LibraryActivities />,
+        errorElement: <ErrorPage />,
+      },
       {
         path: "activities/:userId",
         loader: activitiesLoader,

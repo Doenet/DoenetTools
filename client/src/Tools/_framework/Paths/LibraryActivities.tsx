@@ -45,7 +45,7 @@ import {
   ContentType,
   License,
   LibraryRelations,
-} from "./../../../_utils/types";
+} from "../../../_utils/types";
 import { MdClose, MdOutlineSearch } from "react-icons/md";
 import { getAllowedParentTypes } from "../../../_utils/activity";
 import {
@@ -135,7 +135,7 @@ export async function loader({ params, request }) {
   };
 }
 
-export function Curation() {
+export function LibraryActivities() {
   const {
     folderId,
     content,
@@ -235,7 +235,7 @@ export function Curation() {
   const [highlightRename, setHighlightRename] = useState(false);
 
   useEffect(() => {
-    document.title = `Curation - Doenet`;
+    document.title = `Library Activities - Doenet`;
   }, []);
 
   const fetcher = useFetcher();
@@ -377,7 +377,7 @@ export function Curation() {
           <MenuItem
             data-test="Go to containing folder"
             onClick={() => {
-              navigate(`/curation/${parentId ? "/" + parentId : ""}`);
+              navigate(`/libraryActivities/${parentId ? "/" + parentId : ""}`);
             }}
           >
             Go to containing folder
@@ -400,7 +400,7 @@ export function Curation() {
       {folderType}: {parent.name}
     </>
   ) : (
-    `Curation`
+    `Library Activities`
   );
 
   let contentData: Content | undefined;
@@ -491,7 +491,7 @@ export function Curation() {
         <Box marginTop="5px" height="24px">
           {parent && !haveQuery ? (
             <Link
-              to={`/curation${parent.parent ? "/" + parent.parent.contentId : ""}`}
+              to={`/libraryActivities${parent.parent ? "/" + parent.parent.contentId : ""}`}
               style={{
                 color: "var(--mainBlue)",
               }}
@@ -502,7 +502,7 @@ export function Curation() {
                 textAlign="left"
               >
                 <Show above="sm">
-                  &lt; Back to {parent.parent ? parent.parent.name : `Curation`}
+                  &lt; Back to {parent.parent ? parent.parent.name : `Library Activities`}
                 </Show>
                 <Hide above="sm">&lt; Back</Hide>
               </Text>
@@ -535,7 +535,7 @@ export function Curation() {
                   colorScheme="blue"
                   width="250px"
                   ref={searchRef}
-                  placeholder={parent ? `Search in folder` : `Search curation`}
+                  placeholder={parent ? `Search in folder` : `Search library activities`}
                   value={searchString}
                   name="q"
                   onInput={(e) => {
@@ -548,14 +548,14 @@ export function Curation() {
                   }}
                 />
                 <Tooltip
-                  label={parent ? `Search in folder` : `Search curation`}
+                  label={parent ? `Search in folder` : `Search library activities`}
                   placement="bottom-end"
                 >
                   <IconButton
                     size="sm"
                     colorScheme="blue"
                     icon={<MdOutlineSearch />}
-                    aria-label={parent ? `Search in folder` : `Search curation`}
+                    aria-label={parent ? `Search in folder` : `Search library activities`}
                     type="submit"
                     onClick={(e) => {
                       if (focusSearch) {
@@ -589,10 +589,10 @@ export function Curation() {
               size="sm"
               colorScheme="blue"
               // hidden={searchOpen}
-              data-test="Pending Requests Button"
-              to="/curationRequests"
+              data-test="See Curation Queue Button"
+              to="/curate"
             >
-              See Pending Requests
+              See Curation Queue
             </Button>
           </HStack>
         </Flex>
@@ -627,7 +627,7 @@ export function Curation() {
     </Flex>
   ) : null;
 
-  const emptyMessage = haveQuery ? "No Results Found" : "No Activities Yet";
+  const emptyMessage = haveQuery ? "No Results Found" : "No Published Activities Yet";
 
   const cardContent: CardContent[] = content.map((activity, position) => {
     const getCardMenuRef = (element: HTMLButtonElement) => {
@@ -652,7 +652,7 @@ export function Curation() {
       }),
       cardLink:
         activity.type === "folder"
-          ? `/curation/${activity.contentId}`
+          ? `/libraryActivities/${activity.contentId}`
           : `/activityEditor/${activity.contentId}`,
     };
   });

@@ -3,13 +3,8 @@ import { createTestAdminUser, createTestUser } from "./utils";
 import { Content, LibraryRelations } from "../types";
 import {
   suggestToBeCurated,
-  addDraftToLibrary,
-  cancelLibraryRequest,
-  markLibraryRequestNeedsRevision,
-  modifyCommentsOfLibraryRequest,
   publishActivityToLibrary,
   unpublishActivityFromLibrary,
-  deleteDraftFromLibrary,
   getCurationQueue,
   getMultipleLibraryRelations,
   getSingleLibraryRelations,

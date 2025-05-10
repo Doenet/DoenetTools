@@ -15,7 +15,7 @@ import {
   TabPanels,
   TabPanel,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLoaderData, Link, useFetcher } from "react-router";
 
 import { CardContent } from "../../../Widgets/Card";
@@ -27,10 +27,13 @@ import {
   DoenetmlVersion,
   LibraryRelations,
   License,
-} from "./../../../_utils/types";
+} from "../../../_utils/types";
 import { createFullName } from "../../../_utils/names";
 import { intWithCommas } from "../../../_utils/formatting";
-import { contentSettingsActions, ContentSettingsDrawer } from "../ToolPanels/ContentSettingsDrawer";
+import {
+  contentSettingsActions,
+  ContentSettingsDrawer,
+} from "../ToolPanels/ContentSettingsDrawer";
 import { ShareDrawer, shareDrawerActions } from "../ToolPanels/ShareDrawer";
 
 export async function action({ request, params }) {
@@ -57,7 +60,7 @@ export async function loader() {
   return pendingRequests;
 }
 
-export function CurationRequests() {
+export function Curate() {
   const {
     pendingContent,
     pendingLibraryRelations,
@@ -83,6 +86,10 @@ export function CurationRequests() {
     availableFeatures: ContentFeature[];
     allLicenses: License[];
   };
+
+  useEffect(() => {
+    document.title = `Curate - Doenet`;
+  }, []);
 
   const fetcher = useFetcher();
 
@@ -157,7 +164,7 @@ export function CurationRequests() {
           showActivityFeatures={true}
           showOwnerName={true}
           content={cardContent}
-          emptyMessage={"No Matches Found!"}
+          emptyMessage={"No Activities Found!"}
           libraryRelations={libraryRelations}
         />
       </Box>
@@ -181,9 +188,7 @@ export function CurationRequests() {
         lineHeight="normal"
         data-test="Folder Heading"
       >
-        <Tooltip label="Pending curation requests">
-          Pending Curation Requests
-        </Tooltip>
+        <Tooltip label="Pending curation requests">Curation Queue</Tooltip>
       </Heading>
       <VStack width="100%">
         <Flex marginRight="1em" width="100%">
@@ -194,10 +199,10 @@ export function CurationRequests() {
               size="sm"
               colorScheme="blue"
               // hidden={searchOpen}
-              data-test="Curation Button"
-              to="/curation"
+              data-test="See Library Button"
+              to="/libraryActivities"
             >
-              Back to Curation
+              See Library
             </Button>
           </HStack>
         </Flex>

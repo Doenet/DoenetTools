@@ -5,8 +5,8 @@ import axios from "axios";
 import { Content, LibraryRelations } from "../../../_utils/types";
 
 export async function libraryRequestActions({ formObj }: { [k: string]: any }) {
-  if (formObj._action == "submit library request") {
-    await axios.post("/api/curate/submitLibraryRequest", {
+  if (formObj._action == "suggest curation") {
+    await axios.post("/api/curate/suggestToBeCurated", {
       contentId: formObj.contentId,
     });
 
@@ -30,10 +30,10 @@ export function LibraryRequest({
 }) {
   // const info = contentData.librarySourceInfo;
 
-  const submitLibraryRequest = () => {
+  const suggestCuration = () => {
     fetcher.submit(
       {
-        _action: "submit library request",
+        _action: "suggest curation",
         contentId: contentData.contentId,
       },
       { method: "post" },
@@ -58,7 +58,7 @@ export function LibraryRequest({
         <Button
           data-test="Submit Library Request"
           colorScheme="blue"
-          onClick={submitLibraryRequest}
+          onClick={suggestCuration}
         >
           Submit for review
         </Button>
@@ -67,22 +67,22 @@ export function LibraryRequest({
   } else {
     function getStatusText() {
       switch (libraryRelations.activity?.status) {
-        case "PENDING_REVIEW":
-          return (
-            <Text fontWeight="bold" as="span" color="purple">
-              pending review
-            </Text>
-          );
-        case "NEEDS_REVISION":
-          return (
-            <Text fontWeight="bold" as="span" color="orange">
-              needs revision
-            </Text>
-          );
-        case "REQUEST_REMOVED":
+        case "PENDING":
           return (
             <Text fontWeight="bold" as="span" color="gray">
-              cancelled by you
+              pending
+            </Text>
+          );
+          case "UNDER_REVIEW":
+            return (
+              <Text fontWeight="bold" as="span" color="purple">
+                under review
+              </Text>
+            );  
+        case "REJECTED":
+          return (
+            <Text fontWeight="bold" as="span" color="orange">
+              rejected
             </Text>
           );
         case "PUBLISHED":
@@ -98,25 +98,24 @@ export function LibraryRequest({
 
     function getStatusExplanation() {
       switch (libraryRelations.activity?.status) {
-        case "PENDING_REVIEW":
+        case "PENDING": 
+        return (
+          <Text>
+            Your request is pending. One of our Doenet editors will get to it shortly.
+          </Text>
+        );
+        case "UNDER_REVIEW":
           return (
             <Text>
-              Your request is pending review by the Doenet editors. You will be
+              Your request is under review by the Doenet editors. You will be
               notified when the review is complete.
             </Text>
           );
-        case "NEEDS_REVISION":
+        case "REJECTED":
           return (
             <Text>
-              Your request needs revision. Please address the comments provided
-              by the reviewers and resubmit your request.
-            </Text>
-          );
-        case "REQUEST_REMOVED":
-          return (
-            <Text>
-              You cancelled your request. You can submit a new request at any
-              time.
+              Your request has been rejected. Please see the comments provided
+              by the reviewers.
             </Text>
           );
         case "PUBLISHED":
@@ -147,35 +146,14 @@ export function LibraryRequest({
           ) : null}
         </VStack>
 
-        {libraryRelations.activity.status === "NEEDS_REVISION" ||
-        libraryRelations.activity.status === "REQUEST_REMOVED" ? (
+        {libraryRelations.activity.status === "REJECTED" ? (
           <Box mt={4}>
             <Button
               data-test="Resubmit Library Request"
               colorScheme="blue"
-              onClick={submitLibraryRequest}
+              onClick={suggestCuration}
             >
               Resubmit for review
-            </Button>
-          </Box>
-        ) : null}
-
-        {libraryRelations.activity.status === "PENDING_REVIEW" ? (
-          <Box mt={4}>
-            <Button
-              data-test="Cancel Library Request"
-              colorScheme="blue"
-              onClick={() => {
-                fetcher.submit(
-                  {
-                    _action: "cancel library request",
-                    contentId: contentData.contentId,
-                  },
-                  { method: "post" },
-                );
-              }}
-            >
-              Cancel review request
             </Button>
           </Box>
         ) : null}

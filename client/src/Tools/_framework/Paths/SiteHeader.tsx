@@ -237,8 +237,8 @@ export function SiteHeader() {
                         Assigned to Me
                       </NavLinkTab>
                       {user.isAdmin && (
-                        <NavLinkTab to="curation" dataTest="Curation">
-                          Curation
+                        <NavLinkTab to="curate" dataTest="Curate">
+                          Curate
                         </NavLinkTab>
                       )}
                     </>
@@ -387,10 +387,10 @@ export function SiteHeader() {
                             </NavLinkDropdownTab>
                             {user.isAdmin && (
                               <NavLinkDropdownTab
-                                to="curation"
-                                dataTest="Curation"
+                                to="curate"
+                                dataTest="Curate"
                               >
-                                Curation
+                                Curate
                               </NavLinkDropdownTab>
                             )}
                           </>
