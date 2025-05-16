@@ -307,7 +307,17 @@ app.get("/", (req: Request, res: Response) => {
 
 app.post(
   "/api/auth/magiclink",
+  // 1) if we're already signed‑in as an anonymous user, pluck their id out of req.user
+  (req, _res, next) => {
+    if (req.user?.isAnonymous) {
+      // req.user.userId is the string you serialized in serializeUser
+      req.body.fromAnonymous = fromUUID(req.user.userId);
+    }
+    next();
+  },
+  // 2) hand off to passport‑magic‑link
   passport.authenticate("magiclink", { action: "requestToken" }),
+  // 3) redirect back home once the link has been sent
   (_req, res) => res.redirect("/"),
 );
 
