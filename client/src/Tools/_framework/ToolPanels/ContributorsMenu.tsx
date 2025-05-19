@@ -14,7 +14,7 @@ import {
   HStack,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router";
-import { createFullName } from "../../../_utils/names";
+import { createFullName, createFullNameCheckCurated } from "../../../_utils/names";
 import { Content, ActivityRemixItem } from "../../../_utils/types";
 
 export default function ContributorsMenu({
@@ -27,20 +27,22 @@ export default function ContributorsMenu({
   if (!activity.owner) {
     return null;
   }
+  const ownerName = createFullName(activity.owner);
+  const ownerNameExtended = createFullNameCheckCurated(activity.owner);
 
   const byLine = (
     <>
       by{" "}
       <Tooltip
-        label={`Go to ${createFullName(activity.owner)}'s shared activities`}
+        label={`Go to ${ownerName}'s shared activities`}
         openDelay={1000}
       >
         <ChakraLink
           as={ReactRouterLink}
           to={`/sharedActivities/${activity.owner.userId}`}
-          aria-label={`Go to ${createFullName(activity.owner)}'s shared activities`}
+          aria-label={`Go to ${ownerName}'s shared activities`}
         >
-          {createFullName(activity.owner)}
+          {ownerNameExtended}
         </ChakraLink>
       </Tooltip>
     </>
@@ -61,7 +63,7 @@ export default function ContributorsMenu({
             aria-label={`Go to ${contributorHistory[0].originContent.name}`}
           >
             {contributorHistory[0].originContent.name} by{" "}
-            {createFullName(contributorHistory[0].originContent.owner)}
+            {createFullNameCheckCurated(contributorHistory[0].originContent.owner)}
           </ChakraLink>
         </Tooltip>
       </>
@@ -74,7 +76,7 @@ export default function ContributorsMenu({
       margin="6px 12px"
       border="0"
       size="sm"
-      name={createFullName(activity.owner)}
+      name={ownerName}
     />,
   ];
 
@@ -112,13 +114,13 @@ export default function ContributorsMenu({
             cursor="default"
           >
             <Tooltip
-              label={`Go to ${createFullName(activity.owner)}'s shared activities`}
+              label={`Go to ${ownerName}'s shared activities`}
               openDelay={1000}
             >
               <ChakraLink
                 as={ReactRouterLink}
                 to={`/sharedActivities/${activity.owner.userId}`}
-                aria-label={`Go to ${createFullName(activity.owner)}'s shared activities`}
+                aria-label={`Go to ${ownerName}'s shared activities`}
               >
                 {avatars[0]}{" "}
               </ChakraLink>
@@ -127,11 +129,11 @@ export default function ContributorsMenu({
               <Text noOfLines={1} maxWidth="400px">
                 {activity.name}
               </Text>{" "}
-              <Text>by {createFullName(activity.owner)}</Text>
+              <Text>by {ownerNameExtended}</Text>
             </HStack>
           </MenuItem>
           {contributorHistory.map((contrib_hist, i) => {
-            const menuText = `${contrib_hist.originContent.name} by ${createFullName(contrib_hist.originContent.owner)}`;
+            const menuText = `${contrib_hist.originContent.name} by ${createFullNameCheckCurated(contrib_hist.originContent.owner)}`;
             const activityRef = `/activityViewer/${contrib_hist.originContent.contentId}`;
             const activityLabel = `Go to ${contrib_hist.originContent.name}`;
             const userRef = `/sharedActivities/${contrib_hist.originContent.owner.userId}`;

@@ -50,6 +50,7 @@ export type UserInfo = {
   isAuthor?: boolean;
   numLibrary?: number;
   numCommunity?: number;
+  isMaskForLibrary?: boolean;
 };
 
 export function isUserInfo(obj: unknown): obj is UserInfo {

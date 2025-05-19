@@ -136,13 +136,10 @@ export async function loader({ params }) {
       activity: activityData,
       availableFeatures,
       revisions,
+      libraryRelations,
     },
   } = await axios.get(
     `/api/activityEditView/getActivityEditorData/${params.contentId}`,
-  );
-
-  const { data: libraryRelations } = await axios.get(
-    `/api/curate/getLibraryRelations/${params.contentId}`,
   );
 
   if (!editableByMe) {

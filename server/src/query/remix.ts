@@ -7,7 +7,7 @@ import {
   filterViewableActivity,
 } from "../utils/permissions";
 import { createContentRevision, getContentSource } from "./activity";
-import { getIsAdmin } from "./curate";
+import { getIsAdmin, maskLibraryUserInfo } from "./curate";
 
 export async function getRemixSources({
   contentId,
@@ -182,6 +182,20 @@ export async function getRemixSources({
     (a, b) =>
       b.originContent.timestamp.getTime() - a.originContent.timestamp.getTime(),
   );
+
+  // Replace library owner info with source owner info
+  const curatedUsers = await Promise.all(
+    remixSources.map(
+      async (remix) =>
+        await maskLibraryUserInfo({
+          contentId: remix.originContent.contentId,
+          owner: remix.originContent.owner,
+        }),
+    ),
+  );
+  for (let i = 0; i < remixSources.length; i++) {
+    remixSources[i].originContent.owner = curatedUsers[i];
+  }  
 
   return { remixSources };
 }
@@ -362,6 +376,20 @@ export async function getRemixes({
     (a, b) =>
       b.remixContent.timestamp.getTime() - a.remixContent.timestamp.getTime(),
   );
+
+  // Replace library owner info with source owner info
+  const curatedUsers = await Promise.all(
+    remixes.map(
+      async (remix) =>
+        await maskLibraryUserInfo({
+          contentId: remix.remixContent.contentId,
+          owner: remix.remixContent.owner,
+        }),
+    ),
+  );
+  for (let i = 0; i < remixes.length; i++) {
+    remixes[i].remixContent.owner = curatedUsers[i];
+  }
 
   return { remixes };
 }

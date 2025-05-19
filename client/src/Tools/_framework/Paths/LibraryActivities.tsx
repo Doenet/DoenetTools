@@ -53,6 +53,7 @@ import {
   createLocalContentModalActions,
 } from "../ToolPanels/CreateLocalContentModal";
 import { ShareDrawer, shareDrawerActions } from "../ToolPanels/ShareDrawer";
+import { createFullName } from "../../../_utils/names";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -502,7 +503,8 @@ export function LibraryActivities() {
                 textAlign="left"
               >
                 <Show above="sm">
-                  &lt; Back to {parent.parent ? parent.parent.name : `Library Activities`}
+                  &lt; Back to{" "}
+                  {parent.parent ? parent.parent.name : `Library Activities`}
                 </Show>
                 <Hide above="sm">&lt; Back</Hide>
               </Text>
@@ -535,7 +537,9 @@ export function LibraryActivities() {
                   colorScheme="blue"
                   width="250px"
                   ref={searchRef}
-                  placeholder={parent ? `Search in folder` : `Search library activities`}
+                  placeholder={
+                    parent ? `Search in folder` : `Search library activities`
+                  }
                   value={searchString}
                   name="q"
                   onInput={(e) => {
@@ -548,14 +552,18 @@ export function LibraryActivities() {
                   }}
                 />
                 <Tooltip
-                  label={parent ? `Search in folder` : `Search library activities`}
+                  label={
+                    parent ? `Search in folder` : `Search library activities`
+                  }
                   placement="bottom-end"
                 >
                   <IconButton
                     size="sm"
                     colorScheme="blue"
                     icon={<MdOutlineSearch />}
-                    aria-label={parent ? `Search in folder` : `Search library activities`}
+                    aria-label={
+                      parent ? `Search in folder` : `Search library activities`
+                    }
                     type="submit"
                     onClick={(e) => {
                       if (focusSearch) {
@@ -627,7 +635,9 @@ export function LibraryActivities() {
     </Flex>
   ) : null;
 
-  const emptyMessage = haveQuery ? "No Results Found" : "No Published Activities Yet";
+  const emptyMessage = haveQuery
+    ? "No Results Found"
+    : "No Published Activities Yet";
 
   const cardContent: CardContent[] = content.map((activity, position) => {
     const getCardMenuRef = (element: HTMLButtonElement) => {

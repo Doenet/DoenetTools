@@ -112,7 +112,7 @@ export function Curate() {
     libraryRelations: LibraryRelations[],
     minHeight?: string | { base: string; lg: string },
   ) {
-    const cardContent: CardContent[] = content.map((contentData) => {
+    const cardContent: CardContent[] = content.map((contentData, idx) => {
       const cardLink = `/activityEditor/${contentData.contentId}`;
 
       const menuItems = (
@@ -142,10 +142,7 @@ export function Curate() {
       return {
         contentId: contentData.contentId,
         content: contentData,
-        ownerName:
-          contentData.owner !== undefined
-            ? createFullName(contentData.owner)
-            : "",
+        ownerName: createFullName(contentData.owner!),
         cardLink,
         menuItems,
       };

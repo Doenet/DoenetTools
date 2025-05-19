@@ -26,6 +26,7 @@ import {
 import { processContent, returnContentSelect } from "../utils/contentStructure";
 import { getAvailableContentFeatures } from "./classification";
 import { getAllLicenses } from "./share";
+import { H } from "vitest/dist/chunks/reporters.DTtkbAtP";
 
 export async function mustBeAdmin(
   userId: Uint8Array,
@@ -92,6 +93,52 @@ async function redactInvisibleContentIds({
   return contentIds.map((id) =>
     id !== null && visibleIds.has(fromUUID(id)) ? id : null,
   );
+}
+
+export async function maskLibraryUserInfo({
+  contentId,
+  owner,
+}: {
+  contentId: Uint8Array;
+  owner: UserInfo;
+}) {
+  const libraryId = await getLibraryAccountId();
+  if (isEqualUUID(owner.userId, libraryId)) {
+    const user = await prisma.content.findUniqueOrThrow({
+      where: {
+        id: contentId,
+      },
+      select: {
+        libraryActivityInfo: {
+          select: {
+            source: {
+              select: {
+                owner: {
+                  select: {
+                    userId: true,
+                    firstNames: true,
+                    lastNames: true,
+                    email: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const maskInfo = user.libraryActivityInfo!.source.owner;
+    const newOwner = {
+      ...owner,
+      // Mask info replaces original user info
+      ...maskInfo,
+      isMaskForLibrary: true,
+    };
+    return newOwner;
+  } else {
+    return owner;
+  }
 }
 
 /**
@@ -727,6 +774,20 @@ export async function getCurationQueue({
       contentIds: content.map((c) => c.contentId),
       loggedInUserId,
     });
+
+    // Replace library owner info with source owner info
+    const curatedUsers = await Promise.all(
+      content.map(
+        async (c) =>
+          await maskLibraryUserInfo({
+            contentId: c.contentId,
+            owner: c.owner!,
+          }),
+      ),
+    );
+    for (let i = 0; i < content.length; i++) {
+      content[i].owner = curatedUsers[i];
+    }
 
     console.assert(
       content.length === library.length,

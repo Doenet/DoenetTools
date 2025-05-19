@@ -38,6 +38,8 @@ export type CardContent = {
   cardLink?: string;
   content: Content;
   ownerName?: string;
+  // If this exists, it replaces the owner name but not the avatar
+  ownerNameExtended?: string;
   menuItems?: ReactElement;
   closeTime?: string;
   indentLevel?: number;
@@ -93,7 +95,7 @@ export default function Card({
     parent,
   } = cardContent.content;
 
-  const { menuItems, closeTime, cardLink, ownerName } = cardContent;
+  const { menuItems, closeTime, cardLink, ownerName, ownerNameExtended } = cardContent;
 
   const contentTypeName = contentTypeToName[contentType];
 
@@ -313,7 +315,7 @@ export default function Card({
       <Tooltip label={ownerName}>
         <HStack>
           <Avatar size="xs" name={ownerName} />
-          <Text noOfLines={1}>{ownerName}</Text>
+          <Text noOfLines={1}>{ownerNameExtended ?? ownerName}</Text>
         </HStack>
       </Tooltip>
     </Box>

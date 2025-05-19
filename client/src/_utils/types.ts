@@ -78,6 +78,7 @@ export type UserInfo = {
   isAuthor?: boolean;
   numLibrary?: number;
   numCommunity?: number;
+  isMaskForLibrary?: boolean;
 };
 
 export type ContentFeature = {

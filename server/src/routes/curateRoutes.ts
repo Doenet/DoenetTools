@@ -58,11 +58,6 @@ curateRouter.post(
   queryLoggedIn(createCurationFolder, createCurationFolderSchema),
 );
 
-curateRouter.get(
-  "/getLibraryRelations/:contentId",
-  queryOptionalLoggedIn(getSingleLibraryRelations, contentIdSchema),
-);
-
 curateRouter.post(
   "/suggestToBeCurated",
   queryLoggedIn(suggestToBeCurated, contentIdSchema),

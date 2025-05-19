@@ -63,7 +63,7 @@ import { ActivitySource, isActivitySource } from "../../../_utils/viewerTypes";
 import { processRemixes } from "../../../_utils/processRemixes";
 import ContributorsMenu from "../ToolPanels/ContributorsMenu";
 import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
-import { createFullName } from "../../../_utils/names";
+import { createFullName, createFullNameCheckCurated } from "../../../_utils/names";
 import { DisplayLicenseItem } from "../../../Widgets/Licenses";
 import { SiteContext } from "./SiteHeader";
 import {
@@ -97,16 +97,12 @@ export async function action({ request }) {
 
 export async function loader({ params }) {
   const {
-    data: { activity: activityData, remixSources },
+    data: { activity: activityData, remixSources, libraryRelations },
   } = await axios.get(
     `/api/activityEditView/getActivityViewerData/${params.contentId}`,
   );
 
   const contentId = params.contentId;
-
-  const { data: libraryRelations } = await axios.get(
-    `/api/curate/getLibraryRelations/${params.contentId}`,
-  );
 
   if (activityData.type === "singleDoc") {
     const doenetML = activityData.doenetML;
@@ -228,6 +224,7 @@ export function ActivityViewer() {
       isOpen={infoIsOpen}
       onClose={infoOnClose}
       contentData={contentData}
+      libraryRelations={libraryRelations}
       displayTab={displayInfoTab}
     />
   ) : null;
@@ -299,7 +296,8 @@ export function ActivityViewer() {
   }
 
   const contentTypeName = contentTypeToName[data.type];
-
+  const ownerNameExtended = createFullNameCheckCurated(activityData.owner!);
+  
   const { iconImage, iconColor } = getIconInfo(data.type);
 
   const typeIcon = (
@@ -383,9 +381,7 @@ export function ActivityViewer() {
         colorScheme="blue"
         toolTip={`Add ${contentTypeName.toLowerCase()} to ${allowedParentsPhrase}`}
         leftIcon={<MdOutlineAdd size={20} />}
-        suggestToBeCuratedOption={
-          !libraryRelations.activity
-        }
+        suggestToBeCuratedOption={!libraryRelations.activity}
       />
     );
   }
@@ -641,7 +637,7 @@ export function ActivityViewer() {
                     <>
                       <p>
                         <strong>{activityData.name}</strong> by{" "}
-                        {createFullName(activityData.owner!)} is shared with
+                        {ownerNameExtended} is shared with
                         these licenses:
                       </p>
                       <List spacing="20px" marginTop="10px">
@@ -661,7 +657,7 @@ export function ActivityViewer() {
                     <>
                       <p>
                         <strong>{activityData.name}</strong> by{" "}
-                        {createFullName(activityData.owner!)} is shared using
+                        {ownerNameExtended} is shared using
                         the license:
                       </p>
                       <List marginTop="10px">
@@ -674,7 +670,7 @@ export function ActivityViewer() {
                 ) : (
                   <p>
                     <strong>{activityData.name}</strong> by{" "}
-                    {createFullName(activityData.owner!)} is shared, but a
+                    {ownerNameExtended} is shared, but a
                     license was not specified. Contact the author to determine
                     in what ways you can reuse this activity.
                   </p>

@@ -8,17 +8,19 @@ import {
   Tooltip,
   UnorderedList,
 } from "@chakra-ui/react";
-import { Content } from "../../../_utils/types";
+import { Content, LibraryRelations } from "../../../_utils/types";
 import { InfoIcon } from "@chakra-ui/icons";
 import { DisplayLicenseItem } from "../../../Widgets/Licenses";
-import { createFullName } from "../../../_utils/names";
+import { createFullName, createFullNameCheckCurated } from "../../../_utils/names";
 import { activityFeatureIcons } from "../../../_utils/activity";
 
-export function GeneralContentInfo({ contentData }: { contentData: Content }) {
+export function GeneralContentInfo({ contentData }: { contentData: Content}) {
   const license = contentData.license;
   const contentType = contentData.type === "folder" ? "Folder" : "Activity";
 
   const containsFeatures = contentData.contentFeatures.length > 0;
+
+  const ownerName = createFullNameCheckCurated(contentData.owner!);
 
   return (
     <Box>
@@ -60,7 +62,7 @@ export function GeneralContentInfo({ contentData }: { contentData: Content }) {
           <>
             <p>
               <em>{contentData.name}</em> by{" "}
-              {createFullName(contentData.owner!)} is shared with these
+              {ownerName} is shared with these
               licenses:
             </p>
             <List spacing="20px" marginTop="10px">
@@ -77,7 +79,7 @@ export function GeneralContentInfo({ contentData }: { contentData: Content }) {
           <>
             <p>
               <em>{contentData.name}</em> by{" "}
-              {createFullName(contentData.owner!)} is shared with the license:
+              {ownerName} is shared with the license:
             </p>
             <List marginTop="10px">
               <DisplayLicenseItem licenseItem={license} />

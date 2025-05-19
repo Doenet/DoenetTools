@@ -18,7 +18,7 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router";
-import { createFullName } from "../../../_utils/names";
+import { createFullName, createFullNameCheckCurated } from "../../../_utils/names";
 import { DateTime } from "luxon";
 import { ActivityRemixItem } from "../../../_utils/types";
 
@@ -92,7 +92,7 @@ export function Remixes({
                       whiteSpace="normal"
                       minWidth="50px"
                     >
-                      {createFullName(ch.remixContent.owner)}
+                      {createFullNameCheckCurated(ch.remixContent.owner)}
                     </Text>
                   </ChakraLink>
                 </Td>
@@ -104,7 +104,7 @@ export function Remixes({
                       {ch.remixContent.name}
                     </Text>
                     <Text wordBreak="break-word" whiteSpace="normal">
-                      {createFullName(ch.remixContent.owner)}
+                      {createFullNameCheckCurated(ch.remixContent.owner)}
                     </Text>
                   </VStack>
                 </Td>

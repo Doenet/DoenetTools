@@ -9,7 +9,11 @@ import {
 import { prisma } from "../model";
 import { getAvailableContentFeatures } from "./classification";
 import { processContent, returnContentSelect } from "../utils/contentStructure";
-import { getIsAdmin } from "./curate";
+import {
+  getIsAdmin,
+  getSingleLibraryRelations,
+  maskLibraryUserInfo,
+} from "./curate";
 import { isEqualUUID } from "../utils/uuid";
 import { getRemixSources } from "./remix";
 import { recordContentView, recordRecentContent } from "./stats";
@@ -53,15 +57,24 @@ export async function getActivityEditorData({
     includeAssignInfo: true,
     includeClassifications: true,
     includeShareDetails: true,
-    includeLibraryInfo: true,
     isAdmin,
   });
 
   const revisions = await getContentRevisions({ contentId, loggedInUserId });
+  const libraryRelations = await getSingleLibraryRelations({
+    contentId,
+    loggedInUserId,
+  });
 
   await recordRecentContent(loggedInUserId, "edit", contentId);
 
-  return { editableByMe: true, activity, availableFeatures, revisions };
+  return {
+    editableByMe: true,
+    activity,
+    availableFeatures,
+    revisions,
+    libraryRelations,
+  };
 }
 
 /**
@@ -78,7 +91,6 @@ export async function getSharedEditorData({
   const activity = getContent({
     contentId,
     loggedInUserId,
-    includeLibraryInfo: true,
   });
   return activity;
 }
@@ -98,7 +110,6 @@ export async function getActivityViewerData({
     isAdmin,
     includeOwnerDetails: true,
     includeClassifications: true,
-    includeLibraryInfo: true,
   });
 
   if (!isEqualUUID(loggedInUserId, activity.ownerId)) {
@@ -111,9 +122,34 @@ export async function getActivityViewerData({
     isAdmin,
   });
 
+  // Replace library owner info with source owner info
+  activity.owner = await maskLibraryUserInfo({
+    contentId: activity.contentId,
+    owner: activity.owner!,
+  });
+
+  const curatedSourceUsers = await Promise.all(
+    remixSources.map(
+      async (remix) =>
+        await maskLibraryUserInfo({
+          contentId: remix.originContent.contentId,
+          owner: remix.originContent.owner,
+        }),
+    ),
+  );
+  for(let i=0; i<remixSources.length; i++){
+    remixSources[i].originContent.owner = curatedSourceUsers[i];
+  }
+
+  const libraryRelations = await getSingleLibraryRelations({
+    contentId,
+    loggedInUserId,
+  });
+
   return {
     activity,
     remixSources,
+    libraryRelations,
   };
 }
 
@@ -137,7 +173,6 @@ export async function getContent({
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
   includeAssignInfo?: boolean;
-  includeLibraryInfo?: boolean;
   includeClassifications?: boolean;
   includeShareDetails?: boolean;
   includeOwnerDetails?: boolean;
