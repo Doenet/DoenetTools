@@ -138,7 +138,8 @@ export async function compoundActivityEditorActions({
 export function CompoundActivityEditor({
   activity,
   activityJson,
-  asViewer,
+  asViewer = false,
+  inLibrary = false,
   mode,
   fetcher,
   setSettingsContentId,
@@ -152,6 +153,7 @@ export function CompoundActivityEditor({
   activity: Content;
   activityJson: ActivitySource;
   asViewer?: boolean;
+  inLibrary?: boolean;
   mode: "Edit" | "View";
   fetcher: FetcherWithComponents<any>;
   setSettingsContentId?: (value: React.SetStateAction<string | null>) => void;
@@ -168,10 +170,14 @@ export function CompoundActivityEditor({
   // which should be given focus when drawers are closed
   const cardMenuRefs = useRef<HTMLButtonElement[]>([]);
 
-  const readOnly =
-    asViewer ||
-    (activity.assignmentInfo?.assignmentStatus ?? "Unassigned") !==
-      "Unassigned";
+  const isAssigned = activity.assignmentInfo
+    ? activity.assignmentInfo.assignmentStatus !== "Unassigned"
+    : false;
+
+  // Read only: cannot edit anything about this activity
+  // Read only structure: cannot add or remove sub-activities
+  const readOnly = asViewer || isAssigned;
+  const readOnlyStructure = readOnly || inLibrary;
 
   const { user, addTo, setAddTo } = useOutletContext<SiteContext>();
   const navigate = useNavigate();
@@ -734,7 +740,7 @@ export function CompoundActivityEditor({
       showAssignmentStatus={false}
       showPublicStatus={true}
       showActivityFeatures={true}
-      showAddButton={asViewer ? false : true}
+      showAddButton={!readOnlyStructure}
       emptyMessage={`${contentTypeName} is empty. Add documents ${activity.type === "sequence" ? "or question banks " : ""}here to begin.`}
       content={cardContent}
       selectedCards={user ? selectedCards : undefined}
@@ -842,7 +848,7 @@ export function CompoundActivityEditor({
       <Spacer />
       <Menu>
         <MenuButton
-          hidden={asViewer}
+          hidden={readOnlyStructure}
           as={Button}
           size="sm"
           colorScheme="blue"

@@ -103,7 +103,7 @@ test("user privileges for library", async () => {
   await expectStatusIs(sourceId, statusNone, randomUserId);
 
   await suggestToBeCurated({ loggedInUserId: ownerId, contentId: sourceId });
-  await expectStatusIs(sourceId, statusPending, ownerId);  
+  await expectStatusIs(sourceId, statusPending, ownerId);
 
   // Only admin can add draft
   async function expectAddDraftFails(userId: Uint8Array) {
@@ -1135,6 +1135,59 @@ test("Owner does not see pending review status if they did not submit request", 
   });
 
   await expectStatusIs(contentId, {}, ownerId);
+});
+
+test.only("Library relations match up with activities with folders in front", async () => {
+  const { userId: adminId } = await createTestAdminUser();
+  const { userId: ownerId } = await createTestUser();
+
+  const { contentId: folderId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "folder",
+    parentId: null,
+  });
+  const { contentId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+
+  await setContentIsPublic({
+    contentId,
+    loggedInUserId: ownerId,
+    isPublic: true,
+  });
+
+  await suggestToBeCurated({
+    contentId,
+    loggedInUserId: ownerId,
+  });
+
+  const expectedSecondNoDate = {
+    status: "PENDING",
+    activityContentId: null,
+  };
+  const expectedSecondDate = new Date();
+
+  const actualResults = await getMultipleLibraryRelations({
+    contentIds: [folderId, contentId],
+    loggedInUserId: ownerId,
+  });
+
+  console.log("actual results", actualResults);
+
+  expect(actualResults.length).toEqual(2);
+  expect(actualResults[0]).toEqual({});
+
+  const { reviewRequestDate: actualSecondDate, ...actualSecondNoDate } =
+    actualResults[1].activity!;
+
+  expect(expectedSecondNoDate).toEqual(actualSecondNoDate);
+
+  const timeDiff = Math.abs(
+    actualSecondDate!.getTime() - expectedSecondDate.getTime(),
+  );
+  expect(timeDiff).toBeLessThan(1000 * 60 * 5); // 5 minutes
 });
 
 test.todo("getCurationContent and all its variations (and search!)");

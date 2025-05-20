@@ -73,16 +73,14 @@ async function redactInvisibleContentIds({
   loggedInUserId,
   isAdmin,
 }: {
-  contentIds: (Uint8Array | null)[];
+  contentIds: Uint8Array[];
   loggedInUserId: Uint8Array;
   isAdmin: boolean;
 }) {
-  const nonnullContentIds = contentIds.filter((id) => id !== null);
-
   const visibleIdsList = (
     await prisma.content.findMany({
       where: {
-        id: { in: nonnullContentIds },
+        id: { in: contentIds },
         ...filterViewableActivity(loggedInUserId, isAdmin),
       },
       select: { id: true },
@@ -90,9 +88,11 @@ async function redactInvisibleContentIds({
   ).map((v) => fromUUID(v.id));
   const visibleIds = new Set(visibleIdsList);
 
-  return contentIds.map((id) =>
-    id !== null && visibleIds.has(fromUUID(id)) ? id : null,
-  );
+  const results: Map<Uint8Array, Uint8Array | null> = new Map();
+  for (const id of contentIds) {
+    results.set(id, visibleIds.has(fromUUID(id)) ? id : null);
+  }
+  return results;
 }
 
 export async function maskLibraryUserInfo({
@@ -173,6 +173,7 @@ export async function getMultipleLibraryRelations({
       },
     },
     select: {
+      sourceId: true,
       status: true,
       contentId: true,
       ownerRequested: true,
@@ -188,12 +189,6 @@ export async function getMultipleLibraryRelations({
   });
 
   if (infos) {
-    const revisedIds = await redactInvisibleContentIds({
-      contentIds: infos.map((v) => v.contentId),
-      loggedInUserId,
-      isAdmin,
-    });
-
     const isOwnerList = await prisma.content.findMany({
       where: {
         id: { in: contentIds },
@@ -201,34 +196,37 @@ export async function getMultipleLibraryRelations({
       },
       select: { id: true },
     });
+
+    // Set of original content ids that this user owns
     const isOwnerOf = new Set(isOwnerList.map((v) => fromUUID(v.id)));
 
-    for (let i = 0; i < infos.length; i++) {
-      const isPublished = infos[i].status === LibraryStatus.PUBLISHED;
-      const isOwner = isOwnerOf.has(fromUUID(contentIds[i]));
+    const redactFor = await redactInvisibleContentIds({
+      contentIds: infos.map((v) => v.contentId),
+      loggedInUserId,
+      isAdmin,
+    });
+
+    for (const info of infos) {
+      const isPublished = info.status === LibraryStatus.PUBLISHED;
+      const isOwner = isOwnerOf.has(fromUUID(info.sourceId));
+
+      const redactedId = redactFor.get(info.contentId)!;
 
       // Three possible conditions for this relation to be visible.
       // 1. Curated activity is published
       // 2. You are admin
       // 3. You are owner and you suggested the review
-      if (isPublished || isAdmin || (isOwner && infos[i].ownerRequested)) {
-        meRelations[fromUUID(contentIds[i])] = {
-          activityContentId: revisedIds[i],
-          status: infos[i].status,
+      if (isPublished || isAdmin || (isOwner && info.ownerRequested)) {
+        meRelations[fromUUID(info.sourceId)] = {
+          // activityContentId: revisedIds[i],
+          activityContentId: redactedId,
+          status: info.status,
         };
 
-        if (isAdmin || (isOwner && infos[i].ownerRequested)) {
-          meRelations[fromUUID(contentIds[i])].reviewRequestDate =
-            infos[i].requestedOn;
+        if (isAdmin || (isOwner && info.ownerRequested)) {
+          meRelations[fromUUID(info.sourceId)].reviewRequestDate =
+            info.requestedOn;
         }
-
-        // if (isAdmin || isOwner) {
-        //   const sourceEvents = infos[i].events;
-        //   if (sourceEvents.length > 0) {
-        //     meRelations[fromUUID(contentIds[i])].reviewRequestDate =
-        //       sourceEvents[0].dateTime;
-        //   }
-        // }
       }
     }
   }
@@ -254,6 +252,7 @@ export async function getMultipleLibraryRelations({
       },
     },
     select: {
+      contentId: true,
       status: true,
       sourceId: true,
       ownerRequested: true,
@@ -269,38 +268,36 @@ export async function getMultipleLibraryRelations({
   });
 
   if (sourceInfos) {
-    const sourceIds = await redactInvisibleContentIds({
+    const redactFor = await redactInvisibleContentIds({
       contentIds: sourceInfos.map((v) => v.sourceId),
       loggedInUserId,
       isAdmin,
     });
 
-    for (let i = 0; i < sourceInfos.length; i++) {
-      sourceRelations[fromUUID(contentIds[i])] = {
-        sourceContentId: sourceIds[i],
-        status: sourceInfos[i].status,
+    for (const sourceInfo of sourceInfos) {
+      const key = fromUUID(sourceInfo.contentId);
+
+      sourceRelations[key] = {
+        sourceContentId: redactFor.get(sourceInfo.sourceId)!,
+        status: sourceInfo.status,
       };
       if (isAdmin) {
-        // Only admins see comments. Owners of original activity must look up comments using their own source id
-        // sourceRelations[fromUUID(contentIds[i])].comments =
-        //   sourceInfos[i].comments;
-
         // Only admins can see if owner requested review and the date requested on
-        sourceRelations[fromUUID(contentIds[i])].ownerRequested =
-          sourceInfos[i].ownerRequested;
-        sourceRelations[fromUUID(contentIds[i])].reviewRequestDate =
-          sourceInfos[i].requestedOn;
+        sourceRelations[key].ownerRequested = sourceInfo.ownerRequested;
+        sourceRelations[key].reviewRequestDate = sourceInfo.requestedOn;
 
-        const primaryEditor = sourceInfos[i].primaryEditor;
+        const primaryEditor = sourceInfo.primaryEditor;
         if (primaryEditor) {
-          sourceRelations[fromUUID(contentIds[i])].primaryEditor = {
+          sourceRelations[key].primaryEditor = {
             email: "",
             ...primaryEditor,
           };
-          sourceRelations[fromUUID(contentIds[i])].iAmPrimaryEditor =
-            isEqualUUID(loggedInUserId, primaryEditor.userId);
+          sourceRelations[key].iAmPrimaryEditor = isEqualUUID(
+            loggedInUserId,
+            primaryEditor.userId,
+          );
         } else {
-          sourceRelations[fromUUID(contentIds[i])].iAmPrimaryEditor = false;
+          sourceRelations[key].iAmPrimaryEditor = false;
         }
       }
     }

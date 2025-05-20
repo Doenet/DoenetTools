@@ -457,6 +457,7 @@ export function ActivityEditor() {
         setSettingsDisplayTab={setSettingsDisplayTab}
         setHighlightRename={setHighlightRename}
         headerHeight={`${readOnly ? 120 : 80}px`}
+        inLibrary={isLibraryActivity}
       />
     );
   }
