@@ -734,7 +734,7 @@ export function CompoundActivityEditor({
       showAssignmentStatus={false}
       showPublicStatus={true}
       showActivityFeatures={true}
-      showAddButton={true}
+      showAddButton={asViewer ? false : true}
       emptyMessage={`${contentTypeName} is empty. Add documents ${activity.type === "sequence" ? "or question banks " : ""}here to begin.`}
       content={cardContent}
       selectedCards={user ? selectedCards : undefined}
