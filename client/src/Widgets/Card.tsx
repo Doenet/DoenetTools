@@ -95,7 +95,8 @@ export default function Card({
     parent,
   } = cardContent.content;
 
-  const { menuItems, closeTime, cardLink, ownerName, ownerNameExtended } = cardContent;
+  const { menuItems, closeTime, cardLink, ownerName, ownerNameExtended } =
+    cardContent;
 
   const contentTypeName = contentTypeToName[contentType];
 

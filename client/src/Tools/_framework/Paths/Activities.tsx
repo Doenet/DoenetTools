@@ -1019,4 +1019,3 @@ export function Activities() {
     </>
   );
 }
- 

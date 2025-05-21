@@ -195,7 +195,7 @@ export async function getRemixSources({
   );
   for (let i = 0; i < remixSources.length; i++) {
     remixSources[i].originContent.owner = curatedUsers[i];
-  }  
+  }
 
   return { remixSources };
 }

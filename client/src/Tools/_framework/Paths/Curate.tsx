@@ -15,7 +15,7 @@ import {
   TabPanels,
   TabPanel,
 } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLoaderData, Link, useFetcher } from "react-router";
 
 import { CardContent } from "../../../Widgets/Card";
@@ -36,7 +36,7 @@ import {
 } from "../ToolPanels/ContentSettingsDrawer";
 import { ShareDrawer, shareDrawerActions } from "../ToolPanels/ShareDrawer";
 
-export async function action({ request, params }) {
+export async function action({ request }) {
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
 
@@ -112,7 +112,7 @@ export function Curate() {
     libraryRelations: LibraryRelations[],
     minHeight?: string | { base: string; lg: string },
   ) {
-    const cardContent: CardContent[] = content.map((contentData, idx) => {
+    const cardContent: CardContent[] = content.map((contentData) => {
       const cardLink = `/activityEditor/${contentData.contentId}`;
 
       const menuItems = (

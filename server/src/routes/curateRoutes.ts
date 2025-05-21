@@ -2,7 +2,6 @@ import express from "express";
 import {
   queryLoggedIn,
   queryLoggedInNoArguments,
-  queryOptionalLoggedIn,
 } from "../middleware/queryMiddleware";
 import {
   addComment,
@@ -11,7 +10,6 @@ import {
   getComments,
   getCurationFolderContent,
   getCurationQueue,
-  getSingleLibraryRelations,
   publishActivityToLibrary,
   rejectActivity,
   searchCurationFolderContent,
@@ -83,10 +81,7 @@ curateRouter.post(
   queryLoggedIn(rejectActivity, contentIdSchema),
 );
 
-curateRouter.post(
-  "/addComment",
-  queryLoggedIn(addComment, addCommentSchema),
-);
+curateRouter.post("/addComment", queryLoggedIn(addComment, addCommentSchema));
 
 curateRouter.get(
   "/getComments/:contentId",

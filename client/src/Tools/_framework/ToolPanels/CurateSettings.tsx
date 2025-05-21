@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { FetcherWithComponents } from "react-router";
-import { Box, List, Button, Text, Textarea } from "@chakra-ui/react";
+import { Box, List, Button, Text } from "@chakra-ui/react";
 import axios from "axios";
 import { Content, LibraryRelations } from "../../../_utils/types";
 import { DisplayLicenseItem } from "../../../Widgets/Licenses";
@@ -62,10 +62,10 @@ export function CurateSettings({
 
   const sourceIdIsVisible = librarySource.sourceContentId !== null;
 
-  const [comments, setComments] = useState<string>(
+  const [comments, _setComments] = useState<string>(
     librarySource.comments || "",
   );
-  const [unsavedComments, setUnsavedComments] = useState<boolean>(false);
+  // const [unsavedComments, setUnsavedComments] = useState<boolean>(false);
 
   return (
     <>
@@ -83,7 +83,8 @@ export function CurateSettings({
         Current primary editor:{" "}
         {librarySource.primaryEditor
           ? createFullName(librarySource.primaryEditor)
-          : "None"}{librarySource.iAmPrimaryEditor && " (you)"}
+          : "None"}
+        {librarySource.iAmPrimaryEditor && " (you)"}
       </Text>
 
       {!librarySource.iAmPrimaryEditor && (
@@ -125,7 +126,7 @@ export function CurateSettings({
       {librarySource.status === "UNDER_REVIEW" && (
         <Button
           onClick={() => {
-            setUnsavedComments(false);
+            // setUnsavedComments(false);
             fetcher.submit(
               {
                 _action: "publish",
@@ -143,7 +144,7 @@ export function CurateSettings({
       {librarySource.status === "UNDER_REVIEW" && (
         <Button
           onClick={() => {
-            setUnsavedComments(false);
+            // setUnsavedComments(false);
             fetcher.submit(
               {
                 _action: "reject",

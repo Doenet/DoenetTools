@@ -16,7 +16,7 @@ import {
   Hide,
   Spinner,
 } from "@chakra-ui/react";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   useLoaderData,
   useNavigate,
@@ -53,7 +53,6 @@ import {
   createLocalContentModalActions,
 } from "../ToolPanels/CreateLocalContentModal";
 import { ShareDrawer, shareDrawerActions } from "../ToolPanels/ShareDrawer";
-import { createFullName } from "../../../_utils/names";
 
 export async function action({ request }) {
   const formData = await request.formData();

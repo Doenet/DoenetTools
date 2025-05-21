@@ -1,18 +1,9 @@
-import {
-  ContentType,
-  LibraryEventType,
-  LibraryStatus,
-  Prisma,
-} from "@prisma/client";
+import { LibraryEventType, LibraryStatus } from "@prisma/client";
 import { prisma } from "../model";
 import { Content, LibraryRelations, UserInfo } from "../types";
 import { InvalidRequestError } from "../utils/error";
-import { compareUUID, fromUUID, isEqualUUID } from "../utils/uuid";
-import {
-  createContent,
-  getAllDoenetmlVersions,
-  getDescendantIds,
-} from "./activity";
+import { fromUUID, isEqualUUID } from "../utils/uuid";
+import { createContent, getAllDoenetmlVersions } from "./activity";
 import { copyContent } from "./copy_move";
 import {
   filterEditableActivity,
@@ -26,7 +17,6 @@ import {
 import { processContent, returnContentSelect } from "../utils/contentStructure";
 import { getAvailableContentFeatures } from "./classification";
 import { getAllLicenses } from "./share";
-import { H } from "vitest/dist/chunks/reporters.DTtkbAtP";
 
 export async function mustBeAdmin(
   userId: Uint8Array,
@@ -183,6 +173,7 @@ export async function getMultipleLibraryRelations({
           userId: true,
           firstNames: true,
           lastNames: true,
+          email: true,
         },
       },
     },
@@ -262,6 +253,7 @@ export async function getMultipleLibraryRelations({
           userId: true,
           firstNames: true,
           lastNames: true,
+          email: true,
         },
       },
     },
@@ -288,10 +280,7 @@ export async function getMultipleLibraryRelations({
 
         const primaryEditor = sourceInfo.primaryEditor;
         if (primaryEditor) {
-          sourceRelations[key].primaryEditor = {
-            email: "",
-            ...primaryEditor,
-          };
+          sourceRelations[key].primaryEditor = primaryEditor;
           sourceRelations[key].iAmPrimaryEditor = isEqualUUID(
             loggedInUserId,
             primaryEditor.userId,
@@ -349,6 +338,17 @@ export async function suggestToBeCurated({
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
 }) {
+  // Don't allow anonymous users to suggest curation
+  await prisma.users.findUniqueOrThrow({
+    where: {
+      userId: loggedInUserId,
+      isAnonymous: false,
+    },
+    select: {
+      userId: true,
+    },
+  });
+
   const content = await prisma.content.findUniqueOrThrow({
     where: {
       id: contentId,
@@ -596,7 +596,8 @@ export async function addComment({
   }
   await prisma.libraryActivityInfos.update({
     where: {
-      sourceId: contentId,
+      sourceId: asEditor ? undefined : contentId,
+      contentId: asEditor ? contentId : undefined,
       source: {
         ownerId: asEditor ? undefined : loggedInUserId,
       },

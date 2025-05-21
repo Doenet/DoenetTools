@@ -14,7 +14,10 @@ import {
   HStack,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router";
-import { createFullName, createFullNameCheckCurated } from "../../../_utils/names";
+import {
+  createFullName,
+  createFullNameCheckCurated,
+} from "../../../_utils/names";
 import { Content, ActivityRemixItem } from "../../../_utils/types";
 
 export default function ContributorsMenu({
@@ -63,7 +66,9 @@ export default function ContributorsMenu({
             aria-label={`Go to ${contributorHistory[0].originContent.name}`}
           >
             {contributorHistory[0].originContent.name} by{" "}
-            {createFullNameCheckCurated(contributorHistory[0].originContent.owner)}
+            {createFullNameCheckCurated(
+              contributorHistory[0].originContent.owner,
+            )}
           </ChakraLink>
         </Tooltip>
       </>

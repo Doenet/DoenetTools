@@ -15,7 +15,11 @@ import {
   Text,
   Tooltip,
 } from "@chakra-ui/react";
-import { ActivityRemixItem, Content, LibraryRelations } from "../../../_utils/types";
+import {
+  ActivityRemixItem,
+  Content,
+  LibraryRelations,
+} from "../../../_utils/types";
 import { GeneralContentInfo } from "./GeneralContentInfo";
 import { ClassificationInfo } from "./ClassificationInfo";
 import axios from "axios";
@@ -139,7 +143,7 @@ export function ContentInfoDrawer({
             <Box height="calc(100vh - 130px)">
               <TabPanels height="100%">
                 <TabPanel height="100%">
-                  <GeneralContentInfo contentData={contentData} libraryRelations={libraryRelations}/>
+                  <GeneralContentInfo contentData={contentData} />
                 </TabPanel>
                 {contentData.type !== "folder" ? (
                   <TabPanel overflowY="hidden" height="100%">

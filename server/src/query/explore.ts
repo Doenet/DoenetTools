@@ -2071,9 +2071,12 @@ export async function searchExplore({
 
   // Replace library owner info with source owner info
   const curatedSourceUsers = await Promise.all(
-    curatedContent.map(async (c) => await maskLibraryUserInfo({contentId: c.contentId, owner: c.owner!})),
+    curatedContent.map(
+      async (c) =>
+        await maskLibraryUserInfo({ contentId: c.contentId, owner: c.owner! }),
+    ),
   );
-  for (let i=0; i<curatedContent.length; i++) {
+  for (let i = 0; i < curatedContent.length; i++) {
     curatedContent[i].owner = curatedSourceUsers[i];
   }
 
@@ -2194,7 +2197,6 @@ export async function searchExplore({
     authorInfo,
     content,
     curatedContent,
-    curatedLibraryRelations,
     matchedClassifications,
     matchedSubCategories,
     matchedCategories,
@@ -2212,7 +2214,7 @@ export async function browseExplore({
   loggedInUserId = new Uint8Array(16),
   systemId,
   categoryId,
-  subCategoryId, 
+  subCategoryId,
   classificationId,
   isUnclassified,
   features,
@@ -2273,16 +2275,14 @@ export async function browseExplore({
     ownerId,
   });
 
-  const curatedLibraryRelations = await getMultipleLibraryRelations({
-    contentIds: curatedContent.map((c) => c.contentId),
-    loggedInUserId,
-  });
-
   // Replace library owner info with source owner info
   const curatedSourceUsers = await Promise.all(
-    curatedContent.map(async (c) => await maskLibraryUserInfo({contentId: c.contentId, owner: c.owner!})),
+    curatedContent.map(
+      async (c) =>
+        await maskLibraryUserInfo({ contentId: c.contentId, owner: c.owner! }),
+    ),
   );
-  for (let i=0; i<curatedContent.length; i++) {
+  for (let i = 0; i < curatedContent.length; i++) {
     curatedContent[i].owner = curatedSourceUsers[i];
   }
 
@@ -2377,7 +2377,6 @@ export async function browseExplore({
     recentContent,
     trendingContent,
     curatedContent,
-    curatedLibraryRelations,
     classificationBrowse,
     subCategoryBrowse,
     categoryBrowse,

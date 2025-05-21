@@ -68,16 +68,18 @@ export async function getMyContentOrLibraryContent({
     parent = processContent(preliminaryParent);
   }
 
-  const additionalFilter = isLibrary ? {
-    OR: [
-      {
-        isPublic: true,
-      },
-      {
-        type: "folder" as const,
+  const additionalFilter = isLibrary
+    ? {
+        OR: [
+          {
+            isPublic: true,
+          },
+          {
+            type: "folder" as const,
+          },
+        ],
       }
-    ]
-  } : {};
+    : {};
 
   const preliminaryContent = await prisma.content.findMany({
     where: {

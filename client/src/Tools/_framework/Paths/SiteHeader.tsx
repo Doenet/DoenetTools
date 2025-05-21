@@ -386,10 +386,7 @@ export function SiteHeader() {
                               Assigned
                             </NavLinkDropdownTab>
                             {user.isAdmin && (
-                              <NavLinkDropdownTab
-                                to="curate"
-                                dataTest="Curate"
-                              >
+                              <NavLinkDropdownTab to="curate" dataTest="Curate">
                                 Curate
                               </NavLinkDropdownTab>
                             )}

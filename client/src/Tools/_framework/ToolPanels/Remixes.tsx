@@ -18,7 +18,7 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router";
-import { createFullName, createFullNameCheckCurated } from "../../../_utils/names";
+import { createFullNameCheckCurated } from "../../../_utils/names";
 import { DateTime } from "luxon";
 import { ActivityRemixItem } from "../../../_utils/types";
 

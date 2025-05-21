@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useMemo, useState } from "react";
+import { ReactElement, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import {
   Box,
@@ -36,14 +36,16 @@ import {
 import Searchbar from "../../../Widgets/SearchBar";
 import { Form, useFetcher } from "react-router";
 import { CardContent } from "../../../Widgets/Card";
-import { createFullName, createFullNameCheckCurated } from "../../../_utils/names";
+import {
+  createFullName,
+  createFullNameCheckCurated,
+} from "../../../_utils/names";
 import {
   ContentDescription,
   ContentFeature,
   Content,
   PartialContentClassification,
   UserInfo,
-  LibraryRelations,
 } from "../../../_utils/types";
 import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
 import CardList from "../../../Widgets/CardList";
@@ -178,7 +180,6 @@ export function Explore() {
     content,
     trendingContent,
     curatedContent,
-    curatedLibraryRelations,
     matchedClassifications,
     matchedSubCategories,
     matchedCategories,
@@ -199,7 +200,6 @@ export function Explore() {
     content: Content[];
     trendingContent: Content[];
     curatedContent: Content[];
-    curatedLibraryRelations: LibraryRelations[];
     matchedClassifications: PartialContentClassification[] | null | undefined;
     matchedSubCategories: PartialContentClassification[] | null | undefined;
     matchedCategories: PartialContentClassification[] | null | undefined;
@@ -329,15 +329,11 @@ export function Explore() {
 
   const curatedContentDisplay = useMemo(
     () =>
-      displayMatchingContent(
-        curatedContent,
-        {
-          base: `calc(100vh - ${q ? "250" : "210"}px)`,
-          lg: `calc(100vh - ${q ? "210" : "170"}px)`,
-        },
-        curatedLibraryRelations,
-      ),
-    [curatedContent, curatedLibraryRelations, selectedCards, addTo],
+      displayMatchingContent(curatedContent, {
+        base: `calc(100vh - ${q ? "250" : "210"}px)`,
+        lg: `calc(100vh - ${q ? "210" : "170"}px)`,
+      }),
+    [curatedContent, selectedCards, addTo],
   );
 
   const trendingContentDisplay = useMemo(
@@ -357,9 +353,8 @@ export function Explore() {
   function displayMatchingContent(
     matches: Content[],
     minHeight?: string | { base: string; lg: string },
-    libraryRelations?: LibraryRelations[],
   ) {
-    const cardContent: CardContent[] = matches.map((itemObj, idx) => {
+    const cardContent: CardContent[] = matches.map((itemObj) => {
       const { contentId, owner, type: contentType } = itemObj;
       const cardLink =
         contentType === "folder" && owner != undefined

@@ -73,12 +73,12 @@ export function LibraryRequest({
               pending
             </Text>
           );
-          case "UNDER_REVIEW":
-            return (
-              <Text fontWeight="bold" as="span" color="purple">
-                under review
-              </Text>
-            );  
+        case "UNDER_REVIEW":
+          return (
+            <Text fontWeight="bold" as="span" color="purple">
+              under review
+            </Text>
+          );
         case "REJECTED":
           return (
             <Text fontWeight="bold" as="span" color="orange">
@@ -98,12 +98,13 @@ export function LibraryRequest({
 
     function getStatusExplanation() {
       switch (libraryRelations.activity?.status) {
-        case "PENDING": 
-        return (
-          <Text>
-            Your request is pending. One of our Doenet editors will get to it shortly.
-          </Text>
-        );
+        case "PENDING":
+          return (
+            <Text>
+              Your request is pending. One of our Doenet editors will get to it
+              shortly.
+            </Text>
+          );
         case "UNDER_REVIEW":
           return (
             <Text>

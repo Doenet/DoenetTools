@@ -33,11 +33,7 @@ export type License = {
 export type AssignmentStatus = "Unassigned" | "Closed" | "Open";
 
 /** This type must match the Prisma-defined enum `LibraryStatus` */
-type LibraryStatus =
-  | "PENDING"
-  | "UNDER_REVIEW"
-  | "PUBLISHED"
-  | "REJECTED";
+type LibraryStatus = "PENDING" | "UNDER_REVIEW" | "PUBLISHED" | "REJECTED";
 
 /**
  * This type represents the library status of a provided content id in both directions.

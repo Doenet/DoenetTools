@@ -170,9 +170,7 @@ export function CopyContentAndReportFinish({
     destinationAction = copyToLibrary
       ? "Go to the library"
       : "Go to My Activities";
-    destinationUrl = copyToLibrary
-      ? "/curate"
-      : `/activities/${user?.userId}`;
+    destinationUrl = copyToLibrary ? "/curate" : `/activities/${user?.userId}`;
   }
 
   return (

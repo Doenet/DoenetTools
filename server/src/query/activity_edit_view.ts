@@ -137,7 +137,7 @@ export async function getActivityViewerData({
         }),
     ),
   );
-  for(let i=0; i<remixSources.length; i++){
+  for (let i = 0; i < remixSources.length; i++) {
     remixSources[i].originContent.owner = curatedSourceUsers[i];
   }
 
