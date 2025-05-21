@@ -12,7 +12,6 @@ import { processContent, returnContentSelect } from "../utils/contentStructure";
 import { fromUUID } from "../utils/uuid";
 import {
   getLibraryAccountId,
-  getMultipleLibraryRelations,
   maskLibraryUserInfo,
 } from "./curate";
 import { PartialContentClassification, UserInfo } from "../types";
@@ -2062,11 +2061,6 @@ export async function searchExplore({
     isUnclassified,
     features,
     ownerId,
-  });
-
-  const curatedLibraryRelations = await getMultipleLibraryRelations({
-    contentIds: curatedContent.map((c) => c.contentId),
-    loggedInUserId,
   });
 
   // Replace library owner info with source owner info

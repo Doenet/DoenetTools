@@ -32,7 +32,6 @@ export function ContentInfoDrawer({
   onClose,
   finalFocusRef,
   contentData,
-  libraryRelations,
   displayTab = "general",
 }: {
   isOpen: boolean;
