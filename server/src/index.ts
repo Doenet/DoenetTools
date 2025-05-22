@@ -154,11 +154,11 @@ passport.use(
 
       sendEmail();
     },
-    async (user: { email: string; fromAnonymous: string | number }) => {
+    async (user: { email: string; fromAnonymous: string }) => {
       return {
         provider: "magiclink",
         email: user.email as string,
-        fromAnonymous: user.fromAnonymous || "",
+        fromAnonymous: user.fromAnonymous,
       };
     },
   ),
@@ -174,7 +174,7 @@ passport.serializeUser<any, any>(async (req, user: any, done) => {
 
     let u;
 
-    if (fromAnonymous !== "") {
+    if (fromAnonymous !== " ") {
       try {
         u = await upgradeAnonymousUser({
           userId: toUUID(fromAnonymous),
@@ -343,6 +343,9 @@ app.post(
     if (req.user?.isAnonymous) {
       // req.user.userId is the string you serialized in serializeUser
       req.body.fromAnonymous = fromUUID(req.user.userId);
+    } else {
+      // add blank `fromAnonymous` field as magic link is configured to expect `userFields: ["email", "fromAnonymous"]`
+      req.body.fromAnonymous = " ";
     }
     next();
   },
