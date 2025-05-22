@@ -345,6 +345,8 @@ app.post(
     if (req.user?.isAnonymous) {
       // req.user.userId is the string you serialized in serializeUser
       req.body.fromAnonymous = fromUUID(req.user.userId);
+    } else {
+      req.body.fromAnonymous = " ";
     }
     next();
   },
