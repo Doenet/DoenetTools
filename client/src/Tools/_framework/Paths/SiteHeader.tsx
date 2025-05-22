@@ -289,14 +289,26 @@ export function SiteHeader() {
                   <Center h="40px" mr="10px">
                     <Menu>
                       <MenuButton>
-                        <Avatar size="sm" name={`${createFullName(user)}`} />
+                        <Avatar
+                          size="sm"
+                          name={`${user.isAnonymous ? "?" : createFullName(user)}`}
+                        />
                       </MenuButton>
                       <MenuList>
                         <VStack mb="20px">
-                          <Avatar size="xl" name={`${createFullName(user)}`} />
-                          <Text>{createFullName(user)}</Text>
+                          <Avatar
+                            size="xl"
+                            name={`${user.isAnonymous ? "?" : createFullName(user)}`}
+                          />
                           <Text>
-                            {user.isAnonymous ? "(anonymous)" : user.email}
+                            {user.isAnonymous
+                              ? "[Anonymous]"
+                              : createFullName(user)}
+                          </Text>
+                          <Text>
+                            {user.isAnonymous
+                              ? `Pseudonym: ${createFullName(user)}`
+                              : user.email}
                           </Text>
                           {user.isAnonymous ? (
                             <Link href={`/signIn`}>Sign in to save work</Link>
@@ -334,7 +346,7 @@ export function SiteHeader() {
                           ) : null}
                         </VStack>
                         <MenuItem as={Link} href="/changeName">
-                          Update name
+                          Update {user.isAnonymous ? "pseudonym" : "name"}
                         </MenuItem>
                         <MenuItem as="a" href="/api/login/logout">
                           {user.isAnonymous

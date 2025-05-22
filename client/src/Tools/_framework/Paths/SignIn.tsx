@@ -13,9 +13,8 @@ import {
   Show,
 } from "@chakra-ui/react";
 import { Form } from "react-router";
-import { useNavigate, useOutletContext } from "react-router";
+import { useNavigate } from "react-router";
 import "./google-signin.css";
-import { SiteContext } from "./SiteHeader";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -24,15 +23,12 @@ export async function action({ request }) {
   axios.post("/api/auth/magiclink", {
     email: formObj.email,
     // stay: formObj.stay !== undefined,
-    fromAnonymous: formObj.fromAnonymous ?? 0,
   });
 
   return null;
 }
 
 export function SignIn() {
-  const { user } = useOutletContext<SiteContext>();
-
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [email, setEmail] = useState("");
 
@@ -116,11 +112,6 @@ export function SignIn() {
                 >
                   Sign up/Log in
                 </Button>
-                <input
-                  type="hidden"
-                  name="fromAnonymous"
-                  value={user?.isAnonymous ? user.userId : 0}
-                />
               </Form>
 
               <Flex

@@ -235,8 +235,8 @@ export function LibraryActivities() {
   const [highlightRename, setHighlightRename] = useState(false);
 
   useEffect(() => {
-    document.title = `Library Activities - Doenet`;
-  }, []);
+    document.title = `${parent?.name ?? "Library Activities"} - Doenet`;
+  }, [parent]);
 
   const fetcher = useFetcher();
 
@@ -396,7 +396,7 @@ export function LibraryActivities() {
 
   const headingText = parent ? (
     <>
-      {parent.isPublic ? "Public " : ""}
+      Library {parent.isPublic ? "Public " : ""}
       {folderType}: {parent.name}
     </>
   ) : (

@@ -47,6 +47,7 @@ export type UserInfo = {
   firstNames: string | null;
   lastNames: string;
   email: string;
+  isAnonymous?: boolean;
   isAuthor?: boolean;
   numLibrary?: number;
   numCommunity?: number;

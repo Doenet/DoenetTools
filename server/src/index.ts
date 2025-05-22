@@ -22,6 +22,7 @@ import { UserInfo } from "./types";
 import {
   findOrCreateUser,
   getUserInfo,
+  updateUser,
   upgradeAnonymousUser,
 } from "./query/user";
 import { userRouter } from "./routes/userRoutes";
@@ -74,9 +75,15 @@ passport.use(
       clientSecret: googleClientSecret,
       callbackURL: (process.env.LOGIN_CALLBACK_ROOT || "") + "api/login/google",
       scope: ["profile", "email"],
+      passReqToCallback: true,
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (_accessToken: any, _refreshToken: any, profile: any, done: any) => {
+    (req, _accessToken, _refreshToken, profile, done) => {
+      if (req.user?.isAnonymous) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-expect-error
+        profile.fromAnonymous = fromUUID((req.user as UserInfo).userId);
+      }
+
       done(null, profile);
     },
   ),
@@ -174,6 +181,7 @@ passport.serializeUser<any, any>(async (req, user: any, done) => {
           email,
         });
       } catch (_e) {
+        console.log("Error upgrading anonymous user", _e);
         /// ignore any error
       }
     }
@@ -192,12 +200,37 @@ passport.serializeUser<any, any>(async (req, user: any, done) => {
     if (user.emails[0].verified) {
       email = user.emails[0].value;
     }
+    const fromAnonymous: string = user.fromAnonymous;
 
-    const u = await findOrCreateUser({
-      email,
-      firstNames: user.name.givenName,
-      lastNames: user.name.familyName,
-    });
+    let u;
+
+    if (fromAnonymous) {
+      try {
+        u = await upgradeAnonymousUser({
+          userId: toUUID(fromAnonymous),
+          email,
+        });
+
+        // Use name from google account
+        await updateUser({
+          loggedInUserId: u.userId,
+          firstNames: user.name.givenName,
+          lastNames: user.name.familyName,
+        });
+      } catch (_e) {
+        console.log("Error upgrading anonymous user", _e);
+        /// ignore any error
+      }
+    }
+
+    if (!u) {
+      u = await findOrCreateUser({
+        email,
+        firstNames: user.name.givenName,
+        lastNames: user.name.familyName,
+      });
+    }
+
     return done(undefined, fromUUID(u.userId));
   } else if (user.uuid) {
     let email = user.uuid + "@anonymous.doenet.org";
@@ -305,7 +338,17 @@ app.get("/", (req: Request, res: Response) => {
 
 app.post(
   "/api/auth/magiclink",
+  // 1) if we're already signed‑in as an anonymous user, pluck their id out of req.user
+  (req, _res, next) => {
+    if (req.user?.isAnonymous) {
+      // req.user.userId is the string you serialized in serializeUser
+      req.body.fromAnonymous = fromUUID(req.user.userId);
+    }
+    next();
+  },
+  // 2) hand off to passport‑magic‑link
   passport.authenticate("magiclink", { action: "requestToken" }),
+  // 3) redirect back home once the link has been sent
   (_req, res) => res.redirect("/"),
 );
 
