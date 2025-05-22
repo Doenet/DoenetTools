@@ -232,8 +232,8 @@ export function Curation() {
   const [highlightRename, setHighlightRename] = useState(false);
 
   useEffect(() => {
-    document.title = `Curation - Doenet`;
-  }, []);
+    document.title = `${parent?.name ?? "Curation"} - Doenet`;
+  }, [parent]);
 
   const fetcher = useFetcher();
 
@@ -393,7 +393,7 @@ export function Curation() {
 
   const headingText = parent ? (
     <>
-      {parent.isPublic ? "Public " : ""}
+      Library {parent.isPublic ? "Public " : ""}
       {folderType}: {parent.name}
     </>
   ) : (

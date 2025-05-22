@@ -326,8 +326,8 @@ export function Activities() {
   const [highlightRename, setHighlightRename] = useState(false);
 
   useEffect(() => {
-    document.title = `Activities - Doenet`;
-  }, []);
+    document.title = `${parent?.name ?? "My Activities"} - Doenet`;
+  }, [parent]);
 
   const fetcher = useFetcher();
 
