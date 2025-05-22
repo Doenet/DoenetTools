@@ -10,10 +10,7 @@ import {
 } from "../utils/classificationsFeatures";
 import { processContent, returnContentSelect } from "../utils/contentStructure";
 import { fromUUID } from "../utils/uuid";
-import {
-  getLibraryAccountId,
-  maskLibraryUserInfo,
-} from "./curate";
+import { getLibraryAccountId, maskLibraryUserInfo } from "./curate";
 import { PartialContentClassification, UserInfo } from "../types";
 import {
   getAvailableContentFeatures,
