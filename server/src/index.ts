@@ -155,11 +155,11 @@ passport.use(
 
       sendEmail();
     },
-    async (user: { email: string; fromAnonymous: string | number }) => {
+    async (user: { email: string; fromAnonymous: string }) => {
       return {
         provider: "magiclink",
         email: user.email as string,
-        fromAnonymous: user.fromAnonymous || "",
+        fromAnonymous: user.fromAnonymous,
       };
     },
   ),
@@ -175,7 +175,7 @@ passport.serializeUser<any, any>(async (req, user: any, done) => {
 
     let u;
 
-    if (fromAnonymous !== "") {
+    if (fromAnonymous !== " ") {
       try {
         u = await upgradeAnonymousUser({
           userId: toUUID(fromAnonymous),
