@@ -346,6 +346,7 @@ app.post(
       // req.user.userId is the string you serialized in serializeUser
       req.body.fromAnonymous = fromUUID(req.user.userId);
     } else {
+      // add blank `fromAnonymous` field as magic link is configured to expect `userFields: ["email", "fromAnonymous"]`
       req.body.fromAnonymous = " ";
     }
     next();
