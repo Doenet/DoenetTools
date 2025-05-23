@@ -1,8 +1,19 @@
 import React from "react";
 import { FetcherWithComponents } from "react-router";
-import { Box, Button, Text, VStack } from "@chakra-ui/react";
+import { Box, Button, Heading, Text, VStack } from "@chakra-ui/react";
 import axios from "axios";
-import { Content, LibraryRelations } from "../../../_utils/types";
+import {
+  Content,
+  LibraryComment,
+  LibraryRelations,
+} from "../../../_utils/types";
+import { ChatConversation } from "../../../Widgets/ChatConversation";
+import { createFullName } from "../../../_utils/names";
+import { DateTime } from "luxon";
+import {
+  getLibraryStatusDescription,
+  getLibraryStatusStylized,
+} from "../../../_utils/library";
 
 export async function libraryRequestActions({ formObj }: { [k: string]: any }) {
   if (formObj._action == "suggest curation") {
@@ -23,10 +34,12 @@ export function LibraryRequest({
   fetcher,
   contentData,
   libraryRelations,
+  libraryComments,
 }: {
   fetcher: FetcherWithComponents<any>;
   contentData: Content;
   libraryRelations: LibraryRelations;
+  libraryComments: LibraryComment[];
 }) {
   // const info = contentData.librarySourceInfo;
 
@@ -65,86 +78,38 @@ export function LibraryRequest({
       </VStack>
     );
   } else {
-    function getStatusText() {
-      switch (libraryRelations.activity?.status) {
-        case "PENDING":
-          return (
-            <Text fontWeight="bold" as="span" color="gray">
-              pending
-            </Text>
-          );
-        case "UNDER_REVIEW":
-          return (
-            <Text fontWeight="bold" as="span" color="purple">
-              under review
-            </Text>
-          );
-        case "REJECTED":
-          return (
-            <Text fontWeight="bold" as="span" color="orange">
-              rejected
-            </Text>
-          );
-        case "PUBLISHED":
-          return (
-            <Text fontWeight="bold" as="span" color="green">
-              published
-            </Text>
-          );
-        default:
-          return null;
-      }
-    }
-
-    function getStatusExplanation() {
-      switch (libraryRelations.activity?.status) {
-        case "PENDING":
-          return (
-            <Text>
-              Your request is pending. One of our Doenet editors will get to it
-              shortly.
-            </Text>
-          );
-        case "UNDER_REVIEW":
-          return (
-            <Text>
-              Your request is under review by the Doenet editors. You will be
-              notified when the review is complete.
-            </Text>
-          );
-        case "REJECTED":
-          return (
-            <Text>
-              Your request has been rejected. Please see the comments provided
-              by the reviewers.
-            </Text>
-          );
-        case "PUBLISHED":
-          return (
-            <Text>
-              Congratulations, your activity has been published in the Doenet
-              Library! It will now appear in the <Text as="em">Curated</Text>{" "}
-              tab on Explore.
-            </Text>
-          );
-        default:
-          return null;
-      }
-    }
-
     return (
       <>
         <VStack align={"left"} spacing={4}>
-          <Text>Current status of your request: {getStatusText()}</Text>
+          <Heading size="md">
+            Status is{" "}
+            {getLibraryStatusStylized(libraryRelations.activity.status)}
+          </Heading>
 
-          {getStatusExplanation()}
+          {getLibraryStatusDescription(libraryRelations.activity.status)}
 
-          {libraryRelations.activity.comments ? (
-            <Text>
-              Comments from an editor:{" "}
-              <Text as="em">{libraryRelations.activity.comments}</Text>
-            </Text>
-          ) : null}
+          <ChatConversation
+            conversationTitle="Conversation with editor(s)"
+            messages={libraryComments.map((c) => {
+              return {
+                user: createFullName(c.user),
+                userIsMe: c.isMe,
+                message: c.comment,
+                dateTime: DateTime.fromISO(c.dateTime),
+              };
+            })}
+            onAddComment={(comment) => {
+              fetcher.submit(
+                {
+                  _action: "add comment",
+                  contentId: contentData.contentId,
+                  asEditor: false,
+                  comment,
+                },
+                { method: "post" },
+              );
+            }}
+          />
         </VStack>
 
         {libraryRelations.activity.status === "REJECTED" ? (

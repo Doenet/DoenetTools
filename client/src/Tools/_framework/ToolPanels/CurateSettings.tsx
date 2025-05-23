@@ -1,22 +1,30 @@
-import { useState } from "react";
 import { FetcherWithComponents } from "react-router";
-import { Box, List, Button, Text } from "@chakra-ui/react";
+import {
+  Box,
+  List,
+  Button,
+  UnorderedList,
+  ListItem,
+  Stack,
+  Spacer,
+  Heading,
+} from "@chakra-ui/react";
 import axios from "axios";
-import { Content, LibraryRelations } from "../../../_utils/types";
+import {
+  Content,
+  LibraryComment,
+  LibraryRelations,
+} from "../../../_utils/types";
 import { DisplayLicenseItem } from "../../../Widgets/Licenses";
 import { createFullName } from "../../../_utils/names";
+import { ChatConversation } from "../../../Widgets/ChatConversation";
+import { DateTime } from "luxon";
+import { getLibraryStatusStylized } from "../../../_utils/library";
 
 export async function curateActions({ formObj }: { [k: string]: any }) {
-  if (formObj._action == "modify comments") {
-    await axios.post("/api/curate/modifyCommentsOfLibraryRequest", {
-      sourceId: formObj.sourceId,
-      comments: formObj.comments,
-    });
-    return true;
-  } else if (formObj._action == "publish") {
+  if (formObj._action == "publish") {
     await axios.post("/api/curate/publishActivityToLibrary", {
       contentId: formObj.id,
-      // comments: formObj.comments,
     });
     return true;
   } else if (formObj._action == "unpublish") {
@@ -27,7 +35,6 @@ export async function curateActions({ formObj }: { [k: string]: any }) {
   } else if (formObj._action == "reject") {
     await axios.post("/api/curate/rejectActivity", {
       contentId: formObj.id,
-      // comments: formObj.comments,
     });
     return true;
   } else if (formObj?._action == "claim") {
@@ -50,10 +57,12 @@ export function CurateSettings({
   fetcher,
   contentData,
   libraryRelations,
+  libraryComments,
 }: {
   fetcher: FetcherWithComponents<any>;
   contentData: Content;
   libraryRelations: LibraryRelations;
+  libraryComments: LibraryComment[];
 }) {
   const license = contentData.license!;
 
@@ -62,159 +71,122 @@ export function CurateSettings({
 
   const sourceIdIsVisible = librarySource.sourceContentId !== null;
 
-  const [comments, _setComments] = useState<string>(
-    librarySource.comments || "",
-  );
-  // const [unsavedComments, setUnsavedComments] = useState<boolean>(false);
-
   return (
     <>
-      {!sourceIdIsVisible ? (
-        <Text>The source activity for this content is no longer public.</Text>
-      ) : null}
+      <Stack direction="row">
+        <Heading size="md">
+          Status is {getLibraryStatusStylized(librarySource.status)}
+        </Heading>
 
-      <Text>Status: {librarySource.status}</Text>
+        <Spacer />
 
-      <Text>
-        Owner-requested: {librarySource.ownerRequested ? "Yes" : "No"}
-      </Text>
+        {!librarySource.iAmPrimaryEditor && (
+          <Button
+            onClick={() => {
+              fetcher.submit(
+                {
+                  _action: "claim",
+                  id: contentData.contentId,
+                },
+                { method: "post" },
+              );
+            }}
+          >
+            Claim
+          </Button>
+        )}
+        {librarySource.status === "UNDER_REVIEW" && (
+          <Button
+            onClick={() => {
+              // setUnsavedComments(false);
+              fetcher.submit(
+                {
+                  _action: "publish",
+                  id: contentData.contentId,
+                },
+                { method: "post" },
+              );
+            }}
+          >
+            Publish
+          </Button>
+        )}
 
-      <Text>
-        Current primary editor:{" "}
-        {librarySource.primaryEditor
-          ? createFullName(librarySource.primaryEditor)
-          : "None"}
-        {librarySource.iAmPrimaryEditor && " (you)"}
-      </Text>
+        {librarySource.status === "UNDER_REVIEW" && (
+          <Button
+            onClick={() => {
+              // setUnsavedComments(false);
+              fetcher.submit(
+                {
+                  _action: "reject",
+                  id: contentData.contentId,
+                },
+                { method: "post" },
+              );
+            }}
+          >
+            Reject
+          </Button>
+        )}
 
-      {!librarySource.iAmPrimaryEditor && (
-        <Button
-          onClick={() => {
-            fetcher.submit(
-              {
-                _action: "claim",
-                id: contentData.contentId,
-              },
-              { method: "post" },
-            );
-          }}
-        >
-          Claim
-        </Button>
-      )}
+        {librarySource.status === "PUBLISHED" && (
+          <Button
+            onClick={() => {
+              fetcher.submit(
+                {
+                  _action: "unpublish",
+                  id: contentData.contentId,
+                },
+                { method: "post" },
+              );
+            }}
+          >
+            Unpublish
+          </Button>
+        )}
+      </Stack>
+      <UnorderedList>
+        <ListItem>
+          Requested on{" "}
+          {DateTime.fromISO(librarySource.reviewRequestDate!).toLocaleString(
+            DateTime.DATE_MED,
+          )}
+          {librarySource.ownerRequested ? ` by owner` : ""}
+        </ListItem>
+        <ListItem>
+          Current primary editor:{" "}
+          {librarySource.primaryEditor
+            ? createFullName(librarySource.primaryEditor)
+            : "None"}
+          {librarySource.iAmPrimaryEditor && " (you)"}
+        </ListItem>
+        {!sourceIdIsVisible ? (
+          <ListItem>Note: Source activity is no longer public</ListItem>
+        ) : null}
+      </UnorderedList>
 
-      {/* <Box marginTop="30px">
-        <Text>Comments</Text>
-
-        <Textarea
-          name="comments"
-          placeholder="Give the author some feedback here..."
-          value={comments}
-          onChange={(e) => {
-            setComments(e.target.value);
-            setUnsavedComments(true);
-          }}
-          width="90%"
-          onBlur={(e) => {
-            if (e.target.value) {
-              setComments(e.target.value);
-              setUnsavedComments(true);
-            }
-          }}
-        />
-      </Box> */}
-      {librarySource.status === "UNDER_REVIEW" && (
-        <Button
-          onClick={() => {
-            // setUnsavedComments(false);
-            fetcher.submit(
-              {
-                _action: "publish",
-                id: contentData.contentId,
-                comments,
-              },
-              { method: "post" },
-            );
-          }}
-        >
-          Publish
-        </Button>
-      )}
-
-      {librarySource.status === "UNDER_REVIEW" && (
-        <Button
-          onClick={() => {
-            // setUnsavedComments(false);
-            fetcher.submit(
-              {
-                _action: "reject",
-                id: contentData.contentId,
-                comments,
-              },
-              { method: "post" },
-            );
-          }}
-        >
-          Reject
-        </Button>
-      )}
-
-      {librarySource.status === "PUBLISHED" && (
-        <Button
-          onClick={() => {
-            fetcher.submit(
-              {
-                _action: "unpublish",
-                id: contentData.contentId,
-              },
-              { method: "post" },
-            );
-          }}
-        >
-          Unpublish
-        </Button>
-      )}
-
-      {/* {librarySource.status === "PENDING_REVIEW" &&
-      librarySource.ownerRequested &&
-      sourceIdIsPublic ? (
-        <Button
-          isDisabled={comments === ""}
-          onClick={() => {
-            setUnsavedComments(false);
-            fetcher.submit(
-              {
-                _action: "return for revision",
-                sourceId: librarySource.sourceContentId,
-                comments,
-              },
-              { method: "post" },
-            );
-          }}
-        >
-          Return for revision
-        </Button>
-      ) : null} */}
-      {/* 
-      {librarySource.ownerRequested ||
-      (librarySource.status === "PUBLISHED" && sourceIdIsPublic) ? (
-        <Button
-          isDisabled={!unsavedComments}
-          onClick={() => {
-            setUnsavedComments(false);
-            fetcher.submit(
-              {
-                _action: "modify comments",
-                sourceId: librarySource.sourceContentId,
-                comments,
-              },
-              { method: "post" },
-            );
-          }}
-        >
-          Save comments
-        </Button>
-      ) : null} */}
+      <ChatConversation
+        conversationTitle="Conversation with owner"
+        messages={libraryComments.map((c) => {
+          return {
+            user: createFullName(c.user),
+            userIsMe: c.isMe,
+            message: c.comment,
+            dateTime: DateTime.fromISO(c.dateTime),
+          };
+        })}
+        onAddComment={(comment) => {
+          fetcher.submit(
+            {
+              _action: "add comment",
+              contentId: contentData.contentId,
+              asEditor: true,
+              comment,
+            },
+            { method: "post" },
+          );
+        }}
+      />
 
       <Box
         marginTop="30px"

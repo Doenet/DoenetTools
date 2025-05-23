@@ -434,7 +434,7 @@ test("owner requests library review, has conversation, admin publishes", async (
 
   let comments = await getComments({ contentId, loggedInUserId: ownerId });
   expect(comments.length).eqls(1);
-  expect(comments[0].userId).eqls(ownerId);
+  expect(comments[0].user.userId).eqls(ownerId);
   expect(comments[0].comment).eqls("Notes about my project...");
 
   const draftId = await getActivityIdFromSourceId(contentId);
@@ -444,7 +444,7 @@ test("owner requests library review, has conversation, admin publishes", async (
     asEditor: true,
   });
   expect(comments.length).eqls(1);
-  expect(comments[0].userId).eqls(ownerId);
+  expect(comments[0].user.userId).eqls(ownerId);
   expect(comments[0].comment).eqls("Notes about my project...");
 
   // Admin comments
@@ -457,9 +457,9 @@ test("owner requests library review, has conversation, admin publishes", async (
 
   comments = await getComments({ contentId, loggedInUserId: ownerId });
   expect(comments.length).eqls(2);
-  expect(comments[0].userId).eqls(ownerId);
+  expect(comments[0].user.userId).eqls(ownerId);
   expect(comments[0].comment).eqls("Notes about my project...");
-  expect(comments[1].userId).eqls(adminId);
+  expect(comments[1].user.userId).eqls(adminId);
   expect(comments[1].comment).eqls("Nice job");
 
   comments = await getComments({
@@ -468,9 +468,9 @@ test("owner requests library review, has conversation, admin publishes", async (
     asEditor: true,
   });
   expect(comments.length).eqls(2);
-  expect(comments[0].userId).eqls(ownerId);
+  expect(comments[0].user.userId).eqls(ownerId);
   expect(comments[0].comment).eqls("Notes about my project...");
-  expect(comments[1].userId).eqls(adminId);
+  expect(comments[1].user.userId).eqls(adminId);
   expect(comments[1].comment).eqls("Nice job");
 
   // Admin claims, edits, and publishes
@@ -515,11 +515,11 @@ test("owner requests library review, has conversation, admin publishes", async (
     asEditor: true,
   });
   expect(comments.length).eqls(3);
-  expect(comments[0].userId).eqls(ownerId);
+  expect(comments[0].user.userId).eqls(ownerId);
   expect(comments[0].comment).eqls("Notes about my project...");
-  expect(comments[1].userId).eqls(adminId);
+  expect(comments[1].user.userId).eqls(adminId);
   expect(comments[1].comment).eqls("Nice job");
-  expect(comments[2].userId).eqls(ownerId);
+  expect(comments[2].user.userId).eqls(ownerId);
   expect(comments[2].comment).eqls("I have new comments.");
 });
 
@@ -596,7 +596,7 @@ test("random user requests, admin publishes", async () => {
     asEditor: true,
   });
   expect(comments.length).eqls(1);
-  expect(comments[0].userId).eqls(ownerId);
+  expect(comments[0].user.userId).eqls(ownerId);
   expect(comments[0].comment).eqls("Wow, you curated my project!");
 });
 

@@ -11,6 +11,13 @@ import {
   MenuGroup,
   MenuItem,
   MenuList,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   ResponsiveValue,
   Tooltip,
   useDisclosure,
@@ -30,6 +37,13 @@ export async function addContentToMenuActions({
 }: {
   [k: string]: any;
 }) {
+  if (formObj._action === "suggest curation") {
+    await axios.post(`/api/curate/suggestToBeCurated`, {
+      contentId: formObj.contentId,
+    });
+    return true;
+  }
+
   const resultMC = await moveCopyContentActions({ formObj });
   if (resultMC) {
     return resultMC;
@@ -89,8 +103,6 @@ export function AddContentToMenu({
 
   const [baseContains, setBaseContains] = useState<ContentType[]>([]);
 
-  const [copyToLibrary, setCopyToLibrary] = useState<boolean>(false);
-
   useEffect(() => {
     const allowedParents = getAllowedParentTypes(
       sourceContent.map((c) => c.type),
@@ -98,6 +110,38 @@ export function AddContentToMenu({
 
     setAllowedParents(allowedParents);
   }, [sourceContent]);
+
+  const {
+    isOpen: suggestCurationIsOpen,
+    onOpen: suggestCurationOnOpen,
+    onClose: suggestCurationOnClose,
+  } = useDisclosure();
+
+  const suggestCurationModal = (
+    <Modal
+      isOpen={suggestCurationIsOpen}
+      onClose={suggestCurationOnClose}
+      size="md"
+      closeOnOverlayClick={true}
+    >
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader textAlign="center" data-test="Copy Header">
+          Suggestion received
+        </ModalHeader>
+        <ModalCloseButton />
+        <ModalBody data-test="Copy Body">
+          Thank you for suggesting this activity. This activity will be reviewed
+          by our editors.
+        </ModalBody>
+        <ModalFooter>
+          <Button data-test="Close Button" onClick={suggestCurationOnClose}>
+            Close
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
 
   const {
     isOpen: copyDialogIsOpen,
@@ -113,7 +157,6 @@ export function AddContentToMenu({
       contentIds={sourceContent.map((sc) => sc.contentId)}
       desiredParent={copyDestination}
       action="Add"
-      copyToLibrary={copyToLibrary}
     />
   );
 
@@ -158,6 +201,7 @@ export function AddContentToMenu({
 
   return (
     <>
+      {suggestCurationModal}
       {copyContentModal}
       {moveCopyContentModal}
       <Menu
@@ -205,8 +249,14 @@ export function AddContentToMenu({
             <MenuItem
               data-test="Suggest this to be curated"
               onClick={() => {
-                setCopyToLibrary(true);
-                copyDialogOnOpen();
+                fetcher.submit(
+                  {
+                    _action: "suggest curation",
+                    contentId: sourceContent[0].contentId,
+                  },
+                  { method: "post" },
+                );
+                suggestCurationOnOpen();
               }}
             >
               Suggest this to be curated
@@ -283,7 +333,6 @@ export function AddContentToMenu({
             data-test="Add To My Activities"
             onClick={() => {
               setCopyDestination(null);
-              setCopyToLibrary(false);
               copyDialogOnOpen();
             }}
           >
@@ -317,7 +366,6 @@ export function AddContentToMenu({
                       }
                       onClick={() => {
                         setCopyDestination(rc);
-                        setCopyToLibrary(false);
                         copyDialogOnOpen();
                       }}
                     >

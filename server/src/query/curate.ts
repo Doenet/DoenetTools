@@ -1,6 +1,6 @@
 import { LibraryEventType, LibraryStatus } from "@prisma/client";
 import { prisma } from "../model";
-import { Content, LibraryRelations, UserInfo } from "../types";
+import { Content, LibraryComment, LibraryRelations, UserInfo } from "../types";
 import { InvalidRequestError } from "../utils/error";
 import { fromUUID, isEqualUUID } from "../utils/uuid";
 import { createContent, getAllDoenetmlVersions } from "./activity";
@@ -85,6 +85,10 @@ async function redactInvisibleContentIds({
   return results;
 }
 
+/**
+ * Replace library content's UserInfo with the source author instead of the library account.
+ * If the content is not owned by the library, this function does nothing.
+ */
 export async function maskLibraryUserInfo({
   contentId,
   owner,
@@ -377,6 +381,7 @@ export async function suggestToBeCurated({
       },
       data: {
         ownerRequested,
+        primaryEditorId: null,
         requestedOn: new Date(),
         status: LibraryStatus.PENDING,
         events: {
@@ -636,7 +641,7 @@ export async function getComments({
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
   asEditor?: boolean;
-}) {
+}): Promise<LibraryComment[]> {
   if (asEditor) {
     await mustBeAdmin(loggedInUserId);
   } else {
@@ -647,7 +652,7 @@ export async function getComments({
     });
   }
 
-  return await prisma.libraryEvents.findMany({
+  const results = await prisma.libraryEvents.findMany({
     where: {
       eventType: LibraryEventType.ADD_COMMENT,
       info: {
@@ -658,15 +663,26 @@ export async function getComments({
     select: {
       comment: true,
       dateTime: true,
-      userId: true,
       user: {
         select: {
+          userId: true,
           firstNames: true,
           lastNames: true,
+          email: true,
         },
       },
     },
   });
+
+  const resultsWithIsMe = results.map((v) => {
+    return {
+      ...v,
+      comment: v.comment!,
+      isMe: isEqualUUID(v.user.userId, loggedInUserId),
+    };
+  });
+
+  return resultsWithIsMe;
 }
 
 export async function getCurationFolderContent({

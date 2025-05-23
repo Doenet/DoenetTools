@@ -28,18 +28,23 @@ export type LibraryRelations = {
   activity?: {
     status: LibraryStatus;
     activityContentId: Uint8Array | null;
-    comments?: string;
     reviewRequestDate?: Date;
   };
   source?: {
     status: LibraryStatus;
     sourceContentId: Uint8Array | null;
-    comments?: string;
     reviewRequestDate?: Date;
     ownerRequested?: boolean;
     primaryEditor?: UserInfo;
     iAmPrimaryEditor?: boolean;
   };
+};
+
+export type LibraryComment = {
+  user: UserInfo;
+  dateTime: Date;
+  comment: string;
+  isMe: boolean;
 };
 
 export type UserInfo = {

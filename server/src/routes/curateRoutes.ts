@@ -21,6 +21,7 @@ import {
   searchCurationFolderContentSchema,
   createCurationFolderSchema,
   curationParentIdSchema,
+  getCommentsSchema,
 } from "../schemas/curateSchema";
 import { contentIdSchema } from "../schemas/contentSchema";
 
@@ -85,5 +86,5 @@ curateRouter.post("/addComment", queryLoggedIn(addComment, addCommentSchema));
 
 curateRouter.get(
   "/getComments/:contentId",
-  queryLoggedIn(getComments, contentIdSchema),
+  queryLoggedIn(getComments, getCommentsSchema),
 );

@@ -22,6 +22,7 @@ import { Remixes } from "./Remixes";
 import {
   ActivityRemixItem,
   Content,
+  LibraryComment,
   LibraryRelations,
   License,
   LicenseCode,
@@ -32,6 +33,16 @@ import { curateActions, CurateSettings } from "./CurateSettings";
 import { LibraryRequest, libraryRequestActions } from "./LibraryRequest";
 
 export async function shareDrawerActions({ formObj }: { [k: string]: any }) {
+  // For editors and activity owners
+  if (formObj._action == "add comment") {
+    await axios.post("/api/curate/addComment", {
+      contentId: formObj.contentId,
+      comment: formObj.comment,
+      asEditor: formObj.asEditor === "true",
+    });
+    return true;
+  }
+
   const sharingResult = await sharingActions({ formObj });
   if (sharingResult) {
     return sharingResult;
@@ -88,6 +99,10 @@ export function ShareDrawer({
   const [remixedWithLicense, setRemixedWithLicense] =
     useState<LicenseCode | null>(null);
 
+  const [libraryComments, setLibraryComments] = useState<LibraryComment[]>([]);
+
+  const inCurationLibrary = libraryRelations.source;
+
   useEffect(() => {
     async function getRemixesAndSources() {
       const { data } = await axios.get(
@@ -113,12 +128,19 @@ export function ShareDrawer({
       setHaveChangedRemix(remixes.some((remix) => remix.remixContent.changed));
     }
 
+    async function getLibraryComments() {
+      const { data } = await axios.get(
+        `/api/curate/getComments/${contentData.contentId}?asEditor=${inCurationLibrary ? "true" : "false"}`,
+      );
+      const comments: LibraryComment[] = data;
+      setLibraryComments(comments);
+    }
+
     if (contentData.type !== "folder") {
       getRemixesAndSources();
+      getLibraryComments();
     }
   }, [contentData]);
-
-  const inCurationLibrary = libraryRelations.source;
 
   const drawerTitle = inCurationLibrary
     ? "Curation Controls"
@@ -131,6 +153,7 @@ export function ShareDrawer({
       fetcher={fetcher}
       contentData={contentData}
       libraryRelations={libraryRelations}
+      libraryComments={libraryComments}
     />
   ) : (
     <ShareSettings
@@ -202,7 +225,7 @@ export function ShareDrawer({
             </TabList>
             <Box overflowY="auto" height="calc(100vh - 130px)">
               <TabPanels height="100%">
-                <TabPanel paddingTop="5px">{shareOrCurateTabPanel}</TabPanel>
+                <TabPanel height="100%">{shareOrCurateTabPanel}</TabPanel>
                 {contentData.type === "folder" ? null : (
                   <TabPanel height="100%">
                     <RemixSources
@@ -226,6 +249,7 @@ export function ShareDrawer({
                     <LibraryRequest
                       contentData={contentData}
                       libraryRelations={libraryRelations}
+                      libraryComments={libraryComments}
                       fetcher={fetcher}
                     ></LibraryRequest>
                   </TabPanel>
