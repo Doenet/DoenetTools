@@ -25,16 +25,15 @@ import {
 } from "@chakra-ui/react";
 import { HiOutlineMail } from "react-icons/hi";
 import { BsGithub, BsDiscord } from "react-icons/bs";
-import axios from "axios";
 import { Content } from "../../../_utils/types";
 import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
 
 export async function loader() {
-  const { data: promotedContent } = await axios.get(
-    "/api/oldAdmin/loadPromotedContent",
-  );
-  const favorites = promotedContent.find((content) => content.homepage);
-  return { favorites };
+  // const { data: promotedContent } = await axios.get(
+  //   "/api/oldAdmin/loadPromotedContent",
+  // );
+  // const favorites = promotedContent.find((content) => content.homepage);
+  return { favorites: [] };
 }
 
 const HomeIntroVideo = lazy(() => import("./HomeIntroVideo"));

@@ -11,7 +11,7 @@ import {
 import { Content } from "../../../_utils/types";
 import { InfoIcon } from "@chakra-ui/icons";
 import { DisplayLicenseItem } from "../../../Widgets/Licenses";
-import { createFullName } from "../../../_utils/names";
+import { createFullNameCheckCurated } from "../../../_utils/names";
 import { activityFeatureIcons } from "../../../_utils/activity";
 
 export function GeneralContentInfo({ contentData }: { contentData: Content }) {
@@ -19,6 +19,8 @@ export function GeneralContentInfo({ contentData }: { contentData: Content }) {
   const contentType = contentData.type === "folder" ? "Folder" : "Activity";
 
   const containsFeatures = contentData.contentFeatures.length > 0;
+
+  const ownerName = createFullNameCheckCurated(contentData.owner!);
 
   return (
     <Box>
@@ -59,8 +61,7 @@ export function GeneralContentInfo({ contentData }: { contentData: Content }) {
         ) : license.isComposition ? (
           <>
             <p>
-              <em>{contentData.name}</em> by{" "}
-              {createFullName(contentData.owner!)} is shared with these
+              <em>{contentData.name}</em> by {ownerName} is shared with these
               licenses:
             </p>
             <List spacing="20px" marginTop="10px">
@@ -76,8 +77,8 @@ export function GeneralContentInfo({ contentData }: { contentData: Content }) {
         ) : (
           <>
             <p>
-              <em>{contentData.name}</em> by{" "}
-              {createFullName(contentData.owner!)} is shared with the license:
+              <em>{contentData.name}</em> by {ownerName} is shared with the
+              license:
             </p>
             <List marginTop="10px">
               <DisplayLicenseItem licenseItem={license} />

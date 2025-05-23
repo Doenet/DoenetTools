@@ -1,5 +1,4 @@
 import express from "express";
-import { requireLoggedIn } from "../middleware/validationMiddleware";
 import {
   checkIfContentContains,
   copyContent,
@@ -15,8 +14,6 @@ import {
 import { queryLoggedIn } from "../middleware/queryMiddleware";
 
 export const copyMoveRouter = express.Router();
-
-copyMoveRouter.use(requireLoggedIn);
 
 copyMoveRouter.post(
   "/moveContent",

@@ -20,7 +20,7 @@ import {
   MenuItem,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink, useOutletContext } from "react-router";
-import { Content, ContentDescription } from "../_utils/types";
+import { Content, ContentDescription, LibraryRelations } from "../_utils/types";
 import { FaEllipsisVertical } from "react-icons/fa6";
 import { BsPeople } from "react-icons/bs";
 import {
@@ -30,6 +30,7 @@ import {
 } from "../_utils/activity";
 import { SmallLicenseBadges } from "./Licenses";
 import { IoDiceOutline } from "react-icons/io5";
+import { DateTime } from "luxon";
 import { SiteContext } from "../Tools/_framework/Paths/SiteHeader";
 
 export type CardContent = {
@@ -37,6 +38,8 @@ export type CardContent = {
   cardLink?: string;
   content: Content;
   ownerName?: string;
+  // If this exists, it replaces the owner name but not the avatar
+  ownerNameExtended?: string;
   menuItems?: ReactElement;
   closeTime?: string;
   indentLevel?: number;
@@ -56,6 +59,8 @@ export default function Card({
   addDocumentCallback,
   disableSelect = false,
   disableAsSelected = false,
+  // Library relations will only appear if this is non-null
+  libraryRelations = null,
   idx = 1,
 }: {
   cardContent: CardContent;
@@ -76,6 +81,7 @@ export default function Card({
   addDocumentCallback?: (contentId: string) => void;
   disableSelect?: boolean;
   disableAsSelected?: boolean;
+  libraryRelations?: LibraryRelations | null;
   idx?: number;
 }) {
   const {
@@ -89,7 +95,8 @@ export default function Card({
     parent,
   } = cardContent.content;
 
-  const { menuItems, closeTime, cardLink, ownerName } = cardContent;
+  const { menuItems, closeTime, cardLink, ownerName, ownerNameExtended } =
+    cardContent;
 
   const contentTypeName = contentTypeToName[contentType];
 
@@ -309,7 +316,7 @@ export default function Card({
       <Tooltip label={ownerName}>
         <HStack>
           <Avatar size="xs" name={ownerName} />
-          <Text noOfLines={1}>{ownerName}</Text>
+          <Text noOfLines={1}>{ownerNameExtended ?? ownerName}</Text>
         </HStack>
       </Tooltip>
     </Box>
@@ -324,6 +331,16 @@ export default function Card({
   } else if (showPublicStatus) {
     activityWidth += 20;
   }
+
+  const libraryRequestDateRaw = libraryRelations?.activity?.reviewRequestDate;
+  const libraryRequestDateFormatted = libraryRequestDateRaw
+    ? DateTime.fromISO(libraryRequestDateRaw).toLocaleString(DateTime.DATE_MED)
+    : null;
+  const libraryRequestDate = libraryRequestDateFormatted ? (
+    <Box flexGrow={1} alignContent="center">
+      <Text>Pending since {libraryRequestDateFormatted}</Text>
+    </Box>
+  ) : null;
 
   const licenseBadges = (
     <Show above="xl">
@@ -465,6 +482,7 @@ export default function Card({
               >
                 {titleDisplay}
               </Box>
+              {libraryRequestDate}
               <Box
                 width={
                   showAssignmentStatus || showOwnerName

@@ -1,5 +1,4 @@
 import express from "express";
-import { requireLoggedIn } from "../middleware/validationMiddleware";
 import {
   addClassification,
   getClassificationCategories,
@@ -35,18 +34,15 @@ classificationRouter.get(
 
 classificationRouter.post(
   "/addClassification",
-  requireLoggedIn,
   queryLoggedIn(addClassification, classificationSchema),
 );
 
 classificationRouter.post(
   "/removeClassification",
-  requireLoggedIn,
   queryLoggedIn(removeClassification, classificationSchema),
 );
 
 classificationRouter.post(
   "/getClassifications",
-  requireLoggedIn,
   queryLoggedIn(getClassifications, contentIdSchema),
 );

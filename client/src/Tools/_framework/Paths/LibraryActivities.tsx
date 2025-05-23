@@ -16,7 +16,7 @@ import {
   Hide,
   Spinner,
 } from "@chakra-ui/react";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   useLoaderData,
   useNavigate,
@@ -44,7 +44,8 @@ import {
   UserInfo,
   ContentType,
   License,
-} from "./../../../_utils/types";
+  LibraryRelations,
+} from "../../../_utils/types";
 import { MdClose, MdOutlineSearch } from "react-icons/md";
 import { getAllowedParentTypes } from "../../../_utils/activity";
 import {
@@ -124,6 +125,7 @@ export async function loader({ params, request }) {
   return {
     folderId: params.parentId ?? null,
     content: data.content,
+    libraryRelations: data.libraryRelations,
     allDoenetmlVersions: data.allDoenetmlVersions,
     allLicenses: data.allLicenses,
     availableFeatures: data.availableFeatures,
@@ -133,10 +135,11 @@ export async function loader({ params, request }) {
   };
 }
 
-export function Curation() {
+export function LibraryActivities() {
   const {
     folderId,
     content,
+    libraryRelations,
     allDoenetmlVersions,
     allLicenses,
     availableFeatures,
@@ -146,6 +149,7 @@ export function Curation() {
   } = useLoaderData() as {
     folderId: string | null;
     content: Content[];
+    libraryRelations: LibraryRelations[];
     allDoenetmlVersions: DoenetmlVersion[];
     allLicenses: License[];
     availableFeatures: ContentFeature[];
@@ -179,7 +183,6 @@ export function Curation() {
   // which should be given focus when drawers are closed
   const cardMenuRefs = useRef<HTMLButtonElement[]>([]);
 
-  const folderSettingsRef = useRef(null);
   const finalFocusRef = useRef<HTMLElement | null>(null);
 
   const [haveContentSpinner, setHaveContentSpinner] = useState(false);
@@ -232,7 +235,7 @@ export function Curation() {
   const [highlightRename, setHighlightRename] = useState(false);
 
   useEffect(() => {
-    document.title = `${parent?.name ?? "Curation"} - Doenet`;
+    document.title = `${parent?.name ?? "Library Activities"} - Doenet`;
   }, [parent]);
 
   const fetcher = useFetcher();
@@ -374,7 +377,7 @@ export function Curation() {
           <MenuItem
             data-test="Go to containing folder"
             onClick={() => {
-              navigate(`/curation/${parentId ? "/" + parentId : ""}`);
+              navigate(`/libraryActivities/${parentId ? "/" + parentId : ""}`);
             }}
           >
             Go to containing folder
@@ -397,24 +400,22 @@ export function Curation() {
       {folderType}: {parent.name}
     </>
   ) : (
-    `Curation`
+    `Library Activities`
   );
 
   let contentData: Content | undefined;
+  let activeLibraryRelations: LibraryRelations = {};
+
   if (settingsContentId) {
-    if (parent && settingsContentId === folderId) {
-      contentData = parent;
-      finalFocusRef.current = folderSettingsRef.current;
+    const index = content.findIndex(
+      (obj) => obj.contentId == settingsContentId,
+    );
+    if (index != -1) {
+      contentData = content[index];
+      activeLibraryRelations = libraryRelations[index];
+      finalFocusRef.current = cardMenuRefs.current[index];
     } else {
-      const index = content.findIndex(
-        (obj) => obj.contentId == settingsContentId,
-      );
-      if (index != -1) {
-        contentData = content[index];
-        finalFocusRef.current = cardMenuRefs.current[index];
-      } else {
-        //Throw error not found
-      }
+      //Throw error not found
     }
   }
 
@@ -430,16 +431,17 @@ export function Curation() {
         fetcher={fetcher}
         displayTab={displaySettingsTab}
         highlightRename={highlightRename}
+        isInLibrary={activeLibraryRelations.source !== undefined}
       />
     ) : null;
 
   const curateDrawer =
     contentData && settingsContentId ? (
       <ShareDrawer
-        inCurationLibrary={true}
         isOpen={curateIsOpen}
         onClose={curateOnClose}
         contentData={contentData}
+        libraryRelations={activeLibraryRelations}
         finalFocusRef={finalFocusRef}
         fetcher={fetcher}
         allLicenses={allLicenses}
@@ -489,7 +491,7 @@ export function Curation() {
         <Box marginTop="5px" height="24px">
           {parent && !haveQuery ? (
             <Link
-              to={`/curation${parent.parent ? "/" + parent.parent.contentId : ""}`}
+              to={`/libraryActivities${parent.parent ? "/" + parent.parent.contentId : ""}`}
               style={{
                 color: "var(--mainBlue)",
               }}
@@ -500,7 +502,8 @@ export function Curation() {
                 textAlign="left"
               >
                 <Show above="sm">
-                  &lt; Back to {parent.parent ? parent.parent.name : `Curation`}
+                  &lt; Back to{" "}
+                  {parent.parent ? parent.parent.name : `Library Activities`}
                 </Show>
                 <Hide above="sm">&lt; Back</Hide>
               </Text>
@@ -533,7 +536,9 @@ export function Curation() {
                   colorScheme="blue"
                   width="250px"
                   ref={searchRef}
-                  placeholder={parent ? `Search in folder` : `Search curation`}
+                  placeholder={
+                    parent ? `Search in folder` : `Search library activities`
+                  }
                   value={searchString}
                   name="q"
                   onInput={(e) => {
@@ -546,14 +551,18 @@ export function Curation() {
                   }}
                 />
                 <Tooltip
-                  label={parent ? `Search in folder` : `Search curation`}
+                  label={
+                    parent ? `Search in folder` : `Search library activities`
+                  }
                   placement="bottom-end"
                 >
                   <IconButton
                     size="sm"
                     colorScheme="blue"
                     icon={<MdOutlineSearch />}
-                    aria-label={parent ? `Search in folder` : `Search curation`}
+                    aria-label={
+                      parent ? `Search in folder` : `Search library activities`
+                    }
                     type="submit"
                     onClick={(e) => {
                       if (focusSearch) {
@@ -581,6 +590,16 @@ export function Curation() {
               }}
             >
               {haveContentSpinner ? <Spinner size="sm" /> : "New Folder"}
+            </Button>
+            <Button
+              as={Link}
+              size="sm"
+              colorScheme="blue"
+              // hidden={searchOpen}
+              data-test="See Curation Queue Button"
+              to="/curate"
+            >
+              See Curation Queue
             </Button>
           </HStack>
         </Flex>
@@ -615,7 +634,9 @@ export function Curation() {
     </Flex>
   ) : null;
 
-  const emptyMessage = haveQuery ? "No Results Found" : "No Activities Yet";
+  const emptyMessage = haveQuery
+    ? "No Results Found"
+    : "No Published Activities Yet";
 
   const cardContent: CardContent[] = content.map((activity, position) => {
     const getCardMenuRef = (element: HTMLButtonElement) => {
@@ -640,7 +661,7 @@ export function Curation() {
       }),
       cardLink:
         activity.type === "folder"
-          ? `/curation/${activity.contentId}`
+          ? `/libraryActivities/${activity.contentId}`
           : `/activityEditor/${activity.contentId}`,
     };
   });

@@ -15,7 +15,6 @@ import {
 import { codeSchema } from "../schemas/assignSchema";
 import { contentIdSchema } from "../schemas/contentSchema";
 import { getRecentContent } from "../query/stats";
-import { requireLoggedIn } from "../middleware/validationMiddleware";
 import { getRecentContentSchema } from "../schemas/infoSchemas";
 
 export const infoRouter = express.Router();
@@ -58,12 +57,10 @@ infoRouter.get(
 
 infoRouter.get(
   "/getRecentContent",
-  requireLoggedIn,
   queryLoggedIn(getRecentContent, getRecentContentSchema),
 );
 
 infoRouter.get(
   "/getContentHistory/:contentId",
-  requireLoggedIn,
   queryLoggedIn(getContentHistory, contentIdSchema),
 );

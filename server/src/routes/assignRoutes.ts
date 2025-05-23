@@ -1,5 +1,4 @@
 import express from "express";
-import { requireLoggedIn } from "../middleware/validationMiddleware";
 import {
   assignActivity,
   closeAssignmentWithCode,
@@ -34,8 +33,6 @@ import {
 } from "../middleware/queryMiddleware";
 
 export const assignRouter = express.Router();
-
-assignRouter.use(requireLoggedIn);
 
 assignRouter.post(
   "/assignActivity",

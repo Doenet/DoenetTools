@@ -11,16 +11,11 @@ import {
   action as exploreAction,
   Explore,
 } from "./Tools/_framework/Paths/Explore";
-import { action as communityAdminAction } from "./Tools/_framework/Paths/CommunityAdmin";
 import {
-  loader as adminLoader,
-  OldAdmin,
-} from "./Tools/_framework/Paths/OldAdmin";
-import {
-  loader as curationLoader,
-  action as curationAction,
-  Curation,
-} from "./Tools/_framework/Paths/Curation";
+  loader as curateLoader,
+  action as curateAction,
+  Curate,
+} from "./Tools/_framework/Paths/Curate";
 
 import {
   loader as siteLoader,
@@ -114,6 +109,11 @@ import {
   loader as changeNameLoader,
   action as changeNameAction,
 } from "./Tools/_framework/Paths/ChangeName";
+import {
+  LibraryActivities,
+  loader as libraryActivitiesLoader,
+  action as libraryActivitiesAction,
+} from "./Tools/_framework/Paths/LibraryActivities";
 
 const theme = extendTheme({
   fonts: {
@@ -232,29 +232,24 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "oldAdmin",
-        loader: adminLoader,
-        // sharing an action with the explore page is somewhat intentional
-        // as it shows cards and admins have the same actions that they can perform
-        // on cards as they can on the explore page
-        // TODO - determine if this is an okay way to share functionality across
-        // pages or a bad idea
-        action: communityAdminAction,
-        element: <OldAdmin />,
+        path: "curate",
+        loader: curateLoader,
+        action: curateAction,
+        element: <Curate />,
         errorElement: <ErrorPage />,
       },
       {
-        path: "curation",
-        loader: curationLoader,
-        action: curationAction,
-        element: <Curation />,
+        path: "libraryActivities",
+        loader: libraryActivitiesLoader,
+        action: libraryActivitiesAction,
+        element: <LibraryActivities />,
         errorElement: <ErrorPage />,
       },
       {
-        path: "curation/:parentId",
-        loader: curationLoader,
-        action: curationAction,
-        element: <Curation />,
+        path: "libraryActivities/:parentId",
+        loader: libraryActivitiesLoader,
+        action: libraryActivitiesAction,
+        element: <LibraryActivities />,
         errorElement: <ErrorPage />,
       },
       {
