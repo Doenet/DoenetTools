@@ -78,7 +78,7 @@ model recentContent {
   accessed  DateTime   @default(now())
   mode      RecentMode
   user      users      @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
-  content   content    @relation(fields: [contentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  content   content    @relation(fields: [contentId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([userId, mode, contentId])
 }
@@ -99,7 +99,7 @@ model contentRevisions {
   createdAt                  DateTime             @default(now())
   numVariants                Int                  @default(1)
   doenetmlVersionId          Int?
-  content                    content              @relation(fields: [contentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  content                    content              @relation(fields: [contentId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   doenetmlVersion            doenetmlVersions?    @relation(fields: [doenetmlVersionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   contributorHistoryAsOrigin contributorHistory[] @relation("originContent")
   contributorHistoryAsRemix  contributorHistory[] @relation("remixContent")
@@ -151,8 +151,8 @@ model contributorHistory {
   directCopy                   Boolean          @default(false)
   subscribeOriginContentChange Boolean          @default(true)
   subscribeRemixContentChange  Boolean          @default(false)
-  remixContent                 contentRevisions @relation("remixContent", fields: [remixContentId, remixContentRevisionNum], references: [contentId, revisionNum], onDelete: NoAction, onUpdate: NoAction)
-  originContent                contentRevisions @relation("originContent", fields: [originContentId, originContentRevisionNum], references: [contentId, revisionNum], onDelete: NoAction, onUpdate: NoAction)
+  remixContent                 contentRevisions @relation("remixContent", fields: [remixContentId, remixContentRevisionNum], references: [contentId, revisionNum], onDelete: Cascade, onUpdate: NoAction)
+  originContent                contentRevisions @relation("originContent", fields: [originContentId, originContentRevisionNum], references: [contentId, revisionNum], onDelete: Cascade, onUpdate: NoAction)
   withLicense                  licenses?        @relation(fields: [withLicenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([remixContentId, originContentId])
@@ -275,7 +275,7 @@ model contentViews {
   contentId Bytes    @db.Binary(16)
   date      DateTime @default(dbgenerated("(curdate())")) @db.Date
   userId    Bytes    @db.Binary(16)
-  content   content  @relation(fields: [contentId], references: [id])
+  content   content  @relation(fields: [contentId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([date, contentId, userId])
 }
@@ -397,7 +397,7 @@ model libraryActivityInfos {
   contentId       Bytes           @unique @db.Binary(16)
   primaryEditorId Bytes?          @db.Binary(16)
   ownerRequested  Boolean
-  requestedOn     DateTime
+  requestedOn     DateTime        @default(now())
   status          LibraryStatus
   source          content         @relation(name: "source", fields: [sourceId], references: [id])
   activity        content         @relation(name: "activity", fields: [contentId], references: [id])

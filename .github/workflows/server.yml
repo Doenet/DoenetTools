@@ -67,7 +67,7 @@ jobs:
         run: npm ci
         working-directory: ./server
       - name: Setup prisma database
-        run: npx prisma db push
+        run: npx prisma migrate dev
         working-directory: ./server
       - name: Seed database
         run: npx prisma db seed
