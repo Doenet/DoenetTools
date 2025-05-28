@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useMemo, useState } from "react";
+import { ReactElement, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import {
   Box,
@@ -36,7 +36,10 @@ import {
 import Searchbar from "../../../Widgets/SearchBar";
 import { Form, useFetcher } from "react-router";
 import { CardContent } from "../../../Widgets/Card";
-import { createFullName } from "../../../_utils/names";
+import {
+  createFullName,
+  createFullNameCheckCurated,
+} from "../../../_utils/names";
 import {
   ContentDescription,
   ContentFeature,
@@ -370,10 +373,14 @@ export function Explore() {
         </MenuItem>
       );
 
+      const ownerName = createFullName(owner!);
+      const ownerNameExtended = createFullNameCheckCurated(owner!);
+
       return {
         contentId,
         content: itemObj,
-        ownerName: owner !== undefined ? createFullName(owner) : "",
+        ownerName,
+        ownerNameExtended,
         cardLink,
         menuItems,
       };
@@ -874,13 +881,13 @@ export function Explore() {
           Curated ({intWithCommas(totalCount.numCurated || 0)})
         </Tab>
         <Tab data-test="Community Tab">
-          Com&shy;munity ({intWithCommas(totalCount.numCommunity || 0)})
+          Community ({intWithCommas(totalCount.numCommunity || 0)})
         </Tab>
         <Tab data-test="Authors Tab" hidden={!q}>
           Authors ({intWithCommas(matchedAuthors?.length || 0)})
         </Tab>
         <Tab data-test="Classifications Tab" hidden={!q}>
-          Classifi&shy;cations ({intWithCommas(totalMatchedClassifications)})
+          Classifications ({intWithCommas(totalMatchedClassifications)})
         </Tab>
       </TabList>
 

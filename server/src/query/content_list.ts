@@ -1,4 +1,8 @@
-import { getLibraryAccountId, mustBeAdmin } from "./curate";
+import {
+  getLibraryAccountId,
+  getMultipleLibraryRelations,
+  mustBeAdmin,
+} from "./curate";
 import { prisma } from "../model";
 import { filterEditableContent } from "../utils/permissions";
 import { processContent, returnContentSelect } from "../utils/contentStructure";
@@ -64,23 +68,42 @@ export async function getMyContentOrLibraryContent({
     parent = processContent(preliminaryParent);
   }
 
+  const additionalFilter = isLibrary
+    ? {
+        OR: [
+          {
+            isPublic: true,
+          },
+          {
+            type: "folder" as const,
+          },
+        ],
+      }
+    : {};
+
   const preliminaryContent = await prisma.content.findMany({
     where: {
       ownerId,
       isDeleted: false,
       parentId,
+      ...additionalFilter,
     },
     select: returnContentSelect({
       includeAssignInfo: true,
       includeShareDetails: true,
       includeClassifications: true,
-      includeLibraryInfo: isLibrary,
     }),
     orderBy: { sortIndex: "asc" },
   });
 
   //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
   const content: Content[] = preliminaryContent.map(processContent);
+
+  const contentIds = content.map((c) => c.contentId);
+  const libraryRelations = await getMultipleLibraryRelations({
+    contentIds,
+    loggedInUserId,
+  });
 
   //TODO: Does this API need to provide this extra data?
   const { availableFeatures } = await getAvailableContentFeatures();
@@ -94,6 +117,7 @@ export async function getMyContentOrLibraryContent({
   return {
     content,
     parent,
+    libraryRelations,
     availableFeatures,
     allDoenetmlVersions,
     allLicenses,
@@ -232,6 +256,12 @@ export async function searchMyContentOrLibraryContent({
     //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
     .map(processContent);
 
+  const contentIds = content.map((c) => c.contentId);
+  const libraryRelations = await getMultipleLibraryRelations({
+    contentIds,
+    loggedInUserId,
+  });
+
   //TODO: Do we need this extra data in this API?
   const { availableFeatures } = await getAvailableContentFeatures();
   const { allDoenetmlVersions } = await getAllDoenetmlVersions();
@@ -240,6 +270,7 @@ export async function searchMyContentOrLibraryContent({
   return {
     content,
     parent,
+    libraryRelations,
     availableFeatures,
     allDoenetmlVersions,
     allLicenses,

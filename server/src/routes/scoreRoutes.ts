@@ -1,5 +1,4 @@
 import express from "express";
-import { requireLoggedIn } from "../middleware/validationMiddleware";
 import {
   createNewAttemptSchema,
   getScoreSchema,
@@ -16,8 +15,6 @@ import {
 import { queryLoggedIn } from "../middleware/queryMiddleware";
 
 export const scoreRouter = express.Router();
-
-scoreRouter.use(requireLoggedIn);
 
 scoreRouter.post(
   "/saveScoreAndState",

@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { uuidSchema } from "./uuid";
 import { DateTime } from "luxon";
+import { stringAsBoolSchema } from "./boolean";
 
 export const assignmentCloseAtSchema = z.object({
   contentId: uuidSchema,
@@ -109,7 +110,7 @@ export const getStudentSubmittedResponsesSchema = z.object({
   contentId: uuidSchema,
   studentUserId: uuidSchema.optional(),
   answerId: z.string(),
-  shuffledOrder: z.string().transform((val) => val === "true"),
+  shuffledOrder: stringAsBoolSchema,
   requestedItemNumber: z
     .string()
     .transform((val) => parseInt(val))
