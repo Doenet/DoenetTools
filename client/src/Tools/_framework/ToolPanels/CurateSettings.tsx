@@ -58,11 +58,13 @@ export function CurateSettings({
   contentData,
   libraryRelations,
   libraryComments,
+  onClose,
 }: {
   fetcher: FetcherWithComponents<any>;
   contentData: Content;
   libraryRelations: LibraryRelations;
   libraryComments: LibraryComment[];
+  onClose: () => void;
 }) {
   const license = contentData.license!;
 
@@ -83,6 +85,7 @@ export function CurateSettings({
         {!librarySource.iAmPrimaryEditor && (
           <Button
             onClick={() => {
+              onClose();
               fetcher.submit(
                 {
                   _action: "claim",
@@ -98,6 +101,7 @@ export function CurateSettings({
         {librarySource.status === "UNDER_REVIEW" && (
           <Button
             onClick={() => {
+              onClose();
               // setUnsavedComments(false);
               fetcher.submit(
                 {
@@ -115,6 +119,7 @@ export function CurateSettings({
         {librarySource.status === "UNDER_REVIEW" && (
           <Button
             onClick={() => {
+              onClose();
               // setUnsavedComments(false);
               fetcher.submit(
                 {
@@ -132,6 +137,7 @@ export function CurateSettings({
         {librarySource.status === "PUBLISHED" && (
           <Button
             onClick={() => {
+              onClose();
               fetcher.submit(
                 {
                   _action: "unpublish",

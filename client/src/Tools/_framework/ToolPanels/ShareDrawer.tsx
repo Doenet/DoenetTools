@@ -154,6 +154,7 @@ export function ShareDrawer({
       contentData={contentData}
       libraryRelations={libraryRelations}
       libraryComments={libraryComments}
+      onClose={onClose}
     />
   ) : (
     <ShareSettings
