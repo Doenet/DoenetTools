@@ -13,7 +13,6 @@ import {
   removePromotedContent,
   updatePromotedContentGroup,
 } from "../query/promoted";
-import { requireLoggedIn } from "../middleware/validationMiddleware";
 
 export const oldAdminRouter = express.Router();
 
@@ -67,7 +66,6 @@ oldAdminRouter.get(
 
 oldAdminRouter.post(
   "/removePromotedContent",
-  requireLoggedIn,
   async (req: Request, res: Response) => {
     try {
       const loggedInUserId = req.user.userId;
@@ -84,7 +82,6 @@ oldAdminRouter.post(
 
 oldAdminRouter.post(
   "/movePromotedContent",
-  requireLoggedIn,
   async (req: Request, res: Response) => {
     try {
       const loggedInUserId = req.user.userId;
@@ -107,7 +104,6 @@ oldAdminRouter.post(
 
 oldAdminRouter.post(
   "/addPromotedContentGroup",
-  requireLoggedIn,
   async (req: Request, res: Response) => {
     try {
       const loggedInUserId = req.user.userId;
@@ -122,7 +118,6 @@ oldAdminRouter.post(
 
 oldAdminRouter.post(
   "/updatePromotedContentGroup",
-  requireLoggedIn,
   async (req: Request, res: Response) => {
     try {
       const loggedInUserId = req.user.userId;
@@ -143,7 +138,6 @@ oldAdminRouter.post(
 
 oldAdminRouter.post(
   "/deletePromotedContentGroup",
-  requireLoggedIn,
   async (req: Request, res: Response) => {
     try {
       const loggedInUserId = req.user.userId;
@@ -158,7 +152,6 @@ oldAdminRouter.post(
 
 oldAdminRouter.post(
   "/movePromotedContentGroup",
-  requireLoggedIn,
   async (req: Request, res: Response) => {
     try {
       const loggedInUserId = req.user.userId;

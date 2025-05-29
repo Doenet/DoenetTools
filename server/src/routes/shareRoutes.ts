@@ -1,5 +1,4 @@
 import express from "express";
-import { requireLoggedIn } from "../middleware/validationMiddleware";
 import {
   contentIdEmailSchema,
   setLicenseCodeSchema,
@@ -16,8 +15,6 @@ import { contentIdSchema } from "../schemas/contentSchema";
 import { queryLoggedIn } from "../middleware/queryMiddleware";
 
 export const shareRouter = express.Router();
-
-shareRouter.use(requireLoggedIn);
 
 shareRouter.post(
   "/setContentLicense",
