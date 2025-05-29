@@ -26,7 +26,6 @@ model content {
   isDeletedOn           DateTime?
   // only defined if this content is NOT the deletion root
   deletionRootId        Bytes?                   @db.Binary(16)
-  isLibrary             Boolean                  @default(false)
   createdAt             DateTime                 @default(now())
   sortIndex             BigInt
   licenseCode           String?                  @default("CCDUAL") @db.VarChar(10)
