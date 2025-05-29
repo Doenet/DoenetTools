@@ -1,5 +1,4 @@
 import express from "express";
-import { requireLoggedIn } from "../middleware/validationMiddleware";
 import { queryLoggedIn } from "../middleware/queryMiddleware";
 import {
   addDraftToLibrary,
@@ -24,8 +23,6 @@ import {
 import { contentIdSchema } from "../schemas/contentSchema";
 
 export const curateRouter = express.Router();
-
-curateRouter.use(requireLoggedIn);
 
 curateRouter.get(
   "/getCurationFolderContent",
