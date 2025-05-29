@@ -59,7 +59,6 @@ import {
 } from "./../../../_utils/types";
 import { MdClose, MdOutlineSearch } from "react-icons/md";
 import { ShareDrawer, shareDrawerActions } from "../ToolPanels/ShareDrawer";
-import { formatTime } from "../../../_utils/dateUtilityFunction";
 import { getAllowedParentTypes, menuIcons } from "../../../_utils/activity";
 import {
   CreateLocalContentModal,
@@ -80,6 +79,7 @@ import {
   AuthorModeModal,
   authorModeModalActions,
 } from "../ToolPanels/AuthorModeModal";
+import { formatAssignmentBlurb } from "../../../_utils/assignment";
 
 export async function action({ request, params }) {
   const formData = await request.formData();
@@ -906,6 +906,14 @@ export function Activities() {
             >
               See Scores
             </Button>
+            <Button
+              colorScheme="blue"
+              size="sm"
+              onClick={() => navigate(`/trash`)}
+              hidden={searchOpen}
+            >
+              My Trash
+            </Button>
           </HStack>
         </Flex>
       </VStack>
@@ -951,7 +959,7 @@ export function Activities() {
     return {
       menuRef: getCardMenuRef,
       content: activity,
-      closeTime: formatTime(activity.assignmentInfo?.codeValidUntil ?? null),
+      blurb: formatAssignmentBlurb(activity),
       menuItems: getCardMenuList({
         contentId: activity.contentId,
         name: activity.name,
@@ -976,7 +984,7 @@ export function Activities() {
   const mainPanel = (
     <CardList
       showOwnerName={false}
-      showAssignmentStatus={true}
+      showBlurb={true}
       showPublicStatus={true}
       showActivityFeatures={true}
       emptyMessage={emptyMessage}

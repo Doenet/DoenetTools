@@ -14,6 +14,7 @@ import {
   createContent,
   createContentRevision,
   deleteContent,
+  restoreDeletedContent,
   revertToRevision,
   updateContent,
   updateContentFeatures,
@@ -28,6 +29,11 @@ updateContentRouter.use(requireLoggedIn);
 updateContentRouter.post(
   "/deleteContent",
   queryLoggedIn(deleteContent, contentIdSchema),
+);
+
+updateContentRouter.post(
+  "/restoreDeletedContent",
+  queryLoggedIn(restoreDeletedContent, contentIdSchema),
 );
 
 updateContentRouter.post(

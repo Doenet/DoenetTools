@@ -219,7 +219,7 @@ export async function addPromotedContent(
         type: ContentType.folder,
       },
       isPublic: true,
-      isDeleted: false,
+      isDeletedOn: null,
     },
     select: {
       // not using this, we just need to select one field
@@ -265,7 +265,7 @@ export async function removePromotedContent(
       NOT: {
         type: ContentType.folder,
       },
-      isDeleted: false,
+      isDeletedOn: null,
     },
     select: {
       // not using this, we just need to select one field
@@ -311,7 +311,7 @@ export async function movePromotedContent(
       NOT: {
         type: ContentType.folder,
       },
-      isDeleted: false,
+      isDeletedOn: null,
     },
     select: {
       // not using this, we just need to select one field
@@ -384,7 +384,7 @@ export async function getAllRecentPublicActivities() {
   const activities = await prisma.content.findMany({
     where: {
       isPublic: true,
-      isDeleted: false,
+      isDeletedOn: null,
       NOT: {
         type: ContentType.folder,
       },

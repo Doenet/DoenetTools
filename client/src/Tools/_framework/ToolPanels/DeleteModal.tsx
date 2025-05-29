@@ -78,6 +78,8 @@ export function DeleteModal({
   }, [fetcher.data]);
 
   function deleteContent() {
+    setIsDeleting(true);
+    document.body.style.cursor = "wait";
     fetcher.submit(
       {
         _action: "Delete Content",
@@ -85,8 +87,6 @@ export function DeleteModal({
       },
       { method: "post" },
     );
-    setIsDeleting(true);
-    document.body.style.cursor = "wait";
   }
 
   return (

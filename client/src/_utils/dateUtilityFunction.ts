@@ -1,51 +1,47 @@
 import { DateTime } from "luxon";
 
-export function formatTime(time: string | null) {
-  let timeFormatted: string | undefined;
+export function formatTime(time: string) {
+  let timeFormatted: string;
 
-  if (time !== null) {
-    const sameDay = (a: DateTime, b: DateTime): boolean => {
-      return (
-        a.hasSame(b, "day") && a.hasSame(b, "month") && a.hasSame(b, "year")
-      );
-    };
+  const sameDay = (a: DateTime, b: DateTime): boolean => {
+    return a.hasSame(b, "day") && a.hasSame(b, "month") && a.hasSame(b, "year");
+  };
 
-    const closeDateTime = DateTime.fromISO(time);
-    const now = DateTime.now();
-    const tomorrow = now.plus({ day: 1 });
+  const timeLuxon = DateTime.fromISO(time);
+  const now = DateTime.now();
+  const tomorrow = now.plus({ day: 1 });
 
-    if (sameDay(closeDateTime, now)) {
-      if (closeDateTime.minute === 0) {
-        timeFormatted = `today, ${closeDateTime.toLocaleString({ hour: "2-digit" })}`;
-      } else {
-        timeFormatted = `today, ${closeDateTime.toLocaleString({ hour: "2-digit", minute: "2-digit" })}`;
-      }
-    } else if (sameDay(closeDateTime, tomorrow)) {
-      if (closeDateTime.minute === 0) {
-        timeFormatted = `tomorrow, ${closeDateTime.toLocaleString({ hour: "2-digit" })}`;
-      } else {
-        timeFormatted = `tomorrow, ${closeDateTime.toLocaleString({ hour: "2-digit", minute: "2-digit" })}`;
-      }
-    } else if (closeDateTime.year === now.year) {
-      if (closeDateTime.minute === 0) {
-        timeFormatted = closeDateTime.toLocaleString({
-          weekday: "short",
-          month: "short",
-          day: "numeric",
-          hour: "2-digit",
-        });
-      } else {
-        timeFormatted = closeDateTime.toLocaleString({
-          weekday: "short",
-          month: "short",
-          day: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-        });
-      }
+  if (sameDay(timeLuxon, now)) {
+    if (timeLuxon.minute === 0) {
+      timeFormatted = `today, ${timeLuxon.toLocaleString({ hour: "2-digit" })}`;
     } else {
-      timeFormatted = closeDateTime.toLocaleString(DateTime.DATETIME_MED);
+      timeFormatted = `today, ${timeLuxon.toLocaleString({ hour: "2-digit", minute: "2-digit" })}`;
     }
+  } else if (sameDay(timeLuxon, tomorrow)) {
+    if (timeLuxon.minute === 0) {
+      timeFormatted = `tomorrow, ${timeLuxon.toLocaleString({ hour: "2-digit" })}`;
+    } else {
+      timeFormatted = `tomorrow, ${timeLuxon.toLocaleString({ hour: "2-digit", minute: "2-digit" })}`;
+    }
+  } else if (timeLuxon.year === now.year) {
+    if (timeLuxon.minute === 0) {
+      timeFormatted = timeLuxon.toLocaleString({
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+      });
+    } else {
+      timeFormatted = timeLuxon.toLocaleString({
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    }
+  } else {
+    timeFormatted = timeLuxon.toLocaleString(DateTime.DATETIME_MED);
   }
 
   return timeFormatted;

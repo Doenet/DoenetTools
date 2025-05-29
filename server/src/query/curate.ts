@@ -129,7 +129,7 @@ export async function submitLibraryRequest({
         NOT: {
           type: ContentType.folder,
         },
-        isDeleted: false,
+        isDeletedOn: null,
         ownerId,
       },
       OR: [
@@ -186,7 +186,7 @@ export async function cancelLibraryRequest({
         NOT: {
           type: ContentType.folder,
         },
-        isDeleted: false,
+        isDeletedOn: null,
         ownerId,
       },
       status: LibraryStatus.PENDING_REVIEW,
@@ -361,7 +361,7 @@ export async function deleteDraftFromLibrary({
 
   const deleteDraft = prisma.content.updateMany({
     where: { id: { in: [contentId, ...draftDescendants] } },
-    data: { isDeleted: true },
+    data: { isDeletedOn: new Date() },
   });
 
   const removeLibraryIdRef = prisma.libraryActivityInfos.update({
@@ -417,7 +417,7 @@ export async function publishActivityToLibrary({
     where: {
       id: draftId,
       isPublic: false,
-      isDeleted: false,
+      isDeletedOn: null,
       NOT: {
         type: ContentType.folder,
       },
@@ -480,7 +480,7 @@ export async function unpublishActivityFromLibrary({
       NOT: {
         type: ContentType.folder,
       },
-      isDeleted: false,
+      isDeletedOn: null,
       ownerId: libraryId,
       libraryActivityInfo: {
         status: LibraryStatus.PUBLISHED,
@@ -531,7 +531,7 @@ export async function markLibraryRequestNeedsRevision({
       NOT: {
         type: ContentType.folder,
       },
-      isDeleted: false,
+      isDeletedOn: null,
       librarySourceInfo: {
         status: LibraryStatus.PENDING_REVIEW,
         ownerRequested: true,
@@ -587,7 +587,7 @@ export async function modifyCommentsOfLibraryRequest({
     where: {
       id: sourceId,
       isPublic: true,
-      isDeleted: false,
+      isDeletedOn: null,
       NOT: {
         type: ContentType.folder,
         librarySourceInfo: null,
