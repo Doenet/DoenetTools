@@ -425,19 +425,6 @@ export function Activities() {
             Move to&hellip;
           </MenuItem>
         )}
-        {contentType !== "folder" ? (
-          <MenuItem
-            data-test="Assign Activity Menu Item"
-            onClick={() => {
-              setSettingsContentId(contentId);
-              assignmentSettingsOnOpen();
-            }}
-          >
-            {assignmentStatus === "Unassigned"
-              ? "Assign activity"
-              : "Manage assignment"}
-          </MenuItem>
-        ) : null}
         <MenuItem
           data-test={"Duplicate Content"}
           onClick={() => {
@@ -466,6 +453,19 @@ export function Activities() {
           </MenuItem>
         ) : null}
         <MenuDivider />
+        {contentType !== "folder" ? (
+          <MenuItem
+            data-test="Assign Activity Menu Item"
+            onClick={() => {
+              setSettingsContentId(contentId);
+              assignmentSettingsOnOpen();
+            }}
+          >
+            {assignmentStatus === "Unassigned"
+              ? "Assign Activity"
+              : "Manage Assignment"}
+          </MenuItem>
+        ) : null}
         <MenuItem
           data-test="Share Menu Item"
           onClick={() => {
