@@ -19,6 +19,7 @@ import {
   Hide,
   Spinner,
   CloseButton,
+  MenuDivider,
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -369,30 +370,6 @@ export function Activities() {
         >
           Rename
         </MenuItem>
-        <MenuItem
-          data-test={"Duplicate Content"}
-          onClick={() => {
-            fetcher.submit(
-              {
-                _action: "Duplicate Content",
-                contentId,
-                parentId,
-              },
-              { method: "post" },
-            );
-          }}
-        >
-          Make a copy
-        </MenuItem>
-        <MenuItem
-          data-test="Delete Menu Item"
-          onClick={() => {
-            setSettingsContentId(contentId);
-            deleteContentOnOpen();
-          }}
-        >
-          Delete
-        </MenuItem>
         {position > 0 && !haveQuery ? (
           <MenuItem
             data-test="Move Up Menu Item"
@@ -408,7 +385,7 @@ export function Activities() {
               );
             }}
           >
-            Move up
+            Move Up
           </MenuItem>
         ) : null}
         {position < numCards - 1 && !haveQuery ? (
@@ -426,7 +403,7 @@ export function Activities() {
               );
             }}
           >
-            Move down
+            Move Down
           </MenuItem>
         ) : null}
         {haveQuery ? null : (
@@ -462,6 +439,34 @@ export function Activities() {
           </MenuItem>
         ) : null}
         <MenuItem
+          data-test={"Duplicate Content"}
+          onClick={() => {
+            fetcher.submit(
+              {
+                _action: "Duplicate Content",
+                contentId,
+                parentId,
+              },
+              { method: "post" },
+            );
+          }}
+        >
+          Make a copy
+        </MenuItem>
+        {haveQuery ? (
+          <MenuItem
+            data-test="Go to containing folder"
+            onClick={() => {
+              navigate(
+                `/activities/${userId}${parentId ? "/" + parentId : ""}`,
+              );
+            }}
+          >
+            Go to containing folder
+          </MenuItem>
+        ) : null}
+        <MenuDivider />
+        <MenuItem
           data-test="Share Menu Item"
           onClick={() => {
             setSettingsContentId(contentId);
@@ -481,18 +486,16 @@ export function Activities() {
         >
           Settings
         </MenuItem>
-        {haveQuery ? (
-          <MenuItem
-            data-test="Go to containing folder"
-            onClick={() => {
-              navigate(
-                `/activities/${userId}${parentId ? "/" + parentId : ""}`,
-              );
-            }}
-          >
-            Go to containing folder
-          </MenuItem>
-        ) : null}
+        <MenuDivider />
+        <MenuItem
+          data-test="Delete Menu Item"
+          onClick={() => {
+            setSettingsContentId(contentId);
+            deleteContentOnOpen();
+          }}
+        >
+          Move to trash
+        </MenuItem>
       </>
     );
   }

@@ -100,9 +100,9 @@ export function DeleteModal({
       <ModalContent>
         <ModalHeader textAlign="center">
           {errMsg ? (
-            <>Error deleting</>
+            <>Error moving to trash</>
           ) : (
-            <>Confirm delete {isDeleting ? <Spinner /> : null}</>
+            <>Move to trash? {isDeleting ? <Spinner /> : null}</>
           )}
         </ModalHeader>
         <ModalCloseButton />
@@ -111,9 +111,8 @@ export function DeleteModal({
             <>{errMsg}</>
           ) : (
             <Box data-test="Confirm Delete Message">
-              Are you sure want to delete the{" "}
-              {contentTypeToName[content.type].toLowerCase()}:{" "}
-              <em>{content.name}</em>
+              The {contentTypeToName[content.type].toLowerCase()}{" "}
+              <em>{content.name}</em>{" "}will be deleted forever after 30 days.
             </Box>
           )}
         </ModalBody>
@@ -127,7 +126,7 @@ export function DeleteModal({
             }}
             isDisabled={errMsg !== ""}
           >
-            Delete
+            Move to trash
           </Button>
           <Button
             data-test="Cancel Button"

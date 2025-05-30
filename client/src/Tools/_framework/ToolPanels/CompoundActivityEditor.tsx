@@ -22,6 +22,7 @@ import {
   HStack,
   Menu,
   MenuButton,
+  MenuDivider,
   MenuItem,
   MenuList,
   Spacer,
@@ -597,32 +598,6 @@ export function CompoundActivityEditor({
         >
           Rename
         </MenuItem>
-        <MenuItem
-          hidden={readOnly}
-          data-test={"Duplicate Content"}
-          onClick={() => {
-            fetcher.submit(
-              {
-                _action: "Duplicate Content",
-                contentId,
-                parentId: activity.contentId,
-              },
-              { method: "post" },
-            );
-          }}
-        >
-          Make a copy
-        </MenuItem>
-        <MenuItem
-          hidden={readOnly}
-          data-test="Delete Menu Item"
-          onClick={() => {
-            setContentToDelete(content);
-            deleteContentOnOpen();
-          }}
-        >
-          Delete
-        </MenuItem>
         {nextPositionUp ? (
           <MenuItem
             hidden={readOnly}
@@ -681,6 +656,23 @@ export function CompoundActivityEditor({
         </MenuItem>
         <MenuItem
           hidden={readOnly}
+          data-test={"Duplicate Content"}
+          onClick={() => {
+            fetcher.submit(
+              {
+                _action: "Duplicate Content",
+                contentId,
+                parentId: activity.contentId,
+              },
+              { method: "post" },
+            );
+          }}
+        >
+          Make a copy
+        </MenuItem>
+        <MenuDivider />
+        <MenuItem
+          hidden={readOnly}
           data-test="Share Menu Item"
           onClick={() => {
             setSettingsContentId?.(content.contentId);
@@ -699,6 +691,17 @@ export function CompoundActivityEditor({
           }}
         >
           Settings
+        </MenuItem>
+        <MenuDivider />
+        <MenuItem
+          hidden={readOnly}
+          data-test="Delete Menu Item"
+          onClick={() => {
+            setContentToDelete(content);
+            deleteContentOnOpen();
+          }}
+        >
+          Move to trash
         </MenuItem>
       </>
     );
@@ -731,7 +734,7 @@ export function CompoundActivityEditor({
   const cardList = (
     <CardList
       showOwnerName={false}
-      showAssignmentStatus={false}
+      showBlurb={false}
       showPublicStatus={true}
       showActivityFeatures={true}
       showAddButton={true}

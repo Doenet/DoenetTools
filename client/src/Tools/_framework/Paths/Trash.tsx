@@ -101,6 +101,9 @@ export function Trash() {
       >
         <Tooltip label={headingText}>{headingText}</Tooltip>
       </Heading>
+      <Heading size="md">
+        Items in the trash will be deleted forever after 30 days
+      </Heading>
     </Box>
   );
 
@@ -130,7 +133,7 @@ export function Trash() {
     return {
       content: activity,
       menuItems: getCardMenuList({ contentId: activity.contentId }),
-      blurb: `Deleted on ${date.toLocaleString(DateTime.DATE_MED)}`,
+      blurb: `Trashed on ${date.toLocaleString(DateTime.DATETIME_MED)}`,
     };
   });
 
