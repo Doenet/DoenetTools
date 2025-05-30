@@ -112,7 +112,7 @@ export function DeleteModal({
           ) : (
             <Box data-test="Confirm Delete Message">
               The {contentTypeToName[content.type].toLowerCase()}{" "}
-              <em>{content.name}</em>{" "}will be deleted forever after 30 days.
+              <em>{content.name}</em> will be deleted forever after 30 days.
             </Box>
           )}
         </ModalBody>
