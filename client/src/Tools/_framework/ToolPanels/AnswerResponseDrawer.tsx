@@ -72,7 +72,7 @@ export function AnswerResponseDrawer({
         `/api/assign/getStudentSubmittedResponses/${assignment.contentId}/${student.userId}?answerId=${answerId}&contentAttemptNumber=${contentAttemptNumber}${itemQuery}&shuffledOrder=${shuffledOrder.toString()}`,
       );
 
-      const responseData = data.responses.map((obj) => ({
+      const responseData = data.responses.map((obj: any) => ({
         response: parseAndFormatResponse(obj.response),
         creditAchieved: Number(obj.answerCreditAchieved),
         submittedAt: DateTime.fromISO(obj.submittedAt).toLocaleString(

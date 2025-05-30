@@ -28,7 +28,6 @@ export async function loader() {
   };
 }
 
-//@ts-ignore
 const PublicActivitiesSection = styled.div`
   grid-row: 2/3;
   display: flex;
@@ -42,7 +41,6 @@ const PublicActivitiesSection = styled.div`
   background: var(--lightBlue);
 `;
 
-//@ts-ignore
 const ActivitiesGrid = styled.div`
   display: grid;
   grid-template-rows: 80px auto;
@@ -90,25 +88,24 @@ export function OldAdmin() {
             ) : (
               <>
                 {publicActivities.map((activity) => {
-                  const cardLink = `/activityViewer/${activity.id}`;
+                  const cardLink = `/activityViewer/${activity.contentId}`;
 
                   return (
                     <Card
-                      key={`Card${activity.id}`}
+                      key={`Card${activity.contentId}`}
                       cardContent={{
                         cardLink,
                         content: activity,
                         ownerName: createFullName(activity.owner!),
                         menuItems: (
                           <MoveToGroupMenuItem
-                            contentId={activity.id}
+                            contentId={activity.contentId}
                             carouselData={carouselData}
                           />
                         ),
                       }}
                       showActivityFeatures={true}
                       showOwnerName={true}
-                      listView={false}
                     />
                   );
                 })}
