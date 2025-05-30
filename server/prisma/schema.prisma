@@ -24,7 +24,7 @@ model content {
   parentId              Bytes?                   @db.Binary(16)
   isPublic              Boolean                  @default(false)
   isDeletedOn           DateTime?
-  // only defined if this content is NOT the deletion root
+  // The parent id that the user deleted. Not defined if this is root
   deletionRootId        Bytes?                   @db.Binary(16)
   createdAt             DateTime                 @default(now())
   sortIndex             BigInt

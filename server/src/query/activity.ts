@@ -173,16 +173,18 @@ export async function deleteContent({
     );
   }
 
+  const isDeletedOn = new Date();
+
   // Delete descendants
   const ids = await getDescendantIds(contentId);
   const deleteDescendants = prisma.content.updateMany({
     where: { id: { in: ids } },
-    data: { isDeletedOn: new Date(), deletionRootId: contentId },
+    data: { isDeletedOn, deletionRootId: contentId },
   });
   // Delete the root content
   const deleteRoot = prisma.content.update({
     where: { id: contentId },
-    data: { isDeletedOn: new Date() },
+    data: { isDeletedOn },
   });
   await prisma.$transaction([deleteDescendants, deleteRoot]);
 }

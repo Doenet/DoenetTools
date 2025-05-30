@@ -345,7 +345,8 @@ export async function deleteDraftFromLibrary({
     },
   });
 
-  const ensureDraftExists = prisma.content.findUniqueOrThrow({
+  // ensure draft exists
+  await prisma.content.findUniqueOrThrow({
     where: {
       id: contentId,
       isPublic: false,
@@ -357,11 +358,18 @@ export async function deleteDraftFromLibrary({
     select: { id: true },
   });
 
-  const draftDescendants = await getDescendantIds(contentId);
+  const isDeletedOn = new Date();
 
-  const deleteDraft = prisma.content.updateMany({
-    where: { id: { in: [contentId, ...draftDescendants] } },
-    data: { isDeletedOn: new Date() },
+  // Delete descendants
+  const ids = await getDescendantIds(contentId);
+  const deleteDescendants = prisma.content.updateMany({
+    where: { id: { in: ids } },
+    data: { isDeletedOn, deletionRootId: contentId },
+  });
+  // Delete the root content
+  const deleteRoot = prisma.content.update({
+    where: { id: contentId },
+    data: { isDeletedOn },
   });
 
   const removeLibraryIdRef = prisma.libraryActivityInfos.update({
@@ -380,8 +388,8 @@ export async function deleteDraftFromLibrary({
   });
 
   await prisma.$transaction([
-    ensureDraftExists,
-    deleteDraft,
+    deleteDescendants,
+    deleteRoot,
     removeLibraryIdRef,
     logDeletion,
   ]);

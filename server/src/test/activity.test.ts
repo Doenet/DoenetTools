@@ -355,8 +355,8 @@ test("Can restore deleted content up to 30 days after deletion", async () => {
   );
   await restoreDeletedContent({ contentId: doc1, loggedInUserId: userId });
 
-  // but not by 31 days
-  vi.setSystemTime(deleteDate.plus({ days: 31 }).toJSDate());
+  // but not after 30 days
+  vi.setSystemTime(deleteDate.plus({ days: 30, minutes: 1 }).toJSDate());
   await expect(
     restoreDeletedContent({ contentId: doc2, loggedInUserId: userId }),
   ).rejects.toThrowError();
