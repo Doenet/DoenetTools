@@ -23,7 +23,6 @@ export default defineConfig(() => ({
     alias: [
       { find: "csv-parse", replacement: "csv-parse/browser/esm" },
       { find: "@Tool", replacement: "/src/Tools/_framework/Tool" },
-      { find: "solid-svg", replacement: "@fortawesome/free-solid-svg-icons" },
     ],
   },
   optimizeDeps: {
@@ -44,7 +43,7 @@ export default defineConfig(() => ({
     format: "iife",
   },
   build: {
-    outDir: "./dist_local",
+    outDir: "./dist",
     rollupOptions: {
       plugins: [nodePolyfills()],
       input: "index.html",

@@ -22,8 +22,8 @@ const rightEyes = [
 ];
 
 function ErrorPage() {
-  let navigate = useNavigate();
-  const error = useRouteError();
+  const navigate = useNavigate();
+  const error: any = useRouteError();
   console.error(error);
 
   let errorDescription;
