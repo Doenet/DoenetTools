@@ -75,7 +75,7 @@ export async function searchSharedContent({
   ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
-    content.isDeleted = FALSE
+    content.isDeletedOn IS NULL
     AND users.isLibrary = ${isCurated ? Prisma.sql`TRUE` : Prisma.sql`FALSE`}
     AND (
        content.isPublic = TRUE
@@ -180,7 +180,7 @@ export async function browseSharedContent({
 
   const preliminarySharedContent = await prisma.content.findMany({
     where: {
-      isDeleted: false,
+      isDeletedOn: null,
       owner: { isLibrary: isCurated },
       OR: [
         { isPublic: true },
@@ -262,7 +262,7 @@ export async function browseTrendingContent({
   LEFT JOIN
     contentViews ON contentViews.contentId = content.id
   WHERE
-    content.isDeleted = FALSE
+    content.isDeletedOn IS NULL
     AND content.ownerId <> ${libraryId}
     AND (
        content.isPublic = TRUE
@@ -360,7 +360,7 @@ export async function searchUsersWithSharedContent({
         ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
         ${returnFeatureJoins(features)}
         WHERE
-          isDeleted = FALSE AND (
+          isDeletedOn IS NULL AND (
             isPublic = TRUE
             OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
           )
@@ -445,7 +445,7 @@ export async function browseUsersWithSharedContent({
           ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
           ${returnFeatureJoins(features)}
           WHERE
-            content.isDeleted = FALSE
+            content.isDeletedOn IS NULL
             AND (
               content.isPublic = TRUE
               OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
@@ -497,7 +497,7 @@ export async function browseUsersWithSharedContent({
           ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
           ${returnFeatureJoins(features)}
           WHERE
-            content.isDeleted = FALSE
+            content.isDeletedOn IS NULL
             AND (
               content.isPublic = TRUE
               OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
@@ -593,7 +593,7 @@ export async function searchClassificationsWithSharedContent({
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
-    content.isDeleted = FALSE
+    content.isDeletedOn IS NULL
     AND (
        content.isPublic = TRUE
        OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
@@ -691,7 +691,7 @@ export async function searchClassificationSubCategoriesWithSharedContent({
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
-    content.isDeleted = FALSE
+    content.isDeletedOn IS NULL
     AND (
        content.isPublic = TRUE
        OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
@@ -776,7 +776,7 @@ export async function searchClassificationCategoriesWithSharedContent({
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
-    content.isDeleted = FALSE
+    content.isDeletedOn IS NULL
     AND (
        content.isPublic = TRUE
        OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
@@ -831,7 +831,7 @@ export async function browseClassificationSharedContent({
   // TODO: how do we sort these?
   const results = await prisma.content.findMany({
     where: {
-      isDeleted: false,
+      isDeletedOn: null,
       OR: [
         { isPublic: true },
         { sharedWith: { some: { userId: loggedInUserId } } },
@@ -894,7 +894,7 @@ export async function browseClassificationSubCategorySharedContent({
               contentClassifications: {
                 some: {
                   content: {
-                    isDeleted: false,
+                    isDeletedOn: null,
                     OR: [
                       { isPublic: true },
                       { sharedWith: { some: { userId: loggedInUserId } } },
@@ -919,7 +919,7 @@ export async function browseClassificationSubCategorySharedContent({
                 contentClassifications: {
                   where: {
                     content: {
-                      isDeleted: false,
+                      isDeletedOn: null,
                       OR: [
                         { isPublic: true },
                         { sharedWith: { some: { userId: loggedInUserId } } },
@@ -992,7 +992,7 @@ export async function browseClassificationCategorySharedContent({
                   contentClassifications: {
                     some: {
                       content: {
-                        isDeleted: false,
+                        isDeletedOn: null,
                         OR: [
                           { isPublic: true },
                           { sharedWith: { some: { userId: loggedInUserId } } },
@@ -1033,7 +1033,7 @@ export async function browseClassificationCategorySharedContent({
                   contentClassifications: {
                     some: {
                       content: {
-                        isDeleted: false,
+                        isDeletedOn: null,
                         OR: [
                           { isPublic: true },
                           { sharedWith: { some: { userId: loggedInUserId } } },
@@ -1058,7 +1058,7 @@ export async function browseClassificationCategorySharedContent({
                     contentClassifications: {
                       where: {
                         content: {
-                          isDeleted: false,
+                          isDeletedOn: null,
                           OR: [
                             { isPublic: true },
                             {
@@ -1175,7 +1175,7 @@ export async function browseClassificationsWithSharedContent({
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
-    content.isDeleted = FALSE
+    content.isDeletedOn IS NULL
     AND (
        content.isPublic = TRUE
        OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
@@ -1240,7 +1240,7 @@ export async function browseClassificationsWithSharedContent({
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
-    content.isDeleted = FALSE
+    content.isDeletedOn IS NULL
     AND (
        content.isPublic = TRUE
        OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
@@ -1341,7 +1341,7 @@ export async function browseClassificationSubCategoriesWithSharedContent({
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
-    content.isDeleted = FALSE
+    content.isDeletedOn IS NULL
     AND (
        content.isPublic = TRUE
        OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
@@ -1400,7 +1400,7 @@ export async function browseClassificationSubCategoriesWithSharedContent({
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
-    content.isDeleted = FALSE
+    content.isDeletedOn IS NULL
     AND (
        content.isPublic = TRUE
        OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
@@ -1491,7 +1491,7 @@ export async function browseClassificationCategoriesWithSharedContent({
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
-    content.isDeleted = FALSE
+    content.isDeletedOn IS NULL
     AND (
        content.isPublic = TRUE
        OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
@@ -1545,7 +1545,7 @@ export async function browseClassificationCategoriesWithSharedContent({
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
-    content.isDeleted = FALSE
+    content.isDeletedOn IS NULL
     AND (
        content.isPublic = TRUE
        OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
@@ -1628,7 +1628,7 @@ export async function browseClassificationSystemsWithSharedContent({
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
-    content.isDeleted = FALSE
+    content.isDeletedOn IS NULL
     AND (
        content.isPublic = TRUE
        OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
@@ -1679,7 +1679,7 @@ export async function browseClassificationSystemsWithSharedContent({
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
-    content.isDeleted = FALSE
+    content.isDeletedOn IS NULL
     AND (
        content.isPublic = TRUE
        OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
@@ -1772,7 +1772,7 @@ export async function getSharedContentMatchCount({
       ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
       ${returnFeatureJoins(features)}
       WHERE
-        content.isDeleted = FALSE
+        content.isDeletedOn IS NULL
         AND (
            content.isPublic = TRUE
            OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
@@ -1815,7 +1815,7 @@ export async function getSharedContentMatchCount({
       ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
       ${returnFeatureJoins(features)}
       WHERE
-        content.isDeleted = FALSE
+        content.isDeletedOn IS NULL
         AND (
            content.isPublic = TRUE
            OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
@@ -1898,7 +1898,7 @@ export async function getSharedContentMatchCountPerAvailableFeature({
       ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
       ${returnFeatureJoins(newFeatures)}
       WHERE
-        content.isDeleted = FALSE
+        content.isDeletedOn IS NULL
         AND (
            content.isPublic = TRUE
            OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
@@ -1955,7 +1955,7 @@ export async function getSharedContentMatchCountPerAvailableFeature({
       ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
       ${returnFeatureJoins(newFeatures)}
       WHERE
-        content.isDeleted = FALSE
+        content.isDeletedOn IS NULL
         AND (
            content.isPublic = TRUE
            OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})

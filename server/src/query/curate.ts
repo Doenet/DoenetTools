@@ -129,7 +129,7 @@ export async function submitLibraryRequest({
         NOT: {
           type: ContentType.folder,
         },
-        isDeleted: false,
+        isDeletedOn: null,
         ownerId,
       },
       OR: [
@@ -186,7 +186,7 @@ export async function cancelLibraryRequest({
         NOT: {
           type: ContentType.folder,
         },
-        isDeleted: false,
+        isDeletedOn: null,
         ownerId,
       },
       status: LibraryStatus.PENDING_REVIEW,
@@ -345,7 +345,8 @@ export async function deleteDraftFromLibrary({
     },
   });
 
-  const ensureDraftExists = prisma.content.findUniqueOrThrow({
+  // ensure draft exists
+  await prisma.content.findUniqueOrThrow({
     where: {
       id: contentId,
       isPublic: false,
@@ -357,11 +358,18 @@ export async function deleteDraftFromLibrary({
     select: { id: true },
   });
 
-  const draftDescendants = await getDescendantIds(contentId);
+  const isDeletedOn = new Date();
 
-  const deleteDraft = prisma.content.updateMany({
-    where: { id: { in: [contentId, ...draftDescendants] } },
-    data: { isDeleted: true },
+  // Delete descendants
+  const ids = await getDescendantIds(contentId);
+  const deleteDescendants = prisma.content.updateMany({
+    where: { id: { in: ids } },
+    data: { isDeletedOn, deletionRootId: contentId },
+  });
+  // Delete the root content
+  const deleteRoot = prisma.content.update({
+    where: { id: contentId },
+    data: { isDeletedOn },
   });
 
   const removeLibraryIdRef = prisma.libraryActivityInfos.update({
@@ -380,8 +388,8 @@ export async function deleteDraftFromLibrary({
   });
 
   await prisma.$transaction([
-    ensureDraftExists,
-    deleteDraft,
+    deleteDescendants,
+    deleteRoot,
     removeLibraryIdRef,
     logDeletion,
   ]);
@@ -417,7 +425,7 @@ export async function publishActivityToLibrary({
     where: {
       id: draftId,
       isPublic: false,
-      isDeleted: false,
+      isDeletedOn: null,
       NOT: {
         type: ContentType.folder,
       },
@@ -480,7 +488,7 @@ export async function unpublishActivityFromLibrary({
       NOT: {
         type: ContentType.folder,
       },
-      isDeleted: false,
+      isDeletedOn: null,
       ownerId: libraryId,
       libraryActivityInfo: {
         status: LibraryStatus.PUBLISHED,
@@ -531,7 +539,7 @@ export async function markLibraryRequestNeedsRevision({
       NOT: {
         type: ContentType.folder,
       },
-      isDeleted: false,
+      isDeletedOn: null,
       librarySourceInfo: {
         status: LibraryStatus.PENDING_REVIEW,
         ownerRequested: true,
@@ -587,7 +595,7 @@ export async function modifyCommentsOfLibraryRequest({
     where: {
       id: sourceId,
       isPublic: true,
-      isDeleted: false,
+      isDeletedOn: null,
       NOT: {
         type: ContentType.folder,
         librarySourceInfo: null,

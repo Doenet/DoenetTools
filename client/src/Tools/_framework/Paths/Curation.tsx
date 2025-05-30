@@ -15,6 +15,7 @@ import {
   VStack,
   Hide,
   Spinner,
+  MenuDivider,
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -331,23 +332,17 @@ export function Curation() {
             Move&hellip;
           </MenuItem>
         )}
-        {contentType !== "folder" && !isPublic ? (
+        {haveQuery ? (
           <MenuItem
-            data-test="Delete Draft"
+            data-test="Go to containing folder"
             onClick={() => {
-              fetcher.submit(
-                {
-                  _action: "Delete Draft",
-                  contentId,
-                  contentType,
-                },
-                { method: "post" },
-              );
+              navigate(`/curation/${parentId ? "/" + parentId : ""}`);
             }}
           >
-            Delete Draft
+            Go to containing folder
           </MenuItem>
         ) : null}
+        <MenuDivider />
         {isFolder ? null : (
           <MenuItem
             data-test="Curate Menu Item"
@@ -370,15 +365,25 @@ export function Curation() {
         >
           Settings
         </MenuItem>
-        {haveQuery ? (
-          <MenuItem
-            data-test="Go to containing folder"
-            onClick={() => {
-              navigate(`/curation/${parentId ? "/" + parentId : ""}`);
-            }}
-          >
-            Go to containing folder
-          </MenuItem>
+        {contentType !== "folder" && !isPublic ? (
+          <>
+            <MenuDivider />
+            <MenuItem
+              data-test="Delete Draft"
+              onClick={() => {
+                fetcher.submit(
+                  {
+                    _action: "Delete Draft",
+                    contentId,
+                    contentType,
+                  },
+                  { method: "post" },
+                );
+              }}
+            >
+              Move to trash
+            </MenuItem>
+          </>
         ) : null}
       </>
     );
@@ -648,7 +653,7 @@ export function Curation() {
   const mainPanel = (
     <CardList
       showOwnerName={false}
-      showAssignmentStatus={false}
+      showBlurb={false}
       showPublicStatus={true}
       showActivityFeatures={true}
       emptyMessage={emptyMessage}

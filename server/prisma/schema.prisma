@@ -23,7 +23,9 @@ model content {
   name                  String
   parentId              Bytes?                   @db.Binary(16)
   isPublic              Boolean                  @default(false)
-  isDeleted             Boolean                  @default(false)
+  isDeletedOn           DateTime?
+  // The parent id that the user deleted. Not defined if this is root
+  deletionRootId        Bytes?                   @db.Binary(16)
   createdAt             DateTime                 @default(now())
   sortIndex             BigInt
   licenseCode           String?                  @default("CCDUAL") @db.VarChar(10)
@@ -59,6 +61,8 @@ model content {
   libraryActivityEvents libraryEvents[]          @relation("activity")
   contentRevisions      contentRevisions[]
   submittedResponses    submittedResponses[]
+  deletionRoot          content?                 @relation("deletionRoot", fields: [deletionRootId], references: [id])
+  isDeletionRootFor     content[]                @relation("deletionRoot")
 
   @@index([ownerId, parentId, sortIndex])
   @@index([parentId, type])

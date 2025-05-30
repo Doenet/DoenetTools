@@ -8,7 +8,7 @@ import axios from "axios";
 import { createFullName } from "../../../_utils/names";
 import { Content, UserInfo } from "../../../_utils/types";
 import CardList from "../../../Widgets/CardList";
-import { formatTime } from "../../../_utils/dateUtilityFunction";
+import { formatAssignmentBlurb } from "../../../_utils/assignment";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -81,14 +81,14 @@ export function Assigned() {
         assignment.assignmentInfo?.assignmentStatus === "Open"
           ? `/code/${assignment.assignmentInfo?.classCode}`
           : `/assignedData/${assignment.contentId}?shuffledOrder`,
-      closeTime: formatTime(assignment.assignmentInfo!.codeValidUntil),
+      blurb: formatAssignmentBlurb(assignment),
     };
   });
 
   const mainPanel = (
     <CardList
       showOwnerName={false}
-      showAssignmentStatus={true}
+      showBlurb={true}
       showPublicStatus={false}
       emptyMessage={"Nothing Assigned"}
       content={cardContent}

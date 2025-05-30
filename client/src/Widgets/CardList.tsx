@@ -7,7 +7,7 @@ import { ContentDescription } from "../_utils/types";
 export default function CardList({
   content,
   showOwnerName = false,
-  showAssignmentStatus = false,
+  showBlurb = false,
   showPublicStatus = false,
   showActivityFeatures = false,
   showAddButton = false,
@@ -29,7 +29,7 @@ export default function CardList({
       }
   )[];
   showOwnerName?: boolean;
-  showAssignmentStatus?: boolean;
+  showBlurb?: boolean;
   showPublicStatus?: boolean;
   showActivityFeatures?: boolean;
   showAddButton?: boolean;
@@ -133,7 +133,7 @@ export default function CardList({
           key={`Card${cardContent.content.contentId}`}
           cardContent={cardContent}
           showOwnerName={showOwnerName}
-          showAssignmentStatus={showAssignmentStatus}
+          showBlurb={showBlurb}
           showPublicStatus={showPublicStatus}
           showActivityFeatures={showActivityFeatures}
           showAddButton={showAddButton}

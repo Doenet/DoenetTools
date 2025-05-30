@@ -13,6 +13,7 @@ import {
   createContent,
   createContentRevision,
   deleteContent,
+  restoreDeletedContent,
   revertToRevision,
   updateContent,
   updateContentFeatures,
@@ -25,6 +26,11 @@ export const updateContentRouter = express.Router();
 updateContentRouter.post(
   "/deleteContent",
   queryLoggedIn(deleteContent, contentIdSchema),
+);
+
+updateContentRouter.post(
+  "/restoreDeletedContent",
+  queryLoggedIn(restoreDeletedContent, contentIdSchema),
 );
 
 updateContentRouter.post(

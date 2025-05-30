@@ -150,7 +150,7 @@ export async function getContent({
     where: {
       id: contentId,
       ...(skipPermissionCheck
-        ? { isDeleted: false }
+        ? { isDeletedOn: null }
         : filterViewableActivity(loggedInUserId, isAdmin)),
     },
     select: { id: true },
@@ -166,13 +166,13 @@ export async function getContent({
     WITH RECURSIVE content_tree(id, parentId, sortIndex) AS (
     SELECT id, parentId, sortIndex FROM content
     WHERE parentId = ${contentId}
-      ${skipPermissionCheck ? Prisma.sql`AND content.isDeleted = FALSE` : Prisma.sql`AND ${viewableContentWhere(loggedInUserId, isAdmin)}`}
+      ${skipPermissionCheck ? Prisma.sql`AND content.isDeletedOn IS NULL` : Prisma.sql`AND ${viewableContentWhere(loggedInUserId, isAdmin)}`}
     UNION ALL
     SELECT content.id, content.parentId, content.sortIndex FROM content
     INNER JOIN content_tree AS ct
     ON content.parentId = ct.id
     WHERE 
-      ${skipPermissionCheck ? Prisma.sql`content.isDeleted = FALSE` : Prisma.sql`${viewableContentWhere(loggedInUserId, isAdmin)}`}
+      ${skipPermissionCheck ? Prisma.sql`content.isDeletedOn IS NULL` : Prisma.sql`${viewableContentWhere(loggedInUserId, isAdmin)}`}
   )
   SELECT id, parentId from content_tree
     ORDER BY

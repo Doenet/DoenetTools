@@ -72,14 +72,14 @@ export async function assignActivity({
       FROM content
         LEFT JOIN assignments ON assignments.rootContentId = content.id
       WHERE parentId = ${contentId}
-        AND content.isDeleted = FALSE
+        AND content.isDeletedOn IS NULL
       UNION ALL
       SELECT content.id, assignments.assigned
       FROM content
         INNER JOIN content_tree AS ct ON content.parentId = ct.id
         LEFT JOIN assignments ON assignments.rootContentId = content.id
       WHERE 
-        content.isDeleted = FALSE
+        content.isDeletedOn IS NULL
     )
     SELECT id, assigned from content_tree
     WHERE assigned IS NOT NULL
@@ -112,7 +112,7 @@ export async function assignActivity({
     select: {
       rootAssignment: { select: { classCode: true } },
       type: true,
-      children: { select: { id: true }, where: { isDeleted: false } },
+      children: { select: { id: true }, where: { isDeletedOn: null } },
     },
   });
 
@@ -454,13 +454,13 @@ export async function getAllAssignmentScores({
       SELECT id, parentId, type, CAST(LPAD(sortIndex+100000000000000000, 18, 0) AS CHAR(1000)) FROM content
       WHERE ${parentId === null ? Prisma.sql`parentId IS NULL` : Prisma.sql`parentId = ${parentId}`}
       AND ownerId = ${loggedInUserId}
-      AND (EXISTS(SELECT * FROM assignments WHERE rootContentId=content.id) or type = "folder") AND isDeleted = false
+      AND (EXISTS(SELECT * FROM assignments WHERE rootContentId=content.id) or type = "folder") AND isDeletedOn IS NULL
       UNION ALL
       SELECT c.id, c.parentId, c.type, CONCAT(ct.path, ',', LPAD(c.sortIndex+100000000000000000, 18, 0))
       FROM content AS c
       INNER JOIN content_tree AS ct
       ON c.parentId = ct.id
-      WHERE (EXISTS(SELECT * FROM assignments WHERE rootContentId=c.id) or c.type = "folder") AND c.isDeleted = false
+      WHERE (EXISTS(SELECT * FROM assignments WHERE rootContentId=c.id) or c.type = "folder") AND c.isDeletedOn IS NULL
     )
     
     SELECT c.id as contentId, c.name FROM content AS c
@@ -610,13 +610,13 @@ export async function getStudentAssignmentScores({
       SELECT id, parentId, type, CAST(LPAD(sortIndex+100000000000000000, 18, 0) AS CHAR(1000)) FROM content
       WHERE ${parentId === null ? Prisma.sql`parentId IS NULL` : Prisma.sql`parentId = ${parentId}`}
       AND ownerId = ${loggedInUserId}
-      AND (EXISTS(SELECT * FROM assignments WHERE rootContentId=content.id) or type = "folder") AND isDeleted = false
+      AND (EXISTS(SELECT * FROM assignments WHERE rootContentId=content.id) or type = "folder") AND isDeletedOn IS NULL
       UNION ALL
       SELECT c.id, c.parentId, c.type, CONCAT(ct.path, ',', LPAD(c.sortIndex+100000000000000000, 18, 0))
       FROM content AS c
       INNER JOIN content_tree AS ct
       ON c.parentId = ct.id
-      WHERE (EXISTS(SELECT * FROM assignments WHERE rootContentId=c.id) or c.type = "folder") AND c.isDeleted = false
+      WHERE (EXISTS(SELECT * FROM assignments WHERE rootContentId=c.id) or c.type = "folder") AND c.isDeletedOn IS NULL
     )
     
     SELECT c.id AS contentId, c.name AS activityName, s.cachedScore FROM content AS c
@@ -687,7 +687,7 @@ export async function getAssignedScores({
   const scores = await prisma.assignmentScores.findMany({
     where: {
       userId: loggedInUserId,
-      assignment: { rootContent: { isDeleted: false } },
+      assignment: { rootContent: { isDeletedOn: null } },
     },
     select: {
       contentId: true,
@@ -833,7 +833,7 @@ export async function getAssignmentViewerDataFromCode({
             },
           ],
         },
-        isDeleted: false,
+        isDeletedOn: null,
         type: { not: "folder" },
       },
       select: {
@@ -895,7 +895,7 @@ export async function listUserAssigned({
 }) {
   const preliminaryAssignments = await prisma.content.findMany({
     where: {
-      isDeleted: false,
+      isDeletedOn: null,
       rootAssignment: {
         contentState: {
           some: { userId: loggedInUserId },
@@ -1012,7 +1012,7 @@ export async function getAssignmentResponseStudent({
         ownerId: isEqualUUID(responseUserId, loggedInUserId)
           ? undefined
           : loggedInUserId,
-        isDeleted: false,
+        isDeletedOn: null,
         type: { not: "folder" },
       },
     },
@@ -1027,7 +1027,7 @@ export async function getAssignmentResponseStudent({
           numToSelect: true,
           shuffle: true,
           children: {
-            where: { isDeleted: false },
+            where: { isDeletedOn: null },
             orderBy: { sortIndex: "asc" },
             select: { name: true, type: true, numToSelect: true },
           },
@@ -1660,7 +1660,7 @@ export async function getStudentSubmittedResponses({
       ownerId: isEqualUUID(responseUserId, loggedInUserId)
         ? undefined
         : loggedInUserId,
-      isDeleted: false,
+      isDeletedOn: null,
     },
     select: {
       submittedResponses: {

@@ -93,7 +93,7 @@ export async function moveContent({
 
         // NOTE: We don't use `filterEditableContent` because the owner must match exactly. We cannot move between admin's folders and library
         ownerId: content.owner.userId,
-        isDeleted: false,
+        isDeletedOn: null,
       },
       select: {
         isPublic: true,
@@ -168,7 +168,7 @@ export async function moveContent({
         ownerId: content.owner.userId,
         parentId: parentId,
         id: { not: contentId },
-        isDeleted: false,
+        isDeletedOn: null,
       },
       select: {
         sortIndex: true,
@@ -192,7 +192,7 @@ export async function moveContent({
         parentId: parentId,
         id: { not: contentId },
         sortIndex: sortIndices,
-        isDeleted: false,
+        isDeletedOn: null,
       },
       data: {
         sortIndex: shift,
@@ -434,7 +434,7 @@ async function copySingleContent({
       ownerId: true,
       parentId: true,
       isPublic: true,
-      isDeleted: true,
+      isDeletedOn: true,
       createdAt: true,
       sortIndex: true,
       lastEdited: true,
@@ -445,7 +445,7 @@ async function copySingleContent({
       classifications: true,
       contentFeatures: true,
       children: {
-        where: { isDeleted: false },
+        where: { isDeletedOn: null },
         select: { id: true, type: true },
         orderBy: { sortIndex: "asc" },
       },

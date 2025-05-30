@@ -166,12 +166,12 @@ export async function modifyContentSharedWith({
     await prisma.$queryRaw<{ id: Uint8Array }[]>(Prisma.sql`
     WITH RECURSIVE content_tree(id) AS (
       SELECT id FROM content
-      WHERE id = ${contentId} AND ownerId = ${loggedInUserId} AND isDeleted = FALSE
+      WHERE id = ${contentId} AND ownerId = ${loggedInUserId} AND isDeletedOn IS NULL
       UNION ALL
       SELECT content.id FROM content
       INNER JOIN content_tree AS ct
       ON content.parentId = ct.id
-      WHERE content.isDeleted = FALSE
+      WHERE content.isDeletedOn IS NULL
     )
 
     SELECT id from content_tree;

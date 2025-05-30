@@ -388,7 +388,7 @@ export function Explore() {
       >
         <CardList
           showPublicStatus={false}
-          showAssignmentStatus={false}
+          showBlurb={false}
           showActivityFeatures={true}
           showOwnerName={true}
           content={cardContent}

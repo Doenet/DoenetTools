@@ -311,7 +311,7 @@ export function SharedActivities() {
   const mainPanel = (
     <CardList
       showOwnerName={false}
-      showAssignmentStatus={false}
+      showBlurb={false}
       showPublicStatus={false}
       showActivityFeatures={true}
       emptyMessage={"No Activities Yet"}
