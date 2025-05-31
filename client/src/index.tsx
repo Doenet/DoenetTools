@@ -75,6 +75,11 @@ import {
   StudentAssignmentScores,
   assignedDataloader,
 } from "./Tools/_framework/Paths/StudentAssignmentScores";
+import {
+  loader as trashLoader,
+  action as trashAction,
+  Trash,
+} from "./Tools/_framework/Paths/Trash";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 
 import ErrorPage from "./Tools/_framework/Paths/ErrorPage";
@@ -264,6 +269,13 @@ const router = createBrowserRouter([
         loader: activitiesLoader,
         action: activitiesAction,
         element: <Activities />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "trash",
+        loader: trashLoader,
+        action: trashAction,
+        element: <Trash />,
         errorElement: <ErrorPage />,
       },
       {

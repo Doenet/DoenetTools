@@ -5,6 +5,7 @@ import {
   filterEditableActivity,
   filterEditableContent,
   filterViewableContent,
+  getEarliestRecoverableDate,
 } from "../utils/permissions";
 import { getNextSortIndexForParent } from "../utils/sort";
 import { DateTime } from "luxon";
@@ -57,7 +58,7 @@ export async function createContent({
       where: {
         id: parentId,
         type: { not: "singleDoc" },
-        isDeleted: false,
+        isDeletedOn: null,
         ownerId,
       },
       select: {
@@ -172,12 +173,20 @@ export async function deleteContent({
     );
   }
 
-  const ids = await getDescendantIds(contentId);
+  const isDeletedOn = new Date();
 
-  return prisma.content.updateMany({
-    where: { id: { in: [contentId, ...ids] } },
-    data: { isDeleted: true },
+  // Delete descendants
+  const ids = await getDescendantIds(contentId);
+  const deleteDescendants = prisma.content.updateMany({
+    where: { id: { in: ids } },
+    data: { isDeletedOn, deletionRootId: contentId },
   });
+  // Delete the root content
+  const deleteRoot = prisma.content.update({
+    where: { id: contentId },
+    data: { isDeletedOn },
+  });
+  await prisma.$transaction([deleteDescendants, deleteRoot]);
 }
 
 /**
@@ -197,18 +206,73 @@ export async function getDescendantIds(contentId: Uint8Array) {
   >(Prisma.sql`
     WITH RECURSIVE content_tree(id) AS (
       SELECT id FROM content
-      WHERE parentId = ${contentId} AND isDeleted = FALSE
+      WHERE parentId = ${contentId} AND isDeletedOn IS NULL
       UNION ALL
       SELECT content.id FROM content
       INNER JOIN content_tree AS ct
       ON content.parentId = ct.id
-      WHERE content.isDeleted = FALSE
+      WHERE content.isDeletedOn IS NULL
     )
-
     SELECT id from content_tree;
   `);
 
   return ids.map((x) => x.id);
+}
+
+export async function restoreDeletedContent({
+  contentId,
+  loggedInUserId,
+}: {
+  contentId: Uint8Array;
+  loggedInUserId: Uint8Array;
+}) {
+  // Verify content is owned by `loggedInUserId`, is recoverable, and is the root of a deletion.
+  const checkForParent = await prisma.content.findUniqueOrThrow({
+    where: {
+      ownerId: loggedInUserId,
+      id: contentId,
+      deletionRootId: null, // if this is null and `isDeletedOn` is not null, then this is the root of a deletion
+      isDeletedOn: { not: null, gte: getEarliestRecoverableDate().toJSDate() },
+    },
+    select: {
+      parent: {
+        select: {
+          id: true,
+          isDeletedOn: true,
+        },
+      },
+    },
+  });
+
+  // Figure out where to put the restored root. If the parent is not deleted we'll put it back where it was.
+  // If the parent is deleted or there was no parent, we're just going to put it in the base folder of the owner.
+  const parentId =
+    checkForParent.parent && checkForParent.parent.isDeletedOn === null
+      ? checkForParent.parent.id
+      : null;
+
+  const updateRoot = prisma.content.update({
+    where: {
+      id: contentId,
+    },
+    data: {
+      isDeletedOn: null,
+      deletionRootId: null,
+      parentId,
+    },
+  });
+
+  const updateDescendants = prisma.content.updateMany({
+    where: {
+      deletionRootId: contentId,
+    },
+    data: {
+      isDeletedOn: null,
+      deletionRootId: null,
+    },
+  });
+
+  await prisma.$transaction([updateRoot, updateDescendants]);
 }
 
 /**

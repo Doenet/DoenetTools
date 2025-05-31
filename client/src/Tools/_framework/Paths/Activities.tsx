@@ -19,6 +19,7 @@ import {
   Hide,
   Spinner,
   CloseButton,
+  MenuDivider,
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -60,7 +61,6 @@ import {
 } from "./../../../_utils/types";
 import { MdClose, MdOutlineSearch } from "react-icons/md";
 import { ShareDrawer, shareDrawerActions } from "../ToolPanels/ShareDrawer";
-import { formatTime } from "../../../_utils/dateUtilityFunction";
 import { getAllowedParentTypes, menuIcons } from "../../../_utils/activity";
 import {
   CreateLocalContentModal,
@@ -81,6 +81,7 @@ import {
   AuthorModeModal,
   authorModeModalActions,
 } from "../ToolPanels/AuthorModeModal";
+import { formatAssignmentBlurb } from "../../../_utils/assignment";
 
 export async function action({ request, params }) {
   const formData = await request.formData();
@@ -373,30 +374,6 @@ export function Activities() {
         >
           Rename
         </MenuItem>
-        <MenuItem
-          data-test={"Duplicate Content"}
-          onClick={() => {
-            fetcher.submit(
-              {
-                _action: "Duplicate Content",
-                contentId,
-                parentId,
-              },
-              { method: "post" },
-            );
-          }}
-        >
-          Make a copy
-        </MenuItem>
-        <MenuItem
-          data-test="Delete Menu Item"
-          onClick={() => {
-            setSettingsContentId(contentId);
-            deleteContentOnOpen();
-          }}
-        >
-          Delete
-        </MenuItem>
         {position > 0 && !haveQuery ? (
           <MenuItem
             data-test="Move Up Menu Item"
@@ -412,7 +389,7 @@ export function Activities() {
               );
             }}
           >
-            Move up
+            Move Up
           </MenuItem>
         ) : null}
         {position < numCards - 1 && !haveQuery ? (
@@ -430,7 +407,7 @@ export function Activities() {
               );
             }}
           >
-            Move down
+            Move Down
           </MenuItem>
         ) : null}
         {haveQuery ? null : (
@@ -452,6 +429,34 @@ export function Activities() {
             Move to&hellip;
           </MenuItem>
         )}
+        <MenuItem
+          data-test={"Duplicate Content"}
+          onClick={() => {
+            fetcher.submit(
+              {
+                _action: "Duplicate Content",
+                contentId,
+                parentId,
+              },
+              { method: "post" },
+            );
+          }}
+        >
+          Make a copy
+        </MenuItem>
+        {haveQuery ? (
+          <MenuItem
+            data-test="Go to containing folder"
+            onClick={() => {
+              navigate(
+                `/activities/${userId}${parentId ? "/" + parentId : ""}`,
+              );
+            }}
+          >
+            Go to containing folder
+          </MenuItem>
+        ) : null}
+        <MenuDivider />
         {contentType !== "folder" ? (
           <MenuItem
             data-test="Assign Activity Menu Item"
@@ -461,8 +466,8 @@ export function Activities() {
             }}
           >
             {assignmentStatus === "Unassigned"
-              ? "Assign activity"
-              : "Manage assignment"}
+              ? "Assign Activity"
+              : "Manage Assignment"}
           </MenuItem>
         ) : null}
         <MenuItem
@@ -485,18 +490,16 @@ export function Activities() {
         >
           Settings
         </MenuItem>
-        {haveQuery ? (
-          <MenuItem
-            data-test="Go to containing folder"
-            onClick={() => {
-              navigate(
-                `/activities/${userId}${parentId ? "/" + parentId : ""}`,
-              );
-            }}
-          >
-            Go to containing folder
-          </MenuItem>
-        ) : null}
+        <MenuDivider />
+        <MenuItem
+          data-test="Delete Menu Item"
+          onClick={() => {
+            setSettingsContentId(contentId);
+            deleteContentOnOpen();
+          }}
+        >
+          Move to trash
+        </MenuItem>
       </>
     );
   }
@@ -909,6 +912,14 @@ export function Activities() {
             >
               See Scores
             </Button>
+            <Button
+              colorScheme="blue"
+              size="sm"
+              onClick={() => navigate(`/trash`)}
+              hidden={searchOpen}
+            >
+              My Trash
+            </Button>
           </HStack>
         </Flex>
       </VStack>
@@ -954,7 +965,7 @@ export function Activities() {
     return {
       menuRef: getCardMenuRef,
       content: activity,
-      closeTime: formatTime(activity.assignmentInfo?.codeValidUntil ?? null),
+      blurb: formatAssignmentBlurb(activity),
       menuItems: getCardMenuList({
         contentId: activity.contentId,
         name: activity.name,
@@ -979,7 +990,7 @@ export function Activities() {
   const mainPanel = (
     <CardList
       showOwnerName={false}
-      showAssignmentStatus={true}
+      showBlurb={true}
       showPublicStatus={true}
       showActivityFeatures={true}
       emptyMessage={emptyMessage}

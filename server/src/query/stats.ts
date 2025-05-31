@@ -60,7 +60,7 @@ export async function getRecentContent({
     where: {
       userId: loggedInUserId,
       mode,
-      content: { isDeleted: false },
+      content: { isDeletedOn: null },
       OR: restrictToTypes?.map((t) => ({ content: { type: t } })),
     },
     select: {

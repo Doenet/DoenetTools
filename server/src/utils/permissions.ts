@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../model";
 import { isEqualUUID } from "./uuid";
+import { DateTime } from "luxon";
 
 /**
  * Filter Prisma's `where` clause to exclude unviewable activities for `loggedInUserId`
@@ -52,7 +53,7 @@ export function filterViewableContent(
     visibilityOptions.push({ owner: { isLibrary: true } });
   }
   return {
-    isDeleted: false,
+    isDeletedOn: null,
     OR: visibilityOptions,
   };
 }
@@ -86,7 +87,7 @@ export function viewableContentWhere(
   }
 
   const whereStatement = Prisma.sql`
-    content.isDeleted = FALSE
+    content.isDeletedOn IS NULL
     AND (
       ${visibilityOptions}
     )
@@ -136,7 +137,7 @@ export function filterEditableContent(
     editabilityOptions.push({ owner: { isLibrary: true } });
   }
   return {
-    isDeleted: false,
+    isDeletedOn: null,
     OR: editabilityOptions,
   };
 }
@@ -166,7 +167,7 @@ export function editableContentWhere(
   }
 
   const whereStatement = Prisma.sql`
-    content.isDeleted = FALSE
+    content.isDeletedOn IS NULL
     AND (
       ${visibilityOptions}
     )
@@ -231,4 +232,9 @@ export async function checkActivityPermissions(
   } else {
     return { editable: false, viewable: true, ownerId: viewable.owner.userId };
   }
+}
+
+export function getEarliestRecoverableDate() {
+  // Only return content deleted up to 30 days ago
+  return DateTime.now().minus({ days: 30 });
 }

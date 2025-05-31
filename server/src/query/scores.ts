@@ -485,7 +485,7 @@ export async function loadState({
           ownerId: isEqualUUID(stateUserId, loggedInUserId)
             ? undefined
             : loggedInUserId,
-          isDeleted: false,
+          isDeletedOn: null,
         },
       },
     });
@@ -659,7 +659,7 @@ export async function loadItemState({
         ownerId: isEqualUUID(stateUserId, loggedInUserId)
           ? undefined
           : loggedInUserId,
-        isDeleted: false,
+        isDeletedOn: null,
       },
     },
   };
@@ -792,7 +792,7 @@ export async function calculateScoreAndCacheResults({
         ownerId: isEqualUUID(scoreUserId, loggedInUserId)
           ? undefined
           : loggedInUserId,
-        isDeleted: false,
+        isDeletedOn: null,
       },
     },
     select: {
@@ -1008,7 +1008,7 @@ export async function getScore({
         ownerId: isEqualUUID(scoreUserId, loggedInUserId)
           ? undefined
           : loggedInUserId,
-        isDeleted: false,
+        isDeletedOn: null,
       },
     },
   });

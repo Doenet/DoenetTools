@@ -15,6 +15,7 @@ import {
   VStack,
   Hide,
   Spinner,
+  MenuDivider,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -334,23 +335,17 @@ export function LibraryActivities() {
             Move&hellip;
           </MenuItem>
         )}
-        {contentType !== "folder" && !isPublic ? (
+        {haveQuery ? (
           <MenuItem
-            data-test="Delete Draft"
+            data-test="Go to containing folder"
             onClick={() => {
-              fetcher.submit(
-                {
-                  _action: "Delete Draft",
-                  contentId,
-                  contentType,
-                },
-                { method: "post" },
-              );
+              navigate(`/libraryActivities/${parentId ? "/" + parentId : ""}`);
             }}
           >
-            Delete Draft
+            Go to containing folder
           </MenuItem>
         ) : null}
+        <MenuDivider />
         {isFolder ? null : (
           <MenuItem
             data-test="Curate Menu Item"
@@ -373,15 +368,25 @@ export function LibraryActivities() {
         >
           Settings
         </MenuItem>
-        {haveQuery ? (
-          <MenuItem
-            data-test="Go to containing folder"
-            onClick={() => {
-              navigate(`/libraryActivities/${parentId ? "/" + parentId : ""}`);
-            }}
-          >
-            Go to containing folder
-          </MenuItem>
+        {contentType !== "folder" && !isPublic ? (
+          <>
+            <MenuDivider />
+            <MenuItem
+              data-test="Delete Draft"
+              onClick={() => {
+                fetcher.submit(
+                  {
+                    _action: "Delete Draft",
+                    contentId,
+                    contentType,
+                  },
+                  { method: "post" },
+                );
+              }}
+            >
+              Move to trash
+            </MenuItem>
+          </>
         ) : null}
       </>
     );
@@ -669,7 +674,7 @@ export function LibraryActivities() {
   const mainPanel = (
     <CardList
       showOwnerName={false}
-      showAssignmentStatus={false}
+      showBlurb={false}
       showPublicStatus={true}
       showActivityFeatures={true}
       emptyMessage={emptyMessage}

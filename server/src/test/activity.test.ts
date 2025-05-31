@@ -1,4 +1,4 @@
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
 
 import { DateTime } from "luxon";
 import { Content, Doc } from "../types";
@@ -14,13 +14,14 @@ import {
   getContentDescription,
   createContentRevision,
   revertToRevision,
+  restoreDeletedContent,
 } from "../query/activity";
 import {
   getActivityEditorData,
   getActivityViewerData,
   getSharedEditorData,
 } from "../query/activity_edit_view";
-import { getMyContent } from "../query/content_list";
+import { getMyContent, getMyTrash } from "../query/content_list";
 import { InvalidRequestError } from "../utils/error";
 import {
   modifyContentSharedWith,
@@ -219,7 +220,7 @@ test("deleteContent marks a activity and document as deleted and prevents its re
   ).rejects.toThrow(PrismaClientKnownRequestError);
 });
 
-test("only owner can delete an activity", async () => {
+test("only owner can delete and restore an activity", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
   const user2 = await createTestUser();
@@ -235,6 +236,15 @@ test("only owner can delete an activity", async () => {
   ).rejects.toThrow("not found");
 
   await deleteContent({ contentId: contentId, loggedInUserId: ownerId });
+
+  await expect(
+    restoreDeletedContent({ contentId: contentId, loggedInUserId: user2Id }),
+  ).rejects.toThrowError();
+
+  await restoreDeletedContent({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+  });
 });
 
 test("Cannot delete content from inside assigned content", async () => {
@@ -264,6 +274,119 @@ test("Cannot delete content from inside assigned content", async () => {
   await expect(
     deleteContent({ contentId: doc2Id, loggedInUserId: userId }),
   ).rejects.toThrow("Cannot delete content from an assigned activity");
+});
+
+test("Can restore deleted content", async () => {
+  const { userId } = await createTestUser();
+  const { contentId: sequenceId } = await createContent({
+    loggedInUserId: userId,
+    contentType: "sequence",
+    parentId: null,
+  });
+
+  const { contentId: doc1Id } = await createContent({
+    loggedInUserId: userId,
+    contentType: "singleDoc",
+    parentId: sequenceId,
+  });
+
+  const { contentId: doc2Id } = await createContent({
+    loggedInUserId: userId,
+    contentType: "singleDoc",
+    parentId: sequenceId,
+  });
+
+  // Delete doc1 then sequence
+  await deleteContent({ contentId: doc1Id, loggedInUserId: userId });
+  await deleteContent({ contentId: sequenceId, loggedInUserId: userId });
+
+  // Can't restore doc2, it's not deletion root
+  await expect(
+    restoreDeletedContent({ contentId: doc2Id, loggedInUserId: userId }),
+  ).rejects.toThrowError();
+
+  // Restore sequence, doc1 not restored
+  await restoreDeletedContent({
+    contentId: sequenceId,
+    loggedInUserId: userId,
+  });
+  await getActivityViewerData({
+    contentId: sequenceId,
+    loggedInUserId: userId,
+  });
+  await getActivityViewerData({ contentId: doc2Id, loggedInUserId: userId });
+  await expect(
+    getActivityViewerData({ contentId: doc1Id, loggedInUserId: userId }),
+  ).rejects.toThrowError();
+
+  // Re-delete sequence, restore doc1, doc1 ends up in base folder
+  await deleteContent({ contentId: sequenceId, loggedInUserId: userId });
+  await restoreDeletedContent({ contentId: doc1Id, loggedInUserId: userId });
+
+  const { activity: doc1Activity } = await getActivityViewerData({
+    contentId: doc1Id,
+    loggedInUserId: userId,
+  });
+  expect(doc1Activity.parent).toBeNull();
+});
+
+test("Can restore deleted content up to 30 days after deletion", async () => {
+  const { userId } = await createTestUser();
+  const { contentId: doc1 } = await createContent({
+    loggedInUserId: userId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: doc2 } = await createContent({
+    loggedInUserId: userId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+
+  // Delete the content
+  const deleteDate = DateTime.fromISO("2025-06-21");
+  vi.setSystemTime(deleteDate.toJSDate());
+  await deleteContent({ contentId: doc1, loggedInUserId: userId });
+  await deleteContent({ contentId: doc2, loggedInUserId: userId });
+
+  // Can restore content after almost 30 days
+  vi.setSystemTime(
+    deleteDate.plus({ days: 29, hours: 23, minutes: 58 }).toJSDate(),
+  );
+  await restoreDeletedContent({ contentId: doc1, loggedInUserId: userId });
+
+  // but not after 30 days
+  vi.setSystemTime(deleteDate.plus({ days: 30, minutes: 1 }).toJSDate());
+  await expect(
+    restoreDeletedContent({ contentId: doc2, loggedInUserId: userId }),
+  ).rejects.toThrowError();
+});
+
+test("Deleted content shows up in trash, ordered by most recent first", async () => {
+  const { userId } = await createTestUser();
+  const { contentId: sequenceId } = await createContent({
+    loggedInUserId: userId,
+    contentType: "sequence",
+    parentId: null,
+  });
+  const { contentId: doc1Id } = await createContent({
+    loggedInUserId: userId,
+    contentType: "singleDoc",
+    parentId: sequenceId,
+  });
+  await createContent({
+    loggedInUserId: userId,
+    contentType: "singleDoc",
+    parentId: sequenceId,
+  });
+
+  await deleteContent({ contentId: doc1Id, loggedInUserId: userId });
+  await deleteContent({ contentId: sequenceId, loggedInUserId: userId });
+
+  const trash = await getMyTrash({ loggedInUserId: userId });
+  expect(trash.content.length).eqls(2);
+  expect(trash.content[0].contentId).eqls(sequenceId);
+  expect(trash.content[1].contentId).eqls(doc1Id);
 });
 
 test("updateContent updates document properties", async () => {

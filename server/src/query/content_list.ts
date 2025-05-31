@@ -4,7 +4,10 @@ import {
   mustBeAdmin,
 } from "./curate";
 import { prisma } from "../model";
-import { filterEditableContent } from "../utils/permissions";
+import {
+  filterEditableContent,
+  getEarliestRecoverableDate,
+} from "../utils/permissions";
 import { processContent, returnContentSelect } from "../utils/contentStructure";
 import { Content } from "../types";
 import { getAvailableContentFeatures } from "./classification";
@@ -84,7 +87,7 @@ export async function getMyContentOrLibraryContent({
   const preliminaryContent = await prisma.content.findMany({
     where: {
       ownerId,
-      isDeleted: false,
+      isDeletedOn: null,
       parentId,
       ...additionalFilter,
     },
@@ -197,12 +200,12 @@ export async function searchMyContentOrLibraryContent({
         ? Prisma.sql`
         WITH RECURSIVE content_tree(id) AS (
         SELECT id FROM content
-        WHERE parentId = ${parentId} AND ownerId = ${ownerId} AND isDeleted = FALSE
+        WHERE parentId = ${parentId} AND ownerId = ${ownerId} AND isDeletedOn IS NULL
         UNION ALL
         SELECT content.id FROM content
         INNER JOIN content_tree AS ft
         ON content.parentId = ft.id
-        WHERE content.isDeleted = FALSE
+        WHERE content.isDeletedOn IS NULL
       )`
         : Prisma.empty
     }
@@ -219,7 +222,7 @@ export async function searchMyContentOrLibraryContent({
       ${
         parentId !== null
           ? Prisma.sql`content.id IN (SELECT id from content_tree)`
-          : Prisma.sql`content.ownerId = ${ownerId} AND content.isDeleted = FALSE`
+          : Prisma.sql`content.ownerId = ${ownerId} AND content.isDeletedOn IS NULL`
       }
       AND
       (
@@ -297,7 +300,7 @@ export async function getSharedContent({
         id: parentId,
         type: "folder",
         // Note: don't use viewable filter, as we require it to be public/shared even if owned by loggedInUserId
-        isDeleted: false,
+        isDeletedOn: null,
         OR: [
           { isPublic: true },
           { sharedWith: { some: { userId: loggedInUserId } } },
@@ -329,7 +332,7 @@ export async function getSharedContent({
       ownerId,
       parentId: parentId,
       // Note: don't use viewable filter, as we require it to be public/shared even if owned by loggedInUserId
-      isDeleted: false,
+      isDeletedOn: null,
       OR: [
         { isPublic: true },
         { sharedWith: { some: { userId: loggedInUserId } } },
@@ -355,7 +358,7 @@ export async function getSharedContent({
           ],
         },
         // Note: don't use viewable filter, as we require it to be public/shared even if owned by loggedInUserId
-        isDeleted: false,
+        isDeletedOn: null,
         OR: [
           { isPublic: true },
           { sharedWith: { some: { userId: loggedInUserId } } },
@@ -386,4 +389,36 @@ export async function getSharedContent({
     owner,
     parent,
   };
+}
+
+export async function getMyTrash({
+  loggedInUserId,
+}: {
+  loggedInUserId: Uint8Array;
+}) {
+  const preliminaryContent = await prisma.content.findMany({
+    where: {
+      ownerId: loggedInUserId,
+      deletionRootId: null,
+      isDeletedOn: {
+        not: null,
+        gte: getEarliestRecoverableDate().toJSDate(),
+      },
+    },
+    select: {
+      ...returnContentSelect({
+        includeClassifications: true,
+      }),
+      isDeletedOn: true,
+    },
+    orderBy: { isDeletedOn: "desc" },
+  });
+
+  const deletionDates = preliminaryContent.map((c) => c.isDeletedOn!);
+  const content = preliminaryContent.map((content) =>
+    //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
+    processContent(content, loggedInUserId),
+  );
+
+  return { deletionDates, content };
 }

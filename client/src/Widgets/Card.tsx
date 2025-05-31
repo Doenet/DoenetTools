@@ -41,14 +41,14 @@ export type CardContent = {
   // If this exists, it replaces the owner name but not the avatar
   ownerNameExtended?: string;
   menuItems?: ReactElement;
-  closeTime?: string;
+  blurb?: string;
   indentLevel?: number;
 };
 
 export default function Card({
   cardContent,
   showOwnerName = false,
-  showAssignmentStatus = false,
+  showBlurb = false,
   showPublicStatus = false,
   showActivityFeatures = false,
   showAddButton = false,
@@ -65,7 +65,7 @@ export default function Card({
 }: {
   cardContent: CardContent;
   showOwnerName?: boolean;
-  showAssignmentStatus?: boolean;
+  showBlurb?: boolean;
   showPublicStatus?: boolean;
   showActivityFeatures?: boolean;
   showAddButton?: boolean;
@@ -95,7 +95,7 @@ export default function Card({
     parent,
   } = cardContent.content;
 
-  const { menuItems, closeTime, cardLink, ownerName, ownerNameExtended } =
+  const { menuItems, blurb, cardLink, ownerName, ownerNameExtended } =
     cardContent;
 
   const contentTypeName = contentTypeToName[contentType];
@@ -105,21 +105,6 @@ export default function Card({
   let numVariants = 1;
   if (cardContent.content.type === "singleDoc") {
     numVariants = cardContent.content.numVariants;
-  }
-
-  if (contentType === "folder") {
-    showAssignmentStatus = false;
-  }
-  let assignmentStatusString = "";
-  if (showAssignmentStatus) {
-    const assignmentStatus =
-      cardContent.content.assignmentInfo?.assignmentStatus ?? "Unassigned";
-    if (assignmentStatus !== "Unassigned") {
-      assignmentStatusString = assignmentStatus;
-      if (assignmentStatus === "Open" && closeTime !== undefined) {
-        assignmentStatusString = assignmentStatusString + " until " + closeTime;
-      }
-    }
   }
 
   const titleDisplay = (
@@ -290,21 +275,22 @@ export default function Card({
     </Tooltip>
   );
 
-  const assignmentStatusDisplay = showAssignmentStatus ? (
-    <Tooltip label={assignmentStatusString}>
-      <Box
-        paddingLeft={[".2em", "1em"]}
-        width="100%"
-        height={cardHeight}
-        alignContent="center"
-        fontSize="sm"
-      >
-        <Box noOfLines={2} fontStyle="italic">
-          {assignmentStatusString}
+  const blurbDisplay =
+    showBlurb && blurb ? (
+      <Tooltip label={blurb}>
+        <Box
+          paddingLeft={[".2em", "1em"]}
+          width="100%"
+          height={cardHeight}
+          alignContent="center"
+          fontSize="sm"
+        >
+          <Box noOfLines={2} fontStyle="italic">
+            {blurb}
+          </Box>
         </Box>
-      </Box>
-    </Tooltip>
-  ) : null;
+      </Tooltip>
+    ) : null;
 
   const ownerNameWithAvatar = showOwnerName ? (
     <Box
@@ -484,13 +470,9 @@ export default function Card({
               </Box>
               {libraryRequestDate}
               <Box
-                width={
-                  showAssignmentStatus || showOwnerName
-                    ? `calc(40% - 50px)`
-                    : "0px"
-                }
+                width={showBlurb || showOwnerName ? `calc(40% - 50px)` : "0px"}
               >
-                {assignmentStatusDisplay}
+                {blurbDisplay}
                 {ownerNameWithAvatar}
               </Box>
               {licenseBadges}
