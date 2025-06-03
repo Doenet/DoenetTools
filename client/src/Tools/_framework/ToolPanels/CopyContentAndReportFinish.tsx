@@ -133,16 +133,9 @@ export function CopyContentAndReportFinish({
       setNewContentIds(null);
       setErrMsg("");
     }
-  }, [
-    isOpen,
-    actionProgressiveWord,
-    newContentIds,
-    fetcher,
-    contentIds,
-    desiredParent,
-    copyToLibrary,
-    prependCopy,
-  ]);
+    // When we included all the dependencies here, it copied content several times
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   let destinationDescription: ReactElement;
   let destinationAction: string;

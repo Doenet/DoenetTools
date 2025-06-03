@@ -146,7 +146,6 @@ export function MoveCopyContent({
     setActionFinished(false);
     setErrMsg("");
     // TODO: proper way to have functions and hooks
-    // Was giving a bug when we included updateActiveView in dependency
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, currentParentId]);
 
@@ -166,14 +165,14 @@ export function MoveCopyContent({
 
   async function updateActiveView(
     newActiveParentId: string | null,
-    modalJustOpened: boolean = false
+    modalJustOpened: boolean = false,
   ) {
     const { data } = inCurationLibrary
       ? await axios.get(
-          `/api/curate/getCurationFolderContent/${newActiveParentId ?? ""}`
+          `/api/curate/getCurationFolderContent/${newActiveParentId ?? ""}`,
         )
       : await axios.get(
-          `/api/contentList/getMyContent/${userId}/${newActiveParentId ?? ""}`
+          `/api/contentList/getMyContent/${userId}/${newActiveParentId ?? ""}`,
         );
 
     const parent: Content | null = data.parent;
@@ -215,7 +214,7 @@ export function MoveCopyContent({
         for (const ct of allowedParentTypes) {
           const { data: containsData } = await axios.get(
             `/api/copyMove/checkIfContentContains`,
-            { params: { contentId: item.contentId, contentType: ct } }
+            { params: { contentId: item.contentId, contentType: ct } },
           );
 
           if (containsData.containsType) {
@@ -361,9 +360,9 @@ export function MoveCopyContent({
                       (c) =>
                         !c.sharedWith ||
                         c.sharedWith.findIndex(
-                          (u) => u.userId === parentUser.userId
-                        ) === -1
-                    )
+                          (u) => u.userId === parentUser.userId,
+                        ) === -1,
+                    ),
                   ))))
           ) {
             // moving non-public content into a public parent
@@ -535,7 +534,7 @@ export function MoveCopyContent({
         desiredPosition: activeView.contents.length, // place it as the last item
         action,
       },
-      { method: "post" }
+      { method: "post" },
     );
   }
 }
