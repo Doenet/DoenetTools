@@ -12,7 +12,7 @@ import {
   Text,
   Spinner,
 } from "@chakra-ui/react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import {
   FetcherWithComponents,
   useNavigate,
@@ -51,10 +51,10 @@ export async function copyContentAndReportFinishActions({
       return { action: "copiedContent", success: true, newContentIds };
     } catch (e) {
       console.error(e);
-      const message =
-        typeof e.response?.data?.details === "string"
-          ? e.response.data.details
-          : null;
+      let message: string | null = null;
+      if (e instanceof AxiosError) {
+        message = e.response?.data.details;
+      }
 
       return { action: "copiedContent", success: false, message };
     }
@@ -133,7 +133,16 @@ export function CopyContentAndReportFinish({
       setNewContentIds(null);
       setErrMsg("");
     }
-  }, [isOpen, actionProgressiveWord]);
+  }, [
+    isOpen,
+    actionProgressiveWord,
+    newContentIds,
+    fetcher,
+    contentIds,
+    desiredParent,
+    copyToLibrary,
+    prependCopy,
+  ]);
 
   let destinationDescription: ReactElement;
   let destinationAction: string;

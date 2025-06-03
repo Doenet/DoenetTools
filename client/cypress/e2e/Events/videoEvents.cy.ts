@@ -111,12 +111,12 @@ describe("video events test", function () {
     cy.request(`/api/getEventData.php?doenetId[]=${doenetId}`).then((resp) => {
       const events = resp.body.events;
 
-      const videoEvents = events.filter((evt) =>
+      const videoEvents = events.filter((evt: any) =>
         ["played", "watched", "paused", "skipped", "completed"].includes(
           evt.verb,
         ),
       );
-      const videoVerbs = videoEvents.map((x) => x.verb);
+      const videoVerbs = videoEvents.map((x: any) => x.verb);
 
       console.log(...videoEvents);
 

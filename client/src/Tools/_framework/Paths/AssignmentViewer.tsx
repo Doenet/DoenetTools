@@ -5,12 +5,17 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { redirect, useLoaderData, useOutletContext } from "react-router";
+import {
+  ActionFunctionArgs,
+  redirect,
+  useLoaderData,
+  useOutletContext,
+} from "react-router";
 
 import { DoenetViewer } from "@doenet/doenetml-iframe";
 
 import { Box, Button, Grid, GridItem, Text, Tooltip } from "@chakra-ui/react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useLocation, useNavigate } from "react-router";
 import {
   EnterClassCode,
@@ -25,6 +30,7 @@ import {
   isReportStateMessage,
 } from "../../../_utils/viewerTypes";
 import { compileActivityFromContent } from "../../../_utils/activity";
+// @ts-expect-error assignment-viewer doesn't publish types, see https://github.com/Doenet/assignment-viewer/issues/20
 import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";
 
 type ItemScore = {
@@ -78,7 +84,7 @@ function createScoreNumberByItem(obj: unknown) {
   return null;
 }
 
-export async function action({ params, request }) {
+export async function action({ params, request }: ActionFunctionArgs) {
   const formData = await request.formData();
 
   const codeResults = await enterClassCodeAction({ params, request, formData });
@@ -98,12 +104,24 @@ export async function action({ params, request }) {
   return null;
 }
 
-export async function loader({ params }) {
+export async function loader({ params }: { params: any }) {
   // TODO: need to select variant for each student (just once)
 
-  const { data } = await axios.get(
+  const { data } = (await axios.get(
     `/api/info/getAssignmentViewerDataFromCode/${params.classCode}`,
-  );
+  )) as {
+    data:
+      | {
+          assignmentFound: true;
+          assignmentOpen?: boolean;
+          assignment: any;
+          scoreData: any;
+        }
+      | {
+          assignmentFound: false;
+          assignment: null;
+        };
+  };
 
   let initialScore: number = 0;
   let initialScoreNumberByItem: number[] | null = null;
@@ -129,7 +147,9 @@ export async function loader({ params }) {
   }
 
   if (!data.assignmentOpen) {
-    return redirect(`/assignedData/${data.assignment.contentId}?shuffledOrder`);
+    return redirect(
+      `/assignedData/${data.assignment!.contentId}?shuffledOrder`,
+    );
   }
 
   if (data.scoreData.calculatedScore) {
@@ -143,21 +163,19 @@ export async function loader({ params }) {
       data.scoreData.latestAttempt.itemScores,
     );
     itemAttemptNumbers = data.scoreData.latestAttempt.itemScores.map(
-      (x) => x.itemAttemptNumber,
+      (x: any) => x.itemAttemptNumber,
     );
     attemptNumber = data.scoreData.latestAttempt.attemptNumber;
   }
 
-  const assignment = data.assignment;
-
-  if (assignment.type === "singleDoc") {
-    const doenetML = assignment.doenetML;
-    const doenetmlVersion: DoenetmlVersion = assignment.doenetmlVersion;
+  if (data.assignment.type === "singleDoc") {
+    const doenetML = data.assignment.doenetML;
+    const doenetmlVersion: DoenetmlVersion = data.assignment.doenetmlVersion;
 
     return {
       assignmentFound: true,
-      type: assignment.type,
-      assignment,
+      type: data.assignment.type,
+      assignment: data.assignment,
       doenetML,
       doenetmlVersion,
       code: params.classCode,
@@ -170,18 +188,18 @@ export async function loader({ params }) {
       loadedScore,
     };
   } else {
-    const activityJsonPrelim = assignment.activityJson
-      ? JSON.parse(assignment.activityJson)
+    const activityJsonPrelim = data.assignment.activityJson
+      ? JSON.parse(data.assignment.activityJson)
       : null;
 
     const activityJson = isActivitySource(activityJsonPrelim)
       ? activityJsonPrelim
-      : compileActivityFromContent(assignment);
+      : compileActivityFromContent(data.assignment);
 
     return {
       assignmentFound: true,
-      type: assignment.type,
-      assignment,
+      type: data.assignment.type,
+      assignment: data.assignment,
       activityJson,
       code: params.classCode,
       initialScore,
@@ -306,7 +324,7 @@ export function AssignmentViewer() {
       return;
     }
 
-    const messageListener = async function (event) {
+    const messageListener = async function (event: any) {
       if (event.data.subject == "SPLICE.reportScoreAndState") {
         console.log("record score and state", event.data);
 
@@ -392,6 +410,7 @@ export function AssignmentViewer() {
               setScoreInfo(saveData);
             } catch (e) {
               if (
+                e instanceof AxiosError &&
                 e.status === 400 &&
                 e.response?.data?.error === "Invalid request" &&
                 e.response.data.details.includes("non-maximal")
@@ -483,9 +502,11 @@ export function AssignmentViewer() {
             if (data.items.length > 0) {
               // add back in state from items
               state.itemAttemptNumbers = data.items.map(
-                (x) => x.itemAttemptNumber,
+                (x: any) => x.itemAttemptNumber,
               );
-              state.doenetStates = data.items.map((x) => JSON.parse(x.state));
+              state.doenetStates = data.items.map((x: any) =>
+                JSON.parse(x.state),
+              );
             }
 
             window.postMessage({
@@ -521,7 +542,16 @@ export function AssignmentViewer() {
     return () => {
       removeEventListener("message", messageListener);
     };
-  }, [assignment]);
+  }, [
+    assignment,
+    attemptNumber,
+    code,
+    createNewAttempt,
+    initialVariant,
+    itemAttemptNumbers.length,
+    scores,
+    scoresCurrentAttempt,
+  ]);
 
   if (!loaderData.assignmentFound || !assignment) {
     return <EnterClassCode invalidCode={code} />;
@@ -714,6 +744,8 @@ export function AssignmentViewer() {
     </Grid>
   );
 
+  // TODO: figure out functions inside hooks
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   async function createNewAttempt({
     variant,
     state = null,

@@ -20,7 +20,7 @@ const nanInfinityReviver = function (_key: any, value: any) {
 export function parseAndFormatResponse(response: string): React.JSX.Element {
   const parsedResp = JSON.parse(response, nanInfinityReviver);
 
-  return parsedResp.response.map((v: any, i: any) => {
+  return parsedResp.response.map((v: unknown, i: number) => {
     const componentType = parsedResp.componentTypes[i];
     if (["math", "point", "matrix", "vector"].includes(componentType)) {
       const expr = me.fromAst(v).round_numbers_to_precision_plus_decimals(6, 2);

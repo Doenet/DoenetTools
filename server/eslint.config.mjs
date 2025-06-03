@@ -1,23 +1,26 @@
-import globals from "globals";
-import pluginJs from "@eslint/js";
+// @ts-check
+
+import eslint from "@eslint/js";
 import tseslint from "typescript-eslint";
 import unusedImports from "eslint-plugin-unused-imports";
 
-export default [
-  { files: ["**.{js,mjs,cjs,ts,jsx,tsx}"] },
+export default tseslint.config(
   { ignores: ["dist/"] },
-  { languageOptions: { globals: { ...globals.node } } },
+  eslint.configs.recommended,
+  tseslint.configs.recommended,
+
+  // eslint-plugin-unused-imports allows linter to fix unused imports
+  // It works by splitting the normal "unused-imports" rule into tw
   {
     plugins: {
       "unused-imports": unusedImports,
     },
-  },
-  pluginJs.configs.recommended,
-  ...tseslint.configs.recommended,
-  {
     rules: {
       "@typescript-eslint/no-unused-vars": "off",
       "unused-imports/no-unused-imports": "error",
+
+      // Allow unused vars that start with underscore
+      // See https://typescript-eslint.io/rules/no-unused-vars/
       "unused-imports/no-unused-vars": [
         "warn",
         {
@@ -32,4 +35,4 @@ export default [
       ],
     },
   },
-];
+);

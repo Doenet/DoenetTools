@@ -7,8 +7,20 @@ import { defineConfig } from "vite";
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 
-export default defineConfig(() => ({
-  plugins: [react()],
+export default defineConfig({
+  // Node.js global to browser globalThis
+  define: {
+    global: "globalThis",
+  },
+  plugins: [
+    react(),
+    // Enable esbuild polyfill plugins
+    NodeGlobalsPolyfillPlugin({
+      process: true,
+      buffer: true,
+    }),
+    NodeModulesPolyfillPlugin(),
+  ],
   server: {
     port: 8000,
     proxy: {
@@ -23,20 +35,6 @@ export default defineConfig(() => ({
     alias: [
       { find: "csv-parse", replacement: "csv-parse/browser/esm" },
       { find: "@Tool", replacement: "/src/Tools/_framework/Tool" },
-    ],
-  },
-  optimizeDeps: {
-    // Node.js global to browser globalThis
-    define: {
-      global: "globalThis",
-    },
-    // Enable esbuild polyfill plugins
-    plugins: [
-      NodeGlobalsPolyfillPlugin({
-        process: true,
-        buffer: true,
-      }),
-      NodeModulesPolyfillPlugin(),
     ],
   },
   worker: {
@@ -63,4 +61,4 @@ export default defineConfig(() => ({
       },
     },
   },
-}));
+});

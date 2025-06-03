@@ -30,6 +30,7 @@ import {
   Link,
   Form,
   useOutletContext,
+  ActionFunctionArgs,
 } from "react-router";
 
 import { CardContent } from "../../../Widgets/Card";
@@ -50,13 +51,13 @@ import {
 import {
   AssignmentStatus,
   ContentDescription,
-  ContentFeature,
   Content,
   ContentType,
-  DoenetmlVersion,
-  License,
   LicenseCode,
   UserInfo,
+  DoenetmlVersion,
+  License,
+  ContentFeature,
 } from "./../../../_utils/types";
 import { MdClose, MdOutlineSearch } from "react-icons/md";
 import { ShareDrawer, shareDrawerActions } from "../ToolPanels/ShareDrawer";
@@ -82,9 +83,9 @@ import {
 } from "../ToolPanels/AuthorModeModal";
 import { formatAssignmentBlurb } from "../../../_utils/assignment";
 
-export async function action({ request, params }) {
-  const formData = await request.formData();
-  const formObj = Object.fromEntries(formData);
+export async function action({ request, params }: ActionFunctionArgs) {
+  const formData: FormData = await request.formData();
+  const formObj = Object.fromEntries(formData.entries());
 
   const resultCS = await contentSettingsActions({ formObj });
   if (resultCS) {
@@ -158,7 +159,7 @@ export async function action({ request, params }) {
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
 }
 
-export async function loader({ params, request }) {
+export async function loader({ params, request }: any) {
   const url = new URL(request.url);
   const q = url.searchParams.get("q");
 
@@ -283,7 +284,7 @@ export function Activities() {
   useEffect(() => {
     setSelectedCards((was) => {
       let foundMissing = false;
-      const newList = content.map((c) => c.contentId);
+      const newList = content.map((c: Content) => c.contentId);
       for (const c of was.filter((x) => x)) {
         if (!newList.includes(c.contentId)) {
           foundMissing = true;
@@ -523,7 +524,7 @@ export function Activities() {
       finalFocusRef.current = folderSettingsRef.current;
     } else {
       const index = content.findIndex(
-        (obj) => obj.contentId == settingsContentId,
+        (obj: any) => obj.contentId == settingsContentId,
       );
       if (index != -1) {
         contentData = content[index];

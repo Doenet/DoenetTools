@@ -128,7 +128,7 @@ export function CreateContentAndPromptName({
       setNewActivityData(null);
       setErrMsg("");
     }
-  }, [isOpen]);
+  }, [contentIds, desiredType, fetcher, isOpen, newActivityData]);
 
   useEffect(() => {
     nameRef.current?.select();

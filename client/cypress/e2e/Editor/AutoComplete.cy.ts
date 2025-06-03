@@ -267,7 +267,7 @@ describe.skip("Auto completion test", function () {
   });
 });
 
-function verifyTopAutoCompleteOptionIsNamed(value) {
+function verifyTopAutoCompleteOptionIsNamed(value: any) {
   // wait autocompletion list has value at the top
   cy.waitUntil(() =>
     cy
@@ -280,7 +280,7 @@ function verifyTopAutoCompleteOptionIsNamed(value) {
   );
 }
 
-function selectTopAutoCompleteOptionWhenNamed(value) {
+function selectTopAutoCompleteOptionWhenNamed(value: any) {
   verifyTopAutoCompleteOptionIsNamed(value);
 
   // for some reason, still have to wait longer

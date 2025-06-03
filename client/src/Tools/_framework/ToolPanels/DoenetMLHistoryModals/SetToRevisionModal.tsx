@@ -79,7 +79,7 @@ export function SetToRevisionModal({
         setEncounteredError(true);
       }
     }
-  }, [fetcher.data]);
+  }, [fetcher.data, immediateDoenetmlChangeCallback]);
 
   useEffect(() => {
     setUpdated(false);

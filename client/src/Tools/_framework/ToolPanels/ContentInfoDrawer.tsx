@@ -52,7 +52,7 @@ export function ContentInfoDrawer({
 
   useEffect(() => {
     setTabIndex(initialTabIndex);
-  }, [displayTab, isOpen]);
+  }, [displayTab, initialTabIndex, isOpen]);
 
   // TODO: this next section (until return statement) is copied almost verbatim from ShareDrawer.tsx
   // Refactor to avoid code duplication

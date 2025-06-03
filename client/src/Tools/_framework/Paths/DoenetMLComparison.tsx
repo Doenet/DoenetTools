@@ -1,7 +1,6 @@
 import React from "react";
 import { DoenetEditor } from "@doenet/doenetml-iframe";
 import { PanelPair } from "../../../Widgets/PanelPair";
-import { DoenetmlVersion, UserInfo } from "../../../_utils/types";
 import {
   Box,
   Flex,
@@ -22,6 +21,7 @@ import {
   useNavigate,
   Link as ReactRouterLink,
   useFetcher,
+  ActionFunctionArgs,
 } from "react-router";
 import axios from "axios";
 
@@ -31,8 +31,9 @@ import {
   BasicUpdateActionsModal,
   basicUpdateActionsModalActions,
 } from "../ToolPanels/DoenetMLComparisonModals/BasicUpdateActionsModal";
+import { DoenetmlVersion, UserInfo } from "../../../_utils/types";
 
-export async function action({ request }) {
+export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
 
@@ -44,7 +45,7 @@ export async function action({ request }) {
   return null;
 }
 
-export async function loader({ params }) {
+export async function loader({ params }: { params: any }) {
   const { data } = await axios.get(
     `/api/compare/getDoenetMLComparison/${params.contentId}/${params.compareId}`,
   );

@@ -24,6 +24,7 @@ import {
   useFetcher,
   Link,
   Form,
+  ActionFunctionArgs,
 } from "react-router";
 
 import { CardContent } from "../../../Widgets/Card";
@@ -38,13 +39,13 @@ import {
   ContentSettingsDrawer,
 } from "../ToolPanels/ContentSettingsDrawer";
 import {
-  ContentFeature,
   Content,
-  DoenetmlVersion,
   LicenseCode,
   UserInfo,
   ContentType,
+  DoenetmlVersion,
   License,
+  ContentFeature,
 } from "./../../../_utils/types";
 import { MdClose, MdOutlineSearch } from "react-icons/md";
 import { getAllowedParentTypes } from "../../../_utils/activity";
@@ -54,7 +55,7 @@ import {
 } from "../ToolPanels/CreateLocalContentModal";
 import { ShareDrawer, shareDrawerActions } from "../ToolPanels/ShareDrawer";
 
-export async function action({ request }) {
+export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
 
@@ -105,7 +106,13 @@ export async function action({ request }) {
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
 }
 
-export async function loader({ params, request }) {
+export async function loader({
+  params,
+  request,
+}: {
+  params: any;
+  request: any;
+}) {
   const url = new URL(request.url);
   const q = url.searchParams.get("q");
 

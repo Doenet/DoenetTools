@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLoaderData } from "react-router";
+import { ActionFunctionArgs, useLoaderData } from "react-router";
 import axios from "axios";
 import {
   Box,
@@ -14,12 +14,12 @@ import {
 import { useNavigate } from "react-router";
 import { action as changeNameAction } from "./ChangeName";
 
-export async function action({ params, request }) {
+export async function action({ params, request }: ActionFunctionArgs) {
   const formData = await request.formData();
   return changeNameAction({ params, request, formData });
 }
 
-export async function loader({ request }) {
+export async function loader({ request }: { request: any }) {
   const url = new URL(request.url);
   const token = url.searchParams.get("token");
 
@@ -27,9 +27,7 @@ export async function loader({ request }) {
 }
 
 export function ConfirmSignIn() {
-  const { token } = useLoaderData() as {
-    token: string;
-  };
+  const { token } = useLoaderData();
 
   const navigate = useNavigate();
 
@@ -55,7 +53,7 @@ export function ConfirmSignIn() {
         document.body.style.cursor = "default";
         setErrorConfirm(true);
       });
-  }, [token]);
+  }, [navigate, token]);
 
   let content: React.JSX.Element;
 

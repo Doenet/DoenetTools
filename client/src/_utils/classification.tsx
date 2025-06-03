@@ -40,12 +40,12 @@ export function returnClassificationsAccordionPanel(
               {classification.descriptions.slice(1).map((description, i) => {
                 return (
                   <ListItem key={i}>
-                    "
+                    &quot;
                     {getClassificationAugmentedDescription(
                       classification,
                       i + 1,
                     )}
-                    " from {description.subCategory.category.system.name}
+                    &quot; from {description.subCategory.category.system.name}
                   </ListItem>
                 );
               })}
