@@ -1,3 +1,4 @@
+import React from "react";
 import { FetcherWithComponents } from "react-router";
 import {
   Box,
@@ -16,7 +17,7 @@ import {
   LibraryRelations,
 } from "../../../_utils/types";
 import { DisplayLicenseItem } from "../../../Widgets/Licenses";
-import { createFullName } from "../../../_utils/names";
+import { createNameNoCurateTag } from "../../../_utils/names";
 import { ChatConversation } from "../../../Widgets/ChatConversation";
 import { DateTime } from "luxon";
 import { getLibraryStatusStylized } from "../../../_utils/library";
@@ -164,7 +165,7 @@ export function CurateSettings({
         <ListItem>
           Current primary editor:{" "}
           {librarySource.primaryEditor
-            ? createFullName(librarySource.primaryEditor)
+            ? createNameNoCurateTag(librarySource.primaryEditor)
             : "None"}
           {amEditor && " (you)"}
         </ListItem>
@@ -178,7 +179,7 @@ export function CurateSettings({
         canComment={amEditor}
         messages={libraryComments.map((c) => {
           return {
-            user: createFullName(c.user),
+            user: createNameNoCurateTag(c.user),
             userIsMe: c.isMe,
             message: c.comment,
             dateTime: DateTime.fromISO(c.dateTime),

@@ -5,7 +5,7 @@ import { ActionFunctionArgs, useLoaderData, useNavigate } from "react-router";
 
 import { CardContent } from "../../../Widgets/Card";
 import axios from "axios";
-import { createFullName } from "../../../_utils/names";
+import { createNameNoCurateTag } from "../../../_utils/names";
 import CardList from "../../../Widgets/CardList";
 import { formatAssignmentBlurb } from "../../../_utils/assignment";
 import { Content, UserInfo } from "../../../_utils/types";
@@ -48,7 +48,7 @@ export function Assigned() {
       padding=".5em 0"
     >
       <Heading as="h2" size="lg">
-        {createFullName(user)}
+        {createNameNoCurateTag(user)}
       </Heading>
       <Heading as="h3" size="md" marginBottom="0.5em">
         Assigned Activities

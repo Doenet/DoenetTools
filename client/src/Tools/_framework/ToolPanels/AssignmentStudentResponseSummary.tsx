@@ -22,7 +22,7 @@ import {
   useNavigate,
 } from "react-router";
 import "../../../_utils/score-table.css";
-import { createFullName } from "../../../_utils/names";
+import { createNameNoCurateTag } from "../../../_utils/names";
 import { ContentType, UserInfo } from "../../../_utils/types";
 import { clearQueryParameter } from "../../../_utils/explore";
 
@@ -356,7 +356,7 @@ export function AssignmentStudentResponseSummary({
             >
               {allStudents.map((user) => (
                 <option value={user.userId} key={user.userId}>
-                  {createFullName(user)}
+                  {createNameNoCurateTag(user)}
                 </option>
               ))}
             </Select>

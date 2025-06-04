@@ -38,8 +38,8 @@ export type CardContent = {
   cardLink?: string;
   content: Content;
   ownerName?: string;
-  // If this exists, it replaces the owner name but not the avatar
-  ownerNameExtended?: string;
+  // This will replace `ownerName` in the avatar
+  ownerAvatarName?: string;
   menuItems?: ReactElement;
   blurb?: string;
   indentLevel?: number;
@@ -95,7 +95,7 @@ export default function Card({
     parent,
   } = cardContent.content;
 
-  const { menuItems, blurb, cardLink, ownerName, ownerNameExtended } =
+  const { menuItems, blurb, cardLink, ownerAvatarName, ownerName } =
     cardContent;
 
   const contentTypeName = contentTypeToName[contentType];
@@ -292,17 +292,17 @@ export default function Card({
       </Tooltip>
     ) : null;
 
-  const ownerNameWithAvatar = showOwnerName ? (
+  const ownerInfo = showOwnerName ? (
     <Box
       paddingLeft={[".1em", "1em"]}
       width="100%"
       height={cardHeight}
       alignContent="center"
     >
-      <Tooltip label={ownerName}>
+      <Tooltip label={ownerAvatarName}>
         <HStack>
-          <Avatar size="xs" name={ownerName} />
-          <Text noOfLines={1}>{ownerNameExtended ?? ownerName}</Text>
+          <Avatar size="xs" name={ownerAvatarName ?? ownerName} />
+          <Text noOfLines={1}>{ownerName}</Text>
         </HStack>
       </Tooltip>
     </Box>
@@ -473,7 +473,7 @@ export default function Card({
                 width={showBlurb || showOwnerName ? `calc(40% - 50px)` : "0px"}
               >
                 {blurbDisplay}
-                {ownerNameWithAvatar}
+                {ownerInfo}
               </Box>
               {licenseBadges}
               {variantsDisplay}

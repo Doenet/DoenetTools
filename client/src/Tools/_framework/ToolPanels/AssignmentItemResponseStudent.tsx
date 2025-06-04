@@ -13,7 +13,7 @@ import {
   Checkbox,
 } from "@chakra-ui/react";
 import { useNavigate, useLocation } from "react-router";
-import { createFullName } from "../../../_utils/names";
+import { createNameNoCurateTag } from "../../../_utils/names";
 import {
   AssignmentMode,
   ContentType,
@@ -246,7 +246,7 @@ export function AssignmentItemResponseStudent({
               >
                 {allStudents.map((user) => (
                   <option value={user.userId} key={user.userId}>
-                    {createFullName(user)}
+                    {createNameNoCurateTag(user)}
                   </option>
                 ))}
               </Select>

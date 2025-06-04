@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useMemo, useState } from "react";
+import React, { ReactElement, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import {
   Box,
@@ -38,8 +38,8 @@ import Searchbar from "../../../Widgets/SearchBar";
 import { Form, useFetcher } from "react-router";
 import { CardContent } from "../../../Widgets/Card";
 import {
-  createFullName,
-  createFullNameCheckCurated,
+  createNameNoCurateTag,
+  createNameCheckCurateTag,
 } from "../../../_utils/names";
 import {
   ContentDescription,
@@ -388,14 +388,14 @@ export function Explore() {
         </MenuItem>
       );
 
-      const ownerName = createFullName(owner!);
-      const ownerNameExtended = createFullNameCheckCurated(owner!);
+      const ownerAvatarName = createNameNoCurateTag(owner!);
+      const ownerName = createNameCheckCurateTag(owner!);
 
       return {
         contentId,
         content: itemObj,
+        ownerAvatarName,
         ownerName,
-        ownerNameExtended,
         cardLink,
         menuItems,
       };
@@ -426,7 +426,7 @@ export function Explore() {
   let authorMatches: ReactElement | null = null;
 
   if (authorInfo) {
-    const authorName = createFullName(authorInfo);
+    const authorName = createNameNoCurateTag(authorInfo);
     authorMatches = (
       <Flex>
         Currently filtered by {authorName}
@@ -453,7 +453,7 @@ export function Explore() {
         </Heading>
         <List>
           {matchedAuthors.map((author) => {
-            const authorName = createFullName(author);
+            const authorName = createNameNoCurateTag(author);
 
             return (
               <ListItem key={author.userId} marginTop="5px">

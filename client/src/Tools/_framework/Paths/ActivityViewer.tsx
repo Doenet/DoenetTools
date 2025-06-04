@@ -64,7 +64,7 @@ import { ActivitySource, isActivitySource } from "../../../_utils/viewerTypes";
 import { processRemixes } from "../../../_utils/processRemixes";
 import ContributorsMenu from "../ToolPanels/ContributorsMenu";
 import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
-import { createFullNameCheckCurated } from "../../../_utils/names";
+import { createNameCheckCurateTag } from "../../../_utils/names";
 import { DisplayLicenseItem } from "../../../Widgets/Licenses";
 import { SiteContext } from "./SiteHeader";
 import {
@@ -298,7 +298,7 @@ export function ActivityViewer() {
   }
 
   const contentTypeName = contentTypeToName[data.type];
-  const ownerNameExtended = createFullNameCheckCurated(activityData.owner!);
+  const ownerName = createNameCheckCurateTag(activityData.owner!);
 
   const { iconImage, iconColor } = getIconInfo(data.type);
 
@@ -641,7 +641,7 @@ export function ActivityViewer() {
                     <>
                       <p>
                         <strong>{activityData.name}</strong> by{" "}
-                        {ownerNameExtended} is shared with these licenses:
+                        {ownerName} is shared with these licenses:
                       </p>
                       <List spacing="20px" marginTop="10px">
                         {activityData.license.composedOf.map((comp) => (
@@ -660,7 +660,7 @@ export function ActivityViewer() {
                     <>
                       <p>
                         <strong>{activityData.name}</strong> by{" "}
-                        {ownerNameExtended} is shared using the license:
+                        {ownerName} is shared using the license:
                       </p>
                       <List marginTop="10px">
                         <DisplayLicenseItem
@@ -671,7 +671,7 @@ export function ActivityViewer() {
                   )
                 ) : (
                   <p>
-                    <strong>{activityData.name}</strong> by {ownerNameExtended}{" "}
+                    <strong>{activityData.name}</strong> by {ownerName}{" "}
                     is shared, but a license was not specified. Contact the
                     author to determine in what ways you can reuse this
                     activity.

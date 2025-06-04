@@ -1,6 +1,13 @@
 import React from "react";
 import { FetcherWithComponents } from "react-router";
-import { Box, Button, Heading, Text, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Center,
+  Heading,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 import axios from "axios";
 import {
   Content,
@@ -8,7 +15,7 @@ import {
   LibraryRelations,
 } from "../../../_utils/types";
 import { ChatConversation } from "../../../Widgets/ChatConversation";
-import { createFullName } from "../../../_utils/names";
+import { createNameNoCurateTag } from "../../../_utils/names";
 import { DateTime } from "luxon";
 import {
   getLibraryStatusDescription,
@@ -55,27 +62,26 @@ export function LibraryRequest({
 
   if (!libraryRelations.activity) {
     return (
-      <VStack spacing={4}>
+      <>
         <Text>
           The <Text as="b">Doenet Library</Text> is a curated selection of
-          excellent DoenetML activities covering a multitude of subjects.
-          Activities in the library are <Text as="em">peer-reviewed</Text> and{" "}
-          <Text as="em">appear prominently in search results</Text>. It is a
-          great opportunity to share your work with a wider audience and
-          contribute to the e-learning ecosystem.
+          public DoenetML activities across various subjects. Activities in the
+          library are <Text as="em">peer-reviewed</Text> and{" "}
+          <Text as="em">appear prominently in search results</Text>. Suggesting
+          your activity allows you to share your work with a wider audience and
+          contribute to the e-learning ecosystem. Please make sure to add
+          classifications to your activity before you suggest it.
         </Text>
-        <Text>
-          Would you like to submit this activity for review? Any publicly shared
-          activity is eligible.
-        </Text>
-        <Button
-          data-test="Submit Library Request"
-          colorScheme="blue"
-          onClick={suggestCuration}
-        >
-          Submit for review
-        </Button>
-      </VStack>
+        <Center paddingTop="1em">
+          <Button
+            data-test="Suggest this activity"
+            colorScheme="blue"
+            onClick={suggestCuration}
+          >
+            Suggest this activity
+          </Button>
+        </Center>
+      </>
     );
   } else {
     return (
@@ -93,7 +99,7 @@ export function LibraryRequest({
             canComment={true}
             messages={libraryComments.map((c) => {
               return {
-                user: createFullName(c.user),
+                user: createNameNoCurateTag(c.user),
                 userIsMe: c.isMe,
                 message: c.comment,
                 dateTime: DateTime.fromISO(c.dateTime),

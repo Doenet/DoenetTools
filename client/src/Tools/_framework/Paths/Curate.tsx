@@ -15,8 +15,13 @@ import {
   TabPanels,
   TabPanel,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
-import { useLoaderData, Link, useFetcher } from "react-router";
+import React, { useEffect, useState } from "react";
+import {
+  useLoaderData,
+  Link,
+  useFetcher,
+  ActionFunctionArgs,
+} from "react-router";
 
 import { CardContent } from "../../../Widgets/Card";
 import CardList from "../../../Widgets/CardList";
@@ -28,15 +33,16 @@ import {
   LibraryRelations,
   License,
 } from "../../../_utils/types";
-import { createFullName } from "../../../_utils/names";
+import { createNameNoCurateTag } from "../../../_utils/names";
 import { intWithCommas } from "../../../_utils/formatting";
 import {
   contentSettingsActions,
   ContentSettingsDrawer,
 } from "../ToolPanels/ContentSettingsDrawer";
 import { ShareDrawer, shareDrawerActions } from "../ToolPanels/ShareDrawer";
+import { DateTime } from "luxon";
 
-export async function action({ request }) {
+export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
 
@@ -112,8 +118,11 @@ export function Curate() {
     libraryRelations: LibraryRelations[],
     minHeight?: string | { base: string; lg: string },
   ) {
-    const cardContent: CardContent[] = content.map((contentData) => {
+    const cardContent: CardContent[] = content.map((contentData, idx) => {
       const cardLink = `/activityEditor/${contentData.contentId}`;
+      const requestDate = DateTime.fromISO(
+        libraryRelations[idx].source!.reviewRequestDate!
+      ).toLocaleString(DateTime.DATE_MED);
 
       const menuItems = (
         <>
@@ -142,7 +151,8 @@ export function Curate() {
       return {
         contentId: contentData.contentId,
         content: contentData,
-        ownerName: createFullName(contentData.owner!),
+        ownerName: createNameNoCurateTag(contentData.owner!),
+        blurb: `Requested on ${requestDate}`,
         cardLink,
         menuItems,
       };
@@ -157,7 +167,7 @@ export function Curate() {
       >
         <CardList
           showPublicStatus={false}
-          showAssignmentStatus={false}
+          showBlurb={true}
           showActivityFeatures={true}
           showOwnerName={true}
           content={cardContent}

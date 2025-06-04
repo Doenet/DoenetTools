@@ -24,7 +24,7 @@ import React, {
 import { FetcherWithComponents } from "react-router";
 import { DoenetmlVersion, UserInfo } from "../../../../_utils/types";
 import axios from "axios";
-import { createFullName } from "../../../../_utils/names";
+import { createNameNoCurateTag } from "../../../../_utils/names";
 import { MdError } from "react-icons/md";
 import { contentTypeToName, getIconInfo } from "../../../../_utils/activity";
 
@@ -168,7 +168,7 @@ export function BasicUpdateActionsModal({
           />
           <Text>
             <em>{activityCompare.name},</em> by{" "}
-            {createFullName(activityCompare.owner)}
+            {createNameNoCurateTag(activityCompare.owner)}
           </Text>
         </Flex>
 
@@ -202,7 +202,7 @@ export function BasicUpdateActionsModal({
           />
           <Text>
             <em>{activityCompare.name},</em> by{" "}
-            {createFullName(activityCompare.owner)}
+            {createNameNoCurateTag(activityCompare.owner)}
           </Text>
         </Flex>
         <RadioGroup
@@ -243,7 +243,7 @@ export function BasicUpdateActionsModal({
           />
           <Text>
             <em>{activityCompare.name},</em> by{" "}
-            {createFullName(activityCompare.owner)}
+            {createNameNoCurateTag(activityCompare.owner)}
           </Text>
         </Flex>
 

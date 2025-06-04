@@ -11,7 +11,7 @@ import {
 import { Content } from "../../../_utils/types";
 import { InfoIcon } from "@chakra-ui/icons";
 import { DisplayLicenseItem } from "../../../Widgets/Licenses";
-import { createFullNameCheckCurated } from "../../../_utils/names";
+import { createNameCheckCurateTag } from "../../../_utils/names";
 import { activityFeatureIcons } from "../../../_utils/activity";
 
 export function GeneralContentInfo({ contentData }: { contentData: Content }) {
@@ -20,7 +20,7 @@ export function GeneralContentInfo({ contentData }: { contentData: Content }) {
 
   const containsFeatures = contentData.contentFeatures.length > 0;
 
-  const ownerName = createFullNameCheckCurated(contentData.owner!);
+  const ownerName = createNameCheckCurateTag(contentData.owner!);
 
   return (
     <Box>

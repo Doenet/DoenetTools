@@ -18,7 +18,7 @@ import {
 } from "@chakra-ui/react";
 import { ContentType, UserInfo } from "../../../_utils/types";
 import axios from "axios";
-import { createFullName } from "../../../_utils/names";
+import { createNameNoCurateTag } from "../../../_utils/names";
 import { DateTime } from "luxon";
 import { parseAndFormatResponse } from "../../../_utils/responses";
 
@@ -107,7 +107,7 @@ export function AnswerResponseDrawer({
       <DrawerContent>
         <DrawerCloseButton data-test="Close Share Drawer Button" />
         <DrawerHeader textAlign="center" height="140px">
-          Responses of {createFullName(student)}
+          Responses of {createNameNoCurateTag(student)}
           <Tooltip label={assignment.name} openDelay={1000}>
             <Text fontSize="smaller" noOfLines={1}>
               Assignment: {assignment.name}

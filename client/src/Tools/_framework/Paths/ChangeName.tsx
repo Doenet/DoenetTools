@@ -17,7 +17,7 @@ import {
 } from "react-router";
 import axios from "axios";
 import { SiteContext } from "./SiteHeader";
-import { createFullName } from "../../../_utils/names";
+import { createNameNoCurateTag } from "../../../_utils/names";
 
 export async function action({
   request,
@@ -71,7 +71,7 @@ export function ChangeName({
       if (user === undefined) {
         setStatusText("Cannot change name; no user logged in.");
       } else {
-        setStatusText(`Name changed to ${createFullName(user)}`);
+        setStatusText(`Name changed to ${createNameNoCurateTag(user)}`);
         if (
           redirectTo &&
           user.firstNames === firstNames &&

@@ -28,7 +28,7 @@ import {
 } from "@chakra-ui/react";
 import { InfoIcon, WarningIcon } from "@chakra-ui/icons";
 import axios, { AxiosError } from "axios";
-import { createFullName } from "../../../_utils/names";
+import { createNameNoCurateTag } from "../../../_utils/names";
 import { Content, License, LicenseCode } from "../../../_utils/types";
 import { DisplayLicenseItem } from "../../../Widgets/Licenses";
 import { contentTypeToName } from "../../../_utils/activity";
@@ -420,13 +420,13 @@ export function ShareSettings({
                     return (
                       <Tr key={user.userId}>
                         <Show above="sm">
-                          <Td>{createFullName(user)}</Td>
+                          <Td>{createNameNoCurateTag(user)}</Td>
                           <Td>{user.email}</Td>
                         </Show>
                         <Hide above="sm">
                           <Td>
                             <VStack alignItems="left">
-                              <Text>{createFullName(user)}</Text>
+                              <Text>{createNameNoCurateTag(user)}</Text>
                               <Text>{user.email}</Text>
                             </VStack>
                           </Td>
@@ -436,16 +436,16 @@ export function ShareSettings({
                             <Text>(inherited)</Text>
                           ) : (
                             <Form method="post">
-                              <Tooltip label={`Remove ${createFullName(user)}`}>
+                              <Tooltip label={`Remove ${createNameNoCurateTag(user)}`}>
                                 <CloseButton
                                   type="submit"
-                                  aria-label={`Remove ${createFullName(user)}`}
+                                  aria-label={`Remove ${createNameNoCurateTag(user)}`}
                                   onClick={() => {
                                     setShowSpinner({
                                       type: "unshare",
                                       id: user.userId,
                                     });
-                                    nextStatusText.current = `Stopped sharing with ${createFullName(user)}.`;
+                                    nextStatusText.current = `Stopped sharing with ${createNameNoCurateTag(user)}.`;
                                   }}
                                 />
                               </Tooltip>

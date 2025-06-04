@@ -34,7 +34,7 @@ import "../../../_utils/score-table.css";
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Label } from "recharts";
 import { Link as ReactRouterLink, useNavigate } from "react-router";
-import { createFullName, lastNameFirst } from "../../../_utils/names";
+import { createNameNoCurateTag, lastNameFirst } from "../../../_utils/names";
 import {
   AssignmentMode,
   Content,
@@ -380,7 +380,7 @@ export function AssignmentData() {
                 contentId +
                 "/" +
                 assignmentScore.user.userId;
-              const studentName = createFullName(assignmentScore.user);
+              const studentName = createNameNoCurateTag(assignmentScore.user);
               const bestAttemptNumber = assignmentScore.bestAttemptNumber;
               return (
                 <Tr key={`user${assignmentScore.user.userId}`}>
@@ -517,7 +517,7 @@ export function AssignmentData() {
                 contentId +
                 "/" +
                 assignmentScore.user.userId;
-              const studentName = createFullName(assignmentScore.user);
+              const studentName = createNameNoCurateTag(assignmentScore.user);
               return (
                 <Tr key={`user${assignmentScore.user.userId}`}>
                   <Td>
