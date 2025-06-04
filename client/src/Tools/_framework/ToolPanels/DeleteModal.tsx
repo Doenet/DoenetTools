@@ -75,7 +75,7 @@ export function DeleteModal({
         setErrMsg(fetcher.data.errorDeletingContent);
       }
     }
-  }, [fetcher.data]);
+  }, [fetcher.data, isDeleting, onClose]);
 
   function deleteContent() {
     setIsDeleting(true);

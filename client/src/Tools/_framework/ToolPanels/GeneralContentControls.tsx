@@ -278,6 +278,10 @@ export function GeneralContentControls({
           <VStack alignItems="flex-start" gap={0}>
             {availableFeatures.map((feature) => {
               const isPresent = selectedFeatures.includes(feature.code);
+              const featureCode = feature.code as
+                | "isQuestion"
+                | "isInteractive"
+                | "containsVideo";
               return (
                 <Checkbox
                   key={feature.code}
@@ -311,7 +315,7 @@ export function GeneralContentControls({
                     {feature.term}
                     <Icon
                       paddingLeft="5px"
-                      as={activityFeatureIcons[feature.code]}
+                      as={activityFeatureIcons[featureCode]}
                       color="#666699"
                       boxSize={5}
                       verticalAlign="middle"

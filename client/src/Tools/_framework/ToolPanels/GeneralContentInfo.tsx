@@ -19,27 +19,32 @@ export function GeneralContentInfo({ contentData }: { contentData: Content }) {
   const contentType = contentData.type === "folder" ? "Folder" : "Activity";
 
   const containsFeatures = contentData.contentFeatures.length > 0;
-
   return (
     <Box>
       {contentData.type !== "folder" && containsFeatures ? (
         <Box borderBottom="2px" marginBottom={4} paddingBottom={4}>
           <Heading size="sm">Activity features</Heading>
           <UnorderedList>
-            {contentData.contentFeatures.map((feature) => (
-              <ListItem key={feature.code}>
-                <Tooltip label={feature.description}>
-                  {feature.term}
-                  <Icon
-                    paddingLeft="5px"
-                    as={activityFeatureIcons[feature.code]}
-                    color="#666699"
-                    boxSize={5}
-                    verticalAlign="middle"
-                  />
-                </Tooltip>
-              </ListItem>
-            ))}
+            {contentData.contentFeatures.map((feature) => {
+              const featureCode = feature.code as
+                | "isQuestion"
+                | "isInteractive"
+                | "containsVideo";
+              return (
+                <ListItem key={feature.code}>
+                  <Tooltip label={feature.description}>
+                    {feature.term}
+                    <Icon
+                      paddingLeft="5px"
+                      as={activityFeatureIcons[featureCode]}
+                      color="#666699"
+                      boxSize={5}
+                      verticalAlign="middle"
+                    />
+                  </Tooltip>
+                </ListItem>
+              );
+            })}
           </UnorderedList>
         </Box>
       ) : null}

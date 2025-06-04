@@ -115,7 +115,7 @@ export function compileActivityFromContent(activity: Content): ActivitySource {
         type: activity.type,
         title: activity.name,
         isDescription: false,
-        doenetML: activity.doenetML!,
+        doenetML: activity.doenetML,
         version: activity.doenetmlVersion.fullVersion,
         numVariants: activity.numVariants,
       };

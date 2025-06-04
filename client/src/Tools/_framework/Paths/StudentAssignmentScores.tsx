@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useLoaderData } from "react-router";
+import { ActionFunctionArgs, useLoaderData } from "react-router";
 import { Link as ReactRouterLink, useNavigate } from "react-router";
 import {
   TableContainer,
@@ -34,7 +34,7 @@ type Folder = {
 };
 
 // loader for when an instructor gets data about a student
-export async function loader({ params }) {
+export async function loader({ params }: ActionFunctionArgs) {
   const { data } = await axios.get(
     `/api/assign/getStudentAssignmentScores/${params.userId}/${params.parentId ?? ""}`,
   );

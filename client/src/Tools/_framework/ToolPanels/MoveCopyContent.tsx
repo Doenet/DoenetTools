@@ -16,7 +16,7 @@ import {
   useDisclosure,
   Icon,
 } from "@chakra-ui/react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { useFetcher, useNavigate } from "react-router";
 import MoveToSharedAlert from "./MoveToSharedAlert";
@@ -77,10 +77,12 @@ export async function moveCopyContentActions({
       return { success: true, numItems };
     } catch (e) {
       let message = "An error occurred";
-      if (e.response?.data?.error) {
-        message += `: ${e.response.data.error}`;
-        if (e.response.data.details) {
-          message += `: ${e.response.data.details}`;
+      if (e instanceof AxiosError) {
+        if (e.response?.data?.error) {
+          message += `: ${e.response.data.error}`;
+          if (e.response.data.details) {
+            message += `: ${e.response.data.details}`;
+          }
         }
       }
       return {
@@ -143,7 +145,9 @@ export function MoveCopyContent({
     }
     setActionFinished(false);
     setErrMsg("");
-  }, [isOpen]);
+    // TODO: proper way to have functions and hooks
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, currentParentId]);
 
   // Set whenever the user navigates to another parent
   const [activeView, setActiveView] = useState<ActiveView>({

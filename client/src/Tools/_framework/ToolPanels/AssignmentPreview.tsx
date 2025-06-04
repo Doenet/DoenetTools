@@ -4,6 +4,7 @@ import { DoenetViewer } from "@doenet/doenetml-iframe";
 import { useLocation, useNavigate } from "react-router";
 import { DoenetmlVersion } from "../../../_utils/types";
 import { ActivitySource } from "../../../_utils/viewerTypes";
+// @ts-expect-error assignment-viewer doesn't publish types, see https://github.com/Doenet/assignment-viewer/issues/20
 import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";
 
 export default function AssignmentPreview({

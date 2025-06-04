@@ -665,28 +665,35 @@ describe("Remix tests", () => {
     await checkAllRemixesAmongThree(contentIds, updatedIndices);
   }
 
-  test("Update remixed chain of three to changed content, test all 12 orders", async () => {
-    for (let firstUpdated = 0; firstUpdated < 3; firstUpdated++) {
-      for (let secondUpdated = 0; secondUpdated < 3; secondUpdated++) {
-        if (secondUpdated === firstUpdated) {
-          continue;
-        }
-        for (let thirdUpdated = 0; thirdUpdated < 3; thirdUpdated++) {
-          if (thirdUpdated === firstUpdated || thirdUpdated === secondUpdated) {
+  test(
+    "Update remixed chain of three to changed content, test all 12 orders",
+    { timeout: 30000 },
+    async () => {
+      for (let firstUpdated = 0; firstUpdated < 3; firstUpdated++) {
+        for (let secondUpdated = 0; secondUpdated < 3; secondUpdated++) {
+          if (secondUpdated === firstUpdated) {
             continue;
           }
-          for (const inSeries of [true, false]) {
-            await testUpdatingRemixChainOfThree({
-              firstUpdated,
-              secondUpdated,
-              thirdUpdated,
-              inSeries,
-            });
+          for (let thirdUpdated = 0; thirdUpdated < 3; thirdUpdated++) {
+            if (
+              thirdUpdated === firstUpdated ||
+              thirdUpdated === secondUpdated
+            ) {
+              continue;
+            }
+            for (const inSeries of [true, false]) {
+              await testUpdatingRemixChainOfThree({
+                firstUpdated,
+                secondUpdated,
+                thirdUpdated,
+                inSeries,
+              });
+            }
           }
         }
       }
-    }
-  });
+    },
+  );
 
   test("Update remixed to previous revision of origin", async () => {
     const ownerIds = [

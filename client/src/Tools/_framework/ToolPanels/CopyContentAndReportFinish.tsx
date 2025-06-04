@@ -12,7 +12,7 @@ import {
   Text,
   Spinner,
 } from "@chakra-ui/react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import {
   FetcherWithComponents,
   useNavigate,
@@ -51,10 +51,10 @@ export async function copyContentAndReportFinishActions({
       return { action: "copiedContent", success: true, newContentIds };
     } catch (e) {
       console.error(e);
-      const message =
-        typeof e.response?.data?.details === "string"
-          ? e.response.data.details
-          : null;
+      let message: string | null = null;
+      if (e instanceof AxiosError) {
+        message = e.response?.data.details;
+      }
 
       return { action: "copiedContent", success: false, message };
     }
@@ -133,7 +133,9 @@ export function CopyContentAndReportFinish({
       setNewContentIds(null);
       setErrMsg("");
     }
-  }, [isOpen, actionProgressiveWord]);
+    // When we included all the dependencies here, it copied content several times
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   let destinationDescription: ReactElement;
   let destinationAction: string;

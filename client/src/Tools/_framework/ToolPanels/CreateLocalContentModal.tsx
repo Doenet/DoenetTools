@@ -21,18 +21,23 @@ export async function createLocalContentModalActions({
 }: {
   [k: string]: any;
 }) {
+  const contentType = formObj.contentType as
+    | "singleDoc"
+    | "select"
+    | "sequence"
+    | "folder";
   if (formObj?._action == "Add Content") {
     try {
       await axios.post(`/api/updateContent/createContent`, {
         name: formObj.contentName,
         parentId: formObj.parentId === "null" ? null : formObj.parentId,
-        contentType: formObj.contentType,
+        contentType,
       });
       return { contentCreated: true };
     } catch (e) {
       console.error(e);
       return {
-        errorCreatingContent: `Error creating ${contentTypeToName[formObj.contentType].toLowerCase()}`,
+        errorCreatingContent: `Error creating ${contentTypeToName[contentType].toLowerCase()}`,
       };
     }
   } else if (formObj?._action == "Add Curation Folder") {
@@ -45,7 +50,7 @@ export async function createLocalContentModalActions({
     } catch (e) {
       console.error(e);
       return {
-        errorCreatingContent: `Error creating ${contentTypeToName[formObj.contentType].toLowerCase()}`,
+        errorCreatingContent: `Error creating ${contentTypeToName[contentType].toLowerCase()}`,
       };
     }
   }
@@ -88,7 +93,7 @@ export function CreateLocalContentModal({
       setContentName(`Untitled ${contentTypeToName[contentType]}`);
       setSubmitted(false);
     }
-  }, [isOpen]);
+  }, [contentType, isOpen]);
 
   useEffect(() => {
     if (!submitted) {
@@ -107,7 +112,7 @@ export function CreateLocalContentModal({
       document.body.style.cursor = "default";
       setErrMsg(fetcher.data.errorCreatingContent);
     }
-  }, [fetcher.data]);
+  }, [fetcher.data, onClose]);
 
   function createContent() {
     if (inCurationLibrary) {

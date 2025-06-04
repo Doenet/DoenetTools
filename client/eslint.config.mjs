@@ -1,27 +1,42 @@
-import globals from "globals";
-import pluginJs from "@eslint/js";
+// @ts-check
+
+import eslint from "@eslint/js";
 import tseslint from "typescript-eslint";
 import unusedImports from "eslint-plugin-unused-imports";
+import react from "eslint-plugin-react";
+import reactHooks from "eslint-plugin-react-hooks";
 
-export default [
-  { files: ["**.{js,mjs,cjs,ts,jsx,tsx}"] },
+export default tseslint.config(
   { ignores: ["dist/"] },
-  { languageOptions: { globals: { ...globals.node } } },
+  eslint.configs.recommended,
+  tseslint.configs.recommended,
+  react.configs.flat.recommended,
+  reactHooks.configs["recommended-latest"],
+  {
+    settings: {
+      react: {
+        version: "detect",
+      },
+    },
+  },
+  //For now, allow explicit anys
+  {
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+    },
+  },
+  // eslint-plugin-unused-imports allows linter to fix unused imports
+  // It works by splitting the normal "unused-imports" rule into tw
   {
     plugins: {
       "unused-imports": unusedImports,
     },
-  },
-  pluginJs.configs.recommended,
-  ...tseslint.configs.recommended,
-  {
     rules: {
-      // For now, we will allow explicit anys, but
-      // we should re-enable this rule in the future.
-      "@typescript-eslint/no-explicit-any": "off",
-
       "@typescript-eslint/no-unused-vars": "off",
       "unused-imports/no-unused-imports": "error",
+
+      // Allow unused vars that start with underscore
+      // See https://typescript-eslint.io/rules/no-unused-vars/
       "unused-imports/no-unused-vars": [
         "warn",
         {
@@ -36,4 +51,4 @@ export default [
       ],
     },
   },
-];
+);

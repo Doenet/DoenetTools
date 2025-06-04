@@ -1,5 +1,6 @@
 import React, { ReactElement, useEffect, useState } from "react";
-import { useLoaderData } from "react-router";
+import { ActionFunctionArgs, useLoaderData } from "react-router";
+// @ts-expect-error math-expression doesn't have types
 import me from "math-expressions";
 
 import {
@@ -40,14 +41,15 @@ import {
   DoenetmlVersion,
   UserInfo,
 } from "../../../_utils/types";
+// @ts-expect-error assignment-viewer doesn't publish types, see https://github.com/Doenet/assignment-viewer/issues/20
 import { isActivitySource } from "@doenet/assignment-viewer";
 import {
   compileActivityFromContent,
   contentTypeToName,
   getIconInfo,
 } from "../../../_utils/activity";
-import { ActivitySource } from "../../../_utils/viewerTypes";
 import { BiDownArrowAlt, BiUpArrowAlt } from "react-icons/bi";
+import { ActivitySource } from "../../../_utils/viewerTypes";
 
 type ScoreItem = {
   score: number;
@@ -60,7 +62,7 @@ type ScoreItem = {
   user: UserInfo;
 };
 
-export async function loader({ params, request }) {
+export async function loader({ params, request }: ActionFunctionArgs) {
   const { data } = await axios.get(
     `/api/assign/getAssignmentResponseOverview/${params.contentId}`,
   );
@@ -108,17 +110,17 @@ export async function loader({ params, request }) {
   const assignment = data.content as Content;
   const mode = data.scoreSummary.mode;
   const scores = data.scoreSummary.scores
-    .map((s) => ({
+    .map((s: any) => ({
       score: s.score,
       bestAttemptNumber: s.bestAttemptNumber,
       itemScores: s.itemScores
-        ? s.itemScores.sort((a, b) => a.itemNumber - b.itemNumber)
+        ? s.itemScores.sort((a: any, b: any) => a.itemNumber - b.itemNumber)
         : null,
       numContentAttempts: s.latestAttempt?.attemptNumber ?? 1,
       numItemAttempts:
         s.latestAttempt?.itemScores
-          .sort((a, b) => a.itemNumber - b.itemNumber)
-          .map((x) => x.itemAttemptNumber) ?? null,
+          .sort((a: any, b: any) => a.itemNumber - b.itemNumber)
+          .map((x: any) => x.itemAttemptNumber) ?? null,
       user: s.user,
     }))
     .sort(sortFunction) as ScoreItem[];
@@ -263,7 +265,7 @@ export function AssignmentData() {
   const totalWidth = 70;
 
   if (data.type !== "singleDoc" && numItems > 1) {
-    const itemNames = data.itemNames;
+    const itemNames: string[] = data.itemNames;
 
     const itemWidth = 50;
 

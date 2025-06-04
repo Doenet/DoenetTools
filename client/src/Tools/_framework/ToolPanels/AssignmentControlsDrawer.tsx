@@ -67,7 +67,7 @@ export function AssignmentControlsDrawer({
 
   useEffect(() => {
     setTabIndex(initialTabIndex);
-  }, [displayTab, isOpen]);
+  }, [displayTab, initialTabIndex, isOpen]);
 
   return (
     <Drawer

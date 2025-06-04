@@ -22,8 +22,6 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { createFullName } from "../_utils/names";
 import { Content } from "../_utils/types";
 
-SwiperCore.use([Keyboard, Mousewheel]);
-
 export function Carousel({
   title = "",
   activities = [],
@@ -35,11 +33,13 @@ export function Carousel({
   setInfoContentData: (arg: Content) => void;
   infoOnOpen: () => void;
 }) {
+  SwiperCore.use([Keyboard, Mousewheel]);
+
   const swiperElRef = useRef<SwiperRef>(null);
 
   const pagination = {
     clickable: true,
-    renderBullet: function (_index, className) {
+    renderBullet: function (_index: any, className: string) {
       return `<span class="${className}" ></span>`;
     },
   };
@@ -72,7 +72,7 @@ export function Carousel({
     );
     return {
       content: activity,
-      cardLink: `/activityViewer/${activity.id}`,
+      cardLink: `/activityViewer/${activity.contentId}`,
       ownerName:
         activity.owner !== undefined ? createFullName(activity.owner) : "",
       menuItems,
@@ -149,7 +149,6 @@ export function Carousel({
                     cardContent={cardObj}
                     showOwnerName={true}
                     showActivityFeatures={true}
-                    listView={false}
                   />
                 </SwiperSlide>
               );

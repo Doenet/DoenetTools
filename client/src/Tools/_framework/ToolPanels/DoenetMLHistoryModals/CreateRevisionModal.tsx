@@ -97,7 +97,7 @@ export function CreateRevisionModel({
     if (isOpen) {
       checkIfAtLastRevision();
     }
-  }, [isOpen, atLastRevision]);
+  }, [isOpen, atLastRevision, revisions]);
 
   useEffect(() => {
     if (isOpen) {

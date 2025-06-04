@@ -102,66 +102,69 @@ export function SupportFilesControls({
     }
   }
 
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    acceptedFiles.forEach((file) => {
-      const reader = new FileReader();
+  const onDrop = useCallback(
+    async (acceptedFiles: File[]) => {
+      acceptedFiles.forEach((file) => {
+        const reader = new FileReader();
 
-      reader.onabort = () => console.log("file reading was aborted");
-      reader.onerror = () => console.log("file reading has failed");
-      reader.onload = async (event) => {
-        let columnTypes = "";
-        if (
-          file.type == "text/csv" &&
-          typeof event.target?.result === "string"
-        ) {
-          const dataURL = event.target.result;
-          const csvString = atob(dataURL.split(",")[1]);
-          const parsedData = Papa.parse(csvString, {
-            dynamicTyping: true,
-          }).data as any[];
-          columnTypes = parsedData
-            .slice(1)[0]
-            .reduce((acc, val) => {
-              if (typeof val === "number") {
-                return `${acc}Number `;
-              } else {
-                return `${acc}Text `;
-              }
-            }, "")
-            .trim();
-        }
-        const uploadData = new FormData();
-        uploadData.append("file", file);
-        uploadData.append("contentId", contentId.toString());
-        uploadData.append("columnTypes", columnTypes);
+        reader.onabort = () => console.log("file reading was aborted");
+        reader.onerror = () => console.log("file reading has failed");
+        reader.onload = async (event) => {
+          let columnTypes = "";
+          if (
+            file.type == "text/csv" &&
+            typeof event.target?.result === "string"
+          ) {
+            const dataURL = event.target.result;
+            const csvString = atob(dataURL.split(",")[1]);
+            const parsedData = Papa.parse(csvString, {
+              dynamicTyping: true,
+            }).data as any[];
+            columnTypes = parsedData
+              .slice(1)[0]
+              .reduce((acc: any, val: any) => {
+                if (typeof val === "number") {
+                  return `${acc}Number `;
+                } else {
+                  return `${acc}Text `;
+                }
+              }, "")
+              .trim();
+          }
+          const uploadData = new FormData();
+          uploadData.append("file", file);
+          uploadData.append("contentId", contentId.toString());
+          uploadData.append("columnTypes", columnTypes);
 
-        const resp = await axios.post("/api/supportFileUpload", uploadData);
+          const resp = await axios.post("/api/supportFileUpload", uploadData);
 
-        if (resp.data.success) {
-          setAlerts([
-            {
-              id: `uploadsuccess${resp.data.cid}`,
-              type: "success",
-              title: `File '${resp.data.asFileName}' Uploaded Successfully`,
-              description: "",
-            },
-          ]);
-        } else {
-          setAlerts([
-            {
-              id: resp.data.asFileName,
-              type: "error",
-              title: resp.data.msg,
-              description: "",
-            },
-          ]);
-        }
+          if (resp.data.success) {
+            setAlerts([
+              {
+                id: `uploadsuccess${resp.data.cid}`,
+                type: "success",
+                title: `File '${resp.data.asFileName}' Uploaded Successfully`,
+                description: "",
+              },
+            ]);
+          } else {
+            setAlerts([
+              {
+                id: resp.data.asFileName,
+                type: "error",
+                title: resp.data.msg,
+                description: "",
+              },
+            ]);
+          }
 
-        fetcher.submit({ _action: "noop" }, { method: "post" });
-      };
-      reader.readAsDataURL(file); //This one could be used with image source to preview image
-    });
-  }, []);
+          fetcher.submit({ _action: "noop" }, { method: "post" });
+        };
+        reader.readAsDataURL(file); //This one could be used with image source to preview image
+      });
+    },
+    [contentId, fetcher],
+  );
 
   const { fileRejections, getRootProps, getInputProps, isDragActive } =
     useDropzone({
@@ -283,7 +286,7 @@ export function SupportFilesControls({
 
       <Box h="360px" w="100%" overflowY="scroll">
         {/* <Box h="415px" overflowY="scroll"> */}
-        {supportingFiles.map((file, i) => {
+        {supportingFiles.map((file: any, i: number) => {
           let previewImagePath = `/media/${file.fileName}`;
 
           const fileNameNoExtension = file.fileName.split(".")[0];

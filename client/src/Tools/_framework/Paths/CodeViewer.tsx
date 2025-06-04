@@ -1,5 +1,10 @@
 import React, { useEffect } from "react";
-import { useLoaderData, useNavigate, useOutletContext } from "react-router";
+import {
+  useFetcher,
+  useLoaderData,
+  useNavigate,
+  useOutletContext,
+} from "react-router";
 
 import { DoenetEditor } from "@doenet/doenetml-iframe";
 
@@ -23,7 +28,13 @@ import { Content, DoenetmlVersion } from "../../../_utils/types";
 import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
 import { MdOutlineInfo } from "react-icons/md";
 
-export async function loader({ params, request }) {
+export async function loader({
+  params,
+  request,
+}: {
+  params: any;
+  request: any;
+}) {
   const url = new URL(request.url);
   const queryParamDoenetML = url.searchParams.get("doenetml");
 
@@ -45,7 +56,7 @@ export async function loader({ params, request }) {
   }
 
   // If docId isn't in the activity, use the first docId
-  let docInOrder = activityData.documents.map((x) => x.id).indexOf(docId);
+  let docInOrder = activityData.documents.map((x: any) => x.id).indexOf(docId);
   if (docInOrder === -1) {
     docInOrder = 0;
     docId = activityData.documents[docInOrder].id;
@@ -69,6 +80,7 @@ export function CodeViewer() {
     activityData?: Content;
   };
 
+  const fetcher = useFetcher();
   const {
     isOpen: copyDialogIsOpen,
     onOpen: copyDialogOnOpen,
@@ -97,7 +109,8 @@ export function CodeViewer() {
           <CopyContentAndReportFinish
             isOpen={copyDialogIsOpen}
             onClose={copyDialogOnClose}
-            sourceContent={[activityData]}
+            fetcher={fetcher}
+            contentIds={[activityData.contentId]}
             desiredParent={null}
             action="Copy"
           />
@@ -142,7 +155,7 @@ export function CodeViewer() {
                       variant="outline"
                       leftIcon={<BsPlayBtnFill />}
                       onClick={() => {
-                        navigate(`/activityViewer/${activityData.id}`);
+                        navigate(`/activityViewer/${activityData.contentId}`);
                       }}
                     >
                       View

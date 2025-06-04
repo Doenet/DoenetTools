@@ -17,6 +17,7 @@ import {
   useFetcher,
   Link,
   useOutletContext,
+  ActionFunctionArgs,
 } from "react-router";
 
 import { CardContent } from "../../../Widgets/Card";
@@ -41,7 +42,7 @@ import {
   copyContentAndReportFinishActions,
 } from "../ToolPanels/CopyContentAndReportFinish";
 
-export async function action({ request }) {
+export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
 
@@ -63,7 +64,7 @@ export async function action({ request }) {
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
 }
 
-export async function loader({ params }) {
+export async function loader({ params }: { params: any }) {
   const { data } = await axios.get(
     `/api/contentList/getSharedContent/${params.ownerId}/${params.parentId ?? ""}`,
   );
@@ -115,7 +116,7 @@ export function SharedActivities() {
     document.title = parent
       ? `Folder ${parent.name}`
       : `Shared Activities of ${createFullName(owner)} - Doenet`;
-  }, [parent]);
+  }, [owner, parent]);
 
   const fetcher = useFetcher();
 

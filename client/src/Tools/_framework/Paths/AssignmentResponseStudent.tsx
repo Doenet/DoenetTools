@@ -15,19 +15,20 @@ import {
   Link as ReactRouterLink,
   useNavigate,
   useLoaderData,
+  ActionFunctionArgs,
 } from "react-router";
 import {
   AssignmentMode,
   ContentType,
   Doc,
-  UserInfo,
   DoenetmlVersion,
+  UserInfo,
 } from "../../../_utils/types";
 import { contentTypeToName, getIconInfo } from "../../../_utils/activity";
 import { AssignmentItemResponseStudent } from "../ToolPanels/AssignmentItemResponseStudent";
 import { AssignmentStudentResponseSummary } from "../ToolPanels/AssignmentStudentResponseSummary";
 
-export async function loader({ params, request }) {
+export async function loader({ params, request }: ActionFunctionArgs) {
   const url = new URL(request.url);
 
   const shuffledOrder =
@@ -52,7 +53,7 @@ export async function loader({ params, request }) {
 
   const overallItemScores = overall.itemScores;
   const latestItemScores = overall.latestAttempt.itemScores;
-  let itemNames = data.itemNames;
+  let itemNames: string[] = data.itemNames;
   const itemScores = data.itemScores;
 
   // Get itemNames, itemScores, and latestItemScores in the correct order.
@@ -63,16 +64,16 @@ export async function loader({ params, request }) {
     const itemNames2 = itemNames.map((name, i) => ({
       name,
       shuffledItemNumber:
-        overallItemScores.findIndex((x) => x.itemNumber === i + 1) + 1,
+        overallItemScores.findIndex((x: any) => x.itemNumber === i + 1) + 1,
     }));
     itemNames = itemNames2
       .sort((a, b) => a.shuffledItemNumber - b.shuffledItemNumber)
       .map((x) => x.name);
   } else {
-    overallItemScores.sort((a, b) => a.itemNumber - b.itemNumber);
-    latestItemScores.sort((a, b) => a.itemNumber - b.itemNumber);
+    overallItemScores.sort((a: any, b: any) => a.itemNumber - b.itemNumber);
+    latestItemScores.sort((a: any, b: any) => a.itemNumber - b.itemNumber);
     if (itemScores) {
-      itemScores.sort((a, b) => a.itemNumber - b.itemNumber);
+      itemScores.sort((a: any, b: any) => a.itemNumber - b.itemNumber);
     }
   }
 
@@ -81,7 +82,7 @@ export async function loader({ params, request }) {
     bestAttemptNumber: overall.bestAttemptNumber,
     itemScores: overallItemScores,
     numContentAttempts: overall.latestAttempt.attemptNumber,
-    numItemAttempts: latestItemScores.map((x) => x.itemAttemptNumber),
+    numItemAttempts: latestItemScores.map((x: any) => x.itemAttemptNumber),
   };
 
   if (data.singleItemAttempt) {

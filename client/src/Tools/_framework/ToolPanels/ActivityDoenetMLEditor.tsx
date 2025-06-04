@@ -7,7 +7,7 @@ import {
   DoenetmlVersion,
 } from "../../../_utils/types";
 import { FetcherWithComponents, useLocation, useNavigate } from "react-router";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import {
   doenetMLHistoryActions,
   DoenetMLHistoryDrawer,
@@ -110,7 +110,9 @@ export function ActivityDoenetMLEditor({
         savedDoenetML.current = newDoenetML;
         documentStructureChanged.current = false;
       } catch (error) {
-        alert(error.message);
+        if (error instanceof AxiosError) {
+          alert(error.message);
+        }
       }
 
       inTheMiddleOfSaving.current = false;

@@ -1,7 +1,10 @@
 import React from "react";
 import { Flex, Heading } from "@chakra-ui/react";
 
-export function DoenetHeading(props) {
+export function DoenetHeading(props: {
+  heading?: string;
+  subheading?: string;
+}) {
   return (
     <Flex
       flexDirection="column"

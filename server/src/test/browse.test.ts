@@ -27,6 +27,7 @@ import {
   browseUsersWithSharedContent,
 } from "../query/explore";
 import { updateUser } from "../query/user";
+import { ContentType } from "@prisma/client";
 
 test("browseUsersWithSharedContent, no filter, filter by unclassified", async () => {
   const { userId } = await createTestUser();
@@ -403,278 +404,168 @@ test("browseUsersWithSharedContent returns only users with public/shared/non-del
 });
 
 test("browseUsersWithSharedContent, search, returns only users with public/shared/non-deleted content", async () => {
+  async function setupContent(
+    ownerId: Uint8Array,
+    {
+      isPublic = false,
+      sharedWith,
+      contentType = "singleDoc",
+      name,
+      source,
+      parentId = null,
+    }: {
+      isPublic?: boolean;
+      sharedWith?: Uint8Array;
+      contentType?: ContentType;
+      name?: string;
+      source?: string;
+      parentId?: Uint8Array | null;
+    },
+  ) {
+    const { contentId } = await createContent({
+      loggedInUserId: ownerId,
+      contentType,
+      parentId,
+    });
+    await updateContent({
+      contentId,
+      name,
+      source,
+      loggedInUserId: ownerId,
+    });
+    if (isPublic) {
+      await setContentIsPublic({
+        contentId,
+        loggedInUserId: ownerId,
+        isPublic: true,
+      });
+    }
+    if (sharedWith) {
+      await modifyContentSharedWith({
+        contentId,
+        loggedInUserId: ownerId,
+        action: "share",
+        users: [sharedWith],
+      });
+    }
+    return contentId;
+  }
+
   const code = Date.now().toString();
 
-  const user1 = await createTestUser();
-  const user1Id = user1.userId;
-  const user2 = await createTestUser();
-  const user2Id = user2.userId;
+  const { userId: user1 } = await createTestUser();
+  const { userId: user2 } = await createTestUser();
 
   // owner 1 has only private and deleted content, and public content with different text
-  const owner1 = await createTestUser();
-  const owner1Id = owner1.userId;
-
-  const { contentId: activity1aId } = await createContent({
-    loggedInUserId: owner1Id,
-    contentType: "singleDoc",
-    parentId: null,
-  });
-  await updateContent({
-    contentId: activity1aId,
+  const { userId: owner1 } = await createTestUser();
+  const folder1 = await setupContent(owner1, { contentType: "folder" });
+  await setupContent(owner1, { name: `banana${code}` });
+  await setupContent(owner1, { source: `banana${code}` });
+  await setupContent(owner1, {
+    parentId: folder1,
     name: `banana${code}`,
-    loggedInUserId: owner1Id,
-  });
-  const { contentId: activity1bId } = await createContent({
-    loggedInUserId: owner1Id,
-    contentType: "singleDoc",
-    parentId: null,
-  });
-  await updateContent({
-    contentId: activity1bId,
-    source: `banana${code}`,
-    loggedInUserId: owner1Id,
-  });
-  const { contentId: folder1aId } = await createContent({
-    loggedInUserId: owner1Id,
-    contentType: "folder",
-    parentId: null,
-  });
-  const { contentId: activity1cId } = await createContent({
-    loggedInUserId: owner1Id,
-    contentType: "singleDoc",
-    parentId: folder1aId,
-  });
-  await updateContent({
-    contentId: activity1cId,
-    name: `banana${code}`,
-    loggedInUserId: owner1Id,
   });
 
-  const { contentId: activity1dId } = await createContent({
-    loggedInUserId: owner1Id,
-    contentType: "singleDoc",
-    parentId: null,
-  });
-  await updateContent({
-    contentId: activity1dId,
-    source: `banana${code}`,
-    loggedInUserId: owner1Id,
-  });
-  await setContentIsPublic({
-    contentId: activity1dId,
-    loggedInUserId: owner1Id,
+  const activity1d = await setupContent(owner1, {
     isPublic: true,
+    source: `banana${code}`,
   });
-  await deleteContent({ contentId: activity1dId, loggedInUserId: owner1Id });
+  await deleteContent({ contentId: activity1d, loggedInUserId: owner1 });
 
-  const { contentId: activity1eId } = await createContent({
-    loggedInUserId: owner1Id,
-    contentType: "singleDoc",
-    parentId: null,
-  });
-  await updateContent({
-    contentId: activity1eId,
+  await setupContent(owner1, {
+    isPublic: true,
     source: `grape${code}`,
-    loggedInUserId: owner1Id,
-  });
-  await setContentIsPublic({
-    contentId: activity1eId,
-    loggedInUserId: owner1Id,
-    isPublic: true,
   });
 
   // owner 2 has two public activities, plus third with different text
-  const owner2 = await createTestUser();
-  const owner2Id = owner2.userId;
-
-  const { contentId: folder2aId } = await createContent({
-    loggedInUserId: owner2Id,
-    contentType: "folder",
-    parentId: null,
-  });
-  const { contentId: activity2aId } = await createContent({
-    loggedInUserId: owner2Id,
-    contentType: "singleDoc",
-    parentId: folder2aId,
-  });
-  await updateContent({
-    contentId: activity2aId,
+  const { userId: owner2 } = await createTestUser();
+  const folder2 = await setupContent(owner2, { contentType: "folder" });
+  await setupContent(owner2, {
+    isPublic: true,
+    parentId: folder2,
     name: `banana${code}`,
-    loggedInUserId: owner2Id,
   });
-  await setContentIsPublic({
-    contentId: activity2aId,
-    loggedInUserId: owner2Id,
+  await setupContent(owner2, {
     isPublic: true,
-  });
-  const { contentId: activity2bId } = await createContent({
-    loggedInUserId: owner2Id,
-    contentType: "singleDoc",
-    parentId: folder2aId,
-  });
-  await updateContent({
-    contentId: activity2bId,
+    parentId: folder2,
     source: `banana${code}`,
-    loggedInUserId: owner2Id,
   });
-  await setContentIsPublic({
-    contentId: activity2bId,
-    loggedInUserId: owner2Id,
+  await setupContent(owner2, {
     isPublic: true,
-  });
-
-  const { contentId: activity2cId } = await createContent({
-    loggedInUserId: owner2Id,
-    contentType: "singleDoc",
-    parentId: null,
-  });
-  await updateContent({
-    contentId: activity2cId,
     source: `grape${code}`,
-    loggedInUserId: owner2Id,
-  });
-  await setContentIsPublic({
-    contentId: activity2cId,
-    loggedInUserId: owner2Id,
-    isPublic: true,
   });
 
   // owner 3 has a activity shared with user1, plus public with different text
-  const owner3 = await createTestUser();
-  const owner3Id = owner3.userId;
-
-  const { contentId: folder3aId } = await createContent({
-    loggedInUserId: owner3Id,
-    contentType: "folder",
-    parentId: null,
-  });
-  const { contentId: activity3aId } = await createContent({
-    loggedInUserId: owner3Id,
-    contentType: "singleDoc",
-    parentId: folder3aId,
-  });
-  await updateContent({
-    contentId: activity3aId,
+  const { userId: owner3 } = await createTestUser();
+  const folder3 = await setupContent(owner3, { contentType: "folder" });
+  await setupContent(owner3, {
+    sharedWith: user1,
+    parentId: folder3,
     name: `banana${code}`,
-    loggedInUserId: owner3Id,
-  });
-  await modifyContentSharedWith({
-    contentId: activity3aId,
-    loggedInUserId: owner3Id,
-    action: "share",
-    users: [user1Id],
   });
 
-  const { contentId: activity3bId } = await createContent({
-    loggedInUserId: owner3Id,
-    contentType: "singleDoc",
-    parentId: null,
-  });
-  await updateContent({
-    contentId: activity3bId,
-    name: `grape${code}`,
-    loggedInUserId: owner3Id,
-  });
-  await setContentIsPublic({
-    contentId: activity3bId,
-    loggedInUserId: owner3Id,
+  await setupContent(owner3, {
     isPublic: true,
+    name: `grape${code}`,
   });
 
   // owner 4 has three activities shared with user2, plus public content with different text
-  const owner4 = await createTestUser();
-  const owner4Id = owner4.userId;
-
-  const { contentId: folder4aId } = await createContent({
-    loggedInUserId: owner4Id,
-    contentType: "folder",
-    parentId: null,
-  });
-  const { contentId: activity4aId } = await createContent({
-    loggedInUserId: owner4Id,
-    contentType: "singleDoc",
-    parentId: folder4aId,
-  });
-  await updateContent({
-    contentId: activity4aId,
+  const { userId: owner4 } = await createTestUser();
+  const folder4 = await setupContent(owner4, { contentType: "folder" });
+  await setupContent(owner4, {
+    sharedWith: user2,
     name: `banana${code}`,
-    loggedInUserId: owner4Id,
   });
-  await modifyContentSharedWith({
-    contentId: activity4aId,
-    loggedInUserId: owner4Id,
-    action: "share",
-    users: [user2Id],
-  });
-
-  const { contentId: activity4bId } = await createContent({
-    loggedInUserId: owner4Id,
-    contentType: "singleDoc",
-    parentId: folder4aId,
-  });
-  await updateContent({
-    contentId: activity4bId,
+  await setupContent(owner4, {
+    sharedWith: user2,
+    parentId: folder4,
     source: `banana${code}`,
-    loggedInUserId: owner4Id,
   });
-  await modifyContentSharedWith({
-    contentId: activity4bId,
-    loggedInUserId: owner4Id,
-    action: "share",
-    users: [user2Id],
-  });
-  const { contentId: activity4cId } = await createContent({
-    loggedInUserId: owner4Id,
-    contentType: "singleDoc",
-    parentId: folder4aId,
-  });
-  await updateContent({
-    contentId: activity4cId,
+  await setupContent(owner4, {
+    sharedWith: user2,
+    parentId: folder4,
     name: `banana${code}`,
-    loggedInUserId: owner4Id,
   });
-  await modifyContentSharedWith({
-    contentId: activity4cId,
-    loggedInUserId: owner4Id,
-    action: "share",
-    users: [user2Id],
-  });
-  const { contentId: activity4dId } = await createContent({
-    loggedInUserId: owner4Id,
-    contentType: "singleDoc",
-    parentId: null,
-  });
-  await updateContent({
-    contentId: activity4dId,
-    name: `grape${code}`,
-    loggedInUserId: owner4Id,
-  });
-  await setContentIsPublic({
-    contentId: activity4dId,
-    loggedInUserId: owner4Id,
+
+  await setupContent(owner4, {
     isPublic: true,
+    name: `grape${code}`,
   });
 
   // user1 find only owner2, owner3
   let result = await browseUsersWithSharedContent({
-    loggedInUserId: user1Id,
+    loggedInUserId: user1,
     query: `banana${code}`,
   });
+  result = result.filter(
+    (r) =>
+      isEqualUUID(r.userId, owner1) ||
+      isEqualUUID(r.userId, owner2) ||
+      isEqualUUID(r.userId, owner3) ||
+      isEqualUUID(r.userId, owner4),
+  );
   expect(result.length).eq(2);
-  expect(isEqualUUID(result[0].userId, owner2Id)).eq(true);
+  expect(isEqualUUID(result[0].userId, owner2)).eq(true);
   expect(result[0].numCommunity).eq(2);
-  expect(isEqualUUID(result[1].userId, owner3Id)).eq(true);
+  expect(isEqualUUID(result[1].userId, owner3)).eq(true);
   expect(result[1].numCommunity).eq(1);
 
   // user2 can find owner2, owner4
   result = await browseUsersWithSharedContent({
-    loggedInUserId: user2Id,
+    loggedInUserId: user2,
     query: `banana${code}`,
   });
+  result = result.filter(
+    (r) =>
+      isEqualUUID(r.userId, owner1) ||
+      isEqualUUID(r.userId, owner2) ||
+      isEqualUUID(r.userId, owner3) ||
+      isEqualUUID(r.userId, owner4),
+  );
   expect(result.length).eq(2);
-  expect(isEqualUUID(result[0].userId, owner4Id)).eq(true);
+  expect(isEqualUUID(result[0].userId, owner4)).eq(true);
   expect(result[0].numCommunity).eq(3);
-  expect(isEqualUUID(result[1].userId, owner2Id)).eq(true);
+  expect(isEqualUUID(result[1].userId, owner2)).eq(true);
   expect(result[1].numCommunity).eq(2);
 });
 

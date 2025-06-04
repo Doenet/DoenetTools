@@ -152,7 +152,7 @@ export function AssignActivityControls({
               step="60"
               width="220px"
               value={
-                DateTime.fromISO(closeAt!).toISO({
+                DateTime.fromISO(closeAt).toISO({
                   includeOffset: false,
                   suppressSeconds: true,
                   suppressMilliseconds: true,
@@ -341,7 +341,7 @@ export function AssignActivityControls({
                               includeOffset: false,
                               suppressSeconds: true,
                               suppressMilliseconds: true,
-                            })!
+                            })
                     }
                     onChange={(e) => {
                       setCustomCloseAt(e.target.value);

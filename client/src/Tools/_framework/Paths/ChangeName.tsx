@@ -43,7 +43,7 @@ export async function action({
   return null;
 }
 
-export async function loader({ request }) {
+export async function loader({ request }: { request: any }) {
   const url = new URL(request.url);
   const redirectTo = url.searchParams.get("redirect");
 
@@ -55,9 +55,7 @@ export function ChangeName({
 }: {
   hideHomeButton?: boolean;
 }) {
-  const { redirectTo } = useLoaderData() as {
-    redirectTo: string | undefined;
-  };
+  const { redirectTo } = useLoaderData();
 
   const { user } = useOutletContext<SiteContext>();
 
@@ -85,7 +83,7 @@ export function ChangeName({
         }
       }
     }
-  }, [user]);
+  }, [firstNames, lastNames, navigate, redirectTo, submitted, user]);
 
   return (
     <Box margin="20px">

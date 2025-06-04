@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 
 import styled from "styled-components";
 
-const LogoButton = styled.button`
+const LogoButton = styled.button<{ hasLink: boolean }>`
   background-image:
     linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
     url("/Doenet_Logo_cloud_only.png");
@@ -29,7 +29,7 @@ const LogoButton = styled.button`
   }
 `;
 
-export default function Logo({ hasLink = true }) {
+export default function Logo({ hasLink = true }: { hasLink?: boolean }) {
   const navigate = useNavigate();
 
   return (
