@@ -60,7 +60,7 @@ export function LibraryRequest({
           The <Text as="b">Doenet Library</Text> is a curated selection of
           excellent DoenetML activities covering a multitude of subjects.
           Activities in the library are <Text as="em">peer-reviewed</Text> and{" "}
-          <Text as="em">appear prominently in search results</Text>. It's a
+          <Text as="em">appear prominently in search results</Text>. It is a
           great opportunity to share your work with a wider audience and
           contribute to the e-learning ecosystem.
         </Text>

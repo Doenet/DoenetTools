@@ -1393,3 +1393,49 @@ test("Admin cannot move content between library and their folders", async () => 
     }),
   ).rejects.toThrowError();
 });
+
+test("Can only suggest single docs", async () => {
+  const { userId } = await createTestUser();
+  const { contentId: folderId } = await createContent({
+    contentType: "folder",
+    loggedInUserId: userId,
+    parentId: null,
+  });
+  await setContentIsPublic({
+    contentId: folderId,
+    loggedInUserId: userId,
+    isPublic: true,
+  });
+  const { contentId: sequenceId } = await createContent({
+    contentType: "sequence",
+    loggedInUserId: userId,
+    parentId: null,
+  });
+  await setContentIsPublic({
+    contentId: sequenceId,
+    loggedInUserId: userId,
+    isPublic: true,
+  });
+  const { contentId: questionBankId } = await createContent({
+    loggedInUserId: userId,
+    contentType: "select",
+    parentId: null,
+  });
+  await setContentIsPublic({
+    contentId: questionBankId,
+    loggedInUserId: userId,
+    isPublic: true,
+  });
+
+  await expect(() =>
+    suggestToBeCurated({ contentId: folderId, loggedInUserId: userId }),
+  ).rejects.toThrowError();
+
+  await expect(() =>
+    suggestToBeCurated({ contentId: sequenceId, loggedInUserId: userId }),
+  ).rejects.toThrowError();
+
+  await expect(() =>
+    suggestToBeCurated({ contentId: questionBankId, loggedInUserId: userId }),
+  ).rejects.toThrowError();
+});

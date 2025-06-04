@@ -383,7 +383,9 @@ export function ActivityViewer() {
         colorScheme="blue"
         toolTip={`Add ${contentTypeName.toLowerCase()} to ${allowedParentsPhrase}`}
         leftIcon={<MdOutlineAdd size={20} />}
-        suggestToBeCuratedOption={!libraryRelations.activity}
+        suggestToBeCuratedOption={
+          activityData.type === "singleDoc" && !libraryRelations.activity
+        }
       />
     );
   }

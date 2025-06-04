@@ -140,7 +140,7 @@ export function ShareDrawer({
       getRemixesAndSources();
       getLibraryComments();
     }
-  }, [contentData]);
+  }, [contentData, inCurationLibrary]);
 
   const drawerTitle = inCurationLibrary
     ? "Curation Controls"
@@ -190,6 +190,12 @@ export function ShareDrawer({
       {changedRemixBadge} Remixes {remixCounter}
     </>
   );
+
+  const showLibraryTab =
+    contentData.isPublic &&
+    contentData.type === "singleDoc" &&
+    !inCurationLibrary;
+
   return (
     <Drawer
       isOpen={isOpen}
@@ -214,20 +220,18 @@ export function ShareDrawer({
           <Tabs>
             <TabList>
               <Tab data-test="Share Tab">{shareOrCurateTabTitle}</Tab>
-              {contentData.type === "folder" ? null : (
+              {contentData.type !== "folder" && (
                 <Tab data-test="Remix Sources Tab">{remixSourcesTabTitle}</Tab>
               )}
-              {contentData.type === "folder" ? null : (
+              {contentData.type !== "folder" && (
                 <Tab data-test="Remixes Tab">{remixesTabTitle}</Tab>
               )}
-              {!contentData.isPublic || inCurationLibrary ? null : (
-                <Tab data-test="Library Tab">Library</Tab>
-              )}
+              {showLibraryTab && <Tab data-test="Library Tab">Library</Tab>}
             </TabList>
             <Box overflowY="auto" height="calc(100vh - 130px)">
               <TabPanels height="100%">
                 <TabPanel height="100%">{shareOrCurateTabPanel}</TabPanel>
-                {contentData.type === "folder" ? null : (
+                {contentData.type !== "folder" && (
                   <TabPanel height="100%">
                     <RemixSources
                       contributorHistory={remixSources}
@@ -236,7 +240,7 @@ export function ShareDrawer({
                     />
                   </TabPanel>
                 )}
-                {contentData.type === "folder" ? null : (
+                {contentData.type !== "folder" && (
                   <TabPanel height="100%">
                     <Remixes
                       remixes={remixes}
@@ -245,7 +249,7 @@ export function ShareDrawer({
                     />
                   </TabPanel>
                 )}
-                {!contentData.isPublic || inCurationLibrary ? null : (
+                {showLibraryTab && (
                   <TabPanel data-test="Library Tab">
                     <LibraryRequest
                       contentData={contentData}

@@ -356,8 +356,10 @@ export async function suggestToBeCurated({
   const content = await prisma.content.findUniqueOrThrow({
     where: {
       id: contentId,
-      isPublic: true,
       ...filterViewableActivity(loggedInUserId, false),
+      isPublic: true,
+      // for now, only allow single docs
+      type: "singleDoc",
     },
     select: {
       ownerId: true,
