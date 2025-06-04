@@ -25,7 +25,6 @@ export default tseslint.config(
       "@typescript-eslint/no-explicit-any": "off",
     },
   },
-
   // eslint-plugin-unused-imports allows linter to fix unused imports
   // It works by splitting the normal "unused-imports" rule into tw
   {
