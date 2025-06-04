@@ -9,7 +9,7 @@
     "test:all": "cypress run -b 'chrome' --config video=false --headless",
     "test:app": "cypress run -b 'electron' --config video=false,excludeSpecPattern=cypress/e2e/DoenetML/** --headless",
     "test:parallel": "cypress-parallel -s test:all -t 4 -d cypress/e2e/DoenetML",
-    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css}\" \"cypress/**/*.{js,jsx,ts,tsx,json,css}\" --end-of-line auto",
+    "format": "prettier . --write",
     "lint": "eslint --fix"
   },
   "dependencies": {

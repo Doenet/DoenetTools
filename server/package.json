@@ -8,7 +8,7 @@
     "dev": "npx nodemon src/index.ts",
     "build": "npx tsc && cp src/signin_email.html dist/src/",
     "start": "node dist/src/index.js",
-    "format": "npx prettier . --write --end-of-line auto",
+    "format": "npx prettier . --write",
     "lint": "npx eslint --fix"
   },
   "keywords": [],
