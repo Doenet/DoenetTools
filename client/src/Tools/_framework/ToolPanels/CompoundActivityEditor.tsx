@@ -42,6 +42,7 @@ import { SiteContext } from "../Paths/SiteHeader";
 import CardList from "../../../Widgets/CardList";
 import axios from "axios";
 import { ActivitySource } from "../../../_utils/viewerTypes";
+// @ts-expect-error assignment-viewer doesn't publish types, see https://github.com/Doenet/assignment-viewer/issues/20
 import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";
 import {
   contentTypeToName,
@@ -222,7 +223,7 @@ export function CompoundActivityEditor({
         navigate(`/activityEditor/${fetcher.data.createdDoc}`);
       }
     }
-  }, [fetcher.data, creatingDoc]);
+  }, [fetcher.data, creatingDoc, navigate]);
 
   const [moveCopyData, setMoveCopyData] = useState<{
     contentId: string;
@@ -333,6 +334,8 @@ export function CompoundActivityEditor({
     />
   );
 
+  // TODO: figure out functions inside hooks
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   function countCards(content: Content, init = true): number {
     const childCounts =
       content.type === "singleDoc"
@@ -351,10 +354,12 @@ export function CompoundActivityEditor({
     }
   }
 
-  const numCards = useMemo(() => countCards(activity), [activity]);
+  const numCards = useMemo(() => countCards(activity), [activity, countCards]);
 
   let idx = 0;
 
+  // TODO: figure out functions inside hooks
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   function createCardContent(
     content: Content,
     indentLevel = -1,
@@ -432,7 +437,7 @@ export function CompoundActivityEditor({
       } else if (parentInfo.parent) {
         // last in parent, so position down is position after parent
         nextPositionDown = {
-          parent: parentInfo.parent!,
+          parent: parentInfo.parent,
           position: parentInfo.positionInParent + 1,
         };
       } else {
@@ -490,10 +495,15 @@ export function CompoundActivityEditor({
     return cards;
   }
 
-  const cardContent = useMemo(() => createCardContent(activity), [activity]);
+  const cardContent = useMemo(
+    () => createCardContent(activity),
+    [activity, createCardContent],
+  );
 
   type ContentRelationships = { descendants: string[]; parent: string | null };
 
+  // TODO: figure out functions inside hooks
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   function extractContentById(
     content: Content,
     skipParent: string,
@@ -527,7 +537,7 @@ export function CompoundActivityEditor({
 
   const contentById = useMemo(
     () => extractContentById(activity, activity.contentId),
-    [activity],
+    [activity, extractContentById],
   );
 
   useEffect(() => {
@@ -559,7 +569,7 @@ export function CompoundActivityEditor({
         return arr;
       });
     }
-  }, [selectedCards]);
+  }, [contentById, disableAsSelected, selectedCards]);
 
   useEffect(() => {
     setSelectedCards((was) => {
@@ -734,7 +744,7 @@ export function CompoundActivityEditor({
         { method: "post" },
       );
     },
-    [activity, creatingDoc],
+    [activity.contentId, fetcher],
   );
 
   const cardList = (

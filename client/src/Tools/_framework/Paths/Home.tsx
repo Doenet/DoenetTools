@@ -1,8 +1,5 @@
 import React, { lazy, Suspense, useEffect, useState } from "react";
-import { useLoaderData } from "react-router";
 import { DoenetViewer } from "@doenet/doenetml-iframe";
-
-import { Carousel } from "../../../Widgets/Carousel";
 import {
   Box,
   Center,
@@ -29,11 +26,7 @@ import { Content } from "../../../_utils/types";
 import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
 
 export async function loader() {
-  // const { data: promotedContent } = await axios.get(
-  //   "/api/oldAdmin/loadPromotedContent",
-  // );
-  // const favorites = promotedContent.find((content) => content.homepage);
-  return { favorites: [] };
+  return {};
 }
 
 const HomeIntroVideo = lazy(() => import("./HomeIntroVideo"));
@@ -95,8 +88,6 @@ const doenetML = `
 `;
 
 export function Home() {
-  const { favorites } = useLoaderData() as { favorites: any };
-
   useEffect(() => {
     document.title = `Home - Doenet`;
   }, []);
@@ -106,11 +97,11 @@ export function Home() {
   const blackColor = "black";
   const whiteColor = useColorModeValue("white", "gray.900");
 
-  const [infoContentData, setInfoContentData] = useState<Content | null>(null);
+  const [infoContentData, _] = useState<Content | null>(null);
 
   const {
     isOpen: infoIsOpen,
-    onOpen: infoOnOpen,
+    onOpen: _infoOnOpen,
     onClose: infoOnClose,
   } = useDisclosure();
 
@@ -434,12 +425,12 @@ export function Home() {
         bg={"white"}
         p="60px 10px"
       >
-        <Carousel
+        {/* <Carousel
           title="Doenet Team Favorites"
           activities={favorites.promotedContent}
           setInfoContentData={setInfoContentData}
           infoOnOpen={infoOnOpen}
-        />
+        /> */}
       </Flex>
 
       <Center w="100%" bg={blueColor} pl="10px" pr="10px">

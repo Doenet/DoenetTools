@@ -4,6 +4,7 @@ import {
   useNavigate,
   useOutletContext,
   Link as ReactRouterLink,
+  ActionFunctionArgs,
 } from "react-router";
 
 import {
@@ -78,7 +79,7 @@ import { CloseIcon } from "@chakra-ui/icons";
 import { BsBookmarkCheck } from "react-icons/bs";
 import { ImCheckmark } from "react-icons/im";
 
-export async function action({ request }) {
+export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
 
@@ -95,7 +96,7 @@ export async function action({ request }) {
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
 }
 
-export async function loader({ params }) {
+export async function loader({ params }: { params: any }) {
   const {
     data: { activity: activityData, remixSources, libraryRelations },
   } = await axios.get(
@@ -173,7 +174,7 @@ export function ActivityViewer() {
 
   useEffect(() => {
     setMode(authorMode ? "Edit" : "View");
-  }, [contentId]);
+  }, [authorMode]);
 
   const fetcher = useFetcher();
 
@@ -189,25 +190,26 @@ export function ActivityViewer() {
     null,
   );
 
+  function matchSettingsContentId(content: Content): Content | undefined {
+    if (content.contentId === settingsContentId) {
+      return content;
+    }
+    if (content.type !== "singleDoc") {
+      for (const child of content.children) {
+        const res = matchSettingsContentId(child);
+        if (res) {
+          return res;
+        }
+      }
+    }
+  }
+
   let contentData: Content | undefined;
   if (settingsContentId) {
     if (settingsContentId === activityData.contentId) {
       contentData = activityData;
     } else {
       if (data.type !== "singleDoc") {
-        function matchSettingsContentId(content: Content): Content | undefined {
-          if (content.contentId === settingsContentId) {
-            return content;
-          }
-          if (content.type !== "singleDoc") {
-            for (const child of content.children) {
-              const res = matchSettingsContentId(child);
-              if (res) {
-                return res;
-              }
-            }
-          }
-        }
         contentData = matchSettingsContentId(data.activityData);
       }
     }

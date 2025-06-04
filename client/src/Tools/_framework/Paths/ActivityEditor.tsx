@@ -1,5 +1,10 @@
 import React, { ReactElement, useEffect, useRef, useState } from "react";
-import { redirect, useLoaderData, useOutletContext } from "react-router";
+import {
+  ActionFunctionArgs,
+  redirect,
+  useLoaderData,
+  useOutletContext,
+} from "react-router";
 
 import {
   Box,
@@ -47,8 +52,8 @@ import {
 } from "../ToolPanels/AssignmentControlsDrawer";
 import { ShareDrawer, shareDrawerActions } from "../ToolPanels/ShareDrawer";
 import {
-  ContentFeature,
   Content,
+  ContentFeature,
   DoenetmlVersion,
   License,
   ContentDescription,
@@ -68,21 +73,21 @@ import {
   contentTypeToName,
   getIconInfo,
 } from "../../../_utils/activity";
-import { ActivitySource } from "../../../_utils/viewerTypes";
 import { CopyContentAndReportFinish } from "../ToolPanels/CopyContentAndReportFinish";
 import { SiteContext } from "./SiteHeader";
 import {
   AuthorModeModal,
   authorModeModalActions,
 } from "../ToolPanels/AuthorModeModal";
+import { ActivitySource } from "../../../_utils/viewerTypes";
 
-export async function action({ params, request }) {
+export async function action({ params, request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
 
   if (formObj._action == "update name") {
     //Don't let name be blank
-    let name = formObj?.name?.trim();
+    let name = formObj.name.toString().trim();
     if (name === "") {
       name = "Untitled";
     }
@@ -129,7 +134,7 @@ export async function action({ params, request }) {
   return null;
 }
 
-export async function loader({ params }) {
+export async function loader({ params }: { params: any }) {
   const {
     data: {
       editableByMe,
@@ -208,10 +213,8 @@ export async function loader({ params }) {
 }
 
 //This is separate as <Editable> wasn't updating when defaultValue was changed
-function EditableName({ dataTest }) {
-  const { activityData } = useLoaderData() as {
-    activityData: Content;
-  };
+function EditableName({ dataTest }: { dataTest: string }) {
+  const { activityData } = useLoaderData();
 
   const [name, setName] = useState(activityData.name);
   const fetcher = useFetcher();
@@ -356,7 +359,7 @@ export function ActivityEditor() {
 
   useEffect(() => {
     setMode(authorMode ? "Edit" : "View");
-  }, [contentId]);
+  }, [authorMode]);
 
   useEffect(() => {
     document.title = `${activityData.name} - Doenet`;
@@ -401,25 +404,26 @@ export function ActivityEditor() {
     null,
   );
 
+  function matchSettingsContentId(content: Content): Content | undefined {
+    if (content.contentId === settingsContentId) {
+      return content;
+    }
+    if (content.type !== "singleDoc") {
+      for (const child of content.children) {
+        const res = matchSettingsContentId(child);
+        if (res) {
+          return res;
+        }
+      }
+    }
+  }
+
   let contentData: Content | undefined;
   if (settingsContentId) {
     if (settingsContentId === contentId) {
       contentData = activityData;
     } else {
       if (data.type !== "singleDoc") {
-        function matchSettingsContentId(content: Content): Content | undefined {
-          if (content.contentId === settingsContentId) {
-            return content;
-          }
-          if (content.type !== "singleDoc") {
-            for (const child of content.children) {
-              const res = matchSettingsContentId(child);
-              if (res) {
-                return res;
-              }
-            }
-          }
-        }
         contentData = matchSettingsContentId(data.activityData);
       }
     }

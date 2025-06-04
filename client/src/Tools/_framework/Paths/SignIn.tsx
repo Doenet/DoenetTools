@@ -12,11 +12,11 @@ import {
   Input,
   Show,
 } from "@chakra-ui/react";
-import { Form } from "react-router";
+import { ActionFunctionArgs, Form } from "react-router";
 import { useNavigate } from "react-router";
 import "./google-signin.css";
 
-export async function action({ request }) {
+export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
 

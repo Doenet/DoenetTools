@@ -27,7 +27,7 @@ import {
   Button,
 } from "@chakra-ui/react";
 import { InfoIcon, WarningIcon } from "@chakra-ui/icons";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { createFullName } from "../../../_utils/names";
 import { Content, License, LicenseCode } from "../../../_utils/types";
 import { DisplayLicenseItem } from "../../../Widgets/Licenses";
@@ -54,7 +54,7 @@ export async function sharingActions({ formObj }: { [k: string]: any }) {
         email: formObj.email,
       });
     } catch (e) {
-      if (e.response?.data?.error) {
+      if (e instanceof AxiosError && e.response?.data?.error) {
         const error = e.response?.data?.error;
         const details = e.response?.data?.details;
         if (

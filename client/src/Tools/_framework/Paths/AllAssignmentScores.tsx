@@ -51,12 +51,20 @@ type Folder = {
   name: string;
 };
 
-export async function loader({ params }) {
-  const { data } = await axios.get(
+export async function loader({
+  params,
+}: {
+  params: {
+    parentId?: string;
+  };
+}) {
+  const { orderedActivities, assignmentScores, folder } = (await axios.get(
     `/api/assign/getAllAssignmentScores/${params.parentId ?? ""}`,
-  );
-
-  const assignmentScores: AssignmentScore[] = data.assignmentScores;
+  )) as {
+    orderedActivities: OrderedActivity[];
+    assignmentScores: AssignmentScore[];
+    folder: Folder;
+  };
 
   const assignmentHasScores = new Set<string>([]);
 
@@ -87,7 +95,7 @@ export async function loader({ params }) {
     return 0;
   });
 
-  const assignments = data.orderedActivities.map((activity) => ({
+  const assignments = orderedActivities.map((activity) => ({
     contentId: activity.contentId,
     name: activity.name,
     hasScores: assignmentHasScores.has(activity.contentId),
@@ -97,7 +105,7 @@ export async function loader({ params }) {
     assignments,
     students: studentData,
     studentIdsOrdered,
-    folder: data.folder,
+    folder,
   };
 }
 

@@ -78,8 +78,14 @@ export function AssignmentItemResponseStudent({
 
   const [responseAnswerId, setResponseAnswerId] = useState<string | null>(null);
 
+  const {
+    isOpen: answerResponsesAreOpen,
+    onOpen: answerResponsesOnOpen,
+    onClose: answerResponsesOnClose,
+  } = useDisclosure();
+
   useEffect(() => {
-    const messageListener = async function (event) {
+    const messageListener = async function (event: any) {
       if (event.data.subject == "SPLICE.getState") {
         if (itemAttemptState.state) {
           const state = JSON.parse(itemAttemptState.state);
@@ -111,13 +117,7 @@ export function AssignmentItemResponseStudent({
     return () => {
       removeEventListener("message", messageListener);
     };
-  }, [user.userId, itemAttemptState, attemptNumber]);
-
-  const {
-    isOpen: answerResponsesAreOpen,
-    onOpen: answerResponsesOnOpen,
-    onClose: answerResponsesOnClose,
-  } = useDisclosure();
+  }, [user.userId, itemAttemptState, attemptNumber, answerResponsesOnOpen]);
 
   const [contentAttemptNumber, itemAttemptNumber] =
     assignment.type === "singleDoc"
@@ -296,7 +296,8 @@ export function AssignmentItemResponseStudent({
           <Flex marginLeft="10px" marginTop="10px" alignItems="center">
             <Box>Original item number: {itemAttemptState.itemNumber}</Box>
             <Box marginLeft="10px">
-              Student's item number: {itemAttemptState.shuffledItemNumber}{" "}
+              Student&apos;s item number:{" "}
+              {itemAttemptState.shuffledItemNumber}{" "}
             </Box>
             <Spacer />
 

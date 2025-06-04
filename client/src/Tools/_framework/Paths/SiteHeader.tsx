@@ -54,7 +54,7 @@ export type SiteContext = {
   setAddTo: (arg: ContentDescription | null) => void;
 };
 
-export async function action({ request }) {
+export async function action({ request }: { request: any }) {
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
 
@@ -75,7 +75,15 @@ export async function loader() {
   return { user };
 }
 
-function NavLinkTab({ to, children, dataTest }) {
+function NavLinkTab({
+  to,
+  children,
+  dataTest,
+}: {
+  to: string;
+  children: React.ReactNode;
+  dataTest: string;
+}) {
   // TODO: use end only when path is "/"
   return (
     <NavLink to={to} end data-test={dataTest}>
@@ -112,7 +120,15 @@ function NavLinkTab({ to, children, dataTest }) {
   );
 }
 
-function NavLinkDropdownTab({ to, children, dataTest }) {
+function NavLinkDropdownTab({
+  to,
+  children,
+  dataTest,
+}: {
+  to: string;
+  children: React.ReactNode;
+  dataTest: string;
+}) {
   // TODO: use end only when path is "/"
   return (
     <NavLink to={to} end data-test={dataTest}>

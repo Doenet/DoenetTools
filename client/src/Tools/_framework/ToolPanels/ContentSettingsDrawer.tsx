@@ -112,7 +112,7 @@ export function ContentSettingsDrawer({
 
   useEffect(() => {
     setTabIndex(initialTabIndex);
-  }, [displayTab, isOpen]);
+  }, [displayTab, initialTabIndex, isOpen]);
 
   const contentTypeName = contentTypeToName[contentData.type];
 

@@ -1,16 +1,16 @@
 // import axios from 'axios';
 import { Button, Box, Flex, Heading, VStack, HStack } from "@chakra-ui/react";
 import React, { useEffect } from "react";
-import { useLoaderData, useNavigate } from "react-router";
+import { ActionFunctionArgs, useLoaderData, useNavigate } from "react-router";
 
 import { CardContent } from "../../../Widgets/Card";
 import axios from "axios";
 import { createFullName } from "../../../_utils/names";
-import { Content, UserInfo } from "../../../_utils/types";
 import CardList from "../../../Widgets/CardList";
 import { formatAssignmentBlurb } from "../../../_utils/assignment";
+import { Content, UserInfo } from "../../../_utils/types";
 
-export async function action({ request }) {
+export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
 

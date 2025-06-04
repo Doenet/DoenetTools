@@ -27,6 +27,7 @@ import {
   HStack,
 } from "@chakra-ui/react";
 import {
+  ActionFunctionArgs,
   Link as ReactRouterLink,
   useLoaderData,
   useLocation,
@@ -44,8 +45,8 @@ import {
   ContentDescription,
   ContentFeature,
   Content,
-  PartialContentClassification,
   UserInfo,
+  PartialContentClassification,
 } from "../../../_utils/types";
 import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
 import CardList from "../../../Widgets/CardList";
@@ -69,7 +70,7 @@ import {
   createContentMenuActions,
 } from "../ToolPanels/CreateContentMenu";
 
-export async function action({ request }) {
+export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
 
@@ -91,7 +92,13 @@ export async function action({ request }) {
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
 }
 
-export async function loader({ params, request }) {
+export async function loader({
+  params,
+  request,
+}: {
+  params: any;
+  request: any;
+}) {
   const classificationId = params.classificationId
     ? Number(params.classificationId)
     : undefined;
@@ -245,7 +252,13 @@ export function Explore() {
     if (currentTab == null || (!q && currentTab > 1)) {
       setCurrentTab(!totalCount.numCurated && totalCount.numCommunity ? 1 : 0);
     }
-  }, [q]);
+  }, [
+    currentTab,
+    q,
+    setCurrentTab,
+    totalCount.numCommunity,
+    totalCount.numCurated,
+  ]);
 
   const [infoContentData, setInfoContentData] = useState<Content | null>(null);
 
@@ -333,12 +346,12 @@ export function Explore() {
         base: `calc(100vh - ${q ? "250" : "210"}px)`,
         lg: `calc(100vh - ${q ? "210" : "170"}px)`,
       }),
-    [curatedContent, selectedCards, addTo],
+    [displayMatchingContent, curatedContent, q],
   );
 
   const trendingContentDisplay = useMemo(
     () => (trendingContent ? displayMatchingContent(trendingContent) : null),
-    [trendingContent, selectedCards, addTo],
+    [trendingContent, displayMatchingContent],
   );
 
   const contentDisplay = useMemo(
@@ -347,9 +360,11 @@ export function Explore() {
         base: `calc(100vh - ${q ? "250" : "210"}px)`,
         lg: `calc(100vh - ${q ? "210" : "170"}px)`,
       }),
-    [content, selectedCards, addTo],
+    [displayMatchingContent, content, q],
   );
 
+  // TODO: figure out functions inside hooks
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   function displayMatchingContent(
     matches: Content[],
     minHeight?: string | { base: string; lg: string },
@@ -645,7 +660,14 @@ export function Explore() {
     }
 
     return cMatchPieces;
-  }, [matchedClassifications]);
+  }, [
+    matchedCategories,
+    matchedClassifications,
+    matchedSubCategories,
+    navigate,
+    search,
+    setCurrentTab,
+  ]);
 
   let classificationMatches: ReactElement | null = null;
 

@@ -17,13 +17,14 @@ import {
   Spinner,
   MenuDivider,
 } from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   useLoaderData,
   useNavigate,
   useFetcher,
   Link,
   Form,
+  ActionFunctionArgs,
 } from "react-router";
 
 import { CardContent } from "../../../Widgets/Card";
@@ -38,12 +39,12 @@ import {
   ContentSettingsDrawer,
 } from "../ToolPanels/ContentSettingsDrawer";
 import {
-  ContentFeature,
   Content,
-  DoenetmlVersion,
+  ContentFeature,
   LicenseCode,
   UserInfo,
   ContentType,
+  DoenetmlVersion,
   License,
   LibraryRelations,
 } from "../../../_utils/types";
@@ -55,7 +56,7 @@ import {
 } from "../ToolPanels/CreateLocalContentModal";
 import { ShareDrawer, shareDrawerActions } from "../ToolPanels/ShareDrawer";
 
-export async function action({ request }) {
+export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
 
@@ -106,7 +107,13 @@ export async function action({ request }) {
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
 }
 
-export async function loader({ params, request }) {
+export async function loader({
+  params,
+  request,
+}: {
+  params: any;
+  request: any;
+}) {
   const url = new URL(request.url);
   const q = url.searchParams.get("q");
 

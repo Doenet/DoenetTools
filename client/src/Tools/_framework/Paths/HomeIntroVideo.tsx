@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import styled from "styled-components";
 import { Box, Link, Show } from "@chakra-ui/react";
 
@@ -17,20 +17,6 @@ const HPVideo = styled.video`
 `;
 
 export default function HomeIntroVideo() {
-  const videoEl = useRef(null);
-
-  const attemptPlay = () => {
-    videoEl &&
-      videoEl.current &&
-      videoEl.current.play().catch((error) => {
-        console.error("Error attempting to play", error);
-      });
-  };
-
-  useEffect(() => {
-    attemptPlay();
-  }, []);
-
   return (
     <Box overflow="hidden" width={["350px", "30vw", "30vw", "30vw"]}>
       <Box
@@ -39,16 +25,17 @@ export default function HomeIntroVideo() {
         width={["500px", "100vw", "100vw", "100vw"]}
       >
         <HPVideo
+          autoPlay={true}
           // height='420px'
-          fluid="false"
+          // fluid="false"
           // src='/media/homepagevideo2.mp4'
           loop
           muted
           playsInline
-          alt="Demonstration video on making DoenetML content"
-          ref={videoEl}
+          // alt="Demonstration video on making DoenetML content"
+          // ref={videoEl}
           controls
-          zIndex="1"
+          // zIndex="1"
         >
           <source src="/planet_orbits_smooth.webm" type="video/webm" />
         </HPVideo>

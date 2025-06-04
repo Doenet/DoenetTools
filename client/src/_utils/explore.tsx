@@ -36,8 +36,8 @@ function numPhraseDisplay({
 }
 
 export function clearQueryParameter(param: string, search: string) {
-  function escapeRegex(string) {
-    return string.replace(/[/\-\\^$*+?.()|[\]{}]/g, "\\$&");
+  function escapeRegex(inputStr: string) {
+    return inputStr.replace(/[/\-\\^$*+?.()|[\]{}]/g, "\\$&");
   }
   const escapedParam = escapeRegex(param);
 

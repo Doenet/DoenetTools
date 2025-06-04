@@ -90,6 +90,7 @@ export function AnswerResponseDrawer({
     answerId,
     contentAttemptNumber,
     itemAttemptNumber,
+    shuffledOrder,
   ]);
 
   const attemptNumber = Math.max(contentAttemptNumber, itemAttemptNumber ?? 1);

@@ -264,6 +264,12 @@ export function FilterPanel({
           const c = countByFeature[feature.code];
           const numCurated = c.numCurated || 0;
           const numCommunity = c.numCommunity || 0;
+          // const icon = activityFeatureIcons[feature.code];
+
+          const featureCode = feature.code as
+            | "isQuestion"
+            | "isInteractive"
+            | "containsVideo";
 
           return (
             <Checkbox
@@ -290,7 +296,7 @@ export function FilterPanel({
                   {feature.term}
                   <Icon
                     paddingLeft="5px"
-                    as={activityFeatureIcons[feature.code]}
+                    as={activityFeatureIcons[featureCode]}
                     color="#666699"
                     boxSize={5}
                     verticalAlign="middle"

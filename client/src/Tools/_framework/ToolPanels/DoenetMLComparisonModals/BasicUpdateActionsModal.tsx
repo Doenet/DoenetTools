@@ -129,7 +129,7 @@ export function BasicUpdateActionsModal({
     } else {
       setOption("");
     }
-  }, [isOpen]);
+  }, [activityAtCompare, isOpen]);
 
   let actionText;
   if (option === "update") {

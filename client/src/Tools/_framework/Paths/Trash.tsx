@@ -6,12 +6,13 @@ import {
   Tooltip,
   Link as ChakraLink,
 } from "@chakra-ui/react";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   useLoaderData,
   useNavigate,
   useFetcher,
   Link as ReactRouterLink,
+  ActionFunctionArgs,
 } from "react-router";
 
 import { CardContent } from "../../../Widgets/Card";
@@ -21,7 +22,7 @@ import {} from "../ToolPanels/MoveCopyContent";
 import { DateTime } from "luxon";
 import { Content } from "../../../_utils/types";
 
-export async function action({ request }) {
+export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
 
