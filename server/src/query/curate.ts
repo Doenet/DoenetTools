@@ -424,8 +424,9 @@ export async function suggestToBeCurated({
 }
 
 /**
- * Claim ownership of a `pending` activity in the library. This marks you as the primary editor for this activity and changes status to `under_review`.
- * You can also claim ownership of an activity that's already `under_review`, in which case you replace the existing editor.
+ * Claim ownership of an activity in the library. This marks you as the primary editor.
+ * If the activity was `pending`, it changes to `under_review`.
+ * If there was an existing primary editor, you replace them.
  * @param contentId - id of the library-owned remix, not the source content id
  * @param loggedInUserId - must be admin
  */
@@ -437,21 +438,38 @@ export async function claimOwnershipOfReview({
   loggedInUserId: Uint8Array;
 }) {
   await mustBeAdmin(loggedInUserId);
-  await prisma.libraryActivityInfos.update({
+
+  const activity = await prisma.libraryActivityInfos.findUniqueOrThrow({
     where: {
       contentId,
       OR: [
         {
-          status: LibraryStatus.PENDING,
+          primaryEditorId: null,
         },
         {
-          status: LibraryStatus.UNDER_REVIEW,
+          NOT: {
+            primaryEditorId: loggedInUserId,
+          },
         },
       ],
     },
+    select: {
+      status: true,
+    },
+  });
+
+  const newStatus =
+    activity.status === LibraryStatus.PENDING
+      ? LibraryStatus.UNDER_REVIEW
+      : activity.status;
+
+  await prisma.libraryActivityInfos.update({
+    where: {
+      contentId,
+    },
     data: {
       primaryEditorId: loggedInUserId,
-      status: LibraryStatus.UNDER_REVIEW,
+      status: newStatus,
       events: {
         create: {
           eventType: LibraryEventType.TAKE_OWNERSHIP,
@@ -466,7 +484,7 @@ export async function claimOwnershipOfReview({
 /**
  * Make library activity public and log event.
  * @param contentId - activity in library account with status `under_review`
- * @param loggedInUserId - must be admin
+ * @param loggedInUserId - must be admin and primary editor
  * @todo notify owner
  */
 export async function publishActivityToLibrary({
@@ -483,6 +501,7 @@ export async function publishActivityToLibrary({
       ...filterEditableActivity(loggedInUserId, true),
       libraryActivityInfo: {
         status: LibraryStatus.UNDER_REVIEW,
+        primaryEditorId: loggedInUserId,
       },
       license: {
         isNot: null,
@@ -512,7 +531,7 @@ export async function publishActivityToLibrary({
 /**
  * Return library activity to `under_review` category and log event.
  * @param contentId - must be existing published (public) activity in library account
- * @param loggedInUserId - must be admin
+ * @param loggedInUserId - must be admin and primary editor
  */
 export async function unpublishActivityFromLibrary({
   contentId,
@@ -529,6 +548,7 @@ export async function unpublishActivityFromLibrary({
       ...filterEditableActivity(loggedInUserId, true),
       libraryActivityInfo: {
         status: LibraryStatus.PUBLISHED,
+        primaryEditorId: loggedInUserId,
       },
     },
     data: {
@@ -552,7 +572,7 @@ export async function unpublishActivityFromLibrary({
 /**
  * Reject activity's request for curation and log event.
  * @param contentId - activity in library account with status `under_review`
- * @param loggedInUserId - must be admin
+ * @param loggedInUserId - must be admin and primary editor
  */
 export async function rejectActivity({
   contentId,
@@ -566,6 +586,7 @@ export async function rejectActivity({
     where: {
       contentId,
       status: LibraryStatus.UNDER_REVIEW,
+      primaryEditorId: loggedInUserId,
     },
     data: {
       status: LibraryStatus.REJECTED,
@@ -583,7 +604,7 @@ export async function rejectActivity({
 /**
  * Post a comment to chat between activity author and editors.
  * @param contentId - source id for author, revised id for editor
- * @param loggedInUserId - must be author or an editor
+ * @param loggedInUserId - must be author or primary editor
  */
 export async function addComment({
   contentId,
@@ -603,6 +624,7 @@ export async function addComment({
     where: {
       sourceId: asEditor ? undefined : contentId,
       contentId: asEditor ? contentId : undefined,
+      primaryEditorId: asEditor ? loggedInUserId : undefined,
       source: {
         ownerId: asEditor ? undefined : loggedInUserId,
       },

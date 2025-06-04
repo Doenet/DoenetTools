@@ -90,6 +90,7 @@ export function LibraryRequest({
 
           <ChatConversation
             conversationTitle="Conversation with editor(s)"
+            canComment={true}
             messages={libraryComments.map((c) => {
               return {
                 user: createFullName(c.user),

@@ -22,10 +22,12 @@ type ChatMessage = {
 export function ChatConversation({
   messages,
   conversationTitle = "Conversation",
+  canComment,
   onAddComment,
 }: {
   messages: ChatMessage[];
   conversationTitle?: string;
+  canComment: boolean;
   onAddComment: (comment: string) => void;
 }) {
   const [newComment, setNewComment] = useState<string>("");
@@ -61,28 +63,32 @@ export function ChatConversation({
         ))
       )}
 
-      <Textarea
-        placeholder="Message"
-        value={newComment}
-        onChange={(e) => {
-          setNewComment(e.target.value);
-        }}
-        width="90%"
-        onBlur={(e) => {
-          if (e.target.value) {
-            setNewComment(e.target.value);
-          }
-        }}
-      />
-      <Button
-        justifySelf="right"
-        onClick={() => {
-          onAddComment(newComment);
-          setNewComment("");
-        }}
-      >
-        Post
-      </Button>
+      {canComment && (
+        <Box>
+          <Textarea
+            placeholder="Message"
+            value={newComment}
+            onChange={(e) => {
+              setNewComment(e.target.value);
+            }}
+            width="90%"
+            onBlur={(e) => {
+              if (e.target.value) {
+                setNewComment(e.target.value);
+              }
+            }}
+          />
+          <Button
+            justifySelf="right"
+            onClick={() => {
+              onAddComment(newComment);
+              setNewComment("");
+            }}
+          >
+            Post
+          </Button>
+        </Box>
+      )}
     </Box>
   );
 }

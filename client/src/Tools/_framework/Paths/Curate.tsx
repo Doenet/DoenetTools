@@ -185,7 +185,7 @@ export function Curate() {
         lineHeight="normal"
         data-test="Folder Heading"
       >
-        <Tooltip label="Pending curation requests">Curation Queue</Tooltip>
+        <Tooltip label="Pending curation requests">Curate</Tooltip>
       </Heading>
       <VStack width="100%">
         <Flex marginRight="1em" width="100%">

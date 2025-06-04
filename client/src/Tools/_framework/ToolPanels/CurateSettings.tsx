@@ -72,6 +72,8 @@ export function CurateSettings({
   const librarySource = libraryRelations.source!;
 
   const sourceIdIsVisible = librarySource.sourceContentId !== null;
+  const amEditor = librarySource.iAmPrimaryEditor ?? false;
+  const status = librarySource.status;
 
   return (
     <>
@@ -82,7 +84,7 @@ export function CurateSettings({
 
         <Spacer />
 
-        {!librarySource.iAmPrimaryEditor && (
+        {!amEditor && (
           <Button
             onClick={() => {
               onClose();
@@ -98,7 +100,7 @@ export function CurateSettings({
             Claim
           </Button>
         )}
-        {librarySource.status === "UNDER_REVIEW" && (
+        {amEditor && status === "UNDER_REVIEW" && (
           <Button
             onClick={() => {
               onClose();
@@ -116,7 +118,7 @@ export function CurateSettings({
           </Button>
         )}
 
-        {librarySource.status === "UNDER_REVIEW" && (
+        {amEditor && status === "UNDER_REVIEW" && (
           <Button
             onClick={() => {
               onClose();
@@ -134,7 +136,7 @@ export function CurateSettings({
           </Button>
         )}
 
-        {librarySource.status === "PUBLISHED" && (
+        {amEditor && status === "PUBLISHED" && (
           <Button
             onClick={() => {
               onClose();
@@ -164,7 +166,7 @@ export function CurateSettings({
           {librarySource.primaryEditor
             ? createFullName(librarySource.primaryEditor)
             : "None"}
-          {librarySource.iAmPrimaryEditor && " (you)"}
+          {amEditor && " (you)"}
         </ListItem>
         {!sourceIdIsVisible ? (
           <ListItem>Note: Source activity is no longer public</ListItem>
@@ -173,6 +175,7 @@ export function CurateSettings({
 
       <ChatConversation
         conversationTitle="Conversation with owner"
+        canComment={amEditor}
         messages={libraryComments.map((c) => {
           return {
             user: createFullName(c.user),

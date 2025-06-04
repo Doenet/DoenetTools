@@ -91,6 +91,7 @@ async function expectStatusIs(
 test("user privileges for library", async () => {
   const { userId: ownerId } = await createTestUser();
   const { userId: adminId } = await createTestAdminUser();
+  const { userId: admin2Id } = await createTestAdminUser();
   const { userId: randomUserId } = await createTestUser();
   const { userId: anonymousId } = await createTestAnonymousUser();
 
@@ -215,6 +216,11 @@ test("user privileges for library", async () => {
 
   await expectStatusIs(sourceId, statusPendingAdmin, adminId);
 
+  // First admin2 takes ownership, then admin takes it
+  await claimOwnershipOfReview({
+    contentId: draftId,
+    loggedInUserId: admin2Id,
+  });
   await claimOwnershipOfReview({ contentId: draftId, loggedInUserId: adminId });
 
   const statusClaimedAdmin: LibraryRelations = {
@@ -250,7 +256,7 @@ test("user privileges for library", async () => {
 
   await expectStatusIs(draftId, draftClaimedAdmin, adminId);
 
-  // Only admin can publish
+  // Only primary editor admin can publish
   async function expectPublishFails(userId: Uint8Array) {
     await expect(() =>
       publishActivityToLibrary({
@@ -262,6 +268,7 @@ test("user privileges for library", async () => {
 
   await expectPublishFails(randomUserId);
   await expectPublishFails(ownerId);
+  await expectPublishFails(admin2Id);
 
   const statusPublishedAdmin: LibraryRelations = {
     activity: {
@@ -305,7 +312,7 @@ test("user privileges for library", async () => {
   await expectStatusIs(draftId, draftPublishedPublic, ownerId);
   await expectStatusIs(draftId, draftPublishedAdmin, adminId);
 
-  // Random user cannot comment
+  // Random user and random admin cannot comment
   async function expectAddCommentFails(userId: Uint8Array) {
     await expect(() =>
       addComment({
@@ -318,8 +325,9 @@ test("user privileges for library", async () => {
 
   await expectAddCommentFails(randomUserId);
   await expectAddCommentFails(anonymousId);
+  await expectAddCommentFails(admin2Id);
 
-  // Only admin can unpublish
+  // Only primary editor admin can unpublish
   async function expectUnpublishFails(userId: Uint8Array) {
     await expect(() =>
       unpublishActivityFromLibrary({
@@ -331,6 +339,7 @@ test("user privileges for library", async () => {
   await expectUnpublishFails(randomUserId);
   await expectUnpublishFails(anonymousId);
   await expectUnpublishFails(ownerId);
+  await expectUnpublishFails(admin2Id);
 
   await unpublishActivityFromLibrary({
     contentId: draftId,
@@ -340,7 +349,7 @@ test("user privileges for library", async () => {
   await expectStatusIs(sourceId, statusNone, ownerId);
   await expectStatusIs(sourceId, statusClaimedAdmin, adminId);
 
-  // Only admin can reject
+  // Only primary editor admin can reject
   async function expectRejectFails(userId: Uint8Array) {
     await expect(() =>
       rejectActivity({
@@ -352,6 +361,7 @@ test("user privileges for library", async () => {
   await expectRejectFails(randomUserId);
   await expectRejectFails(ownerId);
   await expectRejectFails(anonymousId);
+  await expectRejectFails(admin2Id);
 
   await rejectActivity({
     contentId: draftId,
@@ -447,7 +457,11 @@ test("owner requests library review, has conversation, admin publishes", async (
   expect(comments[0].user.userId).eqls(ownerId);
   expect(comments[0].comment).eqls("Notes about my project...");
 
-  // Admin comments
+  // Admin claims and  comments
+  await claimOwnershipOfReview({
+    contentId: draftId,
+    loggedInUserId: adminId,
+  });
   await addComment({
     contentId: draftId,
     comment: "Nice job",
@@ -473,11 +487,7 @@ test("owner requests library review, has conversation, admin publishes", async (
   expect(comments[1].user.userId).eqls(adminId);
   expect(comments[1].comment).eqls("Nice job");
 
-  // Admin claims, edits, and publishes
-  await claimOwnershipOfReview({
-    contentId: draftId,
-    loggedInUserId: adminId,
-  });
+  // Admin edits and publishes
 
   await updateContent({
     contentId: draftId,
