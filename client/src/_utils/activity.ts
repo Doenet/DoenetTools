@@ -13,6 +13,9 @@ import { RiArchive2Fill } from "react-icons/ri";
 import React, { ReactElement } from "react";
 import { Icon } from "@chakra-ui/react";
 
+/**
+ * Content feature icons. Displayed in this order.
+ */
 export const activityFeatureIcons = {
   isQuestion: TbPuzzle,
   isInteractive: MdOutlineSwipeLeft,

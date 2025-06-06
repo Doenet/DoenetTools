@@ -17,7 +17,7 @@ import {
   LibraryRelations,
 } from "../../../_utils/types";
 import { DisplayLicenseItem } from "../../../Widgets/Licenses";
-import { createNameNoCurateTag } from "../../../_utils/names";
+import { createNameCheckIsMeTag, createNameNoTag } from "../../../_utils/names";
 import { ChatConversation } from "../../../Widgets/ChatConversation";
 import { DateTime } from "luxon";
 import { getLibraryStatusStylized } from "../../../_utils/library";
@@ -165,9 +165,8 @@ export function CurateSettings({
         <ListItem>
           Current primary editor:{" "}
           {librarySource.primaryEditor
-            ? createNameNoCurateTag(librarySource.primaryEditor)
+            ? createNameCheckIsMeTag(librarySource.primaryEditor, amEditor)
             : "None"}
-          {amEditor && " (you)"}
         </ListItem>
         {!sourceIdIsVisible ? (
           <ListItem>Note: Source activity is no longer public</ListItem>
@@ -179,7 +178,7 @@ export function CurateSettings({
         canComment={amEditor}
         messages={libraryComments.map((c) => {
           return {
-            user: createNameNoCurateTag(c.user),
+            user: createNameNoTag(c.user),
             userIsMe: c.isMe,
             message: c.comment,
             dateTime: DateTime.fromISO(c.dateTime),

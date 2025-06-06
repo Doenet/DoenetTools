@@ -19,7 +19,7 @@ import "./Carousel.css";
 import { Box, Flex, IconButton, MenuItem, Text } from "@chakra-ui/react";
 import Card, { CardContent } from "./Card";
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
-import { createNameNoCurateTag } from "../_utils/names";
+import { createNameNoTag } from "../_utils/names";
 import { Content } from "../_utils/types";
 
 export function Carousel({
@@ -74,7 +74,7 @@ export function Carousel({
       content: activity,
       cardLink: `/activityViewer/${activity.contentId}`,
       ownerName:
-        activity.owner !== undefined ? createNameNoCurateTag(activity.owner) : "",
+        activity.owner !== undefined ? createNameNoTag(activity.owner) : "",
       menuItems,
     };
   });

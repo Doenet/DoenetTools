@@ -33,7 +33,7 @@ import {
   LibraryRelations,
   License,
 } from "../../../_utils/types";
-import { createNameNoCurateTag } from "../../../_utils/names";
+import { createNameCheckIsMeTag, createNameNoTag } from "../../../_utils/names";
 import { intWithCommas } from "../../../_utils/formatting";
 import {
   contentSettingsActions,
@@ -116,13 +116,27 @@ export function Curate() {
   function displayCardList(
     content: Content[],
     libraryRelations: LibraryRelations[],
+    showLibraryEditor: boolean,
     minHeight?: string | { base: string; lg: string },
   ) {
     const cardContent: CardContent[] = content.map((contentData, idx) => {
       const cardLink = `/activityEditor/${contentData.contentId}`;
+
+      const librarySource = libraryRelations[idx].source!;
+
       const requestDate = DateTime.fromISO(
-        libraryRelations[idx].source!.reviewRequestDate!
+        librarySource.reviewRequestDate!,
       ).toLocaleString(DateTime.DATE_MED);
+
+      const libraryEditorAvatarName = showLibraryEditor
+        ? createNameNoTag(librarySource.primaryEditor!)
+        : undefined;
+      const libraryEditorName = showLibraryEditor
+        ? createNameCheckIsMeTag(
+            librarySource.primaryEditor!,
+            librarySource.iAmPrimaryEditor!,
+          )
+        : undefined;
 
       const menuItems = (
         <>
@@ -149,9 +163,10 @@ export function Curate() {
       );
 
       return {
-        contentId: contentData.contentId,
         content: contentData,
-        ownerName: createNameNoCurateTag(contentData.owner!),
+        ownerName: createNameNoTag(contentData.owner!),
+        libraryEditorName,
+        libraryEditorAvatarName,
         blurb: `Requested on ${requestDate}`,
         cardLink,
         menuItems,
@@ -170,9 +185,9 @@ export function Curate() {
           showBlurb={true}
           showActivityFeatures={true}
           showOwnerName={true}
+          showLibraryEditor={showLibraryEditor}
           content={cardContent}
           emptyMessage={"No Activities Found!"}
-          libraryRelations={libraryRelations}
         />
       </Box>
     );
@@ -290,16 +305,20 @@ export function Curate() {
 
       <TabPanels data-test="Curation">
         <TabPanel padding={0} data-test="Pending Results">
-          {displayCardList(pendingContent, pendingLibraryRelations)}
+          {displayCardList(pendingContent, pendingLibraryRelations, false)}
         </TabPanel>
         <TabPanel padding={0} data-test="Under Review Results">
-          {displayCardList(underReviewContent, underReviewLibraryRelations)}
+          {displayCardList(
+            underReviewContent,
+            underReviewLibraryRelations,
+            true,
+          )}
         </TabPanel>
         <TabPanel padding={0} data-test="Rejected Results">
-          {displayCardList(rejectedContent, rejectedLibraryRelations)}
+          {displayCardList(rejectedContent, rejectedLibraryRelations, true)}
         </TabPanel>
         <TabPanel padding={0} data-test="Published Results">
-          {displayCardList(publishedContent, publishedLibraryRelations)}
+          {displayCardList(publishedContent, publishedLibraryRelations, true)}
         </TabPanel>
       </TabPanels>
     </Tabs>

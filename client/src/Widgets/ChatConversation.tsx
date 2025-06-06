@@ -10,7 +10,7 @@ import {
   Heading,
 } from "@chakra-ui/react";
 import { DateTime } from "luxon";
-import { useState } from "react";
+import React, { useState } from "react";
 
 type ChatMessage = {
   user: string;
@@ -44,7 +44,7 @@ export function ChatConversation({
         </Box>
       ) : (
         messages.map((msg, i) => (
-          <Box justifyContent="left">
+          <Box key={`message${i}`} justifyContent="left">
             <HStack justify="left">
               <Tooltip label={msg.user}>
                 <Avatar

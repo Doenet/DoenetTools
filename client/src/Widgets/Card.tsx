@@ -1,6 +1,5 @@
 import React, { ReactElement } from "react";
 import {
-  Box,
   Avatar,
   Text,
   Card as ChakraCard,
@@ -14,13 +13,14 @@ import {
   Tooltip,
   HStack,
   Show,
-  Badge,
   Checkbox,
   Button,
   MenuItem,
+  Spacer,
+  Hide,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink, useOutletContext } from "react-router";
-import { Content, ContentDescription, LibraryRelations } from "../_utils/types";
+import { Content, ContentDescription } from "../_utils/types";
 import { FaEllipsisVertical } from "react-icons/fa6";
 import { BsPeople } from "react-icons/bs";
 import {
@@ -30,7 +30,6 @@ import {
 } from "../_utils/activity";
 import { SmallLicenseBadges } from "./Licenses";
 import { IoDiceOutline } from "react-icons/io5";
-import { DateTime } from "luxon";
 import { SiteContext } from "../Tools/_framework/Paths/SiteHeader";
 
 export type CardContent = {
@@ -43,6 +42,9 @@ export type CardContent = {
   menuItems?: ReactElement;
   blurb?: string;
   indentLevel?: number;
+  libraryEditorName?: string;
+  // This will replace `libraryEditorName` in the avatar
+  libraryEditorAvatarName?: string;
 };
 
 export default function Card({
@@ -52,6 +54,7 @@ export default function Card({
   showPublicStatus = false,
   showActivityFeatures = false,
   showAddButton = false,
+  showLibraryEditor = false,
   indentLevel = 0,
   selectedCards,
   selectCallback,
@@ -59,8 +62,6 @@ export default function Card({
   addDocumentCallback,
   disableSelect = false,
   disableAsSelected = false,
-  // Library relations will only appear if this is non-null
-  libraryRelations = null,
   idx = 1,
 }: {
   cardContent: CardContent;
@@ -69,6 +70,7 @@ export default function Card({
   showPublicStatus?: boolean;
   showActivityFeatures?: boolean;
   showAddButton?: boolean;
+  showLibraryEditor?: boolean;
   indentLevel?: number;
   selectedCards?: string[];
   selectCallback?: (
@@ -81,7 +83,6 @@ export default function Card({
   addDocumentCallback?: (contentId: string) => void;
   disableSelect?: boolean;
   disableAsSelected?: boolean;
-  libraryRelations?: LibraryRelations | null;
   idx?: number;
 }) {
   const {
@@ -95,285 +96,214 @@ export default function Card({
     parent,
   } = cardContent.content;
 
-  const { menuItems, blurb, cardLink, ownerAvatarName, ownerName } =
-    cardContent;
-
+  const {
+    menuItems,
+    blurb,
+    cardLink,
+    ownerAvatarName,
+    ownerName,
+    libraryEditorName,
+    libraryEditorAvatarName,
+  } = cardContent;
   const contentTypeName = contentTypeToName[contentType];
-
   const { user, setAddTo } = useOutletContext<SiteContext>();
 
+  // === SIZE SETTINGS ===
+  const itemHeight = "2.3rem";
+  const indentWidth = 2; // rem
+  const titleWidth = ["7rem", "12rem"];
+  const libraryEditorWidth = "20rem";
+
+  const contentTypeIconSize = "1.6rem";
+  const featureIconSize = "1.2rem";
+  const sharedIconSize = "1.2rem";
+  const variantsIconHeight = "1.6rem";
+  const variantsBadgeWidth = "3.5rem";
+
+  // Select checkbox
+  const selectCheckbox = selectedCards && (
+    <Checkbox
+      data-test="Card Select"
+      margin="5px"
+      isDisabled={disableSelect || disableAsSelected}
+      isChecked={selectedCards.includes(contentId) || disableAsSelected}
+      onChange={(e) => {
+        selectCallback?.({
+          contentId,
+          checked: e.target.checked,
+          type: contentType,
+          name: title,
+          parent,
+          idx,
+        });
+      }}
+    ></Checkbox>
+  );
+
+  // Content type icon
+  const { iconImage, iconColor } = getIconInfo(contentType);
+  const contentTypeIcon = (
+    <Tooltip label={contentTypeName}>
+      <Flex
+        alignItems="center"
+        marginLeft={["0.5rem", "0.5rem"]}
+        marginRight="0.5rem"
+      >
+        <Icon
+          as={iconImage}
+          color={iconColor}
+          width={contentTypeIconSize}
+          height={contentTypeIconSize}
+          aria-label={contentTypeName}
+        />
+      </Flex>
+    </Tooltip>
+  );
+
+  // Feature icons
+  const featureIcons: ReactElement[] = [];
+  if (showActivityFeatures) {
+    for (const [featureCode, featureIcon] of Object.entries(
+      activityFeatureIcons,
+    )) {
+      const id = contentFeatures.findIndex((f) => f.code === featureCode);
+      if (id === -1) {
+        featureIcons.push(<Flex width={featureIconSize} />);
+      } else {
+        featureIcons.push(
+          <Tooltip label={contentFeatures[id].description}>
+            <Flex alignItems="center">
+              <Icon
+                as={featureIcon}
+                color="#666699"
+                width={featureIconSize}
+                height={featureIconSize}
+              />
+            </Flex>
+          </Tooltip>,
+        );
+      }
+    }
+  }
+
+  // Shared icon
+  const sharedIconMarginLeft = "0.2rem";
+  const sharedIcon =
+    showPublicStatus &&
+    (isPublic || isShared ? (
+      <Tooltip label={(isPublic ? "Public " : "Shared ") + contentTypeName}>
+        <Flex alignItems="center" marginLeft={sharedIconMarginLeft}>
+          <Icon
+            as={BsPeople}
+            color="#666699"
+            width={sharedIconSize}
+            height={sharedIconSize}
+          />
+        </Flex>
+      </Tooltip>
+    ) : (
+      <Flex width={sharedIconSize} marginLeft={sharedIconMarginLeft} />
+    ));
+
+  // Title
+  const titleBox = (
+    <Tooltip label={title} placement="bottom-start">
+      <Flex alignItems="center" flexGrow={1} width={titleWidth}>
+        <Text paddingLeft={[".5rem", "1.5rem"]} flexGrow={3} noOfLines={1}>
+          {title}
+        </Text>
+      </Flex>
+    </Tooltip>
+  );
+
+  // Library editor avatar and name
+  const libraryEditorInfo = showLibraryEditor && (
+    <Tooltip label={`Claimed by ${libraryEditorName}`}>
+      <HStack
+        paddingLeft={[".1rem", "1rem"]}
+        alignItems="center"
+        width={libraryEditorWidth}
+      >
+        <Text noOfLines={1}>Claimed by</Text>
+        <Avatar size="xs" name={libraryEditorAvatarName ?? libraryEditorName} />
+        <Text noOfLines={1}>{libraryEditorName}</Text>
+      </HStack>
+    </Tooltip>
+  );
+
+  // Blurb
+  const blurbDisplay = showBlurb && blurb && (
+    <Tooltip label={blurb}>
+      <Flex
+        // width={blurbWidth}
+        flexGrow={1}
+        paddingLeft={[".2rem", "1rem"]}
+        alignItems="center"
+      >
+        <Text noOfLines={1} fontStyle="italic" fontSize="sm">
+          {blurb}
+        </Text>
+      </Flex>
+    </Tooltip>
+  );
+
+  // Avatar and name
+  const ownerInfo = showOwnerName && (
+    <Tooltip label={ownerAvatarName}>
+      <HStack paddingLeft={[".1rem", "1rem"]} alignItems="center">
+        <Avatar size="xs" name={ownerAvatarName ?? ownerName} />
+        <Text noOfLines={1}>{ownerName}</Text>
+      </HStack>
+    </Tooltip>
+  );
+
+  // Variants display
   let numVariants = 1;
   if (cardContent.content.type === "singleDoc") {
     numVariants = cardContent.content.numVariants;
   }
-
-  const titleDisplay = (
-    <Tooltip label={title} placement="bottom-start">
-      <Text noOfLines={1}>{title}</Text>
-    </Tooltip>
-  );
-
-  const menuDisplay = menuItems ? (
-    <Menu>
-      <MenuButton
-        width="16px"
-        height="26px"
-        data-test="Card Menu Button"
-        _focus={{ boxShadow: "outline" }}
-        position="relative"
-        ref={cardContent.menuRef}
+  const variantsDisplay =
+    (contentType !== "select" || !showAddButton) &&
+    ((numVariants ?? 1) > 1 ? (
+      <Tooltip
+        label={`This document has ${numVariants} variants`}
+        placement="bottom-end"
       >
-        <Icon color="#949494" as={FaEllipsisVertical} boxSize={4} />
-      </MenuButton>
-      <MenuList zIndex="1000">{menuItems}</MenuList>
-    </Menu>
-  ) : null;
-
-  let sharedIcon: ReactElement | null = null;
-
-  if (showPublicStatus && (isPublic || isShared)) {
-    sharedIcon = (
-      <Tooltip label={(isPublic ? "Public " : "Shared ") + contentTypeName}>
-        <Box width="20px">
+        <Flex alignItems="center" width={variantsBadgeWidth}>
           <Icon
-            as={BsPeople}
+            as={IoDiceOutline}
             color="#666699"
-            boxSize={5}
-            verticalAlign="middle"
+            width={variantsIconHeight}
+            height={variantsIconHeight}
           />
-        </Box>
+          <Text>{numVariants}</Text>
+        </Flex>
       </Tooltip>
-    );
-  }
+    ) : (
+      <Flex width={variantsBadgeWidth} />
+    ));
 
-  let featureIcons: ReactElement | null = null;
-
-  if (showActivityFeatures) {
-    let isQuestionIcon: ReactElement | null = null;
-    const isQuestionFeature = contentFeatures?.find(
-      (feature) => feature.code === "isQuestion",
-    );
-    if (isQuestionFeature) {
-      isQuestionIcon = (
-        <Tooltip label={isQuestionFeature.description} placement="bottom-end">
-          <Box width="20px">
-            <Icon
-              as={activityFeatureIcons.isQuestion}
-              color="#666699"
-              boxSize={5}
-              verticalAlign="middle"
-            />
-          </Box>
-        </Tooltip>
-      );
-    } else {
-      isQuestionIcon = <Box width="20px" />;
-    }
-
-    let isInteractiveIcon: ReactElement | null = null;
-    const isInteractiveFeature = contentFeatures?.find(
-      (feature) => feature.code === "isInteractive",
-    );
-
-    if (isInteractiveFeature) {
-      isInteractiveIcon = (
-        <Tooltip
-          label={isInteractiveFeature.description}
-          placement="bottom-end"
-        >
-          <Box>
-            <Icon
-              as={activityFeatureIcons.isInteractive}
-              color="#666699"
-              boxSize={5}
-              verticalAlign="middle"
-            />
-          </Box>
-        </Tooltip>
-      );
-    } else {
-      isInteractiveIcon = <Box width="20px" />;
-    }
-
-    let containsVideoIcon: ReactElement | null = null;
-    const containsVideoFeature = contentFeatures?.find(
-      (feature) => feature.code === "containsVideo",
-    );
-    if (containsVideoFeature) {
-      containsVideoIcon = (
-        <Tooltip
-          label={containsVideoFeature.description}
-          placement="bottom-end"
-        >
-          <Box width="20px">
-            <Icon
-              as={activityFeatureIcons.containsVideo}
-              color="#666699"
-              boxSize={5}
-              verticalAlign="middle"
-            />
-          </Box>
-        </Tooltip>
-      );
-    } else {
-      containsVideoIcon = <Box width="20px" />;
-    }
-
-    featureIcons = (
-      <HStack gap={0} width="60px">
-        {isQuestionIcon}
-        {isInteractiveIcon}
-        {containsVideoIcon}
-      </HStack>
-    );
-  }
-
-  let selectCheckbox: ReactElement | null = null;
-
-  if (selectedCards) {
-    selectCheckbox = (
-      <Checkbox
-        data-test="Card Select"
-        margin="5px"
-        isDisabled={disableSelect || disableAsSelected}
-        isChecked={selectedCards.includes(contentId) || disableAsSelected}
-        onChange={(e) => {
-          selectCallback?.({
-            contentId,
-            checked: e.target.checked,
-            type: contentType,
-            name: title,
-            parent,
-            idx,
-          });
-        }}
-      ></Checkbox>
-    );
-  }
-
-  //Note: when we have a menu width 140px becomes 120px
-  const cardWidth = `calc(100% - ${30 * indentLevel}px)`;
-  const cardHeight = "40px";
-  const leftMargin = `${30 * indentLevel}px`;
-
-  const { iconImage, iconColor } = getIconInfo(contentType);
-
-  const initialIcon = (
-    <Tooltip label={contentTypeName}>
-      <Box>
-        <Icon
-          as={iconImage}
-          color={iconColor}
-          boxSizing="content-box"
-          width="24px"
-          height={cardHeight}
-          paddingLeft={["2px", "5px"]}
-          verticalAlign="middle"
-          aria-label={contentTypeName}
-        />
-      </Box>
-    </Tooltip>
-  );
-
-  const blurbDisplay =
-    showBlurb && blurb ? (
-      <Tooltip label={blurb}>
-        <Box
-          paddingLeft={[".2em", "1em"]}
-          width="100%"
-          height={cardHeight}
-          alignContent="center"
-          fontSize="sm"
-        >
-          <Box noOfLines={2} fontStyle="italic">
-            {blurb}
-          </Box>
-        </Box>
-      </Tooltip>
-    ) : null;
-
-  const ownerInfo = showOwnerName ? (
-    <Box
-      paddingLeft={[".1em", "1em"]}
-      width="100%"
-      height={cardHeight}
-      alignContent="center"
-    >
-      <Tooltip label={ownerAvatarName}>
-        <HStack>
-          <Avatar size="xs" name={ownerAvatarName ?? ownerName} />
-          <Text noOfLines={1}>{ownerName}</Text>
-        </HStack>
-      </Tooltip>
-    </Box>
-  ) : null;
-
-  let activityWidth = 0;
-  if (showActivityFeatures) {
-    activityWidth += 60;
-    if (showPublicStatus) {
-      activityWidth += 24;
-    }
-  } else if (showPublicStatus) {
-    activityWidth += 20;
-  }
-
-  const libraryRequestDateRaw = libraryRelations?.activity?.reviewRequestDate;
-  const libraryRequestDateFormatted = libraryRequestDateRaw
-    ? DateTime.fromISO(libraryRequestDateRaw).toLocaleString(DateTime.DATE_MED)
-    : null;
-  const libraryRequestDate = libraryRequestDateFormatted ? (
-    <Box flexGrow={1} alignContent="center">
-      <Text>Pending since {libraryRequestDateFormatted}</Text>
-    </Box>
-  ) : null;
+  // License badges;
+  // We'll show a particular if:
+  // 1. it's public or shared
+  // 2. `showLibraryEditor` is true -- we're assuming editors want to see license
+  const showThisBage = license && (isPublic || isShared || showLibraryEditor);
 
   const licenseBadges = (
-    <Show above="xl">
-      <Box
-        height={cardHeight}
-        width="80px"
-        alignContent="center"
-        marginRight="10px"
-      >
-        {license && (isPublic || isShared) ? (
-          <SmallLicenseBadges license={license} suppressLink={true} />
-        ) : null}
-      </Box>
-    </Show>
+    <Flex alignItems="center" marginLeft="3rem">
+      {showThisBage ? (
+        <SmallLicenseBadges license={license} suppressLink={true} />
+      ) : (
+        // Same width as `SmallLicenseBadges`
+        <Flex width="80px" />
+      )}
+    </Flex>
   );
 
-  const variantsDisplay =
-    contentType !== "select" || !showAddButton ? (
-      <Show above="lg">
-        <Flex height={cardHeight} width="60px" alignContent="center">
-          {(numVariants ?? 1) > 1 ? (
-            <Box alignContent="center">
-              <Tooltip
-                label={`This document has ${numVariants} variants`}
-                placement="bottom-end"
-              >
-                <Badge>
-                  {" "}
-                  <Icon
-                    as={IoDiceOutline}
-                    color="#666699"
-                    boxSize={5}
-                    verticalAlign="middle"
-                  />
-                  {numVariants}
-                </Badge>
-              </Tooltip>
-            </Box>
-          ) : null}
-        </Flex>
-      </Show>
-    ) : null;
-
-  const addMenu =
-    contentType === "select" && showAddButton ? (
+  const addMenu = contentType === "select" && showAddButton && (
+    <>
       <Flex
-        height={cardHeight}
+        // height={cardHeight}
         width="60px"
         alignItems="center"
         justifyContent="center"
@@ -417,15 +347,32 @@ export default function Card({
           </MenuList>
         </Menu>
       </Flex>
-    ) : null;
+    </>
+  );
 
-  const card = (
+  const menuMarginLeft = ["0em", "3em"];
+  const menuDisplay = menuItems && (
+    <Flex ml={menuMarginLeft}>
+      <Menu>
+        <MenuButton
+          data-test="Card Menu Button"
+          _focus={{ boxShadow: "outline" }}
+          ref={cardContent.menuRef}
+        >
+          <Flex alignItems="center">
+            <Icon color="#949494" as={FaEllipsisVertical} />
+          </Flex>
+        </MenuButton>
+        <MenuList zIndex="1000">{menuItems}</MenuList>
+      </Menu>
+    </Flex>
+  );
+
+  return (
     <ChakraCard
-      width={cardWidth}
-      height={cardHeight}
       p="0"
       m="0"
-      marginLeft={leftMargin}
+      marginLeft={`${indentLevel * indentWidth}rem`}
       data-test="Content Card"
       variant="unstyled"
       borderBottom="2px solid gray"
@@ -433,58 +380,40 @@ export default function Card({
       _hover={{ backgroundColor: cardLink ? "#eeeeee" : "ffffff" }}
     >
       <CardBody>
-        <HStack gap={0}>
+        <Flex height={itemHeight} alignItems="center">
+          {/* Left-aligned, not main link */}
           {selectCheckbox}
           <ChakraLink
             as={ReactRouterLink}
             to={cardLink}
-            width={menuItems ? "calc(100% - 16px)" : "100%"}
             _hover={{ textDecoration: "none" }}
             cursor={cardLink ? "pointer" : "default"}
+            flexGrow={1}
           >
-            <Flex width="100%">
-              <Box m="0" p="0" width={["26px", "29px"]}>
-                {initialIcon}
-              </Box>
-              <Box
-                width={`${activityWidth}px`}
-                paddingLeft={[".1em", "0.5em"]}
-                height={cardHeight}
-                alignContent="center"
-                boxSizing="content-box"
-              >
-                <HStack gap="4px" width={`${activityWidth}px`}>
-                  {featureIcons}
-                  {sharedIcon}
-                </HStack>
-              </Box>
-              <Box
-                paddingLeft={[".1em", "0.5em"]}
-                paddingRight={[".1em", "1em"]}
-                width="1px"
-                flexGrow={3}
-                height={cardHeight}
-                alignContent="center"
-              >
-                {titleDisplay}
-              </Box>
-              {libraryRequestDate}
-              <Box
-                width={showBlurb || showOwnerName ? `calc(40% - 50px)` : "0px"}
-              >
-                {blurbDisplay}
-                {ownerInfo}
-              </Box>
+            <Flex>
+              {contentTypeIcon}
+              <Hide below="md">{featureIcons}</Hide>
+              {/* <Hide below="lg">{featureIcons}</Hide> */}
+              {sharedIcon}
+              {titleBox}
+              <Spacer />
+              {libraryEditorInfo}
+              <Spacer />
+              <Hide below="sm">{blurbDisplay}</Hide>
+              <Spacer />
+              {ownerInfo}
+              <Spacer />
+              <Show above="lg">{variantsDisplay}</Show>
+              {/* <Hide below="xl">{licenseBadges}</Hide> */}
               {licenseBadges}
-              {variantsDisplay}
+              {showAddButton && <Spacer />}
               {addMenu}
             </Flex>
           </ChakraLink>
+          {/* Right-aligned, not main link */}
           {menuDisplay}
-        </HStack>
+        </Flex>
       </CardBody>
     </ChakraCard>
   );
-
-  return card;
 }

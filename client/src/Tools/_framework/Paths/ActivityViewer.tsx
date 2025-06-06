@@ -542,7 +542,7 @@ export function ActivityViewer() {
                       size="sm"
                       colorScheme="blue"
                       as={ReactRouterLink}
-                      to={`/activityViewer/${libraryRelations.activity.activityContentId}`}
+                      to={`/activityEditor/${libraryRelations.activity.activityContentId}`}
 
                       // style={{ color: "var(--mainBlue)" }}
                     >
@@ -640,8 +640,8 @@ export function ActivityViewer() {
                   activityData.license.isComposition ? (
                     <>
                       <p>
-                        <strong>{activityData.name}</strong> by{" "}
-                        {ownerName} is shared with these licenses:
+                        <strong>{activityData.name}</strong> by {ownerName} is
+                        shared with these licenses:
                       </p>
                       <List spacing="20px" marginTop="10px">
                         {activityData.license.composedOf.map((comp) => (
@@ -659,8 +659,8 @@ export function ActivityViewer() {
                   ) : (
                     <>
                       <p>
-                        <strong>{activityData.name}</strong> by{" "}
-                        {ownerName} is shared using the license:
+                        <strong>{activityData.name}</strong> by {ownerName} is
+                        shared using the license:
                       </p>
                       <List marginTop="10px">
                         <DisplayLicenseItem
@@ -671,10 +671,9 @@ export function ActivityViewer() {
                   )
                 ) : (
                   <p>
-                    <strong>{activityData.name}</strong> by {ownerName}{" "}
-                    is shared, but a license was not specified. Contact the
-                    author to determine in what ways you can reuse this
-                    activity.
+                    <strong>{activityData.name}</strong> by {ownerName} is
+                    shared, but a license was not specified. Contact the author
+                    to determine in what ways you can reuse this activity.
                   </p>
                 )}
               </Box>

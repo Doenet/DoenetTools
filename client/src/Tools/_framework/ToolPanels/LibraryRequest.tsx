@@ -1,13 +1,6 @@
 import React from "react";
 import { FetcherWithComponents } from "react-router";
-import {
-  Box,
-  Button,
-  Center,
-  Heading,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, Button, Center, Heading, Text, VStack } from "@chakra-ui/react";
 import axios from "axios";
 import {
   Content,
@@ -15,7 +8,7 @@ import {
   LibraryRelations,
 } from "../../../_utils/types";
 import { ChatConversation } from "../../../Widgets/ChatConversation";
-import { createNameNoCurateTag } from "../../../_utils/names";
+import { createNameNoTag } from "../../../_utils/names";
 import { DateTime } from "luxon";
 import {
   getLibraryStatusDescription,
@@ -99,7 +92,7 @@ export function LibraryRequest({
             canComment={true}
             messages={libraryComments.map((c) => {
               return {
-                user: createNameNoCurateTag(c.user),
+                user: createNameNoTag(c.user),
                 userIsMe: c.isMe,
                 message: c.comment,
                 dateTime: DateTime.fromISO(c.dateTime),

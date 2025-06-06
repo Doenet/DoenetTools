@@ -16,7 +16,7 @@ import {
   Wrap,
 } from "@chakra-ui/react";
 import React, { ReactElement } from "react";
-import { createNameNoCurateTag } from "../../../_utils/names";
+import { createNameNoTag } from "../../../_utils/names";
 import { CloseIcon } from "@chakra-ui/icons";
 import { activityFeatureIcons } from "../../../_utils/activity";
 import {
@@ -215,7 +215,7 @@ export function FilterPanel({
     }
 
     if (authorInfo) {
-      const authorName = createNameNoCurateTag(authorInfo);
+      const authorName = createNameNoTag(authorInfo);
       clearFilterButtons.push(
         <Tooltip
           label={`Clear filter: ${authorName}`}
@@ -695,7 +695,7 @@ export function FilterPanel({
               newSearch = "?";
             }
             newSearch += `author=${u.userId}`;
-            const authorName = createNameNoCurateTag(u);
+            const authorName = createNameNoTag(u);
             return (
               <ListItem key={u.userId}>
                 <ChakraLink as={ReactRouterLink} to={`./${newSearch}`}>
@@ -711,7 +711,7 @@ export function FilterPanel({
       </>
     );
   } else if (authorInfo) {
-    const authorName = createNameNoCurateTag(authorInfo);
+    const authorName = createNameNoTag(authorInfo);
     authorBrowseSection = (
       <>
         {" "}

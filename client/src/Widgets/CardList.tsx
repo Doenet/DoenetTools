@@ -2,7 +2,7 @@ import React, { ReactElement } from "react";
 import { Text, Icon, Box, Flex } from "@chakra-ui/react";
 import Card, { CardContent } from "./Card";
 import { MdInfoOutline } from "react-icons/md";
-import { ContentDescription, LibraryRelations } from "../_utils/types";
+import { ContentDescription } from "../_utils/types";
 
 export default function CardList({
   content,
@@ -11,12 +11,12 @@ export default function CardList({
   showPublicStatus = false,
   showActivityFeatures = false,
   showAddButton = false,
+  showLibraryEditor = false,
   emptyMessage,
   selectedCards,
   setSelectedCards,
   disableSelectFor,
   disableAsSelectedFor,
-  libraryRelations = [],
   isAuthor = false,
   addDocumentCallback,
 }: {
@@ -34,12 +34,12 @@ export default function CardList({
   showPublicStatus?: boolean;
   showActivityFeatures?: boolean;
   showAddButton?: boolean;
+  showLibraryEditor?: boolean;
   emptyMessage: string;
   selectedCards?: ContentDescription[];
   setSelectedCards?: React.Dispatch<React.SetStateAction<ContentDescription[]>>;
   disableSelectFor?: string[];
   disableAsSelectedFor?: string[];
-  libraryRelations?: LibraryRelations[];
   isAuthor?: boolean;
   addDocumentCallback?: (contentId: string) => void;
 }) {
@@ -139,6 +139,7 @@ export default function CardList({
           showPublicStatus={showPublicStatus}
           showActivityFeatures={showActivityFeatures}
           showAddButton={showAddButton}
+          showLibraryEditor={showLibraryEditor}
           indentLevel={cardContent.indentLevel}
           selectedCards={
             selectedCardsFiltered
@@ -154,7 +155,6 @@ export default function CardList({
           disableAsSelected={disableAsSelectedFor?.includes(
             cardContent.content.contentId,
           )}
-          libraryRelations={libraryRelations[idx]}
           idx={idx}
         />
       );

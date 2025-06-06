@@ -31,7 +31,7 @@ import { NavLink } from "react-router";
 import RouterLogo from "../RouterLogo";
 import { ExternalLinkIcon, HamburgerIcon } from "@chakra-ui/icons";
 import axios from "axios";
-import { createNameNoCurateTag } from "../../../_utils/names";
+import { createNameNoTag } from "../../../_utils/names";
 import { ContentDescription } from "../../../_utils/types";
 
 export type User =
@@ -307,23 +307,23 @@ export function SiteHeader() {
                       <MenuButton>
                         <Avatar
                           size="sm"
-                          name={`${user.isAnonymous ? "?" : createNameNoCurateTag(user)}`}
+                          name={`${user.isAnonymous ? "?" : createNameNoTag(user)}`}
                         />
                       </MenuButton>
                       <MenuList>
                         <VStack mb="20px">
                           <Avatar
                             size="xl"
-                            name={`${user.isAnonymous ? "?" : createNameNoCurateTag(user)}`}
+                            name={`${user.isAnonymous ? "?" : createNameNoTag(user)}`}
                           />
                           <Text>
                             {user.isAnonymous
                               ? "[Anonymous]"
-                              : createNameNoCurateTag(user)}
+                              : createNameNoTag(user)}
                           </Text>
                           <Text>
                             {user.isAnonymous
-                              ? `Pseudonym: ${createNameNoCurateTag(user)}`
+                              ? `Pseudonym: ${createNameNoTag(user)}`
                               : user.email}
                           </Text>
                           {user.isAnonymous ? (

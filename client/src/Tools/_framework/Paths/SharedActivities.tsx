@@ -22,7 +22,7 @@ import {
 
 import { CardContent } from "../../../Widgets/Card";
 import axios from "axios";
-import { createNameNoCurateTag } from "../../../_utils/names";
+import { createNameNoTag } from "../../../_utils/names";
 import { ContentDescription, Content } from "../../../_utils/types";
 import { DisplayLicenseItem } from "../../../Widgets/Licenses";
 import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
@@ -115,7 +115,7 @@ export function SharedActivities() {
   useEffect(() => {
     document.title = parent
       ? `Folder ${parent.name}`
-      : `Shared Activities of ${createNameNoCurateTag(owner)} - Doenet`;
+      : `Shared Activities of ${createNameNoTag(owner)} - Doenet`;
   }, [owner, parent]);
 
   const fetcher = useFetcher();
@@ -168,7 +168,7 @@ export function SharedActivities() {
   const headingText = parent ? (
     <>Folder: {parent.name}</>
   ) : (
-    `Shared Activities of ${createNameNoCurateTag(owner)}`
+    `Shared Activities of ${createNameNoTag(owner)}`
   );
 
   const heading = (
@@ -197,7 +197,7 @@ export function SharedActivities() {
               &lt; Back to{" "}
               {parent.parent
                 ? parent.parent.name
-                : `Shared Activities of ${createNameNoCurateTag(owner)}`}
+                : `Shared Activities of ${createNameNoTag(owner)}`}
             </Link>
           ) : null}
         </Box>

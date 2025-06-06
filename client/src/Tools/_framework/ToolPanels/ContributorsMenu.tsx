@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router";
 import {
-  createNameNoCurateTag,
+  createNameNoTag,
   createNameCheckCurateTag,
 } from "../../../_utils/names";
 import { Content, ActivityRemixItem } from "../../../_utils/types";
@@ -30,7 +30,7 @@ export default function ContributorsMenu({
   if (!activity.owner) {
     return null;
   }
-  const ownerAvatarName = createNameNoCurateTag(activity.owner);
+  const ownerAvatarName = createNameNoTag(activity.owner);
   const ownerName = createNameCheckCurateTag(activity.owner);
 
   const byLine = (
@@ -92,7 +92,7 @@ export default function ContributorsMenu({
         margin="6px 12px"
         border="0"
         size="sm"
-        name={createNameNoCurateTag(contrib_hist.originContent.owner)}
+        name={createNameNoTag(contrib_hist.originContent.owner)}
       />
     )),
   );
@@ -142,7 +142,7 @@ export default function ContributorsMenu({
             const activityRef = `/activityViewer/${contrib_hist.originContent.contentId}`;
             const activityLabel = `Go to ${contrib_hist.originContent.name}`;
             const userRef = `/sharedActivities/${contrib_hist.originContent.owner.userId}`;
-            const userLabel = `Go to ${createNameNoCurateTag(contrib_hist.originContent.owner)}'s shared activities`;
+            const userLabel = `Go to ${createNameNoTag(contrib_hist.originContent.owner)}'s shared activities`;
             return (
               <MenuItem
                 key={`mi${i}`}

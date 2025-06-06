@@ -38,7 +38,7 @@ import Searchbar from "../../../Widgets/SearchBar";
 import { Form, useFetcher } from "react-router";
 import { CardContent } from "../../../Widgets/Card";
 import {
-  createNameNoCurateTag,
+  createNameNoTag,
   createNameCheckCurateTag,
 } from "../../../_utils/names";
 import {
@@ -388,7 +388,7 @@ export function Explore() {
         </MenuItem>
       );
 
-      const ownerAvatarName = createNameNoCurateTag(owner!);
+      const ownerAvatarName = createNameNoTag(owner!);
       const ownerName = createNameCheckCurateTag(owner!);
 
       return {
@@ -426,7 +426,7 @@ export function Explore() {
   let authorMatches: ReactElement | null = null;
 
   if (authorInfo) {
-    const authorName = createNameNoCurateTag(authorInfo);
+    const authorName = createNameNoTag(authorInfo);
     authorMatches = (
       <Flex>
         Currently filtered by {authorName}
@@ -453,7 +453,7 @@ export function Explore() {
         </Heading>
         <List>
           {matchedAuthors.map((author) => {
-            const authorName = createNameNoCurateTag(author);
+            const authorName = createNameNoTag(author);
 
             return (
               <ListItem key={author.userId} marginTop="5px">
