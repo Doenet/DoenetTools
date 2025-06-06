@@ -1,28 +1,36 @@
 import express from "express";
-import { queryLoggedIn } from "../middleware/queryMiddleware";
 import {
-  addDraftToLibrary,
+  queryLoggedIn,
+  queryLoggedInNoArguments,
+} from "../middleware/queryMiddleware";
+import {
+  addComment,
+  claimOwnershipOfReview,
   createCurationFolder,
-  deleteDraftFromLibrary,
+  getComments,
   getCurationFolderContent,
-  getLibraryStatus,
-  markLibraryRequestNeedsRevision,
-  modifyCommentsOfLibraryRequest,
+  getCurationQueue,
   publishActivityToLibrary,
+  rejectActivity,
   searchCurationFolderContent,
+  suggestToBeCurated,
   unpublishActivityFromLibrary,
 } from "../query/curate";
 import {
-  updateLibraryInfoSchema,
-  publishSchema,
+  addCommentSchema,
   searchCurationFolderContentSchema,
-  sourceIdSchema,
   createCurationFolderSchema,
   curationParentIdSchema,
+  getCommentsSchema,
 } from "../schemas/curateSchema";
 import { contentIdSchema } from "../schemas/contentSchema";
 
 export const curateRouter = express.Router();
+
+curateRouter.get(
+  "/getCurationQueue",
+  queryLoggedInNoArguments(getCurationQueue),
+);
 
 curateRouter.get(
   "/getCurationFolderContent",
@@ -44,29 +52,24 @@ curateRouter.get(
   queryLoggedIn(searchCurationFolderContent, searchCurationFolderContentSchema),
 );
 
-curateRouter.get(
-  "/getLibraryStatus",
-  queryLoggedIn(getLibraryStatus, sourceIdSchema),
-);
-
-curateRouter.post(
-  "/addDraftToLibrary",
-  queryLoggedIn(addDraftToLibrary, contentIdSchema),
-);
-
-curateRouter.post(
-  "/deleteDraftFromLibrary",
-  queryLoggedIn(deleteDraftFromLibrary, contentIdSchema),
-);
-
 curateRouter.post(
   "/createCurationFolder",
   queryLoggedIn(createCurationFolder, createCurationFolderSchema),
 );
 
 curateRouter.post(
+  "/suggestToBeCurated",
+  queryLoggedIn(suggestToBeCurated, contentIdSchema),
+);
+
+curateRouter.post(
+  "/claimOwnershipOfReview",
+  queryLoggedIn(claimOwnershipOfReview, contentIdSchema),
+);
+
+curateRouter.post(
   "/publishActivityToLibrary",
-  queryLoggedIn(publishActivityToLibrary, publishSchema),
+  queryLoggedIn(publishActivityToLibrary, contentIdSchema),
 );
 
 curateRouter.post(
@@ -75,11 +78,13 @@ curateRouter.post(
 );
 
 curateRouter.post(
-  "/modifyCommentsOfLibraryRequest",
-  queryLoggedIn(modifyCommentsOfLibraryRequest, updateLibraryInfoSchema),
+  "/rejectActivity",
+  queryLoggedIn(rejectActivity, contentIdSchema),
 );
 
-curateRouter.post(
-  "/markLibraryRequestNeedsRevision",
-  queryLoggedIn(markLibraryRequestNeedsRevision, updateLibraryInfoSchema),
+curateRouter.post("/addComment", queryLoggedIn(addComment, addCommentSchema));
+
+curateRouter.get(
+  "/getComments/:contentId",
+  queryLoggedIn(getComments, getCommentsSchema),
 );

@@ -37,7 +37,10 @@ import {
 import Searchbar from "../../../Widgets/SearchBar";
 import { Form, useFetcher } from "react-router";
 import { CardContent } from "../../../Widgets/Card";
-import { createFullName } from "../../../_utils/names";
+import {
+  createNameNoTag,
+  createNameCheckCurateTag,
+} from "../../../_utils/names";
 import {
   ContentDescription,
   ContentFeature,
@@ -385,10 +388,14 @@ export function Explore() {
         </MenuItem>
       );
 
+      const ownerAvatarName = createNameNoTag(owner!);
+      const ownerName = createNameCheckCurateTag(owner!);
+
       return {
         contentId,
         content: itemObj,
-        ownerName: owner !== undefined ? createFullName(owner) : "",
+        ownerAvatarName,
+        ownerName,
         cardLink,
         menuItems,
       };
@@ -419,7 +426,7 @@ export function Explore() {
   let authorMatches: ReactElement | null = null;
 
   if (authorInfo) {
-    const authorName = createFullName(authorInfo);
+    const authorName = createNameNoTag(authorInfo);
     authorMatches = (
       <Flex>
         Currently filtered by {authorName}
@@ -446,7 +453,7 @@ export function Explore() {
         </Heading>
         <List>
           {matchedAuthors.map((author) => {
-            const authorName = createFullName(author);
+            const authorName = createNameNoTag(author);
 
             return (
               <ListItem key={author.userId} marginTop="5px">
@@ -896,13 +903,13 @@ export function Explore() {
           Curated ({intWithCommas(totalCount.numCurated || 0)})
         </Tab>
         <Tab data-test="Community Tab">
-          Com&shy;munity ({intWithCommas(totalCount.numCommunity || 0)})
+          Community ({intWithCommas(totalCount.numCommunity || 0)})
         </Tab>
         <Tab data-test="Authors Tab" hidden={!q}>
           Authors ({intWithCommas(matchedAuthors?.length || 0)})
         </Tab>
         <Tab data-test="Classifications Tab" hidden={!q}>
-          Classifi&shy;cations ({intWithCommas(totalMatchedClassifications)})
+          Classifications ({intWithCommas(totalMatchedClassifications)})
         </Tab>
       </TabList>
 

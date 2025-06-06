@@ -13,10 +13,10 @@ import {
 } from "./Tools/_framework/Paths/Explore";
 
 import {
-  loader as curationLoader,
-  action as curationAction,
-  Curation,
-} from "./Tools/_framework/Paths/Curation";
+  loader as curateLoader,
+  action as curateAction,
+  Curate,
+} from "./Tools/_framework/Paths/Curate";
 
 import {
   loader as siteLoader,
@@ -115,6 +115,11 @@ import {
   loader as changeNameLoader,
   action as changeNameAction,
 } from "./Tools/_framework/Paths/ChangeName";
+import {
+  LibraryActivities,
+  loader as libraryActivitiesLoader,
+  action as libraryActivitiesAction,
+} from "./Tools/_framework/Paths/LibraryActivities";
 
 const theme = extendTheme({
   fonts: {
@@ -233,17 +238,24 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "curation",
-        loader: curationLoader,
-        action: curationAction,
-        element: <Curation />,
+        path: "curate",
+        loader: curateLoader,
+        action: curateAction,
+        element: <Curate />,
         errorElement: <ErrorPage />,
       },
       {
-        path: "curation/:parentId",
-        loader: curationLoader,
-        action: curationAction,
-        element: <Curation />,
+        path: "libraryActivities",
+        loader: libraryActivitiesLoader,
+        action: libraryActivitiesAction,
+        element: <LibraryActivities />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "libraryActivities/:parentId",
+        loader: libraryActivitiesLoader,
+        action: libraryActivitiesAction,
+        element: <LibraryActivities />,
         errorElement: <ErrorPage />,
       },
       {

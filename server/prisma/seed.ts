@@ -53,6 +53,16 @@ async function main() {
       isAdmin: true,
     },
   });
+  await prisma.users.upsert({
+    where: { email: "admin2@doenet.org" },
+    update: {},
+    create: {
+      email: "admin2@doenet.org",
+      firstNames: "Second",
+      lastNames: "Admin",
+      isAdmin: true,
+    },
+  });
 
   await prisma.promotedContentGroups.upsert({
     where: { groupName: "Homepage" },

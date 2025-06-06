@@ -11,6 +11,7 @@ export default function CardList({
   showPublicStatus = false,
   showActivityFeatures = false,
   showAddButton = false,
+  showLibraryEditor = false,
   emptyMessage,
   selectedCards,
   setSelectedCards,
@@ -33,6 +34,7 @@ export default function CardList({
   showPublicStatus?: boolean;
   showActivityFeatures?: boolean;
   showAddButton?: boolean;
+  showLibraryEditor?: boolean;
   emptyMessage: string;
   selectedCards?: ContentDescription[];
   setSelectedCards?: React.Dispatch<React.SetStateAction<ContentDescription[]>>;
@@ -137,6 +139,7 @@ export default function CardList({
           showPublicStatus={showPublicStatus}
           showActivityFeatures={showActivityFeatures}
           showAddButton={showAddButton}
+          showLibraryEditor={showLibraryEditor}
           indentLevel={cardContent.indentLevel}
           selectedCards={
             selectedCardsFiltered

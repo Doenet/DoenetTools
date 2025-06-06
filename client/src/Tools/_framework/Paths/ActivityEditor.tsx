@@ -54,9 +54,11 @@ import { ShareDrawer, shareDrawerActions } from "../ToolPanels/ShareDrawer";
 import {
   Content,
   ContentFeature,
-  ContentRevision,
   DoenetmlVersion,
   License,
+  ContentDescription,
+  LibraryRelations,
+  ContentRevision,
 } from "../../../_utils/types";
 import {
   ActivityDoenetMLEditor,
@@ -139,6 +141,7 @@ export async function loader({ params }: { params: any }) {
       activity: activityData,
       availableFeatures,
       revisions,
+      libraryRelations,
     },
   } = await axios.get(
     `/api/activityEditView/getActivityEditorData/${params.contentId}`,
@@ -187,6 +190,7 @@ export async function loader({ params }: { params: any }) {
       allDoenetmlVersions,
       allLicenses,
       availableFeatures,
+      libraryRelations,
       revisions,
     };
   } else {
@@ -202,6 +206,7 @@ export async function loader({ params }: { params: any }) {
       allDoenetmlVersions,
       allLicenses,
       availableFeatures,
+      libraryRelations,
       revisions,
     };
   }
@@ -261,6 +266,8 @@ export function ActivityEditor() {
     allLicenses: License[];
     availableFeatures: ContentFeature[];
     activityData: Content;
+    addTo: ContentDescription | undefined;
+    libraryRelations: LibraryRelations;
     revisions: ContentRevision[];
   } & (
     | {
@@ -280,6 +287,7 @@ export function ActivityEditor() {
     allDoenetmlVersions,
     allLicenses,
     availableFeatures,
+    libraryRelations,
     revisions,
   } = data;
 
@@ -343,6 +351,8 @@ export function ActivityEditor() {
 
   const authorMode = user?.isAuthor || data.type !== "singleDoc";
 
+  const isLibraryActivity = Boolean(libraryRelations.source);
+
   const [mode, setMode] = useState<"Edit" | "View">(
     authorMode ? "Edit" : "View",
   );
@@ -350,8 +360,6 @@ export function ActivityEditor() {
   useEffect(() => {
     setMode(authorMode ? "Edit" : "View");
   }, [authorMode]);
-
-  const isLibraryActivity = Boolean(activityData.libraryActivityInfo);
 
   useEffect(() => {
     document.title = `${activityData.name} - Doenet`;
@@ -453,6 +461,7 @@ export function ActivityEditor() {
         setSettingsDisplayTab={setSettingsDisplayTab}
         setHighlightRename={setHighlightRename}
         headerHeight={`${readOnly ? 120 : 80}px`}
+        inLibrary={isLibraryActivity}
       />
     );
   }
@@ -468,18 +477,19 @@ export function ActivityEditor() {
       availableFeatures={availableFeatures}
       displayTab={displaySettingsTab}
       highlightRename={highlightRename}
+      isInLibrary={libraryRelations.source !== undefined}
     />
   ) : null;
 
   const shareDrawer = contentData ? (
     <ShareDrawer
-      inCurationLibrary={isLibraryActivity}
       isOpen={sharingIsOpen}
       onClose={sharingOnClose}
       finalFocusRef={finalFocusRef}
       fetcher={fetcher}
       contentData={contentData}
       allLicenses={allLicenses}
+      libraryRelations={libraryRelations}
     />
   ) : null;
 
@@ -680,6 +690,7 @@ export function ActivityEditor() {
                       aria-label="open curation controls"
                       onClick={() => {
                         finalFocusRef.current = curateBtnRef.current;
+                        setSettingsContentId(activityData.contentId);
                         sharingOnOpen();
                       }}
                       ref={curateBtnRef}
@@ -746,7 +757,7 @@ export function ActivityEditor() {
                 {data.type === "singleDoc" && authorMode && (
                   <Tooltip
                     hasArrow
-                    label="Open document history"
+                    label="Open Document History"
                     placement="bottom-end"
                   >
                     <Button
@@ -754,7 +765,7 @@ export function ActivityEditor() {
                       size="sm"
                       pr={{ base: "0px", lg: "10px" }}
                       leftIcon={<MdHistory size={20} />}
-                      aria-label="Open document history"
+                      aria-label="Open Document History"
                       onClick={() => {
                         historyOnOpen();
                       }}

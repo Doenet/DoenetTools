@@ -47,3 +47,16 @@ export async function addClassificationsByNames({
     });
   }
 }
+
+export async function getActivityIdFromSourceId(sourceId: Uint8Array) {
+  const result = await prisma.libraryActivityInfos.findUniqueOrThrow({
+    where: {
+      sourceId,
+    },
+    select: {
+      contentId: true,
+    },
+  });
+
+  return result.contentId;
+}

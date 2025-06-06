@@ -14,7 +14,10 @@ import {
   HStack,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router";
-import { createFullName } from "../../../_utils/names";
+import {
+  createNameNoTag,
+  createNameCheckCurateTag,
+} from "../../../_utils/names";
 import { Content, ActivityRemixItem } from "../../../_utils/types";
 
 export default function ContributorsMenu({
@@ -27,20 +30,22 @@ export default function ContributorsMenu({
   if (!activity.owner) {
     return null;
   }
+  const ownerAvatarName = createNameNoTag(activity.owner);
+  const ownerName = createNameCheckCurateTag(activity.owner);
 
   const byLine = (
     <>
       by{" "}
       <Tooltip
-        label={`Go to ${createFullName(activity.owner)}'s shared activities`}
+        label={`Go to ${ownerAvatarName}'s shared activities`}
         openDelay={1000}
       >
         <ChakraLink
           as={ReactRouterLink}
           to={`/sharedActivities/${activity.owner.userId}`}
-          aria-label={`Go to ${createFullName(activity.owner)}'s shared activities`}
+          aria-label={`Go to ${ownerAvatarName}'s shared activities`}
         >
-          {createFullName(activity.owner)}
+          {ownerName}
         </ChakraLink>
       </Tooltip>
     </>
@@ -61,7 +66,9 @@ export default function ContributorsMenu({
             aria-label={`Go to ${contributorHistory[0].originContent.name}`}
           >
             {contributorHistory[0].originContent.name} by{" "}
-            {createFullName(contributorHistory[0].originContent.owner)}
+            {createNameCheckCurateTag(
+              contributorHistory[0].originContent.owner,
+            )}
           </ChakraLink>
         </Tooltip>
       </>
@@ -74,7 +81,7 @@ export default function ContributorsMenu({
       margin="6px 12px"
       border="0"
       size="sm"
-      name={createFullName(activity.owner)}
+      name={ownerAvatarName}
     />,
   ];
 
@@ -85,7 +92,7 @@ export default function ContributorsMenu({
         margin="6px 12px"
         border="0"
         size="sm"
-        name={createFullName(contrib_hist.originContent.owner)}
+        name={createNameNoTag(contrib_hist.originContent.owner)}
       />
     )),
   );
@@ -112,13 +119,13 @@ export default function ContributorsMenu({
             cursor="default"
           >
             <Tooltip
-              label={`Go to ${createFullName(activity.owner)}'s shared activities`}
+              label={`Go to ${ownerAvatarName}'s shared activities`}
               openDelay={1000}
             >
               <ChakraLink
                 as={ReactRouterLink}
                 to={`/sharedActivities/${activity.owner.userId}`}
-                aria-label={`Go to ${createFullName(activity.owner)}'s shared activities`}
+                aria-label={`Go to ${ownerAvatarName}'s shared activities`}
               >
                 {avatars[0]}{" "}
               </ChakraLink>
@@ -127,15 +134,15 @@ export default function ContributorsMenu({
               <Text noOfLines={1} maxWidth="400px">
                 {activity.name}
               </Text>{" "}
-              <Text>by {createFullName(activity.owner)}</Text>
+              <Text>by {ownerName}</Text>
             </HStack>
           </MenuItem>
           {contributorHistory.map((contrib_hist, i) => {
-            const menuText = `${contrib_hist.originContent.name} by ${createFullName(contrib_hist.originContent.owner)}`;
+            const menuText = `${contrib_hist.originContent.name} by ${createNameCheckCurateTag(contrib_hist.originContent.owner)}`;
             const activityRef = `/activityViewer/${contrib_hist.originContent.contentId}`;
             const activityLabel = `Go to ${contrib_hist.originContent.name}`;
             const userRef = `/sharedActivities/${contrib_hist.originContent.owner.userId}`;
-            const userLabel = `Go to ${createFullName(contrib_hist.originContent.owner)}'s shared activities`;
+            const userLabel = `Go to ${createNameNoTag(contrib_hist.originContent.owner)}'s shared activities`;
             return (
               <MenuItem
                 key={`mi${i}`}

@@ -26,7 +26,7 @@ import {
 import axios from "axios";
 
 import { contentTypeToName, getIconInfo } from "../../../_utils/activity";
-import { createFullName } from "../../../_utils/names";
+import { createNameNoTag } from "../../../_utils/names";
 import {
   BasicUpdateActionsModal,
   basicUpdateActionsModalActions,
@@ -188,7 +188,7 @@ export function DoenetMLComparison() {
         </Text>
         by
         <Text noOfLines={1} marginLeft="5px">
-          {createFullName(activityCompare.owner)}
+          {createNameNoTag(activityCompare.owner)}
         </Text>
       </Flex>
       <DoenetEditor

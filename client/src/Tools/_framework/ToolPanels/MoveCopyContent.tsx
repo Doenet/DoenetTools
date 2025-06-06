@@ -377,7 +377,7 @@ export function MoveCopyContent({
           {action} to{" "}
           <em>
             {activeView.parentName ??
-              (inCurationLibrary ? "Curation" : "My Activities")}
+              (inCurationLibrary ? "Library Activities" : "My Activities")}
           </em>
         </Text>
       </Button>
@@ -399,7 +399,7 @@ export function MoveCopyContent({
       destinationAction = "Go to folder";
 
       if (inCurationLibrary) {
-        destinationUrl = `/curation/${activeView.parentId}`;
+        destinationUrl = `/libraryActivities/${activeView.parentId}`;
       } else {
         destinationUrl = `/activities/${userId}/${activeView.parentId}`;
       }
@@ -416,9 +416,9 @@ export function MoveCopyContent({
       destinationUrl = `/activityEditor/${activeView.parentId}`;
     }
   } else if (inCurationLibrary) {
-    destinationDescription = <>Curation</>;
-    destinationAction = "Go to Curation";
-    destinationUrl = `/curation`;
+    destinationDescription = <>Library Activities</>;
+    destinationAction = "Go to Library Activities";
+    destinationUrl = `/libraryActivities`;
   } else {
     destinationDescription = <>My Activities</>;
     destinationAction = "Go to My Activities";
@@ -471,7 +471,7 @@ export function MoveCopyContent({
                 </>
               ) : (
                 <Text data-test="Current destination">
-                  {inCurationLibrary ? "Curation" : "My Activities"}
+                  {inCurationLibrary ? "Library Activities" : "My Activities"}
                 </Text>
               )}
             </HStack>

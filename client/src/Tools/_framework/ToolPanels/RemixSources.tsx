@@ -17,7 +17,7 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router";
-import { createFullName } from "../../../_utils/names";
+import { createNameCheckCurateTag } from "../../../_utils/names";
 import { DateTime } from "luxon";
 import { ActivityRemixItem } from "../../../_utils/types";
 
@@ -113,7 +113,7 @@ export function RemixSources({
                         whiteSpace="normal"
                         minWidth="50px"
                       >
-                        {createFullName(ch.originContent.owner)}
+                        {createNameCheckCurateTag(ch.originContent.owner)}
                       </Text>
                     </ChakraLink>
                   </Td>
@@ -125,7 +125,7 @@ export function RemixSources({
                         {ch.originContent.name}
                       </Text>
                       <Text wordBreak="break-word" whiteSpace="normal">
-                        {createFullName(ch.originContent.owner)}
+                        {createNameCheckCurateTag(ch.originContent.owner)}
                       </Text>
                     </VStack>
                   </Td>

@@ -22,14 +22,27 @@ import { Remixes } from "./Remixes";
 import {
   ActivityRemixItem,
   Content,
+  LibraryComment,
+  LibraryRelations,
   License,
   LicenseCode,
 } from "../../../_utils/types";
 import axios from "axios";
 import { processRemixes } from "../../../_utils/processRemixes";
 import { curateActions, CurateSettings } from "./CurateSettings";
+import { LibraryRequest, libraryRequestActions } from "./LibraryRequest";
 
 export async function shareDrawerActions({ formObj }: { [k: string]: any }) {
+  // For editors and activity owners
+  if (formObj._action == "add comment") {
+    await axios.post("/api/curate/addComment", {
+      contentId: formObj.contentId,
+      comment: formObj.comment,
+      asEditor: formObj.asEditor === "true",
+    });
+    return true;
+  }
+
   const sharingResult = await sharingActions({ formObj });
   if (sharingResult) {
     return sharingResult;
@@ -45,15 +58,20 @@ export async function shareDrawerActions({ formObj }: { [k: string]: any }) {
     return remixSourcesResult;
   }
 
+  const libraryRequestResult = await libraryRequestActions({ formObj });
+  if (libraryRequestResult) {
+    return libraryRequestResult;
+  }
+
   return null;
 }
 
 /**
  * A side menu drawer that controls sharing settings for a content item.
- * Includes up to three tabs: `Share`, `Remix Sources`, and `Remixes`.
- * The `Remix Sources` and `Remixes` tabs are only shown for non-folder content.
- *
- * Additionally, you can set the `inCurationLibrary` prop to `true` to show controls for library content. This will replace the `Share` tab with a `Curate` tab.
+ * Includes up to four tabs: `Share`, `Remixed Sources`, `Remixes`, and `Library`.
+ * The `Remixed Sources` and `Remixes` tabs are only shown for non-folder content.
+ * The `Library` tab is only shown if the content is public.
+ * Additionally, if the activity belongs to the library, this component will replace the `Share` tab with a `Curate` tab.
  *
  * Make sure to include {@link shareDrawerActions} in the page's actions.
  */
@@ -63,16 +81,16 @@ export function ShareDrawer({
   finalFocusRef,
   fetcher,
   contentData,
+  libraryRelations,
   allLicenses,
-  inCurationLibrary = false,
 }: {
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
   fetcher: FetcherWithComponents<any>;
   contentData: Content;
+  libraryRelations: LibraryRelations;
   allLicenses: License[];
-  inCurationLibrary?: boolean;
 }) {
   const [remixSources, setRemixSources] = useState<ActivityRemixItem[]>([]);
   const [haveChangedSource, setHaveChangedSource] = useState(false);
@@ -80,6 +98,10 @@ export function ShareDrawer({
   const [haveChangedRemix, setHaveChangedRemix] = useState(false);
   const [remixedWithLicense, setRemixedWithLicense] =
     useState<LicenseCode | null>(null);
+
+  const [libraryComments, setLibraryComments] = useState<LibraryComment[]>([]);
+
+  const inCurationLibrary = libraryRelations.source;
 
   useEffect(() => {
     async function getRemixesAndSources() {
@@ -106,10 +128,19 @@ export function ShareDrawer({
       setHaveChangedRemix(remixes.some((remix) => remix.remixContent.changed));
     }
 
+    async function getLibraryComments() {
+      const { data } = await axios.get(
+        `/api/curate/getComments/${contentData.contentId}?asEditor=${inCurationLibrary ? "true" : "false"}`,
+      );
+      const comments: LibraryComment[] = data;
+      setLibraryComments(comments);
+    }
+
     if (contentData.type !== "folder") {
       getRemixesAndSources();
+      getLibraryComments();
     }
-  }, [contentData]);
+  }, [contentData, inCurationLibrary]);
 
   const drawerTitle = inCurationLibrary
     ? "Curation Controls"
@@ -118,7 +149,13 @@ export function ShareDrawer({
   // Share Tab (becomes Curate Tab in Library)
   const shareOrCurateTabTitle = inCurationLibrary ? "Curate" : "Share";
   const shareOrCurateTabPanel = inCurationLibrary ? (
-    <CurateSettings fetcher={fetcher} contentData={contentData} />
+    <CurateSettings
+      fetcher={fetcher}
+      contentData={contentData}
+      libraryRelations={libraryRelations}
+      libraryComments={libraryComments}
+      onClose={onClose}
+    />
   ) : (
     <ShareSettings
       fetcher={fetcher}
@@ -153,6 +190,12 @@ export function ShareDrawer({
       {changedRemixBadge} Remixes {remixCounter}
     </>
   );
+
+  const showLibraryTab =
+    contentData.isPublic &&
+    contentData.type === "singleDoc" &&
+    !inCurationLibrary;
+
   return (
     <Drawer
       isOpen={isOpen}
@@ -177,17 +220,18 @@ export function ShareDrawer({
           <Tabs>
             <TabList>
               <Tab data-test="Share Tab">{shareOrCurateTabTitle}</Tab>
-              {contentData.type === "folder" ? null : (
+              {contentData.type !== "folder" && (
                 <Tab data-test="Remix Sources Tab">{remixSourcesTabTitle}</Tab>
               )}
-              {contentData.type === "folder" ? null : (
+              {contentData.type !== "folder" && (
                 <Tab data-test="Remixes Tab">{remixesTabTitle}</Tab>
               )}
+              {showLibraryTab && <Tab data-test="Library Tab">Library</Tab>}
             </TabList>
             <Box overflowY="auto" height="calc(100vh - 130px)">
               <TabPanels height="100%">
-                <TabPanel paddingTop="5px">{shareOrCurateTabPanel}</TabPanel>
-                {contentData.type === "folder" ? null : (
+                <TabPanel height="100%">{shareOrCurateTabPanel}</TabPanel>
+                {contentData.type !== "folder" && (
                   <TabPanel height="100%">
                     <RemixSources
                       contributorHistory={remixSources}
@@ -196,13 +240,23 @@ export function ShareDrawer({
                     />
                   </TabPanel>
                 )}
-                {contentData.type === "folder" ? null : (
+                {contentData.type !== "folder" && (
                   <TabPanel height="100%">
                     <Remixes
                       remixes={remixes}
                       onClose={onClose}
                       haveChangedRemix={haveChangedRemix}
                     />
+                  </TabPanel>
+                )}
+                {showLibraryTab && (
+                  <TabPanel data-test="Library Tab">
+                    <LibraryRequest
+                      contentData={contentData}
+                      libraryRelations={libraryRelations}
+                      libraryComments={libraryComments}
+                      fetcher={fetcher}
+                    ></LibraryRequest>
                   </TabPanel>
                 )}
               </TabPanels>
