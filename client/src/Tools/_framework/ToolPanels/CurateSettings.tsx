@@ -173,29 +173,31 @@ export function CurateSettings({
         ) : null}
       </UnorderedList>
 
-      <ChatConversation
-        conversationTitle="Conversation with owner"
-        canComment={amEditor}
-        messages={libraryComments.map((c) => {
-          return {
-            user: createNameNoTag(c.user),
-            userIsMe: c.isMe,
-            message: c.comment,
-            dateTime: DateTime.fromISO(c.dateTime),
-          };
-        })}
-        onAddComment={(comment) => {
-          fetcher.submit(
-            {
-              _action: "add comment",
-              contentId: contentData.contentId,
-              asEditor: true,
-              comment,
-            },
-            { method: "post" },
-          );
-        }}
-      />
+      {librarySource.ownerRequested && (
+        <ChatConversation
+          conversationTitle="Conversation with owner"
+          canComment={amEditor}
+          messages={libraryComments.map((c) => {
+            return {
+              user: createNameNoTag(c.user),
+              userIsMe: c.isMe,
+              message: c.comment,
+              dateTime: DateTime.fromISO(c.dateTime),
+            };
+          })}
+          onAddComment={(comment) => {
+            fetcher.submit(
+              {
+                _action: "add comment",
+                contentId: contentData.contentId,
+                asEditor: true,
+                comment,
+              },
+              { method: "post" },
+            );
+          }}
+        />
+      )}
 
       <Box
         marginTop="30px"
