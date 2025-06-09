@@ -1,4 +1,4 @@
-import { AssignmentMode, ContentType } from "@prisma/client";
+import { ContentType, LibraryStatus, AssignmentMode } from "@prisma/client";
 import { prisma } from "./model";
 
 export type DoenetmlVersion = {
@@ -13,26 +13,39 @@ export type DoenetmlVersion = {
 
 export type AssignmentStatus = "Unassigned" | "Closed" | "Open";
 
-export type LibraryInfo = {
-  sourceId: Uint8Array;
-  contentId: Uint8Array | null;
-  ownerRequested?: boolean;
-  status:
-    | "none"
-    | "PENDING_REVIEW"
-    | "REQUEST_REMOVED"
-    | "PUBLISHED"
-    | "NEEDS_REVISION";
-  comments?: string;
+/**
+ * This type represents the library status of a provided content id in both directions.
+ * The `activity` field contains info about an activity revised from provided content .
+ * The `source` fields refers an activity that uses the provied content as a source.
+ *
+ * Optional fields are only included for certain users:
+ * - `activity.comments` - must be owner or editor
+ * - `activity.reviewRequestDate` - must be owner or editor
+ * - `source.comments` - must be editor
+ * - `source.ownerRequested` - must be editor
+ */
+export type LibraryRelations = {
+  activity?: {
+    status: LibraryStatus;
+    activityContentId: Uint8Array | null;
+    reviewRequestDate?: Date;
+  };
+  source?: {
+    status: LibraryStatus;
+    sourceContentId: Uint8Array | null;
+    reviewRequestDate?: Date;
+    ownerRequested?: boolean;
+    primaryEditor?: UserInfo;
+    iAmPrimaryEditor?: boolean;
+  };
 };
 
-export function blankLibraryInfo(sourceId: Uint8Array): LibraryInfo {
-  return {
-    sourceId,
-    contentId: null,
-    status: "none",
-  };
-}
+export type LibraryComment = {
+  user: UserInfo;
+  dateTime: Date;
+  comment: string;
+  isMe: boolean;
+};
 
 export type UserInfo = {
   userId: Uint8Array;
@@ -43,6 +56,7 @@ export type UserInfo = {
   isAuthor?: boolean;
   numLibrary?: number;
   numCommunity?: number;
+  isMaskForLibrary?: boolean;
 };
 
 export function isUserInfo(obj: unknown): obj is UserInfo {
@@ -143,8 +157,6 @@ export type ContentBase = {
     sortIndex: number;
   }[];
   classifications: ContentClassification[];
-  librarySourceInfo?: LibraryInfo;
-  libraryActivityInfo?: LibraryInfo;
   parent: {
     contentId: Uint8Array;
     name: string;

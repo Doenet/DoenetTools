@@ -17,52 +17,50 @@ model Session {
 
 model content {
   // General metadata
-  id                    Bytes                    @id @default(dbgenerated("(uuid_to_bin(uuid(),1))")) @db.Binary(16)
-  type                  ContentType              @default(singleDoc)
-  ownerId               Bytes                    @db.Binary(16)
-  name                  String
-  parentId              Bytes?                   @db.Binary(16)
-  isPublic              Boolean                  @default(false)
-  isDeletedOn           DateTime?
+  id                  Bytes                    @id @default(dbgenerated("(uuid_to_bin(uuid(),1))")) @db.Binary(16)
+  type                ContentType              @default(singleDoc)
+  ownerId             Bytes                    @db.Binary(16)
+  name                String
+  parentId            Bytes?                   @db.Binary(16)
+  isPublic            Boolean                  @default(false)
+  isDeletedOn         DateTime?
   // The parent id that the user deleted. Not defined if this is root
-  deletionRootId        Bytes?                   @db.Binary(16)
-  createdAt             DateTime                 @default(now())
-  sortIndex             BigInt
-  licenseCode           String?                  @default("CCDUAL") @db.VarChar(10)
-  lastEdited            DateTime                 @default(now())
+  deletionRootId      Bytes?                   @db.Binary(16)
+  createdAt           DateTime                 @default(now())
+  sortIndex           BigInt
+  licenseCode         String?                  @default("CCDUAL") @db.VarChar(10)
+  lastEdited          DateTime                 @default(now())
   // Specific to document type
-  source                String?                  @db.MediumText
-  doenetmlVersionId     Int?
-  numVariants           Int                      @default(1)
+  source              String?                  @db.MediumText
+  doenetmlVersionId   Int?
+  numVariants         Int                      @default(1)
   // Specific to sequence type
-  shuffle               Boolean                  @default(false)
-  paginate              Boolean                  @default(false)
+  shuffle             Boolean                  @default(false)
+  paginate            Boolean                  @default(false)
   // Specific to select type
-  numToSelect           Int                      @default(1) @db.UnsignedSmallInt
-  selectByVariant       Boolean                  @default(false)
+  numToSelect         Int                      @default(1) @db.UnsignedSmallInt
+  selectByVariant     Boolean                  @default(false)
   // Assignments
-  nonRootAssignmentId   Bytes?                   @db.Binary(16)
-  nonRootAssignment     assignments?             @relation("nonRootAssignment", fields: [nonRootAssignmentId], references: [rootContentId], onDelete: SetNull, onUpdate: NoAction)
-  rootAssignment        assignments?             @relation("rootAssignment")
-  owner                 users                    @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
-  parent                content?                 @relation("childParent", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  children              content[]                @relation("childParent")
-  license               licenses?                @relation(fields: [licenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
-  doenetmlVersion       doenetmlVersions?        @relation(fields: [doenetmlVersionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  contentFeatures       contentFeatures[]
-  promotedContent       promotedContent[]
-  sharedWith            contentShares[]
-  classifications       contentClassifications[]
-  contentViews          contentViews[]
-  recentContent         recentContent[]
-  librarySourceInfo     libraryActivityInfos?    @relation("source")
-  libraryActivityInfo   libraryActivityInfos?    @relation("activity")
-  librarySourceEvents   libraryEvents[]          @relation("source")
-  libraryActivityEvents libraryEvents[]          @relation("activity")
-  contentRevisions      contentRevisions[]
-  submittedResponses    submittedResponses[]
-  deletionRoot          content?                 @relation("deletionRoot", fields: [deletionRootId], references: [id])
-  isDeletionRootFor     content[]                @relation("deletionRoot")
+  nonRootAssignmentId Bytes?                   @db.Binary(16)
+  nonRootAssignment   assignments?             @relation("nonRootAssignment", fields: [nonRootAssignmentId], references: [rootContentId], onDelete: SetNull, onUpdate: NoAction)
+  rootAssignment      assignments?             @relation("rootAssignment")
+  owner               users                    @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  parent              content?                 @relation("childParent", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children            content[]                @relation("childParent")
+  license             licenses?                @relation(fields: [licenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
+  doenetmlVersion     doenetmlVersions?        @relation(fields: [doenetmlVersionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  contentFeatures     contentFeatures[]
+  promotedContent     promotedContent[]
+  sharedWith          contentShares[]
+  classifications     contentClassifications[]
+  contentViews        contentViews[]
+  recentContent       recentContent[]
+  librarySourceInfo   libraryActivityInfos?    @relation("source")
+  libraryActivityInfo libraryActivityInfos?    @relation("activity")
+  contentRevisions    contentRevisions[]
+  submittedResponses  submittedResponses[]
+  deletionRoot        content?                 @relation("deletionRoot", fields: [deletionRootId], references: [id])
+  isDeletionRootFor   content[]                @relation("deletionRoot")
 
   @@index([ownerId, parentId, sortIndex])
   @@index([parentId, type])
@@ -84,7 +82,7 @@ model recentContent {
   accessed  DateTime   @default(now())
   mode      RecentMode
   user      users      @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
-  content   content    @relation(fields: [contentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  content   content    @relation(fields: [contentId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([userId, mode, contentId])
 }
@@ -105,7 +103,7 @@ model contentRevisions {
   createdAt                  DateTime             @default(now())
   numVariants                Int                  @default(1)
   doenetmlVersionId          Int?
-  content                    content              @relation(fields: [contentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  content                    content              @relation(fields: [contentId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   doenetmlVersion            doenetmlVersions?    @relation(fields: [doenetmlVersionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   contributorHistoryAsOrigin contributorHistory[] @relation("originContent")
   contributorHistoryAsRemix  contributorHistory[] @relation("remixContent")
@@ -157,8 +155,8 @@ model contributorHistory {
   directCopy                   Boolean          @default(false)
   subscribeOriginContentChange Boolean          @default(true)
   subscribeRemixContentChange  Boolean          @default(false)
-  remixContent                 contentRevisions @relation("remixContent", fields: [remixContentId, remixContentRevisionNum], references: [contentId, revisionNum], onDelete: NoAction, onUpdate: NoAction)
-  originContent                contentRevisions @relation("originContent", fields: [originContentId, originContentRevisionNum], references: [contentId, revisionNum], onDelete: NoAction, onUpdate: NoAction)
+  remixContent                 contentRevisions @relation("remixContent", fields: [remixContentId, remixContentRevisionNum], references: [contentId, revisionNum], onDelete: Cascade, onUpdate: NoAction)
+  originContent                contentRevisions @relation("originContent", fields: [originContentId, originContentRevisionNum], references: [contentId, revisionNum], onDelete: Cascade, onUpdate: NoAction)
   withLicense                  licenses?        @relation(fields: [withLicenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([remixContentId, originContentId])
@@ -281,27 +279,28 @@ model contentViews {
   contentId Bytes    @db.Binary(16)
   date      DateTime @default(dbgenerated("(curdate())")) @db.Date
   userId    Bytes    @db.Binary(16)
-  content   content  @relation(fields: [contentId], references: [id])
+  content   content  @relation(fields: [contentId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([date, contentId, userId])
 }
 
 model users {
-  userId             Bytes                @id @default(dbgenerated("(uuid_to_bin(uuid(),1))")) @db.Binary(16)
-  email              String               @unique
+  userId             Bytes                  @id @default(dbgenerated("(uuid_to_bin(uuid(),1))")) @db.Binary(16)
+  email              String                 @unique
   firstNames         String?
   lastNames          String
-  isAdmin            Boolean              @default(false)
-  isLibrary          Boolean              @default(false)
-  isAnonymous        Boolean              @default(false)
-  isAuthor           Boolean              @default(false)
+  isEditor           Boolean                @default(false)
+  isLibrary          Boolean                @default(false)
+  isAnonymous        Boolean                @default(false)
+  isAuthor           Boolean                @default(false)
   content            content[]
   contentState       contentState[]
   submittedResponses submittedResponses[]
   sharedWithMe       contentShares[]
   recentContent      recentContent[]
-  libraryEvents      libraryEvents[]
   assignmentScores   assignmentScores[]
+  libraryEvents      libraryEvents[]
+  libraryEditorInfos libraryActivityInfos[]
 
   @@fulltext([firstNames, lastNames])
 }
@@ -398,45 +397,47 @@ model classifications {
 }
 
 model libraryActivityInfos {
-  sourceId       Bytes         @id @db.Binary(16)
-  contentId      Bytes?        @unique @db.Binary(16)
-  ownerRequested Boolean
-  status         LibraryStatus
-  comments       String        @default("")
-  source         content       @relation(name: "source", fields: [sourceId], references: [id])
-  activity       content?      @relation(name: "activity", fields: [contentId], references: [id])
+  sourceId        Bytes           @id @db.Binary(16)
+  contentId       Bytes           @unique @db.Binary(16)
+  primaryEditorId Bytes?          @db.Binary(16)
+  ownerRequested  Boolean
+  requestedOn     DateTime        @default(now())
+  status          LibraryStatus
+  source          content         @relation(name: "source", fields: [sourceId], references: [id])
+  activity        content         @relation(name: "activity", fields: [contentId], references: [id])
+  primaryEditor   users?          @relation(fields: [primaryEditorId], references: [userId])
+  events          libraryEvents[]
 }
 
 enum LibraryStatus {
-  PENDING_REVIEW
-  REQUEST_REMOVED
+  PENDING
+  UNDER_REVIEW
   PUBLISHED
-  NEEDS_REVISION
+  REJECTED
 }
 
 model libraryEvents {
-  id        Bytes            @id @default(dbgenerated("(uuid_to_bin(uuid(),1))")) @db.Binary(16)
-  sourceId  Bytes            @db.Binary(16)
-  contentId Bytes?           @db.Binary(16)
+  id        Bytes                @id @default(dbgenerated("(uuid_to_bin(uuid(),1))")) @db.Binary(16)
+  infoId    Bytes                @db.Binary(16)
   eventType LibraryEventType
   dateTime  DateTime
-  comments  String           @default("")
-  userId    Bytes            @db.Binary(16)
-  user      users            @relation(fields: [userId], references: [userId])
-  source    content          @relation(name: "source", fields: [sourceId], references: [id])
-  activity  content?         @relation(name: "activity", fields: [contentId], references: [id])
+  comment   String?
+  userId    Bytes                @db.Binary(16)
+  info      libraryActivityInfos @relation(fields: [infoId], references: [sourceId])
+  user      users                @relation(fields: [userId], references: [userId])
 }
 
 enum LibraryEventType {
-  // Activity owners can:
-  SUBMIT_REQUEST
-  CANCEL_REQUEST
-  // Admins can:
-  ADD_DRAFT
-  DELETE_DRAFT
+  // Anyone can:
+  SUGGEST_REVIEW
+
+  // Editors can:
+  TAKE_OWNERSHIP
   PUBLISH
   UNPUBLISH
-  // And admins can communicate with owner
-  MARK_NEEDS_REVISION
-  MODIFY_COMMENTS
+  REJECT
+
+  // Editors and owners can:
+  ADD_COMMENT
+  // EDIT_COMMENT
 }

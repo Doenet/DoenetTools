@@ -1,21 +1,31 @@
-import React, { useState } from "react";
+import React from "react";
 import { FetcherWithComponents } from "react-router";
-import { Box, List, Button, Text, Textarea, Heading } from "@chakra-ui/react";
+import {
+  Box,
+  List,
+  Button,
+  UnorderedList,
+  ListItem,
+  Stack,
+  Spacer,
+  Heading,
+} from "@chakra-ui/react";
 import axios from "axios";
-import { Content } from "../../../_utils/types";
+import {
+  Content,
+  LibraryComment,
+  LibraryRelations,
+} from "../../../_utils/types";
 import { DisplayLicenseItem } from "../../../Widgets/Licenses";
+import { createNameCheckIsMeTag, createNameNoTag } from "../../../_utils/names";
+import { ChatConversation } from "../../../Widgets/ChatConversation";
+import { DateTime } from "luxon";
+import { getLibraryStatusStylized } from "../../../_utils/library";
 
 export async function curateActions({ formObj }: { [k: string]: any }) {
-  if (formObj._action == "modify comments") {
-    await axios.post("/api/curate/modifyCommentsOfLibraryRequest", {
-      sourceId: formObj.sourceId,
-      comments: formObj.comments,
-    });
-    return true;
-  } else if (formObj._action == "publish") {
+  if (formObj._action == "publish") {
     await axios.post("/api/curate/publishActivityToLibrary", {
-      draftId: formObj.id,
-      comments: formObj.comments,
+      contentId: formObj.id,
     });
     return true;
   } else if (formObj._action == "unpublish") {
@@ -23,10 +33,14 @@ export async function curateActions({ formObj }: { [k: string]: any }) {
       contentId: formObj.id,
     });
     return true;
-  } else if (formObj._action == "return for revision") {
-    await axios.post("/api/curate/markLibraryRequestNeedsRevision", {
-      sourceId: formObj.sourceId,
-      comments: formObj.comments,
+  } else if (formObj._action == "reject") {
+    await axios.post("/api/curate/rejectActivity", {
+      contentId: formObj.id,
+    });
+    return true;
+  } else if (formObj?._action == "claim") {
+    await axios.post(`/api/curate/claimOwnershipOfReview`, {
+      contentId: formObj.id,
     });
     return true;
   }
@@ -34,112 +48,68 @@ export async function curateActions({ formObj }: { [k: string]: any }) {
   return null;
 }
 
+/**
+ * This component is used to display the curation settings for an activity in the library.
+ * It is the library's equivalent of the `ShareSettings` component panel.
+ *
+ * Only meant to be used by editors.
+ */
 export function CurateSettings({
   fetcher,
   contentData,
+  libraryRelations,
+  libraryComments,
+  onClose,
 }: {
   fetcher: FetcherWithComponents<any>;
   contentData: Content;
+  libraryRelations: LibraryRelations;
+  libraryComments: LibraryComment[];
+  onClose: () => void;
 }) {
   const license = contentData.license!;
-  const sourceId = contentData.libraryActivityInfo!.sourceId;
-  const contentId = contentData.contentId;
-  const existingComments = contentData.libraryActivityInfo?.comments ?? "";
-  const status = contentData.libraryActivityInfo!.status;
-  // const userRequested = contentData;
 
-  const [comments, setComments] = useState<string>(existingComments);
-  const [unsavedComments, setUnsavedComments] = useState<boolean>(false);
+  // Must have library source if in library
+  const librarySource = libraryRelations.source!;
+
+  const sourceIdIsVisible = librarySource.sourceContentId !== null;
+  const amEditor = librarySource.iAmPrimaryEditor ?? false;
+  const status = librarySource.status;
 
   return (
     <>
-      <Box>
-        <Heading
-          size="small"
-          // marginTop="10px"
-          padding="10px"
-        >
-          Status: {status}
+      <Stack direction="row">
+        <Heading size="md">
+          Status is {getLibraryStatusStylized(librarySource.status)}
         </Heading>
-      </Box>
 
-      <Box>
-        <Box
-          marginTop="10px"
-          border="2px solid lightgray"
-          background="lightgray"
-          padding="10px"
-        >
-          <>
-            {license.isComposition ? (
-              <>
-                <p>Activity is shared with these licenses:</p>
-                <List spacing="20px" marginTop="10px">
-                  {license.composedOf.map((comp) => (
-                    <DisplayLicenseItem licenseItem={comp} key={comp.code} />
-                  ))}
-                </List>
-                <p style={{ marginTop: "10px" }}>
-                  (You authorize reuse under any of these licenses.)
-                </p>
-              </>
-            ) : (
-              <>
-                <p>Activity is shared using the license:</p>
-                <List marginTop="10px">
-                  <DisplayLicenseItem licenseItem={license} />
-                </List>
-              </>
-            )}
-          </>
-        </Box>
-      </Box>
+        <Spacer />
 
-      <Box marginTop="30px">
-        <Text>Comments</Text>
-
-        <Textarea
-          name="comments"
-          placeholder="Give the author some feedback here..."
-          value={comments}
-          onChange={(e) => {
-            setComments(e.target.value);
-            setUnsavedComments(true);
-          }}
-          width="90%"
-          onBlur={(e) => {
-            if (e.target.value) {
-              setComments(e.target.value);
-              setUnsavedComments(true);
-            }
-          }}
-        />
-      </Box>
-
-      {status === "PUBLISHED" ? (
-        <Button
-          onClick={() => {
-            fetcher.submit(
-              {
-                _action: "unpublish",
-                id: contentId,
-              },
-              { method: "post" },
-            );
-          }}
-        >
-          Unpublish
-        </Button>
-      ) : (
-        <>
+        {!amEditor && (
           <Button
             onClick={() => {
-              setUnsavedComments(false);
+              onClose();
+              fetcher.submit(
+                {
+                  _action: "claim",
+                  id: contentData.contentId,
+                },
+                { method: "post" },
+              );
+            }}
+          >
+            Claim
+          </Button>
+        )}
+        {amEditor && status === "UNDER_REVIEW" && (
+          <Button
+            onClick={() => {
+              onClose();
+              // setUnsavedComments(false);
               fetcher.submit(
                 {
                   _action: "publish",
-                  id: contentId,
-                  comments,
+                  id: contentData.contentId,
                 },
                 { method: "post" },
               );
@@ -147,44 +117,117 @@ export function CurateSettings({
           >
             Publish
           </Button>
-        </>
-      )}
+        )}
 
-      {/* {status === "PENDING_REVIEW" &&
-      contentData.libraryActivityInfo!.onwerRequested ? (
-        <Button
-          onClick={() => {
-            setUnsavedComments(false);
+        {amEditor && status === "UNDER_REVIEW" && (
+          <Button
+            onClick={() => {
+              onClose();
+              // setUnsavedComments(false);
+              fetcher.submit(
+                {
+                  _action: "reject",
+                  id: contentData.contentId,
+                },
+                { method: "post" },
+              );
+            }}
+          >
+            Reject
+          </Button>
+        )}
+
+        {amEditor && status === "PUBLISHED" && (
+          <Button
+            onClick={() => {
+              onClose();
+              fetcher.submit(
+                {
+                  _action: "unpublish",
+                  id: contentData.contentId,
+                },
+                { method: "post" },
+              );
+            }}
+          >
+            Unpublish
+          </Button>
+        )}
+      </Stack>
+      <UnorderedList>
+        <ListItem>
+          Requested on{" "}
+          {DateTime.fromISO(librarySource.reviewRequestDate!).toLocaleString(
+            DateTime.DATE_MED,
+          )}
+          {librarySource.ownerRequested ? ` by owner` : ""}
+        </ListItem>
+        <ListItem>
+          Current primary editor:{" "}
+          {librarySource.primaryEditor
+            ? createNameCheckIsMeTag(librarySource.primaryEditor, amEditor)
+            : "None"}
+        </ListItem>
+        {!sourceIdIsVisible ? (
+          <ListItem>Note: Source activity is no longer public</ListItem>
+        ) : null}
+      </UnorderedList>
+
+      {librarySource.ownerRequested && (
+        <ChatConversation
+          conversationTitle="Conversation with owner"
+          canComment={amEditor}
+          messages={libraryComments.map((c) => {
+            return {
+              user: createNameNoTag(c.user),
+              userIsMe: c.isMe,
+              message: c.comment,
+              dateTime: DateTime.fromISO(c.dateTime),
+            };
+          })}
+          onAddComment={(comment) => {
             fetcher.submit(
               {
-                _action: "return for revision",
-                sourceId: sourceId,
-                comments,
+                _action: "add comment",
+                contentId: contentData.contentId,
+                asEditor: true,
+                comment,
               },
               { method: "post" },
             );
           }}
-        >
-          Return for revision
-        </Button>
-      ) : null} */}
+        />
+      )}
 
-      <Button
-        isDisabled={!unsavedComments}
-        onClick={() => {
-          setUnsavedComments(false);
-          fetcher.submit(
-            {
-              _action: "modify comments",
-              sourceId,
-              comments,
-            },
-            { method: "post" },
-          );
-        }}
+      <Box
+        marginTop="30px"
+        border="2px solid lightgray"
+        background="lightgray"
+        padding="10px"
       >
-        Save comments
-      </Button>
+        <>
+          {license.isComposition ? (
+            <>
+              <p>Activity is shared with these licenses:</p>
+              <List spacing="20px" marginTop="10px">
+                {license.composedOf.map((comp) => (
+                  <DisplayLicenseItem licenseItem={comp} key={comp.code} />
+                ))}
+              </List>
+              <p style={{ marginTop: "10px" }}>
+                (You authorize reuse under any of these licenses.)
+              </p>
+            </>
+          ) : (
+            <>
+              <p>Activity is shared using the license:</p>
+              <List marginTop="10px">
+                <DisplayLicenseItem licenseItem={license} />
+              </List>
+            </>
+          )}
+        </>
+      </Box>
     </>
   );
 }

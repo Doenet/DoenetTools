@@ -10,7 +10,7 @@ import {
 } from "../utils/classificationsFeatures";
 import { processContent, returnContentSelect } from "../utils/contentStructure";
 import { fromUUID } from "../utils/uuid";
-import { getLibraryAccountId } from "./curate";
+import { getLibraryAccountId, maskLibraryUserInfo } from "./curate";
 import { PartialContentClassification, UserInfo } from "../types";
 import {
   getAvailableContentFeatures,
@@ -2060,6 +2060,17 @@ export async function searchExplore({
     ownerId,
   });
 
+  // Replace library owner info with source owner info
+  const curatedSourceUsers = await Promise.all(
+    curatedContent.map(
+      async (c) =>
+        await maskLibraryUserInfo({ contentId: c.contentId, owner: c.owner! }),
+    ),
+  );
+  for (let i = 0; i < curatedContent.length; i++) {
+    curatedContent[i].owner = curatedSourceUsers[i];
+  }
+
   let matchedClassifications: PartialContentClassification[] | null = null;
   let matchedSubCategories: PartialContentClassification[] | null = null;
   let matchedCategories: PartialContentClassification[] | null = null;
@@ -2254,6 +2265,17 @@ export async function browseExplore({
     features,
     ownerId,
   });
+
+  // Replace library owner info with source owner info
+  const curatedSourceUsers = await Promise.all(
+    curatedContent.map(
+      async (c) =>
+        await maskLibraryUserInfo({ contentId: c.contentId, owner: c.owner! }),
+    ),
+  );
+  for (let i = 0; i < curatedContent.length; i++) {
+    curatedContent[i].owner = curatedSourceUsers[i];
+  }
 
   const trendingContent = await browseTrendingContent({
     loggedInUserId,

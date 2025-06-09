@@ -9,7 +9,11 @@ import {
 import { prisma } from "../model";
 import { getAvailableContentFeatures } from "./classification";
 import { processContent, returnContentSelect } from "../utils/contentStructure";
-import { getIsAdmin } from "./curate";
+import {
+  getIsEditor,
+  getSingleLibraryRelations,
+  maskLibraryUserInfo,
+} from "./curate";
 import { isEqualUUID } from "../utils/uuid";
 import { getRemixSources } from "./remix";
 import { recordContentView, recordRecentContent } from "./stats";
@@ -29,12 +33,12 @@ export async function getActivityEditorData({
 }) {
   // TODO: add pagination or a hard limit in the number of documents one can add to an activity
 
-  const isAdmin = await getIsAdmin(loggedInUserId);
+  const isEditor = await getIsEditor(loggedInUserId);
 
   const activityPermissions = await checkActivityPermissions(
     contentId,
     loggedInUserId,
-    isAdmin,
+    isEditor,
   );
   if (!activityPermissions.viewable || !activityPermissions.ownerId) {
     throw new InvalidRequestError(
@@ -53,15 +57,24 @@ export async function getActivityEditorData({
     includeAssignInfo: true,
     includeClassifications: true,
     includeShareDetails: true,
-    includeLibraryInfo: true,
-    isAdmin,
+    isEditor,
   });
 
   const revisions = await getContentRevisions({ contentId, loggedInUserId });
+  const libraryRelations = await getSingleLibraryRelations({
+    contentId,
+    loggedInUserId,
+  });
 
   await recordRecentContent(loggedInUserId, "edit", contentId);
 
-  return { editableByMe: true, activity, availableFeatures, revisions };
+  return {
+    editableByMe: true,
+    activity,
+    availableFeatures,
+    revisions,
+    libraryRelations,
+  };
 }
 
 /**
@@ -78,7 +91,6 @@ export async function getSharedEditorData({
   const activity = getContent({
     contentId,
     loggedInUserId,
-    includeLibraryInfo: true,
   });
   return activity;
 }
@@ -90,15 +102,14 @@ export async function getActivityViewerData({
   contentId: Uint8Array;
   loggedInUserId?: Uint8Array;
 }) {
-  const isAdmin = await getIsAdmin(loggedInUserId);
+  const isEditor = await getIsEditor(loggedInUserId);
 
   const activity = await getContent({
     contentId,
     loggedInUserId,
-    isAdmin,
+    isEditor,
     includeOwnerDetails: true,
     includeClassifications: true,
-    includeLibraryInfo: true,
   });
 
   if (!isEqualUUID(loggedInUserId, activity.ownerId)) {
@@ -108,12 +119,37 @@ export async function getActivityViewerData({
   const { remixSources } = await getRemixSources({
     contentId,
     loggedInUserId,
-    isAdmin,
+    isEditor,
+  });
+
+  // Replace library owner info with source owner info
+  activity.owner = await maskLibraryUserInfo({
+    contentId: activity.contentId,
+    owner: activity.owner!,
+  });
+
+  const curatedSourceUsers = await Promise.all(
+    remixSources.map(
+      async (remix) =>
+        await maskLibraryUserInfo({
+          contentId: remix.originContent.contentId,
+          owner: remix.originContent.owner,
+        }),
+    ),
+  );
+  for (let i = 0; i < remixSources.length; i++) {
+    remixSources[i].originContent.owner = curatedSourceUsers[i];
+  }
+
+  const libraryRelations = await getSingleLibraryRelations({
+    contentId,
+    loggedInUserId,
   });
 
   return {
     activity,
     remixSources,
+    libraryRelations,
   };
 }
 
@@ -128,21 +164,19 @@ export async function getContent({
   contentId,
   loggedInUserId,
   includeAssignInfo = false,
-  includeLibraryInfo = false,
   includeClassifications = false,
   includeShareDetails = false,
   includeOwnerDetails = false,
-  isAdmin = false,
+  isEditor = false,
   skipPermissionCheck = false,
 }: {
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
   includeAssignInfo?: boolean;
-  includeLibraryInfo?: boolean;
   includeClassifications?: boolean;
   includeShareDetails?: boolean;
   includeOwnerDetails?: boolean;
-  isAdmin?: boolean;
+  isEditor?: boolean;
   skipPermissionCheck?: boolean;
 }) {
   // 1. verify that `loggedInUserId` can view content
@@ -151,7 +185,7 @@ export async function getContent({
       id: contentId,
       ...(skipPermissionCheck
         ? { isDeletedOn: null }
-        : filterViewableActivity(loggedInUserId, isAdmin)),
+        : filterViewableActivity(loggedInUserId, isEditor)),
     },
     select: { id: true },
   });
@@ -166,13 +200,13 @@ export async function getContent({
     WITH RECURSIVE content_tree(id, parentId, sortIndex) AS (
     SELECT id, parentId, sortIndex FROM content
     WHERE parentId = ${contentId}
-      ${skipPermissionCheck ? Prisma.sql`AND content.isDeletedOn IS NULL` : Prisma.sql`AND ${viewableContentWhere(loggedInUserId, isAdmin)}`}
+      ${skipPermissionCheck ? Prisma.sql`AND content.isDeletedOn IS NULL` : Prisma.sql`AND ${viewableContentWhere(loggedInUserId, isEditor)}`}
     UNION ALL
     SELECT content.id, content.parentId, content.sortIndex FROM content
     INNER JOIN content_tree AS ct
     ON content.parentId = ct.id
     WHERE 
-      ${skipPermissionCheck ? Prisma.sql`content.isDeletedOn IS NULL` : Prisma.sql`${viewableContentWhere(loggedInUserId, isAdmin)}`}
+      ${skipPermissionCheck ? Prisma.sql`content.isDeletedOn IS NULL` : Prisma.sql`${viewableContentWhere(loggedInUserId, isEditor)}`}
   )
   SELECT id, parentId from content_tree
     ORDER BY
@@ -183,11 +217,9 @@ export async function getContent({
 
   const contentSelect = returnContentSelect({
     includeAssignInfo,
-    includeLibraryInfo,
     includeClassifications,
     includeShareDetails,
     includeOwnerDetails,
-    isAdmin,
   });
 
   const preliminaryList = await prisma.content.findMany({
@@ -204,7 +236,6 @@ export async function getContent({
     //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
     preliminaryList[idx],
     loggedInUserId,
-    isAdmin,
   );
 
   preliminaryList.splice(idx, 1);

@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { DoenetHeading as Heading } from "../../../Widgets/Heading";
-import { createFullName } from "../../../_utils/names";
+import { createNameNoTag } from "../../../_utils/names";
 
 type UserData = {
   userId: string;
@@ -66,7 +66,7 @@ export function StudentAssignmentScores() {
   };
 
   useEffect(() => {
-    document.title = `${createFullName(userData)}'s Assignments`;
+    document.title = `${createNameNoTag(userData)}'s Assignments`;
   });
 
   const navigate = useNavigate();
@@ -89,7 +89,7 @@ export function StudentAssignmentScores() {
           &lt; Back
         </ChakraLink>
       </Box>
-      <Heading heading={`${createFullName(userData)}'s Assignments`} />
+      <Heading heading={`${createNameNoTag(userData)}'s Assignments`} />
 
       {folder ? (
         <Heading subheading={`${folder.name}`} />

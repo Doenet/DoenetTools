@@ -3,7 +3,6 @@ import {
   AssignmentStatus,
   ContentClassification,
   Content,
-  LibraryInfo,
   License,
   LicenseCode,
   UserInfo,
@@ -143,11 +142,9 @@ export function processLicense(
 
 export function returnContentSelect({
   includeAssignInfo = false,
-  includeLibraryInfo = false,
   includeClassifications = false,
   includeShareDetails = false,
   includeOwnerDetails = false,
-  isAdmin = false,
 }) {
   const sharedWith = {
     select: includeShareDetails
@@ -165,30 +162,6 @@ export function returnContentSelect({
           userId: true,
         },
   };
-
-  const librarySourceInfo = includeLibraryInfo
-    ? {
-        select: {
-          status: true,
-          sourceId: true,
-          contentId: true,
-          comments: isAdmin,
-          ownerRequested: isAdmin,
-        },
-      }
-    : false;
-
-  const libraryActivityInfo = includeLibraryInfo
-    ? {
-        select: {
-          status: true,
-          sourceId: true,
-          contentId: true,
-          comments: isAdmin,
-          ownerRequested: isAdmin,
-        },
-      }
-    : false;
 
   const classificationsObj = includeClassifications
     ? {
@@ -239,8 +212,6 @@ export function returnContentSelect({
         sharedWith,
       },
     },
-    librarySourceInfo,
-    libraryActivityInfo,
     ...classificationsObj,
   };
 
@@ -365,8 +336,6 @@ type PreliminaryContent = {
     isPublic: boolean;
     sharedWith: { userId: Uint8Array }[] | { user: UserInfo }[];
   } | null;
-  libraryActivityInfo: LibraryInfo | null;
-  librarySourceInfo: LibraryInfo | null;
   classifications?: {
     classification: ContentClassification;
   }[];
@@ -424,7 +393,6 @@ type PreliminaryContent = {
 export function processContent(
   preliminaryContent: PreliminaryContent,
   forUserId?: Uint8Array,
-  isAdmin?: boolean,
 ): Content {
   const {
     id,
@@ -435,8 +403,6 @@ export function processContent(
     license,
     parent,
     classifications,
-    libraryActivityInfo,
-    librarySourceInfo,
     rootAssignment,
     nonRootAssignment,
 
@@ -521,26 +487,9 @@ export function processContent(
 
   const { isShared, sharedWith } = processSharedWith(sharedWithOrig, forUserId);
 
-  // Don't include library fields if the values are null
-  const libraryInfos: {
-    libraryActivityInfo?: LibraryInfo;
-    librarySourceInfo?: LibraryInfo;
-  } = {};
-  if (libraryActivityInfo) {
-    libraryInfos.libraryActivityInfo = libraryActivityInfo;
-  }
-  if (librarySourceInfo) {
-    if (librarySourceInfo.status !== "PUBLISHED" && !isAdmin) {
-      // Owner cannot see library draft for their activity
-      librarySourceInfo.contentId = null;
-    }
-    libraryInfos.librarySourceInfo = librarySourceInfo;
-  }
-
   const baseContent: ContentBase = {
     contentId: id,
     ...preliminaryContent2,
-    ...libraryInfos,
     ...assignmentInfoObj,
     isShared,
     sharedWith,

@@ -55,6 +55,7 @@ import {
   ContentType,
   LicenseCode,
   UserInfo,
+  LibraryRelations,
   DoenetmlVersion,
   License,
   ContentFeature,
@@ -185,6 +186,7 @@ export async function loader({ params, request }: any) {
   return {
     parentId: params.parentId ? params.parentId : null,
     content: data.content,
+    libraryRelations: data.libraryRelations,
     allDoenetmlVersions: data.allDoenetmlVersions,
     allLicenses: data.allLicenses,
     availableFeatures: data.availableFeatures,
@@ -198,6 +200,7 @@ export function Activities() {
   const {
     parentId,
     content,
+    libraryRelations,
     allDoenetmlVersions,
     allLicenses,
     availableFeatures,
@@ -207,6 +210,7 @@ export function Activities() {
   } = useLoaderData() as {
     parentId: string | null;
     content: Content[];
+    libraryRelations: LibraryRelations[];
     allDoenetmlVersions: DoenetmlVersion[];
     allLicenses: License[];
     availableFeatures: ContentFeature[];
@@ -518,20 +522,17 @@ export function Activities() {
   );
 
   let contentData: Content | undefined;
+  let activeLibraryRelations: LibraryRelations = {};
   if (settingsContentId) {
-    if (parent && settingsContentId === parentId) {
-      contentData = parent;
-      finalFocusRef.current = folderSettingsRef.current;
+    const index = content.findIndex(
+      (obj) => obj.contentId == settingsContentId,
+    );
+    if (index != -1) {
+      contentData = content[index];
+      activeLibraryRelations = libraryRelations[index];
+      finalFocusRef.current = cardMenuRefs.current[index];
     } else {
-      const index = content.findIndex(
-        (obj: any) => obj.contentId == settingsContentId,
-      );
-      if (index != -1) {
-        contentData = content[index];
-        finalFocusRef.current = cardMenuRefs.current[index];
-      } else {
-        //Throw error not found
-      }
+      //Throw error not found
     }
   }
 
@@ -555,6 +556,7 @@ export function Activities() {
         fetcher={fetcher}
         displayTab={displaySettingsTab}
         highlightRename={highlightRename}
+        isInLibrary={activeLibraryRelations.source !== undefined}
       />
     ) : null;
 
@@ -564,6 +566,7 @@ export function Activities() {
         isOpen={sharingIsOpen}
         onClose={sharingOnClose}
         contentData={contentData}
+        libraryRelations={activeLibraryRelations}
         allLicenses={allLicenses}
         finalFocusRef={finalFocusRef}
         fetcher={fetcher}

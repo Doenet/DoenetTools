@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { uuidSchema } from "./uuid";
+import { stringAsBoolSchema } from "./boolean";
 
 export const curationParentIdSchema = z.object({
   parentId: uuidSchema.nullish().transform((val) => val ?? null),
@@ -14,14 +15,15 @@ export const sourceIdSchema = z.object({
   sourceId: uuidSchema,
 });
 
-export const publishSchema = z.object({
-  draftId: uuidSchema,
-  comments: z.string(),
+export const addCommentSchema = z.object({
+  contentId: uuidSchema,
+  comment: z.string(),
+  asEditor: z.boolean().optional(),
 });
 
-export const updateLibraryInfoSchema = z.object({
-  sourceId: uuidSchema,
-  comments: z.string(),
+export const getCommentsSchema = z.object({
+  contentId: uuidSchema,
+  asEditor: stringAsBoolSchema,
 });
 
 export const createCurationFolderSchema = z.object({

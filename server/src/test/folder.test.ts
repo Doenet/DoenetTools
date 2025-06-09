@@ -377,7 +377,7 @@ test(
       lastNames: "Zaborowski",
     });
     const {
-      isAdmin: _isAdmin1,
+      isEditor: _isEditor1,
       isAnonymous: _isAnonymous1,
       isAuthor: _isAuthor1,
       ...userFields1
@@ -390,7 +390,7 @@ test(
       lastNames: "Abbas",
     });
     const {
-      isAdmin: _isAdmin2,
+      isEditor: _isEditor2,
       isAnonymous: _isAnonymous2,
       isAuthor: _isAuthor2,
       ...userFields2

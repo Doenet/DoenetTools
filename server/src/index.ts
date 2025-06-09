@@ -27,7 +27,6 @@ import {
 } from "./query/user";
 import { userRouter } from "./routes/userRoutes";
 import { loginRouter } from "./routes/loginRoutes";
-import { oldAdminRouter } from "./routes/oldAdminRoutes";
 import { assignRouter } from "./routes/assignRoutes";
 import { updateContentRouter } from "./routes/updateContentRoutes";
 import { shareRouter } from "./routes/shareRoutes";
@@ -238,7 +237,7 @@ passport.serializeUser<any, any>(async (req, user: any, done) => {
     let lastNames = "";
     let firstNames: string | null = null;
     let isAnonymous = true;
-    let isAdmin = false;
+    let isEditor = false;
 
     if (
       process.env.ALLOW_TEST_LOGIN &&
@@ -252,8 +251,8 @@ passport.serializeUser<any, any>(async (req, user: any, done) => {
         if (req.body.lastNames) {
           lastNames = req.body.lastNames;
         }
-        if (req.body.isAdmin) {
-          isAdmin = true;
+        if (req.body.isEditor) {
+          isEditor = true;
         }
         isAnonymous = false;
       }
@@ -264,7 +263,7 @@ passport.serializeUser<any, any>(async (req, user: any, done) => {
       lastNames,
       firstNames,
       isAnonymous,
-      isAdmin,
+      isEditor,
     });
     return done(undefined, fromUUID(u.userId));
   }
@@ -308,7 +307,6 @@ app.use(express.static(path.resolve(__dirname, "../public")));
 
 app.use("/api/user", userRouter);
 app.use("/api/login", loginRouter);
-app.use("/api/oldAdmin", oldAdminRouter);
 app.use("/api/assign", assignRouter);
 app.use("/api/updateContent", updateContentRouter);
 app.use("/api/share", shareRouter);

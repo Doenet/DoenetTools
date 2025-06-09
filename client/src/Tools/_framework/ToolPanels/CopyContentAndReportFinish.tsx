@@ -32,22 +32,13 @@ export async function copyContentAndReportFinishActions({
 
     try {
       const contentIds = JSON.parse(formObj.contentIds);
-      if (formObj.copyToLibrary === "true") {
-        for (const c of contentIds) {
-          const { data } = await axios.post(`/api/curate/addDraftToLibrary`, {
-            contentId: c,
-          });
-          newContentIds.push(data.newContentId);
-        }
-      } else {
-        const { data } = await axios.post(`/api/copyMove/copyContent`, {
-          contentIds,
-          parentId: formObj.parentId === "null" ? null : formObj.parentId,
-          prependCopy: formObj.prependCopy === "true",
-        });
+      const { data } = await axios.post(`/api/copyMove/copyContent`, {
+        contentIds,
+        parentId: formObj.parentId === "null" ? null : formObj.parentId,
+        prependCopy: formObj.prependCopy === "true",
+      });
 
-        newContentIds.push(...data.newContentIds);
-      }
+      newContentIds.push(...data.newContentIds);
       return { action: "copiedContent", success: true, newContentIds };
     } catch (e) {
       console.error(e);
@@ -64,7 +55,7 @@ export async function copyContentAndReportFinishActions({
 }
 /**
  * A modal that immediately upon opening copies source content into a parent or Activities
- * Alternatively, if the `copyToLibrary` flag is set and the user is an admin, it copies the activity into the library as a draft.
+ * Alternatively, if the `copyToLibrary` flag is set and the user is an editor, it copies the activity into the library as a draft.
  *
  * When the copy is finished, the modal allows the user to close it or navigate to the parent.
  */
@@ -76,7 +67,6 @@ export function CopyContentAndReportFinish({
   contentIds,
   desiredParent,
   action,
-  copyToLibrary = false,
   prependCopy = false,
 }: {
   fetcher: FetcherWithComponents<any>;
@@ -86,7 +76,6 @@ export function CopyContentAndReportFinish({
   contentIds: string[];
   desiredParent: ContentDescription | null;
   action: "Copy" | "Add";
-  copyToLibrary?: boolean;
   prependCopy?: boolean;
 }) {
   const [newContentIds, setNewContentIds] = useState<string[] | null>(null);
@@ -123,7 +112,6 @@ export function CopyContentAndReportFinish({
             _action: "copy content",
             contentIds: JSON.stringify(contentIds),
             parentId: desiredParent ? desiredParent.contentId : null,
-            copyToLibrary,
             prependCopy,
           },
           { method: "post" },
@@ -164,17 +152,9 @@ export function CopyContentAndReportFinish({
       destinationUrl = `/activityEditor/${desiredParent.contentId}`;
     }
   } else {
-    destinationDescription = copyToLibrary ? (
-      <>the library</>
-    ) : (
-      <>My Activities</>
-    );
-    destinationAction = copyToLibrary
-      ? "Go to the library"
-      : "Go to My Activities";
-    destinationUrl = copyToLibrary
-      ? "/curation"
-      : `/activities/${user?.userId}`;
+    destinationDescription = <>My Activities</>;
+    destinationAction = "Go to My Activities";
+    destinationUrl = `/activities/${user?.userId}`;
   }
 
   return (

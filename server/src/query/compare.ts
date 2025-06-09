@@ -4,7 +4,7 @@ import {
   filterEditableContent,
   filterViewableContent,
 } from "../utils/permissions";
-import { getIsAdmin } from "./curate";
+import { getIsEditor } from "./curate";
 import { cidFromText } from "../utils/cid";
 
 export async function getDoenetMLComparison({
@@ -16,13 +16,13 @@ export async function getDoenetMLComparison({
   compareId: Uint8Array;
   loggedInUserId: Uint8Array;
 }) {
-  const isAdmin = await getIsAdmin(loggedInUserId);
+  const isEditor = await getIsEditor(loggedInUserId);
 
   // verify content exists, is a document, and is editable by logged in user
   const activity = await prisma.content.findUniqueOrThrow({
     where: {
       id: contentId,
-      ...filterEditableContent(loggedInUserId, isAdmin),
+      ...filterEditableContent(loggedInUserId, isEditor),
       type: "singleDoc",
     },
     select: {
@@ -36,7 +36,7 @@ export async function getDoenetMLComparison({
   await prisma.content.findUniqueOrThrow({
     where: {
       id: compareId,
-      ...filterViewableContent(loggedInUserId, isAdmin),
+      ...filterViewableContent(loggedInUserId, isEditor),
       type: "singleDoc",
     },
   });

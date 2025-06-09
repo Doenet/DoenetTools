@@ -31,7 +31,7 @@ import { NavLink } from "react-router";
 import RouterLogo from "../RouterLogo";
 import { ExternalLinkIcon, HamburgerIcon } from "@chakra-ui/icons";
 import axios from "axios";
-import { createFullName } from "../../../_utils/names";
+import { createNameNoTag } from "../../../_utils/names";
 import { ContentDescription } from "../../../_utils/types";
 
 export type User =
@@ -41,7 +41,7 @@ export type User =
       firstNames: string | null;
       lastNames: string;
       isAnonymous: boolean;
-      isAdmin: boolean;
+      isEditor: boolean;
       isAuthor: boolean;
     }
   | undefined;
@@ -252,14 +252,9 @@ export function SiteHeader() {
                       <NavLinkTab to={`assigned`} dataTest="Assigned">
                         Assigned to Me
                       </NavLinkTab>
-                      {user.isAdmin && (
-                        <NavLinkTab to="curation" dataTest="Curation">
-                          Curation
-                        </NavLinkTab>
-                      )}
-                      {user.isAdmin && (
-                        <NavLinkTab to="oldAdmin" dataTest="Admin">
-                          Old Admin
+                      {user.isEditor && (
+                        <NavLinkTab to="curate" dataTest="Curate">
+                          Curate
                         </NavLinkTab>
                       )}
                     </>
@@ -312,23 +307,23 @@ export function SiteHeader() {
                       <MenuButton>
                         <Avatar
                           size="sm"
-                          name={`${user.isAnonymous ? "?" : createFullName(user)}`}
+                          name={`${user.isAnonymous ? "?" : createNameNoTag(user)}`}
                         />
                       </MenuButton>
                       <MenuList>
                         <VStack mb="20px">
                           <Avatar
                             size="xl"
-                            name={`${user.isAnonymous ? "?" : createFullName(user)}`}
+                            name={`${user.isAnonymous ? "?" : createNameNoTag(user)}`}
                           />
                           <Text>
                             {user.isAnonymous
                               ? "[Anonymous]"
-                              : createFullName(user)}
+                              : createNameNoTag(user)}
                           </Text>
                           <Text>
                             {user.isAnonymous
-                              ? `Pseudonym: ${createFullName(user)}`
+                              ? `Pseudonym: ${createNameNoTag(user)}`
                               : user.email}
                           </Text>
                           {user.isAnonymous ? (
@@ -418,20 +413,9 @@ export function SiteHeader() {
                             >
                               Assigned
                             </NavLinkDropdownTab>
-                            {user.isAdmin && (
-                              <NavLinkDropdownTab
-                                to="curation"
-                                dataTest="Curation"
-                              >
-                                Curation
-                              </NavLinkDropdownTab>
-                            )}
-                            {user.isAdmin && (
-                              <NavLinkDropdownTab
-                                to="oldAdmin"
-                                dataTest="Admin"
-                              >
-                                Old Admin
+                            {user.isEditor && (
+                              <NavLinkDropdownTab to="curate" dataTest="Curate">
+                                Curate
                               </NavLinkDropdownTab>
                             )}
                           </>

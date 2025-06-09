@@ -32,17 +32,48 @@ export type License = {
 
 export type AssignmentStatus = "Unassigned" | "Closed" | "Open";
 
-export type LibraryInfo = {
-  sourceId: string;
-  contentId: string | null;
-  onwerRequested?: boolean;
-  status:
-    | "none"
-    | "PENDING_REVIEW"
-    | "REQUEST_REMOVED"
-    | "PUBLISHED"
-    | "NEEDS_REVISION";
-  comments?: string;
+/** This type must match the Prisma-defined enum `LibraryStatus` */
+export type LibraryStatus =
+  | "PENDING"
+  | "UNDER_REVIEW"
+  | "PUBLISHED"
+  | "REJECTED";
+
+/**
+ * This type represents the library status of a provided content id in both directions.
+ * The `activity` field contains info about an activity revised from provided content .
+ * The `source` fields refers an activity that uses the provied content as a source.
+ *
+ * Optional fields are only included for certain users:
+ * - `activity.comments` - must be owner or editor
+ * - `activity.reviewRequestDate` - must be owner or editor
+ * - `source.comments` - must be editor
+ * - `source.ownerRequested` - must be editor
+ */
+export type LibraryRelations = {
+  activity?: {
+    status: LibraryStatus;
+    activityContentId: string | null;
+    // This field is a Date in the server code but a string in the client code.
+    reviewRequestDate?: string;
+  };
+  source?: {
+    status: LibraryStatus;
+    sourceContentId: string | null;
+    // This field is a Date in the server code but a string in the client code.
+    reviewRequestDate?: string;
+    ownerRequested?: boolean;
+    primaryEditor?: UserInfo;
+    iAmPrimaryEditor?: boolean;
+  };
+};
+
+export type LibraryComment = {
+  user: UserInfo;
+  // This field is a Date in the server code but a string in the client code.
+  dateTime: string;
+  comment: string;
+  isMe: boolean;
 };
 
 export type UserInfo = {
@@ -53,6 +84,7 @@ export type UserInfo = {
   isAuthor?: boolean;
   numLibrary?: number;
   numCommunity?: number;
+  isMaskForLibrary?: boolean;
 };
 
 export type ContentFeature = {
@@ -140,8 +172,6 @@ export type ContentBase = {
     sortIndex: number;
   }[];
   classifications: ContentClassification[];
-  librarySourceInfo?: LibraryInfo;
-  libraryActivityInfo?: LibraryInfo;
   parent: {
     contentId: string;
     name: string;

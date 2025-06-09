@@ -3,7 +3,7 @@ import { prisma } from "../model";
 import { LicenseCode } from "../types";
 import { processLicense } from "../utils/contentStructure";
 import { filterEditableContent } from "../utils/permissions";
-import { getIsAdmin } from "./curate";
+import { getIsEditor } from "./curate";
 import { isEqualUUID } from "../utils/uuid";
 import { InvalidRequestError } from "../utils/error";
 import { getDescendantIds } from "./activity";
@@ -47,9 +47,12 @@ export async function setContentLicense({
   loggedInUserId: Uint8Array;
   licenseCode: LicenseCode;
 }) {
-  const isAdmin = await getIsAdmin(loggedInUserId);
+  const isEditor = await getIsEditor(loggedInUserId);
   await prisma.content.update({
-    where: { id: contentId, ...filterEditableContent(loggedInUserId, isAdmin) },
+    where: {
+      id: contentId,
+      ...filterEditableContent(loggedInUserId, isEditor),
+    },
     data: { licenseCode },
   });
 }

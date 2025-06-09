@@ -5,19 +5,19 @@ export async function findOrCreateUser({
   email,
   firstNames,
   lastNames,
-  isAdmin = false,
+  isEditor = false,
   isAnonymous = false,
 }: {
   email: string;
   firstNames: string | null;
   lastNames: string;
-  isAdmin?: boolean;
+  isEditor?: boolean;
   isAnonymous?: boolean;
 }) {
   let user = await prisma.users.upsert({
     where: { email },
     update: {},
-    create: { email, firstNames, lastNames, isAdmin, isAnonymous },
+    create: { email, firstNames, lastNames, isEditor, isAnonymous },
   });
 
   if (lastNames !== "" && user.lastNames == "") {
@@ -56,7 +56,7 @@ export async function getUserInfo({
       firstNames: true,
       lastNames: true,
       isAnonymous: true,
-      isAdmin: true,
+      isEditor: true,
       isAuthor: true,
     },
   });
@@ -84,7 +84,7 @@ export async function getUserInfoFromEmail(email: string) {
       firstNames: true,
       lastNames: true,
       isAnonymous: true,
-      isAdmin: true,
+      isEditor: true,
     },
   });
   return user;
