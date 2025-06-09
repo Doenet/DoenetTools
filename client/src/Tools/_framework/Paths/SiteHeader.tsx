@@ -41,7 +41,7 @@ export type User =
       firstNames: string | null;
       lastNames: string;
       isAnonymous: boolean;
-      isAdmin: boolean;
+      isEditor: boolean;
       isAuthor: boolean;
     }
   | undefined;
@@ -252,7 +252,7 @@ export function SiteHeader() {
                       <NavLinkTab to={`assigned`} dataTest="Assigned">
                         Assigned to Me
                       </NavLinkTab>
-                      {user.isAdmin && (
+                      {user.isEditor && (
                         <NavLinkTab to="curate" dataTest="Curate">
                           Curate
                         </NavLinkTab>
@@ -413,7 +413,7 @@ export function SiteHeader() {
                             >
                               Assigned
                             </NavLinkDropdownTab>
-                            {user.isAdmin && (
+                            {user.isEditor && (
                               <NavLinkDropdownTab to="curate" dataTest="Curate">
                                 Curate
                               </NavLinkDropdownTab>

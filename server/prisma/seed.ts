@@ -44,23 +44,23 @@ async function main() {
   });
 
   await prisma.users.upsert({
-    where: { email: "admin@doenet.org" },
+    where: { email: "editor@doenet.org" },
     update: {},
     create: {
-      email: "admin@doenet.org",
-      firstNames: "Admin",
+      email: "editor@doenet.org",
+      firstNames: "Editor",
       lastNames: "User",
-      isAdmin: true,
+      isEditor: true,
     },
   });
   await prisma.users.upsert({
-    where: { email: "admin2@doenet.org" },
+    where: { email: "editor2@doenet.org" },
     update: {},
     create: {
-      email: "admin2@doenet.org",
+      email: "editor2@doenet.org",
       firstNames: "Second",
-      lastNames: "Admin",
-      isAdmin: true,
+      lastNames: "Editor",
+      isEditor: true,
     },
   });
 

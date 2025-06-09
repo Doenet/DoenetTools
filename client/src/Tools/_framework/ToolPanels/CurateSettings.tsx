@@ -52,7 +52,7 @@ export async function curateActions({ formObj }: { [k: string]: any }) {
  * This component is used to display the curation settings for an activity in the library.
  * It is the library's equivalent of the `ShareSettings` component panel.
  *
- * Only meant to be used by admins.
+ * Only meant to be used by editors.
  */
 export function CurateSettings({
   fetcher,

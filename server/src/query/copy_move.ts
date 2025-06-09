@@ -6,7 +6,7 @@ import {
   filterViewableContent,
 } from "../utils/permissions";
 import { isEqualUUID } from "../utils/uuid";
-import { getIsAdmin } from "./curate";
+import { getIsEditor } from "./curate";
 import {
   calculateNewSortIndex,
   getNextSortIndexForParent,
@@ -42,13 +42,13 @@ export async function moveContent({
     throw Error("desiredPosition must be an integer");
   }
 
-  const isAdmin = await getIsAdmin(loggedInUserId);
+  const isEditor = await getIsEditor(loggedInUserId);
 
   // make sure content exists and is editable by `ownerId`
   const content = await prisma.content.findUniqueOrThrow({
     where: {
       id: contentId,
-      ...filterEditableContent(loggedInUserId, isAdmin),
+      ...filterEditableContent(loggedInUserId, isEditor),
     },
     select: {
       id: true,
@@ -91,7 +91,7 @@ export async function moveContent({
         id: parentId,
         type: { not: "singleDoc" },
 
-        // NOTE: We don't use `filterEditableContent` because the owner must match exactly. We cannot move between admin's folders and library
+        // NOTE: We don't use `filterEditableContent` because the owner must match exactly. We cannot move between editor's folders and library
         ownerId: content.owner.userId,
         isDeletedOn: null,
       },
@@ -258,7 +258,7 @@ export async function moveContent({
  * add it and its contributor history to the contributor history of the new activity.
  *
  * The parameter `parentId`, if not `null`, must be existing content which is owned by `userId` or,
- * if the user is an admin, an existing _library_ folder.
+ * if the user is an editor, an existing _library_ folder.
  *
  * If `parentId` is a content type (`select` or `sequence`) that cannot be a parent of `origId`,
  * then instead copy the children of `origId` into `parentId`.
@@ -281,14 +281,14 @@ export async function copyContent({
   parentId: Uint8Array | null;
   prependCopy?: boolean;
 }) {
-  const isAdmin = await getIsAdmin(loggedInUserId);
+  const isEditor = await getIsEditor(loggedInUserId);
 
   // make sure all content exists and is viewable by `loggedInUserId`
 
   const visibleContentIds = await prisma.content.findMany({
     where: {
       id: { in: contentIds },
-      ...filterViewableContent(loggedInUserId, isAdmin),
+      ...filterViewableContent(loggedInUserId, isEditor),
     },
     select: { id: true },
   });
@@ -309,7 +309,7 @@ export async function copyContent({
       where: {
         id: parentId,
         type: { not: "singleDoc" },
-        ...filterEditableContent(loggedInUserId, isAdmin),
+        ...filterEditableContent(loggedInUserId, isEditor),
       },
       select: {
         isPublic: true,
@@ -386,7 +386,7 @@ export async function copyContent({
         contentId,
         parentId,
         prependCopy,
-        isAdmin,
+        isEditor,
         desiredParentIsPublic,
         desiredParentLicenseCode,
         desiredParentShares,
@@ -407,7 +407,7 @@ async function copySingleContent({
   loggedInUserId,
   parentId,
   prependCopy,
-  isAdmin,
+  isEditor,
   desiredParentIsPublic,
   desiredParentLicenseCode,
   desiredParentShares,
@@ -417,7 +417,7 @@ async function copySingleContent({
   loggedInUserId: Uint8Array;
   parentId: Uint8Array | null;
   prependCopy: boolean;
-  isAdmin: boolean;
+  isEditor: boolean;
   desiredParentIsPublic: boolean;
   desiredParentLicenseCode: LicenseCode;
   desiredParentShares: Uint8Array[];
@@ -427,7 +427,7 @@ async function copySingleContent({
   const originalContent = await prisma.content.findUniqueOrThrow({
     where: {
       id: contentId,
-      ...filterViewableContent(loggedInUserId, isAdmin),
+      ...filterViewableContent(loggedInUserId, isEditor),
     },
     omit: {
       id: true,
@@ -473,7 +473,7 @@ async function copySingleContent({
         loggedInUserId,
         parentId,
         prependCopy: false,
-        isAdmin,
+        isEditor,
         desiredParentIsPublic,
         desiredParentLicenseCode,
         desiredParentShares,
@@ -537,7 +537,7 @@ async function copySingleContent({
         loggedInUserId,
         parentId: newContent.id,
         prependCopy: false,
-        isAdmin,
+        isEditor,
         desiredParentIsPublic,
         desiredParentLicenseCode,
         desiredParentShares,

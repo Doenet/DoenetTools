@@ -55,7 +55,7 @@ export async function copyContentAndReportFinishActions({
 }
 /**
  * A modal that immediately upon opening copies source content into a parent or Activities
- * Alternatively, if the `copyToLibrary` flag is set and the user is an admin, it copies the activity into the library as a draft.
+ * Alternatively, if the `copyToLibrary` flag is set and the user is an editor, it copies the activity into the library as a draft.
  *
  * When the copy is finished, the modal allows the user to close it or navigate to the parent.
  */

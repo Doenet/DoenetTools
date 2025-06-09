@@ -18,23 +18,23 @@ import { processContent, returnContentSelect } from "../utils/contentStructure";
 import { getAvailableContentFeatures } from "./classification";
 import { getAllLicenses } from "./share";
 
-export async function mustBeAdmin(
+export async function mustBeEditor(
   userId: Uint8Array,
-  message = "You must be an community admin to take this action",
+  message = "You must be an community editor to take this action",
 ) {
-  const isAdmin = await getIsAdmin(userId);
-  if (!isAdmin) {
+  const isEditor = await getIsEditor(userId);
+  if (!isEditor) {
     throw new InvalidRequestError(message);
   }
 }
 
-export async function getIsAdmin(userId: Uint8Array) {
+export async function getIsEditor(userId: Uint8Array) {
   const user = await prisma.users.findUnique({ where: { userId } });
-  let isAdmin = false;
+  let isEditor = false;
   if (user) {
-    isAdmin = user.isAdmin;
+    isEditor = user.isEditor;
   }
-  return isAdmin;
+  return isEditor;
 }
 
 export async function getLibraryAccountId() {
@@ -61,17 +61,17 @@ export async function getLibraryAccountId() {
 async function redactInvisibleContentIds({
   contentIds: contentIds,
   loggedInUserId,
-  isAdmin,
+  isEditor,
 }: {
   contentIds: Uint8Array[];
   loggedInUserId: Uint8Array;
-  isAdmin: boolean;
+  isEditor: boolean;
 }) {
   const visibleIdsList = (
     await prisma.content.findMany({
       where: {
         id: { in: contentIds },
-        ...filterViewableActivity(loggedInUserId, isAdmin),
+        ...filterViewableActivity(loggedInUserId, isEditor),
       },
       select: { id: true },
     })
@@ -145,7 +145,7 @@ export async function getMultipleLibraryRelations({
   contentIds: Uint8Array[];
   loggedInUserId?: Uint8Array;
 }): Promise<LibraryRelations[]> {
-  const isAdmin = await getIsAdmin(loggedInUserId);
+  const isEditor = await getIsEditor(loggedInUserId);
 
   // ======== Relation: Me to Revised =========
 
@@ -163,7 +163,7 @@ export async function getMultipleLibraryRelations({
     where: {
       sourceId: { in: contentIds },
       source: {
-        ...filterViewableActivity(loggedInUserId, isAdmin),
+        ...filterViewableActivity(loggedInUserId, isEditor),
       },
     },
     select: {
@@ -198,7 +198,7 @@ export async function getMultipleLibraryRelations({
     const redactFor = await redactInvisibleContentIds({
       contentIds: infos.map((v) => v.contentId),
       loggedInUserId,
-      isAdmin,
+      isEditor,
     });
 
     for (const info of infos) {
@@ -209,16 +209,16 @@ export async function getMultipleLibraryRelations({
 
       // Three possible conditions for this relation to be visible.
       // 1. Curated activity is published
-      // 2. You are admin
+      // 2. You are editor
       // 3. You are owner and you suggested the review
-      if (isPublished || isAdmin || (isOwner && info.ownerRequested)) {
+      if (isPublished || isEditor || (isOwner && info.ownerRequested)) {
         meRelations[fromUUID(info.sourceId)] = {
           // activityContentId: revisedIds[i],
           activityContentId: redactedId,
           status: info.status,
         };
 
-        if (isAdmin || (isOwner && info.ownerRequested)) {
+        if (isEditor || (isOwner && info.ownerRequested)) {
           meRelations[fromUUID(info.sourceId)].reviewRequestDate =
             info.requestedOn;
         }
@@ -243,7 +243,7 @@ export async function getMultipleLibraryRelations({
     where: {
       contentId: { in: contentIds },
       activity: {
-        ...filterViewableActivity(loggedInUserId, isAdmin),
+        ...filterViewableActivity(loggedInUserId, isEditor),
       },
     },
     select: {
@@ -267,7 +267,7 @@ export async function getMultipleLibraryRelations({
     const redactFor = await redactInvisibleContentIds({
       contentIds: sourceInfos.map((v) => v.sourceId),
       loggedInUserId,
-      isAdmin,
+      isEditor,
     });
 
     for (const sourceInfo of sourceInfos) {
@@ -277,8 +277,8 @@ export async function getMultipleLibraryRelations({
         sourceContentId: redactFor.get(sourceInfo.sourceId)!,
         status: sourceInfo.status,
       };
-      if (isAdmin) {
-        // Only admins can see if owner requested review and the date requested on
+      if (isEditor) {
+        // Only editors can see if owner requested review and the date requested on
         sourceRelations[key].ownerRequested = sourceInfo.ownerRequested;
         sourceRelations[key].reviewRequestDate = sourceInfo.requestedOn;
 
@@ -430,7 +430,7 @@ export async function suggestToBeCurated({
  * If the activity was `pending`, it changes to `under_review`.
  * If there was an existing primary editor, you replace them.
  * @param contentId - id of the library-owned remix, not the source content id
- * @param loggedInUserId - must be admin
+ * @param loggedInUserId - must be editor
  */
 export async function claimOwnershipOfReview({
   contentId,
@@ -439,7 +439,7 @@ export async function claimOwnershipOfReview({
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
 }) {
-  await mustBeAdmin(loggedInUserId);
+  await mustBeEditor(loggedInUserId);
 
   const activity = await prisma.libraryActivityInfos.findUniqueOrThrow({
     where: {
@@ -486,7 +486,7 @@ export async function claimOwnershipOfReview({
 /**
  * Make library activity public and log event.
  * @param contentId - activity in library account with status `under_review`
- * @param loggedInUserId - must be admin and primary editor
+ * @param loggedInUserId - must be editor and primary editor
  * @todo notify owner
  */
 export async function publishActivityToLibrary({
@@ -496,7 +496,7 @@ export async function publishActivityToLibrary({
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
 }) {
-  await mustBeAdmin(loggedInUserId);
+  await mustBeEditor(loggedInUserId);
   await prisma.content.update({
     where: {
       id: contentId,
@@ -533,7 +533,7 @@ export async function publishActivityToLibrary({
 /**
  * Return library activity to `under_review` category and log event.
  * @param contentId - must be existing published (public) activity in library account
- * @param loggedInUserId - must be admin and primary editor
+ * @param loggedInUserId - must be editor and primary editor
  */
 export async function unpublishActivityFromLibrary({
   contentId,
@@ -542,7 +542,7 @@ export async function unpublishActivityFromLibrary({
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
 }) {
-  await mustBeAdmin(loggedInUserId);
+  await mustBeEditor(loggedInUserId);
   await prisma.content.update({
     where: {
       id: contentId,
@@ -574,7 +574,7 @@ export async function unpublishActivityFromLibrary({
 /**
  * Reject activity's request for curation and log event.
  * @param contentId - activity in library account with status `under_review`
- * @param loggedInUserId - must be admin and primary editor
+ * @param loggedInUserId - must be editor and primary editor
  */
 export async function rejectActivity({
   contentId,
@@ -583,7 +583,7 @@ export async function rejectActivity({
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
 }) {
-  await mustBeAdmin(loggedInUserId);
+  await mustBeEditor(loggedInUserId);
   await prisma.libraryActivityInfos.update({
     where: {
       contentId,
@@ -620,7 +620,7 @@ export async function addComment({
   asEditor?: boolean;
 }) {
   if (asEditor) {
-    await mustBeAdmin(loggedInUserId);
+    await mustBeEditor(loggedInUserId);
   }
   await prisma.libraryActivityInfos.update({
     where: {
@@ -667,7 +667,7 @@ export async function getComments({
   asEditor?: boolean;
 }): Promise<LibraryComment[]> {
   if (asEditor) {
-    await mustBeAdmin(loggedInUserId);
+    await mustBeEditor(loggedInUserId);
   } else {
     // Must be owner
     await prisma.content.findUniqueOrThrow({
@@ -760,14 +760,14 @@ export async function createCurationFolder({
 
 /**
  * Get all pending curation requests, sorted by submission date oldest to newest.
- * Must be admin to call function.
+ * Must be editor to call function.
  */
 export async function getCurationQueue({
   loggedInUserId,
 }: {
   loggedInUserId: Uint8Array;
 }) {
-  await mustBeAdmin(loggedInUserId);
+  await mustBeEditor(loggedInUserId);
 
   async function getLibraryContentWithStatus({
     status,

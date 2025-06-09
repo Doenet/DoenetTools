@@ -178,6 +178,7 @@ export function CompoundActivityEditor({
 
   // Read only: cannot edit anything about this activity
   // Read only structure: cannot add or remove sub-activities
+  // NOTE: currently not used as we're limiting curation to single docs
   const readOnly = asViewer || isAssigned;
   const readOnlyStructure = readOnly || inLibrary;
 

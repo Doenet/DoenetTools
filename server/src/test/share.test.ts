@@ -74,7 +74,7 @@ describe("Share tests", () => {
     const ownerId = owner.userId;
     const user = await createTestUser();
     const userId = user.userId;
-    const { isAdmin, isAnonymous, isAuthor, ...userFields } = user;
+    const { isEditor, isAnonymous, isAuthor, ...userFields } = user;
 
     const { contentId: publicFolderId } = await createContent({
       loggedInUserId: ownerId,
@@ -540,7 +540,7 @@ describe("Share tests", () => {
         lastNames: "Zaborowski",
       });
       const {
-        isAdmin: _isAdmin1,
+        isEditor: _isEditor1,
         isAnonymous: _isAnonymous1,
         isAuthor: _isAuthor1,
         ...userFields1
@@ -553,7 +553,7 @@ describe("Share tests", () => {
         lastNames: "Abbas",
       });
       const {
-        isAdmin: _isAdmin2,
+        isEditor: _isEditor2,
         isAnonymous: _isAnonymous2,
         isAuthor: _isAuthor2,
         ...userFields2
@@ -566,7 +566,7 @@ describe("Share tests", () => {
         lastNames: "Nyquist",
       });
       const {
-        isAdmin: _isAdmin3,
+        isEditor: _isEditor3,
         isAnonymous: _isAnonymous3,
         isAuthor: _isAuthor3,
         ...userFields3
@@ -1064,7 +1064,7 @@ describe("Share tests", () => {
     const user = await createTestUser();
     const userId = user.userId;
     const {
-      isAdmin: _isAdmin,
+      isEditor: _isEditor,
       isAnonymous: _isAnonymous,
       isAuthor: _isAuthor,
       ...userFields

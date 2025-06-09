@@ -10,16 +10,16 @@ import { DateTime } from "luxon";
  * 1. `loggedInUserId` is the owner
  * 2. The content is public
  * 3. The content is shared with `loggedInUserId`
- * 4. `loggedInUserId` is an admin and the content is in the library.
+ * 4. `loggedInUserId` is an editor and the content is in the library.
  *
- * NOTE: This function does not verify admin privileges. You must pass in the correct `isAdmin` flag.
+ * NOTE: This function does not verify editor privileges. You must pass in the correct `isEditor` flag.
  */
 export function filterViewableActivity(
   loggedInUserId: Uint8Array,
-  isAdmin: boolean = false,
+  isEditor: boolean = false,
 ) {
   return {
-    ...filterViewableContent(loggedInUserId, isAdmin),
+    ...filterViewableContent(loggedInUserId, isEditor),
     type: { not: "folder" as const },
   };
 }
@@ -31,13 +31,13 @@ export function filterViewableActivity(
  * 1. `loggedInUserId` is the owner
  * 2. The content is public
  * 3. The content is shared with `loggedInUserId`
- * 4. `loggedInUserId` is an admin and the content is in the library.
+ * 4. `loggedInUserId` is an editor and the content is in the library.
  *
- * NOTE: This function does not verify admin privileges. You must pass in the correct `isAdmin` flag.
+ * NOTE: This function does not verify editor privileges. You must pass in the correct `isEditor` flag.
  */
 export function filterViewableContent(
   loggedInUserId: Uint8Array,
-  isAdmin: boolean = false,
+  isEditor: boolean = false,
 ) {
   const visibilityOptions: (
     | { ownerId: Uint8Array }
@@ -49,7 +49,7 @@ export function filterViewableContent(
     { isPublic: true },
     { sharedWith: { some: { userId: loggedInUserId } } },
   ];
-  if (isAdmin) {
+  if (isEditor) {
     visibilityOptions.push({ owner: { isLibrary: true } });
   }
   return {
@@ -65,13 +65,13 @@ export function filterViewableContent(
  * 1. `loggedInUserId` is the owner
  * 2. The content is public
  * 3. The content is shared with `loggedInUserId`
- * 4. `loggedInUserId` is an admin and the content is in the library.
+ * 4. `loggedInUserId` is an editor and the content is in the library.
  *
- * NOTE: This function does not verify admin privileges. You must pass in the correct `isAdmin` flag.
+ * NOTE: This function does not verify editor privileges. You must pass in the correct `isEditor` flag.
  */
 export function viewableContentWhere(
   loggedInUserId: Uint8Array,
-  isAdmin: boolean = false,
+  isEditor: boolean = false,
 ) {
   let visibilityOptions = Prisma.sql`
       content.ownerId = ${loggedInUserId}
@@ -79,7 +79,7 @@ export function viewableContentWhere(
       OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
   `;
 
-  if (isAdmin) {
+  if (isEditor) {
     visibilityOptions = Prisma.sql`
         ${visibilityOptions}
         OR (SELECT isLibrary FROM users WHERE userId = content.ownerId) = TRUE
@@ -101,16 +101,16 @@ export function viewableContentWhere(
  *
  * For an activity to be editable, one of these conditions must be true:
  * 1. `loggedInUserId` is the owner
- * 4. `loggedInUserId` is an admin and the content is in the library.
+ * 4. `loggedInUserId` is an editor and the content is in the library.
  *
- * NOTE: This function does not verify admin privileges. You must pass in the correct `isAdmin` flag.
+ * NOTE: This function does not verify editor privileges. You must pass in the correct `isEditor` flag.
  */
 export function filterEditableActivity(
   loggedInUserId: Uint8Array,
-  isAdmin: boolean = false,
+  isEditor: boolean = false,
 ) {
   return {
-    ...filterEditableContent(loggedInUserId, isAdmin),
+    ...filterEditableContent(loggedInUserId, isEditor),
     type: { not: "folder" as const },
   };
 }
@@ -120,20 +120,20 @@ export function filterEditableActivity(
  *
  * For content to be editable, one of these conditions must be true:
  * 1. `loggedInUserId` is the owner
- * 2. `loggedInUserId` is an admin and the content is in the library.
+ * 2. `loggedInUserId` is an editor and the content is in the library.
  *
- * NOTE: This function does not verify admin privileges. You must pass in the correct `isAdmin` flag.
+ * NOTE: This function does not verify editor privileges. You must pass in the correct `isEditor` flag.
  */
 export function filterEditableContent(
   loggedInUserId: Uint8Array,
-  isAdmin: boolean = false,
+  isEditor: boolean = false,
 ) {
   const editabilityOptions: (
     | { ownerId: Uint8Array }
     | { owner: { isLibrary: boolean } }
   )[] = [{ ownerId: loggedInUserId }];
 
-  if (isAdmin) {
+  if (isEditor) {
     editabilityOptions.push({ owner: { isLibrary: true } });
   }
   return {
@@ -147,19 +147,19 @@ export function filterEditableContent(
  *
  * For content to be viewable, one of these conditions must be true:
  * 1. `loggedInUserId` is the owner
- * 2. `loggedInUserId` is an admin and the content is in the library.
+ * 2. `loggedInUserId` is an editor and the content is in the library.
  *
- * NOTE: This function does not verify admin privileges. You must pass in the correct `isAdmin` flag.
+ * NOTE: This function does not verify editor privileges. You must pass in the correct `isEditor` flag.
  */
 export function editableContentWhere(
   loggedInUserId: Uint8Array,
-  isAdmin: boolean = false,
+  isEditor: boolean = false,
 ) {
   let visibilityOptions = Prisma.sql`
       content.ownerId = ${loggedInUserId}
   `;
 
-  if (isAdmin) {
+  if (isEditor) {
     visibilityOptions = Prisma.sql`
         ${visibilityOptions}
         OR (SELECT isLibrary FROM users WHERE userId = content.ownerId) = TRUE
@@ -181,7 +181,7 @@ export function editableContentWhere(
  *
  * For an activity to be editable, one of these conditions must be true:
  * 1. You are the owner
- * 2. You are an admin and the activity is in the library
+ * 2. You are an editor and the activity is in the library
  *
  * For an activity to be viewable, these conditions also work:
  *
@@ -195,7 +195,7 @@ export function editableContentWhere(
 export async function checkActivityPermissions(
   contentId: Uint8Array,
   loggedInUserId: Uint8Array,
-  isAdmin: boolean,
+  isEditor: boolean,
 ): Promise<{
   editable: boolean;
   viewable: boolean;
@@ -204,7 +204,7 @@ export async function checkActivityPermissions(
   const viewable = await prisma.content.findUnique({
     where: {
       id: contentId,
-      ...filterViewableActivity(loggedInUserId, isAdmin),
+      ...filterViewableActivity(loggedInUserId, isEditor),
     },
     select: {
       // We will use these fields to determine if it is editable
@@ -223,10 +223,10 @@ export async function checkActivityPermissions(
 
   // For an activity to be editable, either
   // 1. You are the owner
-  // 2. You are an admin and the activity is in the library
+  // 2. You are an editor and the activity is in the library
   if (
     isEqualUUID(viewable.owner.userId, loggedInUserId) ||
-    (viewable.owner.isLibrary && isAdmin)
+    (viewable.owner.isLibrary && isEditor)
   ) {
     return { editable: true, viewable: true, ownerId: viewable.owner.userId };
   } else {

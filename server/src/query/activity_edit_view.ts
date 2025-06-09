@@ -10,7 +10,7 @@ import { prisma } from "../model";
 import { getAvailableContentFeatures } from "./classification";
 import { processContent, returnContentSelect } from "../utils/contentStructure";
 import {
-  getIsAdmin,
+  getIsEditor,
   getSingleLibraryRelations,
   maskLibraryUserInfo,
 } from "./curate";
@@ -33,12 +33,12 @@ export async function getActivityEditorData({
 }) {
   // TODO: add pagination or a hard limit in the number of documents one can add to an activity
 
-  const isAdmin = await getIsAdmin(loggedInUserId);
+  const isEditor = await getIsEditor(loggedInUserId);
 
   const activityPermissions = await checkActivityPermissions(
     contentId,
     loggedInUserId,
-    isAdmin,
+    isEditor,
   );
   if (!activityPermissions.viewable || !activityPermissions.ownerId) {
     throw new InvalidRequestError(
@@ -57,7 +57,7 @@ export async function getActivityEditorData({
     includeAssignInfo: true,
     includeClassifications: true,
     includeShareDetails: true,
-    isAdmin,
+    isEditor,
   });
 
   const revisions = await getContentRevisions({ contentId, loggedInUserId });
@@ -102,12 +102,12 @@ export async function getActivityViewerData({
   contentId: Uint8Array;
   loggedInUserId?: Uint8Array;
 }) {
-  const isAdmin = await getIsAdmin(loggedInUserId);
+  const isEditor = await getIsEditor(loggedInUserId);
 
   const activity = await getContent({
     contentId,
     loggedInUserId,
-    isAdmin,
+    isEditor,
     includeOwnerDetails: true,
     includeClassifications: true,
   });
@@ -119,7 +119,7 @@ export async function getActivityViewerData({
   const { remixSources } = await getRemixSources({
     contentId,
     loggedInUserId,
-    isAdmin,
+    isEditor,
   });
 
   // Replace library owner info with source owner info
@@ -167,7 +167,7 @@ export async function getContent({
   includeClassifications = false,
   includeShareDetails = false,
   includeOwnerDetails = false,
-  isAdmin = false,
+  isEditor = false,
   skipPermissionCheck = false,
 }: {
   contentId: Uint8Array;
@@ -176,7 +176,7 @@ export async function getContent({
   includeClassifications?: boolean;
   includeShareDetails?: boolean;
   includeOwnerDetails?: boolean;
-  isAdmin?: boolean;
+  isEditor?: boolean;
   skipPermissionCheck?: boolean;
 }) {
   // 1. verify that `loggedInUserId` can view content
@@ -185,7 +185,7 @@ export async function getContent({
       id: contentId,
       ...(skipPermissionCheck
         ? { isDeletedOn: null }
-        : filterViewableActivity(loggedInUserId, isAdmin)),
+        : filterViewableActivity(loggedInUserId, isEditor)),
     },
     select: { id: true },
   });
@@ -200,13 +200,13 @@ export async function getContent({
     WITH RECURSIVE content_tree(id, parentId, sortIndex) AS (
     SELECT id, parentId, sortIndex FROM content
     WHERE parentId = ${contentId}
-      ${skipPermissionCheck ? Prisma.sql`AND content.isDeletedOn IS NULL` : Prisma.sql`AND ${viewableContentWhere(loggedInUserId, isAdmin)}`}
+      ${skipPermissionCheck ? Prisma.sql`AND content.isDeletedOn IS NULL` : Prisma.sql`AND ${viewableContentWhere(loggedInUserId, isEditor)}`}
     UNION ALL
     SELECT content.id, content.parentId, content.sortIndex FROM content
     INNER JOIN content_tree AS ct
     ON content.parentId = ct.id
     WHERE 
-      ${skipPermissionCheck ? Prisma.sql`content.isDeletedOn IS NULL` : Prisma.sql`${viewableContentWhere(loggedInUserId, isAdmin)}`}
+      ${skipPermissionCheck ? Prisma.sql`content.isDeletedOn IS NULL` : Prisma.sql`${viewableContentWhere(loggedInUserId, isEditor)}`}
   )
   SELECT id, parentId from content_tree
     ORDER BY

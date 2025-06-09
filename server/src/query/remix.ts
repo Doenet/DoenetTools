@@ -7,27 +7,27 @@ import {
   filterViewableActivity,
 } from "../utils/permissions";
 import { createContentRevision, getContentSource } from "./activity";
-import { getIsAdmin, maskLibraryUserInfo } from "./curate";
+import { getIsEditor, maskLibraryUserInfo } from "./curate";
 
 export async function getRemixSources({
   contentId,
   loggedInUserId = new Uint8Array(16),
-  isAdmin,
+  isEditor,
   includeSource = false,
 }: {
   contentId: Uint8Array;
   loggedInUserId?: Uint8Array;
-  isAdmin?: boolean;
+  isEditor?: boolean;
   includeSource?: boolean;
 }): Promise<{ remixSources: ActivityRemixItem[] }> {
-  if (isAdmin === undefined) {
-    isAdmin = await getIsAdmin(loggedInUserId);
+  if (isEditor === undefined) {
+    isEditor = await getIsEditor(loggedInUserId);
   }
 
   const prelimRemixSources = await prisma.content.findUniqueOrThrow({
     where: {
       id: contentId,
-      ...filterViewableActivity(loggedInUserId, isAdmin),
+      ...filterViewableActivity(loggedInUserId, isEditor),
     },
     select: {
       id: true,
@@ -48,7 +48,7 @@ export async function getRemixSources({
             where: {
               originContent: {
                 content: {
-                  ...filterViewableActivity(loggedInUserId, isAdmin),
+                  ...filterViewableActivity(loggedInUserId, isEditor),
                 },
               },
             },
@@ -211,7 +211,7 @@ export async function getRemixes({
   includeSource?: boolean;
   // directRemixesOnly?: boolean;
 }): Promise<{ remixes: ActivityRemixItem[] }> {
-  const isAdmin = await getIsAdmin(loggedInUserId);
+  const isEditor = await getIsEditor(loggedInUserId);
 
   // const directFilter = directRemixesOnly
   //   ? {
@@ -222,7 +222,7 @@ export async function getRemixes({
   const prelimRemixes = await prisma.content.findUniqueOrThrow({
     where: {
       id: contentId,
-      ...filterViewableActivity(loggedInUserId, isAdmin),
+      ...filterViewableActivity(loggedInUserId, isEditor),
     },
     select: {
       id: true,
@@ -243,7 +243,7 @@ export async function getRemixes({
             where: {
               remixContent: {
                 content: {
-                  ...filterViewableActivity(loggedInUserId, isAdmin),
+                  ...filterViewableActivity(loggedInUserId, isEditor),
                 },
               },
               // ...directFilter,

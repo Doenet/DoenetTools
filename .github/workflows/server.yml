@@ -66,7 +66,7 @@ jobs:
       - name: Npm clean install
         run: npm ci
         working-directory: ./server
-      - name: Setup prisma database
+      - name: Apply migrations
         run: npx prisma migrate dev
         working-directory: ./server
       - name: Seed database

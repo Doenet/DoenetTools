@@ -533,7 +533,7 @@ export function ActivityViewer() {
                   ) : (
                     <></>
                   )}
-                  {user?.isAdmin &&
+                  {user?.isEditor &&
                   libraryRelations.activity?.activityContentId &&
                   libraryRelations.activity?.status !== "PUBLISHED" ? (
                     <Button

@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 import {
-  createTestAdminUser,
+  createTestEditorUser,
   createTestAnonymousUser,
   createTestUser,
 } from "./utils";
@@ -90,8 +90,8 @@ async function expectStatusIs(
 
 test("user privileges for library", async () => {
   const { userId: ownerId } = await createTestUser();
-  const { userId: adminId } = await createTestAdminUser();
-  const { userId: admin2Id } = await createTestAdminUser();
+  const { userId: editorId } = await createTestEditorUser();
+  const { userId: editor2Id } = await createTestEditorUser();
   const { userId: randomUserId } = await createTestUser();
   const { userId: anonymousId } = await createTestAnonymousUser();
 
@@ -105,7 +105,7 @@ test("user privileges for library", async () => {
   const statusNone: LibraryRelations = {};
 
   await expectStatusIs(sourceId, statusNone, ownerId);
-  await expectStatusIs(sourceId, statusNone, adminId);
+  await expectStatusIs(sourceId, statusNone, editorId);
   await expectStatusIs(sourceId, statusNone, randomUserId);
   await expectStatusIs(sourceId, statusNone, anonymousId);
 
@@ -116,11 +116,11 @@ test("user privileges for library", async () => {
     ).rejects.toThrowError();
   }
   await expectSubmitRequestFails(ownerId);
-  await expectSubmitRequestFails(adminId);
+  await expectSubmitRequestFails(editorId);
   await expectSubmitRequestFails(randomUserId);
   await expectSubmitRequestFails(anonymousId);
   await expectStatusIs(sourceId, statusNone, ownerId);
-  await expectStatusIs(sourceId, statusNone, adminId);
+  await expectStatusIs(sourceId, statusNone, editorId);
   await expectStatusIs(sourceId, statusNone, randomUserId);
   await expectStatusIs(sourceId, statusNone, anonymousId);
 
@@ -184,14 +184,14 @@ test("user privileges for library", async () => {
   });
   await expectStatusIs(someContentIds[2], statusNone, randomUserId);
 
-  // Admin
+  // Editor
   await suggestToBeCurated({
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
     contentId: sourceId,
   });
 
   const draftId = await getActivityIdFromSourceId(sourceId);
-  const statusPendingAdmin: LibraryRelations = {
+  const statusPendingEditor: LibraryRelations = {
     activity: {
       status: "PENDING",
       reviewRequestDate: approximateReviewRequestDate,
@@ -199,10 +199,10 @@ test("user privileges for library", async () => {
     },
   };
 
-  await expectStatusIs(sourceId, statusPendingAdmin, adminId);
+  await expectStatusIs(sourceId, statusPendingEditor, editorId);
   await expectStatusIs(sourceId, statusNone, ownerId);
 
-  // Only admin can take ownership
+  // Only editor can take ownership
 
   async function expectClaimFails(userId: Uint8Array) {
     await expect(() =>
@@ -214,49 +214,49 @@ test("user privileges for library", async () => {
   await expectClaimFails(randomUserId);
   await expectClaimFails(anonymousId);
 
-  await expectStatusIs(sourceId, statusPendingAdmin, adminId);
+  await expectStatusIs(sourceId, statusPendingEditor, editorId);
 
-  // First admin2 takes ownership, then admin takes it
+  // First editor2 takes ownership, then editor takes it
   await claimOwnershipOfReview({
     contentId: draftId,
-    loggedInUserId: admin2Id,
+    loggedInUserId: editor2Id,
   });
-  await claimOwnershipOfReview({ contentId: draftId, loggedInUserId: adminId });
+  await claimOwnershipOfReview({ contentId: draftId, loggedInUserId: editorId });
 
-  const statusClaimedAdmin: LibraryRelations = {
+  const statusClaimedEditor: LibraryRelations = {
     activity: {
-      ...statusPendingAdmin.activity!,
+      ...statusPendingEditor.activity!,
       status: "UNDER_REVIEW",
     },
   };
 
-  await expectStatusIs(sourceId, statusClaimedAdmin, adminId);
+  await expectStatusIs(sourceId, statusClaimedEditor, editorId);
   await expectStatusIs(sourceId, statusNone, ownerId);
 
-  const { user: adminUserInfoAll } = await getUserInfo({
-    loggedInUserId: adminId,
+  const { user: editorUserInfoAll } = await getUserInfo({
+    loggedInUserId: editorId,
   });
-  const adminUserInfo: UserInfo = {
-    userId: adminUserInfoAll.userId,
-    email: adminUserInfoAll.email,
-    firstNames: adminUserInfoAll.firstNames,
-    lastNames: adminUserInfoAll.lastNames,
+  const editorUserInfo: UserInfo = {
+    userId: editorUserInfoAll.userId,
+    email: editorUserInfoAll.email,
+    firstNames: editorUserInfoAll.firstNames,
+    lastNames: editorUserInfoAll.lastNames,
   };
 
-  const draftClaimedAdmin: LibraryRelations = {
+  const draftClaimedEditor: LibraryRelations = {
     source: {
       status: "UNDER_REVIEW",
       sourceContentId: sourceId,
       iAmPrimaryEditor: true,
-      primaryEditor: adminUserInfo,
+      primaryEditor: editorUserInfo,
       reviewRequestDate: approximateReviewRequestDate,
       ownerRequested: false,
     },
   };
 
-  await expectStatusIs(draftId, draftClaimedAdmin, adminId);
+  await expectStatusIs(draftId, draftClaimedEditor, editorId);
 
-  // Only primary editor admin can publish
+  // Only primary editor editor can publish
   async function expectPublishFails(userId: Uint8Array) {
     await expect(() =>
       publishActivityToLibrary({
@@ -268,11 +268,11 @@ test("user privileges for library", async () => {
 
   await expectPublishFails(randomUserId);
   await expectPublishFails(ownerId);
-  await expectPublishFails(admin2Id);
+  await expectPublishFails(editor2Id);
 
-  const statusPublishedAdmin: LibraryRelations = {
+  const statusPublishedEditor: LibraryRelations = {
     activity: {
-      ...statusClaimedAdmin.activity!,
+      ...statusClaimedEditor.activity!,
       status: "PUBLISHED",
     },
   };
@@ -290,29 +290,29 @@ test("user privileges for library", async () => {
     },
   };
 
-  const draftPublishedAdmin: LibraryRelations = {
+  const draftPublishedEditor: LibraryRelations = {
     source: {
-      ...draftClaimedAdmin.source!,
+      ...draftClaimedEditor.source!,
       status: "PUBLISHED",
     },
   };
 
   await publishActivityToLibrary({
     contentId: draftId,
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
   });
 
   await expectStatusIs(sourceId, statusPublishedPublic, randomUserId);
   await expectStatusIs(sourceId, statusPublishedPublic, anonymousId);
   await expectStatusIs(sourceId, statusPublishedPublic, ownerId);
-  await expectStatusIs(sourceId, statusPublishedAdmin, adminId);
+  await expectStatusIs(sourceId, statusPublishedEditor, editorId);
 
   await expectStatusIs(draftId, draftPublishedPublic, randomUserId);
   await expectStatusIs(draftId, draftPublishedPublic, anonymousId);
   await expectStatusIs(draftId, draftPublishedPublic, ownerId);
-  await expectStatusIs(draftId, draftPublishedAdmin, adminId);
+  await expectStatusIs(draftId, draftPublishedEditor, editorId);
 
-  // Random user and random admin cannot comment
+  // Random user and random editor cannot comment
   async function expectAddCommentFails(userId: Uint8Array) {
     await expect(() =>
       addComment({
@@ -325,9 +325,9 @@ test("user privileges for library", async () => {
 
   await expectAddCommentFails(randomUserId);
   await expectAddCommentFails(anonymousId);
-  await expectAddCommentFails(admin2Id);
+  await expectAddCommentFails(editor2Id);
 
-  // Only primary editor admin can unpublish
+  // Only primary editor editor can unpublish
   async function expectUnpublishFails(userId: Uint8Array) {
     await expect(() =>
       unpublishActivityFromLibrary({
@@ -339,17 +339,17 @@ test("user privileges for library", async () => {
   await expectUnpublishFails(randomUserId);
   await expectUnpublishFails(anonymousId);
   await expectUnpublishFails(ownerId);
-  await expectUnpublishFails(admin2Id);
+  await expectUnpublishFails(editor2Id);
 
   await unpublishActivityFromLibrary({
     contentId: draftId,
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
   });
   await expectStatusIs(sourceId, statusNone, randomUserId);
   await expectStatusIs(sourceId, statusNone, ownerId);
-  await expectStatusIs(sourceId, statusClaimedAdmin, adminId);
+  await expectStatusIs(sourceId, statusClaimedEditor, editorId);
 
-  // Only primary editor admin can reject
+  // Only primary editor editor can reject
   async function expectRejectFails(userId: Uint8Array) {
     await expect(() =>
       rejectActivity({
@@ -361,26 +361,26 @@ test("user privileges for library", async () => {
   await expectRejectFails(randomUserId);
   await expectRejectFails(ownerId);
   await expectRejectFails(anonymousId);
-  await expectRejectFails(admin2Id);
+  await expectRejectFails(editor2Id);
 
   await rejectActivity({
     contentId: draftId,
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
   });
 
-  const statusRejectedAdmin: LibraryRelations = {
+  const statusRejectedEditor: LibraryRelations = {
     activity: {
-      ...statusClaimedAdmin.activity!,
+      ...statusClaimedEditor.activity!,
       status: "REJECTED",
     },
   };
   await expectStatusIs(sourceId, statusNone, randomUserId);
   await expectStatusIs(sourceId, statusNone, anonymousId);
   await expectStatusIs(sourceId, statusNone, ownerId);
-  await expectStatusIs(sourceId, statusRejectedAdmin, adminId);
+  await expectStatusIs(sourceId, statusRejectedEditor, editorId);
 });
 
-test("Admin cannot publish before claiming", async () => {
+test("Editor cannot publish before claiming", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
   const { contentId } = await createContent({
@@ -396,20 +396,20 @@ test("Admin cannot publish before claiming", async () => {
   });
   await suggestToBeCurated({ loggedInUserId: ownerId, contentId });
 
-  const admin = await createTestAdminUser();
-  const adminId = admin.userId;
+  const editor = await createTestEditorUser();
+  const editorId = editor.userId;
   // Immediately trying to publish fails
   await expect(() =>
     publishActivityToLibrary({
       contentId: contentId,
-      loggedInUserId: adminId,
+      loggedInUserId: editorId,
     }),
   ).rejects.toThrowError();
 });
 
-test("owner requests library review, has conversation, admin publishes", async () => {
+test("owner requests library review, has conversation, editor publishes", async () => {
   const { userId: ownerId } = await createTestUser();
-  const { userId: adminId } = await createTestAdminUser();
+  const { userId: editorId } = await createTestEditorUser();
 
   const { contentId } = await createContent({
     loggedInUserId: ownerId,
@@ -450,22 +450,22 @@ test("owner requests library review, has conversation, admin publishes", async (
   const draftId = await getActivityIdFromSourceId(contentId);
   comments = await getComments({
     contentId: draftId,
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
     asEditor: true,
   });
   expect(comments.length).eqls(1);
   expect(comments[0].user.userId).eqls(ownerId);
   expect(comments[0].comment).eqls("Notes about my project...");
 
-  // Admin claims and  comments
+  // Editor claims and  comments
   await claimOwnershipOfReview({
     contentId: draftId,
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
   });
   await addComment({
     contentId: draftId,
     comment: "Nice job",
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
     asEditor: true,
   });
 
@@ -473,31 +473,31 @@ test("owner requests library review, has conversation, admin publishes", async (
   expect(comments.length).eqls(2);
   expect(comments[0].user.userId).eqls(ownerId);
   expect(comments[0].comment).eqls("Notes about my project...");
-  expect(comments[1].user.userId).eqls(adminId);
+  expect(comments[1].user.userId).eqls(editorId);
   expect(comments[1].comment).eqls("Nice job");
 
   comments = await getComments({
     contentId: draftId,
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
     asEditor: true,
   });
   expect(comments.length).eqls(2);
   expect(comments[0].user.userId).eqls(ownerId);
   expect(comments[0].comment).eqls("Notes about my project...");
-  expect(comments[1].user.userId).eqls(adminId);
+  expect(comments[1].user.userId).eqls(editorId);
   expect(comments[1].comment).eqls("Nice job");
 
-  // Admin edits and publishes
+  // Editor edits and publishes
 
   await updateContent({
     contentId: draftId,
     source: "<graph>(3,2)</graph>",
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
   });
 
   await publishActivityToLibrary({
     contentId: draftId,
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
   });
 
   const status = await getSingleLibraryRelations({
@@ -521,22 +521,22 @@ test("owner requests library review, has conversation, admin publishes", async (
 
   comments = await getComments({
     contentId: draftId,
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
     asEditor: true,
   });
   expect(comments.length).eqls(3);
   expect(comments[0].user.userId).eqls(ownerId);
   expect(comments[0].comment).eqls("Notes about my project...");
-  expect(comments[1].user.userId).eqls(adminId);
+  expect(comments[1].user.userId).eqls(editorId);
   expect(comments[1].comment).eqls("Nice job");
   expect(comments[2].user.userId).eqls(ownerId);
   expect(comments[2].comment).eqls("I have new comments.");
 });
 
-test("random user requests, admin publishes", async () => {
+test("random user requests, editor publishes", async () => {
   const { userId: ownerId } = await createTestUser();
   const { userId: randomId } = await createTestUser();
-  const { userId: adminId } = await createTestAdminUser();
+  const { userId: editorId } = await createTestEditorUser();
 
   const { contentId } = await createContent({
     loggedInUserId: ownerId,
@@ -552,13 +552,13 @@ test("random user requests, admin publishes", async () => {
   await suggestToBeCurated({ contentId, loggedInUserId: randomId });
   await expectStatusIs(contentId, {}, ownerId);
 
-  // Admin can't comment yet
+  // Editor can't comment yet
   const draftId = await getActivityIdFromSourceId(contentId);
   await expect(() =>
     addComment({
       contentId: draftId,
       comment: "You can't see this yet",
-      loggedInUserId: adminId,
+      loggedInUserId: editorId,
       asEditor: true,
     }),
   ).rejects.toThrowError();
@@ -566,19 +566,19 @@ test("random user requests, admin publishes", async () => {
   let comments = await getComments({ contentId, loggedInUserId: ownerId });
   expect(comments.length).eqls(0);
 
-  // Admin curates and publishes
+  // Editor curates and publishes
   await claimOwnershipOfReview({
     contentId: draftId,
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
   });
   await updateContent({
     contentId: draftId,
     name: "My curated activity",
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
   });
   await publishActivityToLibrary({
     contentId: draftId,
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
   });
   const statusPublished: LibraryRelations = {
     activity: {
@@ -602,7 +602,7 @@ test("random user requests, admin publishes", async () => {
 
   comments = await getComments({
     contentId: draftId,
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
     asEditor: true,
   });
   expect(comments.length).eqls(1);
@@ -613,7 +613,7 @@ test("random user requests, admin publishes", async () => {
 test("published activity in library with unavailable source activity", async () => {
   // Setup
   const { userId: ownerId } = await createTestUser();
-  const { userId: adminId } = await createTestAdminUser();
+  const { userId: editorId } = await createTestEditorUser();
   const { contentId } = await createContent({
     loggedInUserId: ownerId,
     contentType: "singleDoc",
@@ -629,16 +629,16 @@ test("published activity in library with unavailable source activity", async () 
   const approximateReviewRequestDate = new Date();
   await suggestToBeCurated({
     contentId,
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
   });
   const draftId = await getActivityIdFromSourceId(contentId);
   await claimOwnershipOfReview({
     contentId: draftId,
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
   });
   await publishActivityToLibrary({
     contentId: draftId,
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
   });
 
   let statusMeOwner: LibraryRelations = {
@@ -647,7 +647,7 @@ test("published activity in library with unavailable source activity", async () 
       activityContentId: draftId,
     },
   };
-  let statusMeAdmin: LibraryRelations = {
+  let statusMeEditor: LibraryRelations = {
     activity: {
       status: "PUBLISHED",
       activityContentId: draftId,
@@ -661,28 +661,28 @@ test("published activity in library with unavailable source activity", async () 
       sourceContentId: contentId,
     },
   };
-  const { user: adminUserAll } = await getUserInfo({ loggedInUserId: adminId });
-  const adminUser: UserInfo = {
-    userId: adminUserAll.userId,
-    email: adminUserAll.email,
-    firstNames: adminUserAll.firstNames,
-    lastNames: adminUserAll.lastNames,
+  const { user: editorUserAll } = await getUserInfo({ loggedInUserId: editorId });
+  const editorUser: UserInfo = {
+    userId: editorUserAll.userId,
+    email: editorUserAll.email,
+    firstNames: editorUserAll.firstNames,
+    lastNames: editorUserAll.lastNames,
   };
 
-  let statusSourceAdmin: LibraryRelations = {
+  let statusSourceEditor: LibraryRelations = {
     source: {
       ...statusSourceOwner.source!,
       ownerRequested: false,
-      primaryEditor: adminUser,
+      primaryEditor: editorUser,
       iAmPrimaryEditor: true,
       reviewRequestDate: approximateReviewRequestDate,
     },
   };
 
   await expectStatusIs(contentId, statusMeOwner, ownerId);
-  await expectStatusIs(contentId, statusMeAdmin, adminId);
+  await expectStatusIs(contentId, statusMeEditor, editorId);
   await expectStatusIs(draftId, statusSourceOwner, ownerId);
-  await expectStatusIs(draftId, statusSourceAdmin, adminId);
+  await expectStatusIs(draftId, statusSourceEditor, editorId);
 
   // Owner makes their activity private, library remix still published
   await setContentIsPublic({
@@ -691,18 +691,18 @@ test("published activity in library with unavailable source activity", async () 
     isPublic: false,
   });
 
-  statusMeAdmin = {};
-  statusSourceAdmin = {
+  statusMeEditor = {};
+  statusSourceEditor = {
     source: {
-      ...statusSourceAdmin.source!,
+      ...statusSourceEditor.source!,
       sourceContentId: null,
     },
   };
 
   await expectStatusIs(contentId, statusMeOwner, ownerId);
-  await expectStatusIs(contentId, statusMeAdmin, adminId);
+  await expectStatusIs(contentId, statusMeEditor, editorId);
   await expectStatusIs(draftId, statusSourceOwner, ownerId);
-  await expectStatusIs(draftId, statusSourceAdmin, adminId);
+  await expectStatusIs(draftId, statusSourceEditor, editorId);
 
   // Owner deletes activity, remix still published
   await deleteContent({ contentId: contentId, loggedInUserId: ownerId });
@@ -716,13 +716,13 @@ test("published activity in library with unavailable source activity", async () 
   };
 
   await expectStatusIs(contentId, statusMeOwner, ownerId);
-  await expectStatusIs(contentId, statusMeAdmin, adminId);
+  await expectStatusIs(contentId, statusMeEditor, editorId);
   await expectStatusIs(draftId, statusSourceOwner, ownerId);
-  await expectStatusIs(draftId, statusSourceAdmin, adminId);
+  await expectStatusIs(draftId, statusSourceEditor, editorId);
 });
 
 async function getRelevantQueue(
-  adminId: Uint8Array,
+  editorId: Uint8Array,
   allowedIds: Uint8Array[],
 ): Promise<
   [
@@ -745,7 +745,7 @@ async function getRelevantQueue(
     publishedLibraryRelations,
     rejectedContent,
     rejectedLibraryRelations,
-  } = await getCurationQueue({ loggedInUserId: adminId });
+  } = await getCurationQueue({ loggedInUserId: editorId });
 
   const allowedIdsSet = new Set(allowedIds.map((v) => fromUUID(v)));
 
@@ -831,7 +831,7 @@ test("List of pending requests updates", { timeout: 30000 }, async () => {
   const startTime = Date.now();
 
   // Setup
-  const { userId: adminId } = await createTestAdminUser();
+  const { userId: editorId } = await createTestEditorUser();
   const { userId: ownerId } = await createTestUser();
 
   const sourceIds: Uint8Array[] = [];
@@ -849,14 +849,14 @@ test("List of pending requests updates", { timeout: 30000 }, async () => {
     sourceIds.push(contentId);
   }
 
-  // Non-admin cannot access pending requests
+  // Non-editor cannot access pending requests
   await expect(() =>
     getCurationQueue({ loggedInUserId: ownerId }),
   ).rejects.toThrowError();
 
   // No pending requests
   let [pendCon, pendLib, underCon, underLib, pubCon, pubLib, rejCon, rejLib] =
-    await getRelevantQueue(adminId, sourceIds);
+    await getRelevantQueue(editorId, sourceIds);
 
   function expectLengths({
     pend,
@@ -891,7 +891,7 @@ test("List of pending requests updates", { timeout: 30000 }, async () => {
     contentId: sourceIds[0],
   });
   [pendCon, pendLib, underCon, underLib, pubCon, pubLib, rejCon, rejLib] =
-    await getRelevantQueue(adminId, sourceIds);
+    await getRelevantQueue(editorId, sourceIds);
 
   const curatedIds: Uint8Array[] = [];
   curatedIds.push(await getActivityIdFromSourceId(sourceIds[0]));
@@ -913,7 +913,7 @@ test("List of pending requests updates", { timeout: 30000 }, async () => {
   curatedIds.push(await getActivityIdFromSourceId(sourceIds[2]));
 
   [pendCon, pendLib, underCon, underLib, pubCon, pubLib, rejCon, rejLib] =
-    await getRelevantQueue(adminId, sourceIds);
+    await getRelevantQueue(editorId, sourceIds);
 
   // The order should be the one in which they were requested reversed, not the order they were made
   expectLengths({ pend: 3, under: 0, pub: 0, rej: 0 });
@@ -921,27 +921,27 @@ test("List of pending requests updates", { timeout: 30000 }, async () => {
   expectAtItemNum(1, sourceIds[2], curatedIds[2], pendCon, pendLib, startTime);
   expectAtItemNum(2, sourceIds[0], curatedIds[0], pendCon, pendLib, startTime);
 
-  // Admin claims activity #3, #2, and rejects #1
+  // Editor claims activity #3, #2, and rejects #1
   await claimOwnershipOfReview({
     contentId: curatedIds[2],
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
   });
   await claimOwnershipOfReview({
     contentId: curatedIds[1],
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
   });
 
   await claimOwnershipOfReview({
     contentId: curatedIds[0],
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
   });
   await rejectActivity({
     contentId: curatedIds[0],
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
   });
 
   [pendCon, pendLib, underCon, underLib, pubCon, pubLib, rejCon, rejLib] =
-    await getRelevantQueue(adminId, sourceIds);
+    await getRelevantQueue(editorId, sourceIds);
 
   expectLengths({ pend: 0, under: 2, pub: 0, rej: 1 });
   expectAtItemNum(0, sourceIds[0], curatedIds[0], rejCon, rejLib, startTime);
@@ -965,11 +965,11 @@ test("List of pending requests updates", { timeout: 30000 }, async () => {
   // Publish activity #3
   await publishActivityToLibrary({
     contentId: curatedIds[2],
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
   });
 
   [pendCon, pendLib, underCon, underLib, pubCon, pubLib, rejCon, rejLib] =
-    await getRelevantQueue(adminId, sourceIds);
+    await getRelevantQueue(editorId, sourceIds);
 
   expectLengths({ pend: 0, under: 1, pub: 1, rej: 1 });
   expectAtItemNum(0, sourceIds[0], curatedIds[0], rejCon, rejLib, startTime);
@@ -986,15 +986,15 @@ test("List of pending requests updates", { timeout: 30000 }, async () => {
   // Unpublish activity #3, reject #2
   await unpublishActivityFromLibrary({
     contentId: curatedIds[2],
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
   });
   await rejectActivity({
     contentId: curatedIds[1],
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
   });
 
   [pendCon, pendLib, underCon, underLib, pubCon, pubLib, rejCon, rejLib] =
-    await getRelevantQueue(adminId, sourceIds);
+    await getRelevantQueue(editorId, sourceIds);
 
   expectLengths({ pend: 0, under: 1, pub: 0, rej: 2 });
   expectAtItemNum(1, sourceIds[0], curatedIds[0], rejCon, rejLib, startTime);
@@ -1008,7 +1008,7 @@ test("List of pending requests updates", { timeout: 30000 }, async () => {
     startTime,
   );
 
-  // Owner re-requests review for #2 and then #1, admin claims them
+  // Owner re-requests review for #2 and then #1, editor claims them
   await suggestToBeCurated({
     loggedInUserId: ownerId,
     contentId: sourceIds[1],
@@ -1020,15 +1020,15 @@ test("List of pending requests updates", { timeout: 30000 }, async () => {
 
   await claimOwnershipOfReview({
     contentId: curatedIds[1],
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
   });
   await claimOwnershipOfReview({
     contentId: curatedIds[0],
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
   });
 
   [pendCon, pendLib, underCon, underLib, pubCon, pubLib, rejCon, rejLib] =
-    await getRelevantQueue(adminId, sourceIds);
+    await getRelevantQueue(editorId, sourceIds);
 
   expectLengths({ pend: 0, under: 3, pub: 0, rej: 0 });
   // New order: #1, #2, #3
@@ -1077,19 +1077,19 @@ test("getSingleLibraryRelations works with visitor not signed in", async () => {
   expect(results).toEqual({});
 
   // curate activity
-  const { userId: adminId } = await createTestAdminUser();
+  const { userId: editorId } = await createTestEditorUser();
   await suggestToBeCurated({
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
     contentId,
   });
   const draftId = await getActivityIdFromSourceId(contentId);
   await claimOwnershipOfReview({
     contentId: draftId,
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
   });
   await publishActivityToLibrary({
     contentId: draftId,
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
   });
 
   // No `loggedInUserId` provided
@@ -1121,7 +1121,7 @@ test("getMultipleLibraryRelations works with visitor not signed in", async () =>
     parentId: null,
   });
 
-  const { userId: adminId } = await createTestAdminUser();
+  const { userId: editorId } = await createTestEditorUser();
   const draftIds: Uint8Array[] = [];
 
   const contentIds = [contentId, contentId2, contentId3];
@@ -1134,18 +1134,18 @@ test("getMultipleLibraryRelations works with visitor not signed in", async () =>
     });
     // curate activity
     await suggestToBeCurated({
-      loggedInUserId: adminId,
+      loggedInUserId: editorId,
       contentId,
     });
     const draftId = await getActivityIdFromSourceId(contentId);
     draftIds.push(draftId);
     await claimOwnershipOfReview({
       contentId: draftId,
-      loggedInUserId: adminId,
+      loggedInUserId: editorId,
     });
     await publishActivityToLibrary({
       contentId: draftId,
-      loggedInUserId: adminId,
+      loggedInUserId: editorId,
     });
   }
   // No `loggedInUserId` provided
@@ -1177,7 +1177,7 @@ test("getMultipleLibraryRelations works with visitor not signed in", async () =>
 });
 
 test("Owner does not see pending review status if they did not submit request", async () => {
-  const { userId: adminId } = await createTestAdminUser();
+  const { userId: editorId } = await createTestEditorUser();
   const { userId: ownerId } = await createTestUser();
 
   const { contentId } = await createContent({
@@ -1193,7 +1193,7 @@ test("Owner does not see pending review status if they did not submit request", 
 
   await suggestToBeCurated({
     contentId,
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
   });
   await expectStatusIs(contentId, {}, ownerId);
 });
@@ -1250,25 +1250,25 @@ test("Library relations match up with activities with folders in front", async (
 
 test("Cannot use normal sharing endpoints for library activities", async () => {
   // Setup
-  const { userId: adminId } = await createTestAdminUser();
+  const { userId: editorId } = await createTestEditorUser();
   const { contentId } = await createContent({
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
     contentType: "singleDoc",
     parentId: null,
   });
   await setContentIsPublic({
     contentId,
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
     isPublic: true,
   });
   await suggestToBeCurated({
     contentId,
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
   });
   const draftId = await getActivityIdFromSourceId(contentId);
   await claimOwnershipOfReview({
     contentId: draftId,
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
   });
 
   // Test
@@ -1279,7 +1279,7 @@ test("Cannot use normal sharing endpoints for library activities", async () => {
     modifyContentSharedWith({
       action: "share",
       contentId: draftId,
-      loggedInUserId: adminId,
+      loggedInUserId: editorId,
       users: [randomId],
     }),
   ).rejects.toThrowError();
@@ -1287,24 +1287,24 @@ test("Cannot use normal sharing endpoints for library activities", async () => {
   await expect(() =>
     makeContentPublic({
       contentId: draftId,
-      loggedInUserId: adminId,
+      loggedInUserId: editorId,
     }),
   ).rejects.toThrowError();
 
   await publishActivityToLibrary({
     contentId: draftId,
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
   });
 
   await expect(() =>
     makeContentPrivate({
       contentId: draftId,
-      loggedInUserId: adminId,
+      loggedInUserId: editorId,
     }),
   ).rejects.toThrowError();
 });
 
-test("Library draft not visible to non-admin", async () => {
+test("Library draft not visible to non-editor", async () => {
   // Setup
   const { userId: ownerId } = await createTestUser();
   const { contentId } = await createContent({
@@ -1331,44 +1331,44 @@ test("Library draft not visible to non-admin", async () => {
   ).rejects.toThrowError();
 });
 
-test("Admin cannot move content between library and their folders", async () => {
-  const { userId: adminId } = await createTestAdminUser();
+test("Editor cannot move content between library and their folders", async () => {
+  const { userId: editorId } = await createTestEditorUser();
 
   const { contentId: libraryFolderId } = await createContent({
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
     contentType: "folder",
     parentId: null,
     inLibrary: true,
   });
 
   const { contentId: folderId } = await createContent({
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
     contentType: "folder",
     parentId: null,
   });
   const { contentId } = await createContent({
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
     contentType: "singleDoc",
     parentId: folderId,
   });
   await setContentIsPublic({
     contentId,
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
     isPublic: true,
   });
   await suggestToBeCurated({
     contentId,
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
   });
 
   const draftId = await getActivityIdFromSourceId(contentId);
   await claimOwnershipOfReview({
     contentId: draftId,
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
   });
   await publishActivityToLibrary({
     contentId: draftId,
-    loggedInUserId: adminId,
+    loggedInUserId: editorId,
   });
 
   // Cannot move library activity to personal folder
@@ -1378,7 +1378,7 @@ test("Admin cannot move content between library and their folders", async () => 
       contentId: draftId,
       parentId: folderId,
       desiredPosition: 0,
-      loggedInUserId: adminId,
+      loggedInUserId: editorId,
     }),
   ).rejects.toThrowError();
 
@@ -1389,7 +1389,7 @@ test("Admin cannot move content between library and their folders", async () => 
       contentId,
       parentId: libraryFolderId,
       desiredPosition: 0,
-      loggedInUserId: adminId,
+      loggedInUserId: editorId,
     }),
   ).rejects.toThrowError();
 });

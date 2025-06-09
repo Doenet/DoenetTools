@@ -289,7 +289,7 @@ model users {
   email              String                 @unique
   firstNames         String?
   lastNames          String
-  isAdmin            Boolean                @default(false)
+  isEditor           Boolean                @default(false)
   isLibrary          Boolean                @default(false)
   isAnonymous        Boolean                @default(false)
   isAuthor           Boolean                @default(false)

@@ -4,7 +4,7 @@ import { findOrCreateUser } from "../query/user";
 import { filterEditableActivity } from "../utils/permissions";
 
 // create an isolated user for each test, will allow tests to be run in parallel
-export async function createTestUser(isAdmin = false, isAnonymous = false) {
+export async function createTestUser(isEditor = false, isAnonymous = false) {
   const id =
     Date.now().toString() + Math.round(Math.random() * 1000).toString();
   const email = `vitest${id}@vitest.test`;
@@ -18,7 +18,7 @@ export async function createTestUser(isAdmin = false, isAnonymous = false) {
       email,
       firstNames,
       lastNames,
-      isAdmin,
+      isEditor,
       isAnonymous,
     });
   } catch (_e) {
@@ -27,14 +27,14 @@ export async function createTestUser(isAdmin = false, isAnonymous = false) {
       email: `vitest${id}a@vitest.test`,
       firstNames,
       lastNames: `user${id}a`,
-      isAdmin,
+      isEditor,
       isAnonymous,
     });
   }
   return user;
 }
 
-export async function createTestAdminUser() {
+export async function createTestEditorUser() {
   return await createTestUser(true);
 }
 

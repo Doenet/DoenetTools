@@ -7,6 +7,7 @@
   - You are about to drop the column `contentId` on the `libraryEvents` table. All the data in the column will be lost.
   - You are about to drop the column `sourceId` on the `libraryEvents` table. All the data in the column will be lost.
   - The values [SUBMIT_REQUEST,CANCEL_REQUEST,ADD_DRAFT,DELETE_DRAFT,MARK_NEEDS_REVISION,MODIFY_COMMENTS] on the enum `libraryEvents_eventType` will be removed. If these variants are still used in the database, this will fail.
+  - You are about to drop the column `isAdmin` on the `users` table. All the data in the column will be lost.
   - Made the column `contentId` on table `libraryActivityInfos` required. This step will fail if there are existing NULL values in that column.
   - Added the required column `infoId` to the `libraryEvents` table without a default value. This is not possible if the table is not empty.
 
@@ -64,6 +65,10 @@ ALTER TABLE `libraryEvents` DROP COLUMN `comments`,
     ADD COLUMN `comment` VARCHAR(191) NULL,
     ADD COLUMN `infoId` BINARY(16) NOT NULL,
     MODIFY `eventType` ENUM('SUGGEST_REVIEW', 'TAKE_OWNERSHIP', 'PUBLISH', 'UNPUBLISH', 'REJECT', 'ADD_COMMENT') NOT NULL;
+
+-- AlterTable
+ALTER TABLE `users` DROP COLUMN `isAdmin`,
+    ADD COLUMN `isEditor` BOOLEAN NOT NULL DEFAULT false;
 
 -- AddForeignKey
 ALTER TABLE `recentContent` ADD CONSTRAINT `recentContent_contentId_fkey` FOREIGN KEY (`contentId`) REFERENCES `content`(`id`) ON DELETE CASCADE ON UPDATE NO ACTION;

@@ -19,10 +19,10 @@ export type AssignmentStatus = "Unassigned" | "Closed" | "Open";
  * The `source` fields refers an activity that uses the provied content as a source.
  *
  * Optional fields are only included for certain users:
- * - `activity.comments` - must be owner or admin
- * - `activity.reviewRequestDate` - must be owner or admin
- * - `source.comments` - must be admin
- * - `source.ownerRequested` - must be admin
+ * - `activity.comments` - must be owner or editor
+ * - `activity.reviewRequestDate` - must be owner or editor
+ * - `source.comments` - must be editor
+ * - `source.ownerRequested` - must be editor
  */
 export type LibraryRelations = {
   activity?: {

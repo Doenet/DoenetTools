@@ -237,7 +237,7 @@ passport.serializeUser<any, any>(async (req, user: any, done) => {
     let lastNames = "";
     let firstNames: string | null = null;
     let isAnonymous = true;
-    let isAdmin = false;
+    let isEditor = false;
 
     if (
       process.env.ALLOW_TEST_LOGIN &&
@@ -251,8 +251,8 @@ passport.serializeUser<any, any>(async (req, user: any, done) => {
         if (req.body.lastNames) {
           lastNames = req.body.lastNames;
         }
-        if (req.body.isAdmin) {
-          isAdmin = true;
+        if (req.body.isEditor) {
+          isEditor = true;
         }
         isAnonymous = false;
       }
@@ -263,7 +263,7 @@ passport.serializeUser<any, any>(async (req, user: any, done) => {
       lastNames,
       firstNames,
       isAnonymous,
-      isAdmin,
+      isEditor,
     });
     return done(undefined, fromUUID(u.userId));
   }

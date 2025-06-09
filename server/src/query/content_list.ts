@@ -1,7 +1,7 @@
 import {
   getLibraryAccountId,
   getMultipleLibraryRelations,
-  mustBeAdmin,
+  mustBeEditor,
 } from "./curate";
 import { prisma } from "../model";
 import {
@@ -166,7 +166,7 @@ export async function searchMyContentOrLibraryContent({
 }) {
   let ownerId = loggedInUserId;
   if (inLibrary) {
-    await mustBeAdmin(loggedInUserId);
+    await mustBeEditor(loggedInUserId);
     ownerId = await getLibraryAccountId();
   }
 

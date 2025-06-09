@@ -13,7 +13,7 @@ import {
   sortClassifications,
 } from "../utils/classificationsFeatures";
 import { returnClassificationListSelect } from "../utils/contentStructure";
-import { getIsAdmin } from "./curate";
+import { getIsEditor } from "./curate";
 import {
   filterEditableActivity,
   filterViewableActivity,
@@ -204,11 +204,11 @@ export async function addClassification({
   classificationId: number;
   loggedInUserId: Uint8Array;
 }) {
-  const isAdmin = await getIsAdmin(loggedInUserId);
+  const isEditor = await getIsEditor(loggedInUserId);
   const activity = await prisma.content.findUnique({
     where: {
       id: contentId,
-      ...filterEditableActivity(loggedInUserId, isAdmin),
+      ...filterEditableActivity(loggedInUserId, isEditor),
     },
     select: {
       // not using this, we just need to select one field
@@ -242,11 +242,11 @@ export async function removeClassification({
   classificationId: number;
   loggedInUserId: Uint8Array;
 }) {
-  const isAdmin = await getIsAdmin(loggedInUserId);
+  const isEditor = await getIsEditor(loggedInUserId);
   const activity = await prisma.content.findUnique({
     where: {
       id: contentId,
-      ...filterEditableActivity(loggedInUserId, isAdmin),
+      ...filterEditableActivity(loggedInUserId, isEditor),
     },
     select: {
       // not using this, we just need to select one field
@@ -280,11 +280,11 @@ export async function getClassifications({
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
 }) {
-  const isAdmin = await getIsAdmin(loggedInUserId);
+  const isEditor = await getIsEditor(loggedInUserId);
   const activity = await prisma.content.findUnique({
     where: {
       id: contentId,
-      ...filterViewableActivity(loggedInUserId, isAdmin),
+      ...filterViewableActivity(loggedInUserId, isEditor),
     },
     select: {
       // not using this, we just need to select one field
