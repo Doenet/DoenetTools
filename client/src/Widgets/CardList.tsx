@@ -2,7 +2,7 @@ import React, { ReactElement } from "react";
 import { Text, Icon, Box, Flex } from "@chakra-ui/react";
 import Card, { CardContent } from "./Card";
 import { MdInfoOutline } from "react-icons/md";
-import { ContentDescription } from "../_utils/types";
+import { ContentDescription } from "../types";
 
 export default function CardList({
   content,

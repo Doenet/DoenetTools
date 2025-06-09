@@ -1,6 +1,6 @@
 // import {signIn} from '../DoenetSignin/DoenetSignin.cy';
 
-import { cesc2 } from "../../src/_utils/url";
+import { cesc2 } from "../../src/utils/url";
 
 describe.skip("doenetEditor test", function () {
   // const userId = "cyuserId";

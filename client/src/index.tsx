@@ -10,116 +10,110 @@ import {
   loader as exploreLoader,
   action as exploreAction,
   Explore,
-} from "./Tools/_framework/Paths/Explore";
+} from "./paths/Explore";
 
 import {
   loader as curateLoader,
   action as curateAction,
   Curate,
-} from "./Tools/_framework/Paths/Curate";
+} from "./paths/Curate";
 
 import {
   loader as siteLoader,
   action as siteAction,
   SiteHeader,
-} from "./Tools/_framework/Paths/SiteHeader";
+} from "./paths/SiteHeader";
 import {
   loader as carouselLoader,
   // action as homeAction,
   Home,
-} from "./Tools/_framework/Paths/Home";
+} from "./paths/Home";
 
 import {
   loader as activitiesLoader,
   action as activitiesAction,
   Activities,
-} from "./Tools/_framework/Paths/Activities";
+} from "./paths/Activities";
 import {
   loader as sharedActivitiesLoader,
   action as sharedActivitiesAction,
   SharedActivities,
-} from "./Tools/_framework/Paths/SharedActivities";
+} from "./paths/SharedActivities";
 import {
   loader as activityViewerLoader,
   action as activityViewerAction,
   ActivityViewer,
-} from "./Tools/_framework/Paths/ActivityViewer";
+} from "./paths/ActivityViewer";
 import {
   loader as assignedLoader,
   action as assignedAction,
   Assigned,
-} from "./Tools/_framework/Paths/Assigned";
+} from "./paths/Assigned";
 import {
   loader as assignmentResponseOverviewLoader,
   AssignmentData as AssignmentResponseOverview,
-} from "./Tools/_framework/Paths/AssignmentResponseOverview";
+} from "./paths/AssignmentResponseOverview";
 import {
   loader as assignmentResponseStudentLoader,
   AssignmentResponseStudent,
   // assignedAssignmentDataloader,
-} from "./Tools/_framework/Paths/AssignmentResponseStudent";
+} from "./paths/AssignmentResponseStudent";
 import {
   action as enterClassCodeAction,
   EnterClassCode,
-} from "./Tools/_framework/Paths/EnterClassCode";
+} from "./paths/EnterClassCode";
 import {
   loader as assignmentViewerLoader,
   action as assignmentViewerAction,
   AssignmentViewer,
-} from "./Tools/_framework/Paths/AssignmentViewer";
+} from "./paths/AssignmentViewer";
 import {
   loader as allAssignmentScoresLoader,
   AllAssignmentScores,
-} from "./Tools/_framework/Paths/AllAssignmentScores";
+} from "./paths/AllAssignmentScores";
 import {
   loader as studentAssignmentScoresLoader,
   StudentAssignmentScores,
   assignedDataloader,
-} from "./Tools/_framework/Paths/StudentAssignmentScores";
+} from "./paths/StudentAssignmentScores";
 import {
   loader as trashLoader,
   action as trashAction,
   Trash,
-} from "./Tools/_framework/Paths/Trash";
+} from "./paths/Trash";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 
-import ErrorPage from "./Tools/_framework/Paths/ErrorPage";
+import ErrorPage from "./paths/ErrorPage";
 
 import "@fontsource/jost";
 import {
   ActivityEditor,
   loader as activityEditorLoader,
   action as activityEditorAction,
-} from "./Tools/_framework/Paths/ActivityEditor";
+} from "./paths/ActivityEditor";
 import {
   DoenetMLComparison,
   loader as doenetMLComparisonLoader,
   action as doenetMLComparisonAction,
-} from "./Tools/_framework/Paths/DoenetMLComparison";
-import {
-  CodeViewer,
-  loader as codeViewerLoader,
-} from "./Tools/_framework/Paths/CodeViewer";
+} from "./paths/DoenetMLComparison";
+import { CodeViewer, loader as codeViewerLoader } from "./paths/CodeViewer";
 import { mathjaxConfig } from "@doenet/doenetml-iframe";
-import {
-  SignIn,
-  action as signInAction,
-} from "./Tools/_framework/Paths/SignIn";
+import { SignIn, action as signInAction } from "./paths/SignIn";
 import {
   ConfirmSignIn,
   loader as confirmSignInLoader,
   action as confirmSignInAction,
-} from "./Tools/_framework/Paths/ConfirmSignIn";
+} from "./paths/ConfirmSignIn";
 import {
   ChangeName,
   loader as changeNameLoader,
   action as changeNameAction,
-} from "./Tools/_framework/Paths/ChangeName";
+} from "./paths/ChangeName";
 import {
   LibraryActivities,
   loader as libraryActivitiesLoader,
   action as libraryActivitiesAction,
-} from "./Tools/_framework/Paths/LibraryActivities";
+} from "./paths/LibraryActivities";
 
 const theme = extendTheme({
   fonts: {

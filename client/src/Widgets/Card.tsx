@@ -20,17 +20,17 @@ import {
   Hide,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink, useOutletContext } from "react-router";
-import { Content, ContentDescription } from "../_utils/types";
+import { Content, ContentDescription } from "../types";
 import { FaEllipsisVertical } from "react-icons/fa6";
 import { BsPeople } from "react-icons/bs";
 import {
   activityFeatureIcons,
   contentTypeToName,
   getIconInfo,
-} from "../_utils/activity";
+} from "../utils/activity";
 import { SmallLicenseBadges } from "./Licenses";
 import { IoDiceOutline } from "react-icons/io5";
-import { SiteContext } from "../Tools/_framework/Paths/SiteHeader";
+import { SiteContext } from "../paths/SiteHeader";
 
 export type CardContent = {
   menuRef?: (arg: HTMLButtonElement) => void;

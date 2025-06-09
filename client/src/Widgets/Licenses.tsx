@@ -1,5 +1,5 @@
 import React from "react";
-import { License } from "../_utils/types";
+import { License } from "../types";
 import { Box, HStack, Image, ListItem, Text, Tooltip } from "@chakra-ui/react";
 import { Link } from "react-router";
 

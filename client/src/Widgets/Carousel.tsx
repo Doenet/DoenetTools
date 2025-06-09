@@ -19,8 +19,8 @@ import "./Carousel.css";
 import { Box, Flex, IconButton, MenuItem, Text } from "@chakra-ui/react";
 import Card, { CardContent } from "./Card";
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
-import { createNameNoTag } from "../_utils/names";
-import { Content } from "../_utils/types";
+import { createNameNoTag } from "../utils/names";
+import { Content } from "../types";
 
 export function Carousel({
   title = "",
