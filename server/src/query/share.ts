@@ -49,7 +49,10 @@ export async function setContentLicense({
 }) {
   const isEditor = await getIsEditor(loggedInUserId);
   await prisma.content.update({
-    where: { id: contentId, ...filterEditableContent(loggedInUserId, isEditor) },
+    where: {
+      id: contentId,
+      ...filterEditableContent(loggedInUserId, isEditor),
+    },
     data: { licenseCode },
   });
 }

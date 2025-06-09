@@ -221,7 +221,10 @@ test("user privileges for library", async () => {
     contentId: draftId,
     loggedInUserId: editor2Id,
   });
-  await claimOwnershipOfReview({ contentId: draftId, loggedInUserId: editorId });
+  await claimOwnershipOfReview({
+    contentId: draftId,
+    loggedInUserId: editorId,
+  });
 
   const statusClaimedEditor: LibraryRelations = {
     activity: {
@@ -661,7 +664,9 @@ test("published activity in library with unavailable source activity", async () 
       sourceContentId: contentId,
     },
   };
-  const { user: editorUserAll } = await getUserInfo({ loggedInUserId: editorId });
+  const { user: editorUserAll } = await getUserInfo({
+    loggedInUserId: editorId,
+  });
   const editorUser: UserInfo = {
     userId: editorUserAll.userId,
     email: editorUserAll.email,

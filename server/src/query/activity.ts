@@ -364,7 +364,10 @@ export async function updateContent({
   }
 
   await prisma.content.update({
-    where: { id: contentId, ...filterEditableContent(loggedInUserId, isEditor) },
+    where: {
+      id: contentId,
+      ...filterEditableContent(loggedInUserId, isEditor),
+    },
     data: {
       name,
       source,
@@ -397,7 +400,10 @@ export async function updateContentFeatures({
 }) {
   const isEditor = await getIsEditor(loggedInUserId);
   await prisma.content.update({
-    where: { id: contentId, ...filterEditableContent(loggedInUserId, isEditor) },
+    where: {
+      id: contentId,
+      ...filterEditableContent(loggedInUserId, isEditor),
+    },
     data: {
       contentFeatures: {
         connect: Object.entries(features)
