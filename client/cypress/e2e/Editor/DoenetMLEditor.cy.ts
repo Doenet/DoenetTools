@@ -1,4 +1,4 @@
-import { cesc2 } from "../../../src/_utils/url";
+import { cesc2 } from "../../../src/utils/url";
 
 describe("Editor Tests", function () {
   it("Update Button", () => {

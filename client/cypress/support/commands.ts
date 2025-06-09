@@ -28,7 +28,7 @@ import "cypress-wait-until";
 import "cypress-file-upload";
 import "cypress-iframe";
 
-import type { ContentType } from "../../src/_utils/types";
+import type { ContentType } from "../../src/types";
 
 Cypress.Commands.add(
   "loginAsTestUser",
