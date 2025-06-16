@@ -1,6 +1,6 @@
 import express from "express";
 import {
-  contentCreateSchema,
+  createContentSchema,
   contentIdSchema,
   createContentRevisionScheme,
   revertToRevisionScheme,
@@ -35,7 +35,7 @@ updateContentRouter.post(
 
 updateContentRouter.post(
   "/createContent/",
-  queryLoggedIn(createContent, contentCreateSchema),
+  queryLoggedIn(createContent, createContentSchema),
 );
 
 updateContentRouter.post(

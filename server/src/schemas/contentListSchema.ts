@@ -1,14 +1,14 @@
 import { z } from "zod";
-import { uuidSchema } from "./uuid";
+import { optionalUuidSchema, uuidSchema } from "./uuid";
 
 export const getContentSchema = z.object({
   ownerId: uuidSchema,
-  parentId: uuidSchema.nullish().transform((val) => val ?? null),
+  parentId: optionalUuidSchema,
 });
 
 export const searchMyContentSchema = z.object({
   ownerId: uuidSchema,
-  parentId: uuidSchema.nullish().transform((val) => val ?? null),
+  parentId: optionalUuidSchema,
   isLibrary: z.boolean().optional(),
   query: z.string(),
 });

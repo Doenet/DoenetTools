@@ -1,13 +1,13 @@
 import { z } from "zod";
-import { uuidSchema } from "./uuid";
+import { optionalUuidSchema, uuidOrNullSchema, uuidSchema } from "./uuid";
 import { stringAsBoolSchema } from "./boolean";
 
 export const curationParentIdSchema = z.object({
-  parentId: uuidSchema.nullish().transform((val) => val ?? null),
+  parentId: uuidOrNullSchema,
 });
 
 export const searchCurationFolderContentSchema = z.object({
-  parentId: uuidSchema.nullish().transform((val) => val ?? null),
+  parentId: optionalUuidSchema,
   query: z.string(),
 });
 
@@ -28,5 +28,5 @@ export const getCommentsSchema = z.object({
 
 export const createCurationFolderSchema = z.object({
   name: z.string(),
-  parentId: uuidSchema.nullish().transform((val) => val ?? null),
+  parentId: uuidOrNullSchema,
 });
