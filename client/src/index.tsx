@@ -56,7 +56,6 @@ import {
 import {
   loader as assignmentResponseStudentLoader,
   AssignmentResponseStudent,
-  // assignedAssignmentDataloader,
 } from "./paths/AssignmentResponseStudent";
 import {
   action as enterClassCodeAction,
@@ -74,7 +73,6 @@ import {
 import {
   loader as studentAssignmentScoresLoader,
   StudentAssignmentScores,
-  assignedDataloader,
 } from "./paths/StudentAssignmentScores";
 import {
   loader as trashLoader,
@@ -192,40 +190,11 @@ const router = createBrowserRouter([
         path: "/",
         loader: carouselLoader,
         action: siteAction,
-        // action: homeAction,
         errorElement: <ErrorPage />,
         element: <Home />,
       },
       {
-        path: "explore",
-        loader: exploreLoader,
-        action: exploreAction,
-        element: <Explore />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "explore/:systemId",
-        loader: exploreLoader,
-        action: exploreAction,
-        element: <Explore />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "explore/:systemId/:categoryId",
-        loader: exploreLoader,
-        action: exploreAction,
-        element: <Explore />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "explore/:systemId/:categoryId/:subCategoryId",
-        loader: exploreLoader,
-        action: exploreAction,
-        element: <Explore />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "explore/:systemId/:categoryId/:subCategoryId/:classificationId",
+        path: "explore/:systemId?/:categoryId?/:subCategoryId?/:classificationId?",
         loader: exploreLoader,
         action: exploreAction,
         element: <Explore />,
@@ -239,28 +208,14 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "libraryActivities",
+        path: "libraryActivities/:parentId?",
         loader: libraryActivitiesLoader,
         action: libraryActivitiesAction,
         element: <LibraryActivities />,
         errorElement: <ErrorPage />,
       },
       {
-        path: "libraryActivities/:parentId",
-        loader: libraryActivitiesLoader,
-        action: libraryActivitiesAction,
-        element: <LibraryActivities />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "activities/:userId",
-        loader: activitiesLoader,
-        action: activitiesAction,
-        element: <Activities />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "activities/:userId/:parentId",
+        path: "activities/:userId/:parentId?",
         loader: activitiesLoader,
         action: activitiesAction,
         element: <Activities />,
@@ -274,14 +229,7 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "sharedActivities/:ownerId",
-        loader: sharedActivitiesLoader,
-        action: sharedActivitiesAction,
-        element: <SharedActivities />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "sharedActivities/:ownerId/:parentId",
+        path: "sharedActivities/:ownerId/:parentId?",
         loader: sharedActivitiesLoader,
         action: sharedActivitiesAction,
         element: <SharedActivities />,
@@ -309,13 +257,7 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "codeViewer",
-        loader: codeViewerLoader,
-        errorElement: <ErrorPage />,
-        element: <CodeViewer />,
-      },
-      {
-        path: "codeViewer/:contentId",
+        path: "codeViewer/:contentId?",
         loader: codeViewerLoader,
         errorElement: <ErrorPage />,
         element: <CodeViewer />,
@@ -329,7 +271,7 @@ const router = createBrowserRouter([
       },
       {
         path: "assignedData",
-        loader: assignedDataloader,
+        loader: studentAssignmentScoresLoader,
         element: <StudentAssignmentScores />,
         errorElement: <ErrorPage />,
       },
@@ -352,25 +294,13 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "allAssignmentScores",
+        path: "allAssignmentScores/:parentId?",
         loader: allAssignmentScoresLoader,
         element: <AllAssignmentScores />,
         errorElement: <ErrorPage />,
       },
       {
-        path: "allAssignmentScores/:parentId",
-        loader: allAssignmentScoresLoader,
-        element: <AllAssignmentScores />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "studentAssignmentScores/:userId",
-        loader: studentAssignmentScoresLoader,
-        element: <StudentAssignmentScores />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "studentAssignmentScores/:userId/:parentId",
+        path: "studentAssignmentScores/:userId/:parentId?",
         loader: studentAssignmentScoresLoader,
         element: <StudentAssignmentScores />,
         errorElement: <ErrorPage />,
