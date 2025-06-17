@@ -39,7 +39,7 @@ export const createNewAttemptSchema = z.object({
       z.object({
         shuffledItemNumber: rangedNumber,
         docId: uuidSchema,
-        variant: rangedNumber,
+        variant: variantSchema,
       }),
     )
     .optional(),
