@@ -118,8 +118,6 @@ describe("video events test", function () {
       );
       const videoVerbs = videoEvents.map((x: any) => x.verb);
 
-      console.log(...videoEvents);
-
       let playedInd = 1;
       let playedEvent = videoEvents.splice(0, playedInd)[0];
       videoVerbs.splice(0, playedInd);
