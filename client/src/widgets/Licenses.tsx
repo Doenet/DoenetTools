@@ -28,7 +28,7 @@ export function SmallLicenseBadges({
   suppressLink = false,
 }: {
   code: LicenseCode;
-  allLicenses: License[],
+  allLicenses: License[];
   suppressLink?: boolean;
 }) {
   const license = findLicenseFromCode(code, allLicenses);

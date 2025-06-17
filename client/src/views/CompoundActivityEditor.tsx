@@ -188,7 +188,8 @@ export function CompoundActivityEditor({
   const readOnly = asViewer || isAssigned;
   const readOnlyStructure = readOnly || inLibrary;
 
-  const { user, allLicenses, addTo, setAddTo } = useOutletContext<SiteContext>();
+  const { user, allLicenses, addTo, setAddTo } =
+    useOutletContext<SiteContext>();
   const navigate = useNavigate();
 
   const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
