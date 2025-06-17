@@ -51,7 +51,6 @@ export type UserInfo = {
   userId: Uint8Array;
   firstNames: string | null;
   lastNames: string;
-  email: string;
   isAnonymous?: boolean;
   isAuthor?: boolean;
   numLibrary?: number;
@@ -73,6 +72,10 @@ export function isUserInfo(obj: unknown): obj is UserInfo {
       typeof typedObj.numCommunity === "number")
   );
 }
+
+export type UserInfoWithEmail = UserInfo & {
+  email: string;
+};
 
 export type ContentClassification = {
   id: number;
@@ -145,7 +148,7 @@ export type ContentBase = {
   name: string;
   isPublic: boolean;
   isShared: boolean;
-  sharedWith: UserInfo[];
+  sharedWith: UserInfoWithEmail[];
   // Content should ~almost always~ have a license.
   // The exception: content without license from old doenet website
   license: License | null;
@@ -163,7 +166,7 @@ export type ContentBase = {
     type: ContentType;
     isPublic: boolean;
     isShared: boolean;
-    sharedWith: UserInfo[];
+    sharedWith: UserInfoWithEmail[];
   } | null;
   assignmentInfo?: AssignmentInfo;
 };

@@ -65,7 +65,6 @@ export async function getDoenetMLComparison({
                 owner: {
                   select: {
                     userId: true,
-                    email: true,
                     firstNames: true,
                     lastNames: true,
                   },
@@ -106,7 +105,6 @@ export async function getDoenetMLComparison({
                   owner: {
                     select: {
                       userId: true,
-                      email: true,
                       firstNames: true,
                       lastNames: true,
                     },

@@ -9,6 +9,7 @@ import {
   ContentBase,
   AssignmentInfo,
   DoenetmlVersion,
+  UserInfoWithEmail,
 } from "../types";
 import { sortClassifications } from "./classificationsFeatures";
 import { fromUUID, isEqualUUID } from "./uuid";
@@ -37,7 +38,7 @@ import { InvalidRequestError } from "./error";
 function processSharedWith(
   sharedWithOrig: FullShareInfo | IdShareInfo | null | undefined,
   forUser?: Uint8Array,
-): { isShared: boolean; sharedWith: UserInfo[] } {
+): { isShared: boolean; sharedWith: UserInfoWithEmail[] } {
   if (sharedWithOrig === null || sharedWithOrig === undefined) {
     return { isShared: false, sharedWith: [] };
   }
@@ -179,7 +180,6 @@ export function returnContentSelect({
     ? {
         select: {
           userId: true,
-          email: true,
           firstNames: true,
           lastNames: true,
         },
@@ -297,13 +297,8 @@ type PreliminaryLicense = {
   sortIndex: number;
 };
 
-type FullShareInfo = { user: UserInfo }[];
+type FullShareInfo = { user: UserInfoWithEmail }[];
 type IdShareInfo = { userId: Uint8Array }[];
-
-// function isFullShareInfo(obj: unknown): obj is FullShareInfo {
-//   const typedObj = obj as FullShareInfo;
-//   return Array.isArray(typedObj) && typedObj.every((v) => isUserInfo(v));
-// }
 
 function isIdShareInfo(obj: unknown): obj is IdShareInfo {
   const typedObj = obj as IdShareInfo;
@@ -327,14 +322,14 @@ type PreliminaryContent = {
     description: string;
     sortIndex: number;
   }[];
-  sharedWith: { userId: Uint8Array }[] | { user: UserInfo }[];
+  sharedWith: { userId: Uint8Array }[] | { user: UserInfoWithEmail }[];
   license: PreliminaryLicense | null;
   parent?: {
     id: Uint8Array;
     name: string;
     type: ContentType;
     isPublic: boolean;
-    sharedWith: { userId: Uint8Array }[] | { user: UserInfo }[];
+    sharedWith: { userId: Uint8Array }[] | { user: UserInfoWithEmail }[];
   } | null;
   classifications?: {
     classification: ContentClassification;

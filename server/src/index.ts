@@ -18,7 +18,7 @@ import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 
 import * as fs from "fs/promises";
 import { fromUUID, toUUID } from "./utils/uuid";
-import { UserInfo } from "./types";
+import { UserInfo, UserInfoWithEmail } from "./types";
 import {
   findOrCreateUser,
   getUserInfo,
@@ -48,7 +48,7 @@ dotenv.config();
 
 declare module "express-serve-static-core" {
   interface Request {
-    user: UserInfo;
+    user: UserInfoWithEmail;
   }
 }
 

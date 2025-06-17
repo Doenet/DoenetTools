@@ -35,7 +35,6 @@ export async function getRemixSources({
       owner: {
         select: {
           userId: true,
-          email: true,
           firstNames: true,
           lastNames: true,
         },
@@ -69,7 +68,6 @@ export async function getRemixSources({
                       owner: {
                         select: {
                           userId: true,
-                          email: true,
                           firstNames: true,
                           lastNames: true,
                         },
@@ -230,7 +228,6 @@ export async function getRemixes({
       owner: {
         select: {
           userId: true,
-          email: true,
           firstNames: true,
           lastNames: true,
         },
@@ -265,7 +262,6 @@ export async function getRemixes({
                       owner: {
                         select: {
                           userId: true,
-                          email: true,
                           firstNames: true,
                           lastNames: true,
                         },

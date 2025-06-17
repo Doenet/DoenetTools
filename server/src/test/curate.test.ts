@@ -241,7 +241,6 @@ test("user privileges for library", async () => {
   });
   const editorUserInfo: UserInfo = {
     userId: editorUserInfoAll.userId,
-    email: editorUserInfoAll.email,
     firstNames: editorUserInfoAll.firstNames,
     lastNames: editorUserInfoAll.lastNames,
   };
@@ -669,7 +668,6 @@ test("published activity in library with unavailable source activity", async () 
   });
   const editorUser: UserInfo = {
     userId: editorUserAll.userId,
-    email: editorUserAll.email,
     firstNames: editorUserAll.firstNames,
     lastNames: editorUserAll.lastNames,
   };

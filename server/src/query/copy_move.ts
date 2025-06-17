@@ -441,7 +441,9 @@ async function copySingleContent({
       nonRootAssignmentId: true,
     },
     include: {
-      owner: true,
+      owner: {
+        omit: { email: true },
+      },
       classifications: true,
       contentFeatures: true,
       children: {

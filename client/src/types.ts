@@ -80,11 +80,14 @@ export type UserInfo = {
   userId: string;
   firstNames: string | null;
   lastNames: string;
-  email: string;
   isAuthor?: boolean;
   numLibrary?: number;
   numCommunity?: number;
   isMaskForLibrary?: boolean;
+};
+
+export type UserInfoWithEmail = UserInfo & {
+  email: string;
 };
 
 export type ContentFeature = {
@@ -160,7 +163,7 @@ export type ContentBase = {
   name: string;
   isPublic: boolean;
   isShared: boolean;
-  sharedWith: UserInfo[];
+  sharedWith: UserInfoWithEmail[];
   // Content should ~almost always~ have a license.
   // The exception: content without license from old doenet website
   license: License | null;
@@ -178,7 +181,7 @@ export type ContentBase = {
     type: ContentType;
     isPublic: boolean;
     isShared: boolean;
-    sharedWith: UserInfo[];
+    sharedWith: UserInfoWithEmail[];
   } | null;
   assignmentInfo?: AssignmentInfo;
 };

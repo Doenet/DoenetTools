@@ -380,7 +380,6 @@ export async function searchUsersWithSharedContent({
     userId: u.userId,
     firstNames: u.firstNames,
     lastNames: u.lastNames,
-    email: "",
   }));
   return usersWithShared2;
 }
@@ -518,7 +517,6 @@ export async function browseUsersWithSharedContent({
     const { numContent, ...u2 } = u;
     return {
       ...u2,
-      email: "",
       numCommunity: Number(numContent),
     };
   });
