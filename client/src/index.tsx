@@ -73,6 +73,7 @@ import {
 import {
   loader as studentAssignmentScoresLoader,
   StudentAssignmentScores,
+  assignedDataloader,
 } from "./paths/StudentAssignmentScores";
 import {
   loader as trashLoader,
@@ -271,7 +272,7 @@ const router = createBrowserRouter([
       },
       {
         path: "assignedData",
-        loader: studentAssignmentScoresLoader,
+        loader: assignedDataloader,
         element: <StudentAssignmentScores />,
         errorElement: <ErrorPage />,
       },

@@ -25,7 +25,6 @@ import { activityFeatureIcons } from "../utils/activity";
 import { MdError } from "react-icons/md";
 
 export async function generalContentActions({ formObj }: { [k: string]: any }) {
-  console.log(`action with name ${formObj._action}`, formObj);
   try {
     if (formObj._action === "update name in settings") {
       await axios.post("/api/updateContent/updateContentSettings", {
