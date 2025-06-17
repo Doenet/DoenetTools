@@ -1,4 +1,4 @@
-import { ContentType, UserInfo } from "../../src/_utils/types";
+import { ContentType, UserInfo } from "../../src/types";
 
 declare global {
   namespace Cypress {

@@ -59,7 +59,7 @@ export async function createLocalContentActions({
 }
 
 /**
- * A model designed for creating content locally, i.e., in the current folder.
+ * A modal designed for creating content locally, i.e., in the current folder.
  * Prompts for the name before creating. Simply closes after the creation.
  */
 export function CreateLocalContent({

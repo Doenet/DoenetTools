@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { uuidSchema } from "./uuid";
+import { uuidOrNullSchema, uuidSchema } from "./uuid";
 
 export const contentIdSchema = z.object({
   contentId: uuidSchema,
@@ -12,10 +12,10 @@ export const contentTypeSchema = z.enum([
   "folder",
 ]);
 
-export const contentCreateSchema = z.object({
+export const createContentSchema = z.object({
   contentType: contentTypeSchema.default("singleDoc"),
   name: z.string().optional(),
-  parentId: uuidSchema.nullish().transform((val) => val ?? null),
+  parentId: uuidOrNullSchema,
 });
 
 export const updateContentSettingsSchema = z.object({

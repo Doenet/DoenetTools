@@ -1,12 +1,10 @@
 import { z } from "zod";
 import { uuidSchema } from "./uuid";
+import { stringAsBoolSchema } from "./boolean";
 
 export const remixSchema = z.object({
   contentId: uuidSchema,
-  includeSource: z
-    .string()
-    .transform((val) => val === "true")
-    .optional(),
+  includeSource: stringAsBoolSchema.optional(),
 });
 
 export const updateRemixedContentToOriginSchema = z.object({

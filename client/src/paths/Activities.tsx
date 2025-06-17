@@ -136,7 +136,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
     //Create an activity and redirect to the editor for it
     const { data } = await axios.post(`/api/updateContent/createContent`, {
       contentType: formObj.type,
-      parentId: params.parentId,
+      parentId:
+        params.parentId && params.parentId !== "null" ? params.parentId : null,
     });
 
     const { contentId } = data;
