@@ -21,13 +21,7 @@ test("New user has no content", async () => {
   if (docs.notMe) {
     throw Error("shouldn't happen");
   }
-  const {
-    availableFeatures,
-    allDoenetmlVersions,
-    allLicenses,
-    notMe,
-    ...docs2
-  } = docs;
+  const { availableFeatures, allDoenetmlVersions, notMe, ...docs2 } = docs;
   expect(docs2).toStrictEqual({
     content: [],
     libraryRelations: [],

@@ -77,7 +77,7 @@ test("New activity starts out private, then delete it", async () => {
     contentFeatures: [],
     sharedWith: [],
     numVariants: 1,
-    license: null,
+    licenseCode: null,
     type: "singleDoc",
     classifications: [],
     doenetML: "",
@@ -85,10 +85,10 @@ test("New activity starts out private, then delete it", async () => {
     parent: null,
   };
 
-  expect(activityContent.license?.code).eq("CCDUAL");
+  expect(activityContent.licenseCode).eq("CCDUAL");
 
   // set license to null as it is too long to compare in its entirety.
-  activityContent.license = null;
+  activityContent.licenseCode = null;
 
   expect(activityContent).toStrictEqual(expectedContent);
 
@@ -783,7 +783,7 @@ test("activity editor data and my folder contents before and after assigned", as
     isShared: false,
     sharedWith: [],
     numVariants: 1,
-    license: null,
+    licenseCode: null,
     type: "singleDoc",
     classifications: [],
     doenetML: "",
@@ -793,7 +793,7 @@ test("activity editor data and my folder contents before and after assigned", as
   if (preAssignedData === undefined) {
     throw Error("shouldn't happen");
   }
-  preAssignedData.license = null; // skip trying to check big license object
+  preAssignedData.licenseCode = null; // skip trying to check big license object
   expect(preAssignedData).eqls(expectedData);
 
   // get my folder content returns same data
@@ -805,7 +805,7 @@ test("activity editor data and my folder contents before and after assigned", as
   if (folderData.notMe) {
     throw Error("shouldn't happen");
   }
-  folderData.content[0].license = null; // skip trying to check big license object
+  folderData.content[0].licenseCode = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
   // Opening assignment also assigns the activity
@@ -829,7 +829,7 @@ test("activity editor data and my folder contents before and after assigned", as
     isShared: false,
     sharedWith: [],
     numVariants: 1,
-    license: null,
+    licenseCode: null,
     type: "singleDoc",
     classifications: [],
     doenetML: "",
@@ -849,7 +849,7 @@ test("activity editor data and my folder contents before and after assigned", as
   if (openedData === undefined) {
     throw Error("shouldn't happen");
   }
-  openedData.license = null; // skip trying to check big license object
+  openedData.licenseCode = null; // skip trying to check big license object
   expect(openedData).eqls(expectedData);
 
   // get my folder content returns same data, with differences in some optional fields
@@ -862,7 +862,7 @@ test("activity editor data and my folder contents before and after assigned", as
   if (folderData.notMe) {
     throw Error("shouldn't happen");
   }
-  folderData.content[0].license = null; // skip trying to check big license object
+  folderData.content[0].licenseCode = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
   // closing the assignment without data also unassigns it
@@ -883,7 +883,7 @@ test("activity editor data and my folder contents before and after assigned", as
     isShared: false,
     sharedWith: [],
     numVariants: 1,
-    license: null,
+    licenseCode: null,
     type: "singleDoc",
     classifications: [],
     doenetML: "",
@@ -902,7 +902,7 @@ test("activity editor data and my folder contents before and after assigned", as
   if (closedData === undefined) {
     throw Error("shouldn't happen");
   }
-  closedData.license = null; // skip trying to check big license object
+  closedData.licenseCode = null; // skip trying to check big license object
   expect(closedData).eqls(expectedData);
 
   // get my folder content returns same data
@@ -914,7 +914,7 @@ test("activity editor data and my folder contents before and after assigned", as
   if (folderData.notMe) {
     throw Error("shouldn't happen");
   }
-  folderData.content[0].license = null; // skip trying to check big license object
+  folderData.content[0].licenseCode = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
   // re-opening, re-assigns with same code
@@ -940,7 +940,7 @@ test("activity editor data and my folder contents before and after assigned", as
     isShared: false,
     sharedWith: [],
     numVariants: 1,
-    license: null,
+    licenseCode: null,
     type: "singleDoc",
     classifications: [],
     doenetML: "",
@@ -960,7 +960,7 @@ test("activity editor data and my folder contents before and after assigned", as
   if (openedData2 === undefined) {
     throw Error("shouldn't happen");
   }
-  openedData2.license = null; // skip trying to check big license object
+  openedData2.licenseCode = null; // skip trying to check big license object
   expect(openedData2).eqls(expectedData);
 
   // get my folder content returns same data, with differences in some optional fields
@@ -973,7 +973,7 @@ test("activity editor data and my folder contents before and after assigned", as
   if (folderData.notMe) {
     throw Error("shouldn't happen");
   }
-  folderData.content[0].license = null; // skip trying to check big license object
+  folderData.content[0].licenseCode = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
   // create initial attempt
@@ -1008,7 +1008,7 @@ test("activity editor data and my folder contents before and after assigned", as
     isShared: false,
     sharedWith: [],
     numVariants: 1,
-    license: null,
+    licenseCode: null,
     type: "singleDoc",
     classifications: [],
     doenetML: "",
@@ -1027,7 +1027,7 @@ test("activity editor data and my folder contents before and after assigned", as
   if (openedData3 === undefined) {
     throw Error("shouldn't happen");
   }
-  openedData3.license = null; // skip trying to check big license object
+  openedData3.licenseCode = null; // skip trying to check big license object
   expect(openedData3).eqls(expectedData);
 
   // get my folder content returns same data, with differences in some optional fields
@@ -1040,7 +1040,7 @@ test("activity editor data and my folder contents before and after assigned", as
   if (folderData.notMe) {
     throw Error("shouldn't happen");
   }
-  folderData.content[0].license = null; // skip trying to check big license object
+  folderData.content[0].licenseCode = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
   // now closing does not unassign
@@ -1061,7 +1061,7 @@ test("activity editor data and my folder contents before and after assigned", as
     isShared: false,
     sharedWith: [],
     numVariants: 1,
-    license: null,
+    licenseCode: null,
     type: "singleDoc",
     classifications: [],
     doenetML: "",
@@ -1081,7 +1081,7 @@ test("activity editor data and my folder contents before and after assigned", as
   if (closedData2 === undefined) {
     throw Error("shouldn't happen");
   }
-  closedData2.license = null; // skip trying to check big license object
+  closedData2.licenseCode = null; // skip trying to check big license object
   expect(closedData2).eqls(expectedData);
 
   // get my folder content returns same data, with differences in some optional fields
@@ -1094,7 +1094,7 @@ test("activity editor data and my folder contents before and after assigned", as
   if (folderData.notMe) {
     throw Error("shouldn't happen");
   }
-  folderData.content[0].license = null; // skip trying to check big license object
+  folderData.content[0].licenseCode = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
   // explicitly unassigning fails due to the presence of data
@@ -1141,7 +1141,7 @@ test("activity editor data shows its parent folder is public", async () => {
     throw Error("shouldn't happen");
   }
   expect(data.isPublic).eq(true);
-  expect(data.license?.code).eq("CCBYSA");
+  expect(data.licenseCode).eq("CCBYSA");
   expect(data.parent).eq(null);
 
   const { contentId: folderId } = await createContent({
@@ -1164,7 +1164,7 @@ test("activity editor data shows its parent folder is public", async () => {
     throw Error("shouldn't happen");
   }
   expect(data.isPublic).eq(true);
-  expect(data.license?.code).eq("CCBYSA");
+  expect(data.licenseCode).eq("CCBYSA");
   expect(data.parent?.isPublic).eq(false);
 
   await setContentLicense({
@@ -1187,7 +1187,7 @@ test("activity editor data shows its parent folder is public", async () => {
   // setting folder public also sets children to be public
   expect(data.isPublic).eq(true);
   // changing license of folder does not change license of content
-  expect(data.license?.code).eq("CCBYSA");
+  expect(data.licenseCode).eq("CCBYSA");
   expect(data.parent?.isPublic).eq(true);
 
   await setContentIsPublic({
@@ -1225,7 +1225,7 @@ test("activity editor data shows its parent folder is public", async () => {
   }
   expect(data.isPublic).eq(true);
   // changing license of folder does not change license of content
-  expect(data.license?.code).eq("CCBYSA");
+  expect(data.licenseCode).eq("CCBYSA");
   expect(data.parent?.isPublic).eq(true);
 });
 

@@ -157,6 +157,7 @@ export function ShareDrawer({
       contentData={contentData}
       libraryRelations={libraryRelations}
       libraryComments={libraryComments}
+      allLicenses={allLicenses}
       onClose={onClose}
     />
   ) : (

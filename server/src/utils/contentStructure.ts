@@ -195,14 +195,7 @@ export function returnContentSelect({
     isPublic: true,
     contentFeatures: true,
     sharedWith,
-    license: {
-      include: {
-        composedOf: {
-          select: { composedOf: true },
-          orderBy: { composedOf: { sortIndex: "asc" as const } },
-        },
-      },
-    },
+    licenseCode: true,
     parent: {
       select: {
         id: true,
@@ -328,7 +321,7 @@ type PreliminaryContent = {
     sortIndex: number;
   }[];
   sharedWith: { userId: Uint8Array }[] | { user: UserInfo }[];
-  license: PreliminaryLicense | null;
+  licenseCode: LicenseCode | null;
   parent?: {
     id: Uint8Array;
     name: string;
@@ -400,7 +393,7 @@ export function processContent(
     activityLevelAttempts,
     itemLevelAttempts,
     sharedWith: sharedWithOrig,
-    license,
+    licenseCode,
     parent,
     classifications,
     rootAssignment,
@@ -493,7 +486,7 @@ export function processContent(
     ...assignmentInfoObj,
     isShared,
     sharedWith,
-    license: license ? processLicense(license) : null,
+    licenseCode,
     classifications: sortClassifications(
       (classifications ?? []).map((c) => c.classification),
     ),

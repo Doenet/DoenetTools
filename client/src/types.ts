@@ -163,7 +163,7 @@ export type ContentBase = {
   sharedWith: UserInfo[];
   // Content should ~almost always~ have a license.
   // The exception: content without license from old doenet website
-  license: License | null;
+  licenseCode: LicenseCode | null;
   contentFeatures: {
     id: number;
     code: string;

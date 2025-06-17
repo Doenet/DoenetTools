@@ -24,6 +24,8 @@ import { HiOutlineMail } from "react-icons/hi";
 import { BsGithub, BsDiscord } from "react-icons/bs";
 import { Content } from "../types";
 import { ContentInfoDrawer } from "../drawers/ContentInfoDrawer";
+import { useOutletContext } from "react-router";
+import { SiteContext } from "./SiteHeader";
 
 export async function loader() {
   return {};
@@ -92,6 +94,8 @@ export function Home() {
     document.title = `Home - Doenet`;
   }, []);
 
+  const { allLicenses } = useOutletContext<SiteContext>();
+
   const grayColor = useColorModeValue("doenet.mainGray", "doenet.lightGray");
   const blueColor = useColorModeValue("doenet.lightBlue", "doenet.mainBlue");
   const blackColor = "black";
@@ -110,6 +114,7 @@ export function Home() {
       isOpen={infoIsOpen}
       onClose={infoOnClose}
       contentData={infoContentData}
+      allLicenses={allLicenses}
     />
   ) : null;
 

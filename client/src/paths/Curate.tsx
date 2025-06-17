@@ -21,6 +21,7 @@ import {
   Link,
   useFetcher,
   ActionFunctionArgs,
+  useOutletContext,
 } from "react-router";
 
 import { CardContent } from "../widgets/Card";
@@ -31,7 +32,6 @@ import {
   ContentFeature,
   DoenetmlVersion,
   LibraryRelations,
-  License,
 } from "../types";
 import { createNameCheckIsMeTag, createNameNoTag } from "../utils/names";
 import { intWithCommas } from "../utils/formatting";
@@ -41,6 +41,7 @@ import {
 } from "../drawers/ContentSettingsDrawer";
 import { ShareDrawer, shareDrawerActions } from "../drawers/ShareDrawer";
 import { DateTime } from "luxon";
+import { SiteContext } from "./SiteHeader";
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
@@ -78,7 +79,6 @@ export function Curate() {
     publishedLibraryRelations,
     allDoenetmlVersions,
     availableFeatures,
-    allLicenses,
   } = useLoaderData() as {
     pendingContent: Content[];
     pendingLibraryRelations: LibraryRelations[];
@@ -90,8 +90,9 @@ export function Curate() {
     publishedLibraryRelations: LibraryRelations[];
     allDoenetmlVersions: DoenetmlVersion[];
     availableFeatures: ContentFeature[];
-    allLicenses: License[];
   };
+
+  const { allLicenses } = useOutletContext<SiteContext>();
 
   useEffect(() => {
     document.title = `Curate - Doenet`;
@@ -187,6 +188,7 @@ export function Curate() {
           showOwnerName={true}
           showLibraryEditor={showLibraryEditor}
           content={cardContent}
+          allLicenses={allLicenses}
           emptyMessage={"No Activities Found!"}
         />
       </Box>

@@ -223,6 +223,7 @@ export function Explore() {
 
   const {
     user,
+    allLicenses,
     exploreTab: currentTab,
     setExploreTab: setCurrentTab,
     addTo,
@@ -270,6 +271,7 @@ export function Explore() {
       isOpen={infoIsOpen}
       onClose={infoOnClose}
       contentData={infoContentData}
+      allLicenses={allLicenses}
     />
   ) : null;
 
@@ -411,6 +413,7 @@ export function Explore() {
           showActivityFeatures={true}
           showOwnerName={true}
           content={cardContent}
+          allLicenses={allLicenses}
           emptyMessage={"No Matches Found!"}
           selectedCards={user ? selectedCards : undefined}
           setSelectedCards={setSelectedCards}
