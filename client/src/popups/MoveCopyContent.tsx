@@ -176,7 +176,7 @@ export function MoveCopyContent({
     const parentIsPublic: boolean = parent?.isPublic ?? false;
     const parentIsShared: boolean = parent?.isShared ?? false;
     const parentSharedWith: UserInfo[] = parent?.sharedWith ?? [];
-    const parentLicenseCode: LicenseCode | null = parent?.license?.code ?? null;
+    const parentLicenseCode: LicenseCode | null = parent?.licenseCode ?? null;
     const grandparentId: string | null = parent?.parent?.contentId ?? null;
     const grandparentType: ContentType = parent?.parent?.type ?? "folder";
     const contentFromApi: Content[] = data.content;

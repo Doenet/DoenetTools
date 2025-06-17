@@ -188,7 +188,7 @@ export function CompoundActivityEditor({
   const readOnly = asViewer || isAssigned;
   const readOnlyStructure = readOnly || inLibrary;
 
-  const { user, addTo, setAddTo } = useOutletContext<SiteContext>();
+  const { user, allLicenses, addTo, setAddTo } = useOutletContext<SiteContext>();
   const navigate = useNavigate();
 
   const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
@@ -670,7 +670,7 @@ export function CompoundActivityEditor({
               isPublic: content.isPublic,
               isShared: content.isShared,
               sharedWith: content.sharedWith,
-              licenseCode: content.license?.code ?? null,
+              licenseCode: content.licenseCode ?? null,
             });
             moveCopyContentOnOpen();
           }}
@@ -763,6 +763,7 @@ export function CompoundActivityEditor({
       showAddButton={!readOnlyStructure}
       emptyMessage={`${contentTypeName} is empty. Add documents ${activity.type === "sequence" ? "or question banks " : ""}here to begin.`}
       content={cardContent}
+      allLicenses={allLicenses}
       selectedCards={user ? selectedCards : undefined}
       setSelectedCards={setSelectedCards}
       disableSelectFor={addTo ? [addTo.contentId] : undefined}

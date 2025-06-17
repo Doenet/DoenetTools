@@ -93,7 +93,7 @@ export function CodeViewer() {
     onClose: infoOnClose,
   } = useDisclosure();
 
-  const { user } = useOutletContext<SiteContext>();
+  const { user, allLicenses } = useOutletContext<SiteContext>();
   const navigate = useNavigate();
 
   const label = activityData?.name ?? "Public Editor";
@@ -118,6 +118,7 @@ export function CodeViewer() {
             isOpen={infoIsOpen}
             onClose={infoOnClose}
             contentData={activityData}
+            allLicenses={allLicenses}
           />
         </>
       ) : null}

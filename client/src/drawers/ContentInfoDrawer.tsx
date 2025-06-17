@@ -15,7 +15,12 @@ import {
   Text,
   Tooltip,
 } from "@chakra-ui/react";
-import { ActivityRemixItem, Content, LibraryRelations } from "../types";
+import {
+  ActivityRemixItem,
+  Content,
+  LibraryRelations,
+  License,
+} from "../types";
 import { GeneralContentInfo } from "../drawerTabs/GeneralContentInfo";
 import { ClassificationInfo } from "../drawerTabs/ClassificationInfo";
 import axios from "axios";
@@ -29,6 +34,7 @@ export function ContentInfoDrawer({
   finalFocusRef,
   contentData,
   displayTab = "general",
+  allLicenses,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -36,6 +42,7 @@ export function ContentInfoDrawer({
   contentData: Content;
   libraryRelations?: LibraryRelations;
   displayTab?: "general" | "classifications";
+  allLicenses: License[];
 }) {
   let initialTabIndex: number;
   switch (displayTab) {
@@ -138,7 +145,10 @@ export function ContentInfoDrawer({
             <Box height="calc(100vh - 130px)">
               <TabPanels height="100%">
                 <TabPanel height="100%">
-                  <GeneralContentInfo contentData={contentData} />
+                  <GeneralContentInfo
+                    contentData={contentData}
+                    allLicenses={allLicenses}
+                  />
                 </TabPanel>
                 {contentData.type !== "folder" ? (
                   <TabPanel overflowY="hidden" height="100%">

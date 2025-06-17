@@ -64,8 +64,7 @@ import { ActivitySource, isActivitySource } from "../viewerTypes";
 import { processRemixes } from "../utils/processRemixes";
 import ContributorsMenu from "../dropdowns/ContributorsMenu";
 import { ContentInfoDrawer } from "../drawers/ContentInfoDrawer";
-import { createNameCheckCurateTag } from "../utils/names";
-import { DisplayLicenseItem } from "../widgets/Licenses";
+import { LicenseDescription } from "../widgets/Licenses";
 import { SiteContext } from "./SiteHeader";
 import {
   AddContentToMenu,
@@ -161,7 +160,8 @@ export function ActivityViewer() {
   const { contentId, activityData, contributorHistory, libraryRelations } =
     data;
 
-  const { user, addTo, setAddTo } = useOutletContext<SiteContext>();
+  const { user, allLicenses, addTo, setAddTo } =
+    useOutletContext<SiteContext>();
   const navigate = useNavigate();
 
   const infoBtnRef = useRef<HTMLButtonElement>(null);
@@ -228,6 +228,7 @@ export function ActivityViewer() {
       contentData={contentData}
       libraryRelations={libraryRelations}
       displayTab={displayInfoTab}
+      allLicenses={allLicenses}
     />
   ) : null;
 
@@ -298,7 +299,6 @@ export function ActivityViewer() {
   }
 
   const contentTypeName = contentTypeToName[data.type];
-  const ownerName = createNameCheckCurateTag(activityData.owner!);
 
   const { iconImage, iconColor } = getIconInfo(data.type);
 
@@ -636,46 +636,13 @@ export function ActivityViewer() {
               minHeight="20vh"
             >
               <Box width={haveClassifications ? "70%" : "100%"}>
-                {activityData.license ? (
-                  activityData.license.isComposition ? (
-                    <>
-                      <p>
-                        <strong>{activityData.name}</strong> by {ownerName} is
-                        shared with these licenses:
-                      </p>
-                      <List spacing="20px" marginTop="10px">
-                        {activityData.license.composedOf.map((comp) => (
-                          <DisplayLicenseItem
-                            licenseItem={comp}
-                            key={comp.code}
-                          />
-                        ))}
-                      </List>
-                      <p style={{ marginTop: "10px" }}>
-                        You are free to use either license when reusing this
-                        work.
-                      </p>
-                    </>
-                  ) : (
-                    <>
-                      <p>
-                        <strong>{activityData.name}</strong> by {ownerName} is
-                        shared using the license:
-                      </p>
-                      <List marginTop="10px">
-                        <DisplayLicenseItem
-                          licenseItem={activityData.license}
-                        />
-                      </List>
-                    </>
-                  )
-                ) : (
-                  <p>
-                    <strong>{activityData.name}</strong> by {ownerName} is
-                    shared, but a license was not specified. Contact the author
-                    to determine in what ways you can reuse this activity.
-                  </p>
-                )}
+                <LicenseDescription
+                  code={activityData.licenseCode}
+                  contentType={activityData.type}
+                  allLicenses={allLicenses}
+                  title={activityData.name}
+                  author={activityData.owner}
+                />
               </Box>
               {haveClassifications ? (
                 <Box

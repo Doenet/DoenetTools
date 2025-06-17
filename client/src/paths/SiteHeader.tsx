@@ -32,7 +32,7 @@ import RouterLogo from "../RouterLogo";
 import { ExternalLinkIcon, HamburgerIcon } from "@chakra-ui/icons";
 import axios from "axios";
 import { createNameNoTag } from "../utils/names";
-import { ContentDescription } from "../types";
+import { ContentDescription, License } from "../types";
 
 export type User =
   | {
@@ -48,6 +48,7 @@ export type User =
 
 export type SiteContext = {
   user?: User;
+  allLicenses: License[];
   exploreTab: number | null;
   setExploreTab: (arg: number | null) => void;
   addTo: ContentDescription | null;
@@ -72,7 +73,11 @@ export async function loader() {
     data: { user },
   } = await axios.get("/api/user/getUser");
 
-  return { user };
+  const {
+    data: { allLicenses },
+  } = await axios.get("/api/info/getAllLicenses");
+
+  return { user, allLicenses };
 }
 
 function NavLinkTab({
@@ -164,7 +169,10 @@ function NavLinkDropdownTab({
 }
 
 export function SiteHeader() {
-  const { user } = useLoaderData() as { user?: User };
+  const { user, allLicenses } = useLoaderData() as {
+    user?: User;
+    allLicenses: License[];
+  };
 
   const [exploreTab, setExploreTab] = useState<number | null>(null);
 
@@ -172,6 +180,7 @@ export function SiteHeader() {
 
   const siteContext: SiteContext = {
     user,
+    allLicenses,
     exploreTab,
     setExploreTab,
     addTo,

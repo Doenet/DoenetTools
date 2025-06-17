@@ -3,7 +3,6 @@ import {
   Flex,
   Heading,
   Tooltip,
-  List,
   MenuItem,
   useDisclosure,
   HStack,
@@ -24,7 +23,7 @@ import { CardContent } from "../widgets/Card";
 import axios from "axios";
 import { createNameNoTag } from "../utils/names";
 import { ContentDescription, Content } from "../types";
-import { DisplayLicenseItem } from "../widgets/Licenses";
+import { LicenseDescription } from "../widgets/Licenses";
 import { ContentInfoDrawer } from "../drawers/ContentInfoDrawer";
 import CardList from "../widgets/CardList";
 import { menuIcons } from "../utils/activity";
@@ -88,7 +87,8 @@ export function SharedActivities() {
     parent: Content | null;
   };
 
-  const { user, addTo, setAddTo } = useOutletContext<SiteContext>();
+  const { user, allLicenses, addTo, setAddTo } =
+    useOutletContext<SiteContext>();
 
   const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
   const selectedCardsFiltered = selectedCards.filter((c) => c);
@@ -144,6 +144,7 @@ export function SharedActivities() {
         isOpen={infoIsOpen}
         onClose={infoOnClose}
         contentData={contentData}
+        allLicenses={allLicenses}
       />
     ) : null;
 
@@ -317,6 +318,7 @@ export function SharedActivities() {
       showActivityFeatures={true}
       emptyMessage={"No Activities Yet"}
       content={cardContent}
+      allLicenses={allLicenses}
       selectedCards={user ? selectedCards : undefined}
       setSelectedCards={setSelectedCards}
       disableSelectFor={addTo ? [addTo.contentId] : undefined}
@@ -346,43 +348,13 @@ export function SharedActivities() {
         padding="20px"
         minHeight="20vh"
       >
-        {parent ? (
-          parent.license ? (
-            parent.license.isComposition ? (
-              <>
-                <p>
-                  <strong>{parent.name}</strong> by {owner.firstNames}{" "}
-                  {owner.lastNames} is shared with these licenses:
-                </p>
-                <List spacing="20px" marginTop="10px">
-                  {parent.license.composedOf.map((comp) => (
-                    <DisplayLicenseItem licenseItem={comp} key={comp.code} />
-                  ))}
-                </List>
-                <p style={{ marginTop: "10px" }}>
-                  You are free to use either license when reusing this work.
-                </p>
-              </>
-            ) : (
-              <>
-                <p>
-                  <strong>{parent.name}</strong> by {owner.firstNames}{" "}
-                  {owner.lastNames} is shared using the license:
-                </p>
-                <List marginTop="10px">
-                  <DisplayLicenseItem licenseItem={parent.license} />
-                </List>
-              </>
-            )
-          ) : (
-            <p>
-              <strong>{parent.name}</strong> by {owner.firstNames}{" "}
-              {owner.lastNames} is shared, but a license was not specified.
-              Contact the author to determine in what ways you can reuse this
-              activity.
-            </p>
-          )
-        ) : null}
+        {parent && (
+          <LicenseDescription
+            code={parent.licenseCode}
+            contentType={parent.type}
+            allLicenses={allLicenses}
+          />
+        )}
       </Box>
     </>
   );

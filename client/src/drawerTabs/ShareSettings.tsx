@@ -10,7 +10,6 @@ import {
   Tooltip,
   Text,
   HStack,
-  List,
   Input,
   Spinner,
   TableContainer,
@@ -26,11 +25,11 @@ import {
   Hide,
   Button,
 } from "@chakra-ui/react";
-import { InfoIcon, WarningIcon } from "@chakra-ui/icons";
+import { WarningIcon } from "@chakra-ui/icons";
 import axios, { AxiosError } from "axios";
 import { createNameNoTag } from "../utils/names";
 import { Content, License, LicenseCode } from "../types";
-import { DisplayLicenseItem } from "../widgets/Licenses";
+import { LicenseDrawerBox, LicenseDescription } from "../widgets/Licenses";
 import { contentTypeToName } from "../utils/activity";
 
 export async function sharingActions({ formObj }: { [k: string]: any }) {
@@ -107,12 +106,16 @@ export function ShareSettings({
   allLicenses: License[];
   remixedWithLicense: LicenseCode | null;
 }) {
-  const license = contentData.license;
+  const licenseCode = contentData.licenseCode;
 
   const [selectedIsPublic, setSelectedIsPublic] = useState(
     contentData.isPublic,
   );
-  const [selectedLicenseCode, setSelectedLicenseCode] = useState(license?.code);
+
+  // TO REVIEW: Is this logic ok?
+  const [selectedLicenseCode, setSelectedLicenseCode] = useState(
+    licenseCode ?? "CCDUAL",
+  );
 
   const [shareWithEmail, setShareWithEmail] = useState("");
   const [showSpinner, setShowSpinner] = useState<{
@@ -128,8 +131,9 @@ export function ShareSettings({
   const shareSubmitButton = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    setSelectedLicenseCode(license?.code);
-  }, [license?.code]);
+    // TO REVIEW: Is this logic ok?
+    setSelectedLicenseCode(licenseCode ?? "CCDUAL");
+  }, [licenseCode]);
 
   useEffect(() => {
     setSelectedIsPublic(contentData.isPublic);
@@ -540,69 +544,30 @@ export function ShareSettings({
         {licenseWarning}
       </Box>
 
-      <Box>
-        <Box
-          marginTop="20px"
-          border="2px solid lightgray"
-          background="lightgray"
-          padding="10px"
-        >
-          {!(contentData.isPublic || contentData.isShared) ? (
-            contentData.type === "folder" ? (
-              <p>
-                Folder is private. However, shared items within the folder can
-                still be found.
-              </p>
-            ) : contentData.type === "singleDoc" ? (
-              <p>Activity is private.</p>
-            ) : (
-              <p>
-                This {contentTypeNameLower} is private. However, shared items
-                within the {contentTypeNameLower} can still be found.
-              </p>
-            )
-          ) : license === null ? (
-            <Box
-              marginTop="10px"
-              border="2px solid black"
-              background="orange.100"
-              padding="5px"
-            >
-              <InfoIcon color="orange.500" mr="2px" /> This{" "}
-              {contentTypeNameLower} is shared without specifying a license.
-              Please select a license below to inform other how they can use
-              your content.
-            </Box>
+      <LicenseDrawerBox>
+        {!(contentData.isPublic || contentData.isShared) ? (
+          contentData.type === "folder" ? (
+            <p>
+              Folder is private. However, shared items within the folder can
+              still be found.
+            </p>
+          ) : contentData.type === "singleDoc" ? (
+            <p>Activity is private.</p>
           ) : (
-            <>
-              {license.isComposition ? (
-                <>
-                  <p>
-                    This {contentTypeNameLower} is shared with these licenses:
-                  </p>
-                  <List spacing="20px" marginTop="10px">
-                    {license.composedOf.map((comp) => (
-                      <DisplayLicenseItem licenseItem={comp} key={comp.code} />
-                    ))}
-                  </List>
-                  <p style={{ marginTop: "10px" }}>
-                    (You authorize reuse under any of these licenses.)
-                  </p>
-                </>
-              ) : (
-                <>
-                  <p>
-                    This {contentTypeNameLower} is shared using the license:
-                  </p>
-                  <List marginTop="10px">
-                    <DisplayLicenseItem licenseItem={license} />
-                  </List>
-                </>
-              )}
-            </>
-          )}
-        </Box>
-      </Box>
+            <p>
+              This {contentTypeNameLower} is private. However, shared items
+              within the {contentTypeNameLower} can still be found.
+            </p>
+          )
+        ) : (
+          <LicenseDescription
+            code={licenseCode}
+            allLicenses={allLicenses}
+            contentType={contentData.type}
+            audience="author"
+          />
+        )}
+      </LicenseDrawerBox>
     </>
   );
 }

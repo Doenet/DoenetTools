@@ -1,15 +1,38 @@
 import React from "react";
-import { License } from "../types";
-import { Box, HStack, Image, ListItem, Text, Tooltip } from "@chakra-ui/react";
+import { ContentType, License, LicenseCode, UserInfo } from "../types";
+import {
+  Box,
+  HStack,
+  Image,
+  List,
+  ListItem,
+  Text,
+  Tooltip,
+} from "@chakra-ui/react";
 import { Link } from "react-router";
+import { contentTypeToName } from "../utils/activity";
+import { createNameCheckCurateTag } from "../utils/names";
+import { InfoIcon } from "@chakra-ui/icons";
+
+function findLicenseFromCode(code: LicenseCode, allLicenses: License[]) {
+  const license = allLicenses.find((license) => license.code === code);
+  if (!license) {
+    throw "License not found";
+  }
+  return license;
+}
 
 export function SmallLicenseBadges({
-  license,
+  code,
+  allLicenses,
   suppressLink = false,
 }: {
-  license: License;
+  code: LicenseCode;
+  allLicenses: License[],
   suppressLink?: boolean;
 }) {
+  const license = findLicenseFromCode(code, allLicenses);
+
   if (license.isComposition) {
     if (license.composedOf.length === 2) {
       return (
@@ -123,4 +146,99 @@ export function DisplayLicenseItem({
       <HStack>{item}</HStack>
     </ListItem>
   );
+}
+
+export function LicenseDrawerBox({ children }: { children: React.ReactNode }) {
+  return (
+    <Box
+      marginTop="20px"
+      border="2px solid lightgray"
+      background="lightgray"
+      padding="10px"
+    >
+      {children}
+    </Box>
+  );
+}
+/**
+ * A box that describes the license(s) for an activity
+ * @param param0
+ * @returns
+ */
+export function LicenseDescription({
+  code,
+  contentType,
+  audience = "public",
+  allLicenses,
+  title,
+  author,
+}: {
+  code: LicenseCode | null;
+  contentType: ContentType;
+  audience?: "author" | "public";
+  title?: string;
+  author?: UserInfo;
+  allLicenses: License[];
+}) {
+  const name = title ? (
+    <strong>{title}</strong>
+  ) : (
+    <span>This {contentTypeToName[contentType].toLowerCase()}</span>
+  );
+
+  const byLine = author ? ` by ${createNameCheckCurateTag(author)}` : "";
+
+  // Technical debt: possibility that some content is shared without a license
+  if (code === null && audience === "author") {
+    return (
+      <Box border="2px solid black" background="orange.100" padding="5px">
+        <InfoIcon color="orange.500" mr="2px" />
+        {name} is shared without specifying a license. Please select a license
+        to inform others how they can use your content.
+      </Box>
+    );
+  } else if (code === null) {
+    return (
+      <p>
+        {name}
+        {byLine} is shared, but a license was not specified. Contact the author
+        to determine in what ways you can reuse this activity.
+      </p>
+    );
+  }
+
+  const license = findLicenseFromCode(code, allLicenses);
+  const compositeExplanation =
+    audience === "author"
+      ? "(You authorize reuse under any of these licenses.)"
+      : "You are free to use either license when reusing this work.";
+
+  if (license.isComposition) {
+    return (
+      <>
+        <p>
+          {name}
+          {byLine} is shared with these licenses:
+        </p>
+        <List spacing="20px" marginTop="10px">
+          {license.composedOf.map((comp) => (
+            <DisplayLicenseItem licenseItem={comp} key={comp.code} />
+          ))}
+        </List>
+        <p style={{ marginTop: "10px" }}>{compositeExplanation}</p>
+      </>
+    );
+  } else {
+    return (
+      <>
+        <p>
+          {name}
+          {byLine} is shared using the license:
+        </p>
+        <List marginTop="10px">
+          <DisplayLicenseItem licenseItem={license} />
+        </List>
+      </>
+    );
+  }
 }
