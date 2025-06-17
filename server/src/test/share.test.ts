@@ -1521,7 +1521,6 @@ describe("Share tests", () => {
 
     expect(activityData!.licenseCode).eq("CCBYNCSA");
 
-
     // switch license to dual
     await setContentLicense({
       contentId,
