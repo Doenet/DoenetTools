@@ -58,9 +58,11 @@ export async function loader({
     parentId?: string;
   };
 }) {
-  const { orderedActivities, assignmentScores, folder } = (await axios.get(
+  const { data } = await axios.get(
     `/api/assign/getAllAssignmentScores/${params.parentId ?? ""}`,
-  )) as {
+  );
+
+  const { orderedActivities, assignmentScores, folder } = data as {
     orderedActivities: OrderedActivity[];
     assignmentScores: AssignmentScore[];
     folder: Folder;
