@@ -6,7 +6,7 @@ import {
   filterViewableContent,
 } from "../utils/permissions";
 import { isEqualUUID } from "../utils/uuid";
-import { getIsEditor } from "./curate";
+import { getIsEditor, getLibraryAccountId, mustBeEditor } from "./curate";
 import {
   calculateNewSortIndex,
   getNextSortIndexForParent,
@@ -687,6 +687,140 @@ async function createContributorHistory({
       directCopy: false,
     })),
   });
+}
+
+/**
+ * Get a sparse view of a given folder with id `parentId`.
+ * Includes information about what can go in folders/compound types.
+ * Used for `MoveCopyContent` modal.
+ */
+export async function getMoveCopyContentData({
+  parentId = null,
+  allowedParentTypes,
+  loggedInUserId,
+  inCurationLibrary = false,
+}: {
+  parentId?: Uint8Array | null;
+  allowedParentTypes: ContentType[];
+  loggedInUserId: Uint8Array;
+  inCurationLibrary?: boolean;
+}) {
+  let userId = loggedInUserId;
+  if (inCurationLibrary) {
+    await mustBeEditor(loggedInUserId);
+    userId = await getLibraryAccountId();
+  }
+
+  const results = await prisma.content.findMany({
+    where: {
+      parentId: parentId,
+      ...filterEditableContent(userId),
+    },
+    select: {
+      id: true,
+      name: true,
+      type: true,
+      rootAssignment: {
+        select: {
+          assigned: true,
+        },
+      },
+      nonRootAssignment: {
+        select: {
+          assigned: true,
+        },
+      },
+    },
+  });
+
+  let parent = null;
+  if (parentId) {
+    parent = await prisma.content.findUniqueOrThrow({
+      where: {
+        id: parentId,
+      },
+      select: {
+        id: true,
+        name: true,
+        type: true,
+        isPublic: true,
+        sharedWith: true,
+        parent: {
+          select: {
+            id: true,
+            type: true,
+          },
+        },
+      },
+    });
+  }
+
+  const contents: {
+    type: ContentType;
+    canOpen: boolean;
+    name: string;
+    contentId: Uint8Array;
+  }[] = [];
+
+  for (const child of results) {
+    let canOpen = true;
+    if (child.nonRootAssignment?.assigned || child.rootAssignment?.assigned) {
+      canOpen = false;
+    } else if (!allowedParentTypes.includes(child.type)) {
+      // We'll assume this cannot be opened unless we find a child (or grandchild) that is the allowed parent type
+      // Example: Imagine the allowedParentTypes is ["select"]. Any content described below should have the following result:
+      // 1. a folder with only documents inside of it       ==> cannot open
+      // 2. a folder with a question bank inside of it      ==> can open
+      // 3. a problem set with only documents               ==> cannot open
+      // 4. a problem set with a question bank inside of it ==> can open
+      // 5. a folder with a folder with a folder with a question bank ==> can open
+      canOpen = false;
+      if (
+        child.type === "folder" ||
+        (child.type === "sequence" && allowedParentTypes.includes("select"))
+      ) {
+        for (const allowedType of allowedParentTypes) {
+          const { containsType } = await checkIfContentContains({
+            contentId: child.id,
+            contentType: allowedType,
+            loggedInUserId: userId,
+          });
+          if (containsType) {
+            canOpen = true;
+            break;
+          }
+        }
+      }
+    }
+
+    contents.push({
+      type: child.type,
+      canOpen,
+      name: child.name,
+      contentId: child.id,
+    });
+  }
+
+  contents.sort((a, b) => {
+    if (a.type !== "singleDoc" && b.type === "singleDoc") {
+      return -1;
+    } else if (b.type !== "singleDoc" && a.type === "singleDoc") {
+      return 1;
+    } else {
+      return 0;
+    }
+  });
+
+  return {
+    parentId: parent?.id ?? null,
+    parentName: parent?.name ?? null,
+    parentType: parent?.type ?? "folder",
+    parentIsPublic: parent?.isPublic,
+    parentSharedWith: parent?.sharedWith,
+    grandparentId: parent?.parent?.id ?? null,
+    grandparentType: parent?.parent?.type ?? "folder",
+    contents,
+  };
 }
 
 /**

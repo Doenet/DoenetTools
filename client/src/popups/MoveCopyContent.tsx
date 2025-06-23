@@ -20,7 +20,7 @@ import axios, { AxiosError } from "axios";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { useFetcher, useNavigate } from "react-router";
 import MoveToSharedAlert from "./MoveToSharedAlert";
-import { Content, ContentType, LicenseCode, UserInfo } from "../types";
+import { ContentType, UserInfo } from "../types";
 import { contentTypeToName, getIconInfo } from "../utils/activity";
 
 type ActiveView = {
@@ -30,9 +30,8 @@ type ActiveView = {
   parentName: string | null;
   parentType: ContentType;
   parentIsPublic: boolean;
-  parentIsShared: boolean;
-  parentSharedWith: UserInfo[];
-  parentLicenseCode: LicenseCode | null;
+  // parentIsShared: boolean;
+  parentSharedWith: string[];
   grandparentId: string | null;
   grandparentType: ContentType;
   contents: {
@@ -149,9 +148,7 @@ export function MoveCopyContent({
     parentName: null,
     parentType: "folder",
     parentIsPublic: false,
-    parentIsShared: false,
     parentSharedWith: [],
-    parentLicenseCode: null,
     parentId: null,
     grandparentId: null,
     grandparentType: "folder",
@@ -162,92 +159,15 @@ export function MoveCopyContent({
     newActiveParentId: string | null,
     modalJustOpened: boolean = false,
   ) {
-    const { data } = inCurationLibrary
-      ? await axios.get(
-          `/api/curate/getCurationFolderContent/${newActiveParentId ?? ""}`,
-        )
-      : await axios.get(
-          `/api/contentList/getMyContent/${userId}/${newActiveParentId ?? ""}`,
-        );
-
-    const parent: Content | null = data.parent;
-    const parentName: string | null = parent?.name ?? null;
-    const parentType: ContentType = parent?.type ?? "folder";
-    const parentIsPublic: boolean = parent?.isPublic ?? false;
-    const parentIsShared: boolean = parent?.isShared ?? false;
-    const parentSharedWith: UserInfo[] = parent?.sharedWith ?? [];
-    const parentLicenseCode: LicenseCode | null = parent?.license?.code ?? null;
-    const grandparentId: string | null = parent?.parent?.contentId ?? null;
-    const grandparentType: ContentType = parent?.parent?.type ?? "folder";
-    const contentFromApi: Content[] = data.content;
-
-    const content: {
-      type: ContentType;
-      canOpen: boolean;
-      name: string;
-      contentId: string;
-    }[] = [];
-
-    for (const item of contentFromApi) {
-      let canOpen = false;
-      if (allowedParentTypes.includes(item.type)) {
-        if (
-          (item.assignmentInfo?.assignmentStatus ?? "Unassigned") ===
-          "Unassigned"
-        ) {
-          canOpen = true;
-        }
-      } else if (
-        (item.type === "folder" ||
-          (item.type === "sequence" &&
-            allowedParentTypes.includes("select"))) &&
-        (item.assignmentInfo?.assignmentStatus ?? "Unassigned") === "Unassigned"
-      ) {
-        // if items is a folder or item is a sequence and we are looking for a select,
-        // then it is possible that a descendant is of allowed parent type.
-        // Check for that possibility
-        for (const ct of allowedParentTypes) {
-          const { data: containsData } = await axios.get(
-            `/api/copyMove/checkIfContentContains`,
-            { params: { contentId: item.contentId, contentType: ct } },
-          );
-
-          if (containsData.containsType) {
-            canOpen = true;
-            break;
-          }
-        }
-      }
-      content.push({
-        type: item.type,
-        canOpen,
-        name: item.name,
-        contentId: item.contentId,
-      });
-    }
-
-    content.sort((a, b) => {
-      if (a.type !== "singleDoc" && b.type === "singleDoc") {
-        return -1;
-      } else if (b.type !== "singleDoc" && a.type === "singleDoc") {
-        return 1;
-      } else {
-        return 0;
-      }
-    });
-
-    setActiveView({
-      parentId: newActiveParentId,
-      parentName,
-      parentType,
-      parentIsPublic,
-      parentIsShared,
-      parentSharedWith,
-      parentLicenseCode,
-      grandparentId,
-      grandparentType,
-      contents: content,
-    });
+    let allowedTypesAsString = allowedParentTypes.reduce(
+      (result, val) => `${result},${val}`,
+      "",
+    );
+    allowedTypesAsString = allowedTypesAsString.substring(1);
+    const { data } = (await axios.get(
+      `/api/copyMove/getMoveCopyContentData/${newActiveParentId ?? ""}?allowedParentTypes=${allowedTypesAsString}${inCurationLibrary ? "&inCurationLibrary=true" : ""}`,
+    )) as { data: ActiveView };
+    setActiveView(data);
 
     if (modalJustOpened) {
       if (sourceContent.length === 1) {
@@ -348,14 +268,14 @@ export function MoveCopyContent({
             action === "Move" &&
             ((activeView.parentIsPublic &&
               !sourceContent.every((c) => c.isPublic)) ||
-              (activeView.parentIsShared &&
+              (activeView.parentSharedWith.length > 0 &&
                 (!sourceContent.every((c) => c.isShared) ||
                   activeView.parentSharedWith.some((parentUser) =>
                     sourceContent.some(
                       (c) =>
                         !c.sharedWith ||
                         c.sharedWith.findIndex(
-                          (u) => u.userId === parentUser.userId,
+                          (u) => u.userId === parentUser,
                         ) === -1,
                     ),
                   ))))
