@@ -5,7 +5,7 @@
   "main": "dist/src/index.js",
   "scripts": {
     "test": "vitest",
-    "dev": "npx nodemon src/index.ts",
+    "dev": "npx ts-node-dev --respawn --rs src/index.ts",
     "build": "npx tsc && cp src/signin_email.html dist/src/",
     "start": "node dist/src/index.js",
     "format": "npx prettier . --write",
@@ -48,10 +48,9 @@
     "cookie-session": "^2.1.0",
     "eslint": "^9.23.0",
     "eslint-plugin-unused-imports": "^4.1.4",
-    "nodemon": "^3.1.9",
     "prettier": "^3.5.3",
     "prisma": "6.4.1",
-    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
     "typescript": "^5.8.2",
     "typescript-eslint": "^8.29.0",
     "vitest": "^3.1.1"
