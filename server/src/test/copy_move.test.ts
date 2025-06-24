@@ -4,6 +4,7 @@ import { createContent, updateContent } from "../query/activity";
 import {
   copyContent,
   createContentCopyInChildren,
+  getMoveCopyContentData,
   moveContent,
 } from "../query/copy_move";
 import { setContentIsPublic } from "../query/share";
@@ -11,6 +12,7 @@ import { getMyContent } from "../query/content_list";
 import { getContent } from "../query/activity_edit_view";
 import { isEqualUUID } from "../utils/uuid";
 import { assignActivity } from "../query/assign";
+import { ContentType } from "@prisma/client";
 
 test("copy folder", async () => {
   const { userId: ownerId } = await createTestUser();
@@ -986,4 +988,165 @@ test("cannot copy/move into assigned problem set or question bank or move out", 
       loggedInUserId: ownerId,
     }),
   ).rejects.toThrow("Cannot move content in an assigned activity");
+});
+
+test("MoveCopyContent allowed parent types", async () => {
+  const { userId: loggedInUserId } = await createTestUser();
+
+  await expect(
+    getMoveCopyContentData({
+      parentId: null,
+      allowedParentTypes: ["folder", "singleDoc"],
+      loggedInUserId,
+    }),
+  ).rejects.toThrowError("parent type");
+});
+
+test("MoveCopyContent has correct canOpen flags", async () => {
+  const { userId: loggedInUserId } = await createTestUser();
+
+  async function create(
+    name: string,
+    type: ContentType,
+    parentId: Uint8Array | null = null,
+    makePublic: boolean = false,
+  ) {
+    const { contentId } = await createContent({
+      loggedInUserId: loggedInUserId,
+      contentType: type,
+      name,
+      parentId,
+    });
+    if (makePublic) {
+      await setContentIsPublic({
+        contentId,
+        isPublic: true,
+        loggedInUserId: loggedInUserId,
+      });
+    }
+    return contentId;
+  }
+
+  let expectedNames: string[] = [];
+  let expectedOpen: boolean[] = [];
+  function expectContentsMatch(contents: { name: string; canOpen: boolean }[]) {
+    expect(contents.length).eqls(expectedNames.length);
+    for (let i = 0; i < expectedNames.length; i++) {
+      const name = expectedNames[i];
+      const open = expectedOpen[i];
+      expect(contents[i].name).eqls(name, `contents ${i} name`);
+      expect(contents[i].canOpen).eqls(open, `contents ${i} canOpen`);
+    }
+  }
+
+  // Setup
+  await create("doc1", "singleDoc", null, true);
+  const ps1 = await create("ps1", "sequence", null, true);
+  await create("psq_qb1", "select", ps1);
+  await create("ps2", "sequence");
+  const qb1 = await create("qb1", "select", null, true);
+  await create("qb1_doc1", "singleDoc", qb1);
+  const f1 = await create("f1", "folder", null, true);
+  await create("f1_doc1", "singleDoc", f1);
+  const f1_ps1 = await create("f1_ps1", "sequence", f1);
+  await create("f1_ps1_doc1", "singleDoc", f1_ps1);
+  const f1_ps1_qb1 = await create("f1_ps1_qb1", "select", f1_ps1);
+  await create("f1_ps1_qb1_doc1", "singleDoc", f1_ps1_qb1);
+  await create("f1_doc2", "singleDoc", f1);
+  const f2 = await create("f2", "folder");
+
+  // Root folder: add anywhere
+  let results = await getMoveCopyContentData({
+    parentId: null,
+    allowedParentTypes: ["folder", "sequence", "select"],
+    loggedInUserId,
+  });
+  expect(results.parent).eqls(null);
+  expectedNames = ["ps1", "ps2", "qb1", "f1", "f2", "doc1"];
+  expectedOpen = [true, true, true, true, true, false];
+
+  // Root folder: add to problem set
+  results = await getMoveCopyContentData({
+    parentId: null,
+    allowedParentTypes: ["sequence"],
+    loggedInUserId,
+  });
+  expect(results.parent).eqls(null);
+  // Folder 1 has a problem set inside it => can open
+  // Folder 2 does not have a problem set => cannot open
+  expectedNames = ["ps1", "ps2", "qb1", "f1", "f2", "doc1"];
+  expectedOpen = [true, true, false, true, false, false];
+
+  expectContentsMatch(results.contents);
+
+  // Root folder: add to question bank
+  results = await getMoveCopyContentData({
+    parentId: null,
+    allowedParentTypes: ["select"],
+    loggedInUserId,
+  });
+  expect(results.parent).eqls(null);
+  // Problem Set 1 has a question bank inside it => can open
+  // Problem Set 2 does not have a question bank => cannot open
+  // Same idea for Folder 1 and Folder 2
+  expectedNames = ["ps1", "ps2", "qb1", "f1", "f2", "doc1"];
+  expectedOpen = [true, false, true, true, false, false];
+  expectContentsMatch(results.contents);
+
+  // Folder 1: add to problem set
+  results = await getMoveCopyContentData({
+    parentId: f1,
+    allowedParentTypes: ["sequence"],
+    loggedInUserId,
+  });
+  expect(results.parent).eqls({
+    id: f1,
+    name: "f1",
+    type: "folder",
+    isPublic: true,
+    sharedWith: [],
+    parent: null,
+  });
+  expectedNames = ["f1_ps1", "f1_doc1", "f1_doc2"];
+  expectedOpen = [true, false, false];
+  expectContentsMatch(results.contents);
+
+  // Folder 1/Problem Set 1: add to question bank
+  results = await getMoveCopyContentData({
+    parentId: f1_ps1,
+    allowedParentTypes: ["select"],
+    loggedInUserId,
+  });
+  expect(results.parent).eqls({
+    id: f1_ps1,
+    name: "f1_ps1",
+    type: "sequence",
+    isPublic: true,
+    sharedWith: [],
+    parent: {
+      id: f1,
+      type: "folder",
+    },
+  });
+  expectedNames = ["f1_ps1_qb1", "f1_ps1_doc1"];
+  expectedOpen = [true, false];
+  expectContentsMatch(results.contents);
+
+  // Folder 2 (empty folder): add to problem set
+  results = await getMoveCopyContentData({
+    parentId: f2,
+    allowedParentTypes: ["sequence"],
+    loggedInUserId,
+  });
+  expect(results.parent).eqls({
+    id: f2,
+    name: "f2",
+    type: "folder",
+    isPublic: false,
+    sharedWith: [],
+    parent: null,
+  });
+  expectedNames = [];
+  expectedOpen = [];
+  expectContentsMatch(results.contents);
 });

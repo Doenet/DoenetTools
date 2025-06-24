@@ -705,6 +705,9 @@ export async function getMoveCopyContentData({
   loggedInUserId: Uint8Array;
   inCurationLibrary?: boolean;
 }) {
+  if (allowedParentTypes.includes("singleDoc")) {
+    throw new Error("Invalid parent type: `singleDoc`");
+  }
   let userId = loggedInUserId;
   if (inCurationLibrary) {
     await mustBeEditor(loggedInUserId);
@@ -812,13 +815,7 @@ export async function getMoveCopyContentData({
   });
 
   return {
-    parentId: parent?.id ?? null,
-    parentName: parent?.name ?? null,
-    parentType: parent?.type ?? "folder",
-    parentIsPublic: parent?.isPublic,
-    parentSharedWith: parent?.sharedWith,
-    grandparentId: parent?.parent?.id ?? null,
-    grandparentType: parent?.parent?.type ?? "folder",
+    parent,
     contents,
   };
 }
