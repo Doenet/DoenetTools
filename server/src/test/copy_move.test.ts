@@ -990,7 +990,7 @@ test("cannot copy/move into assigned problem set or question bank or move out", 
   ).rejects.toThrow("Cannot move content in an assigned activity");
 });
 
-test("MoveCopyContent allowed parent types", async () => {
+test("MoveCopyContent does not allow singleDoc` as parent type", async () => {
   const { userId: loggedInUserId } = await createTestUser();
 
   await expect(
@@ -1027,9 +1027,11 @@ test("MoveCopyContent has correct canOpen flags", async () => {
     return contentId;
   }
 
-  let expectedNames: string[] = [];
-  let expectedOpen: boolean[] = [];
-  function expectContentsMatch(contents: { name: string; canOpen: boolean }[]) {
+  function expectContentsMatch(
+    contents: { name: string; canOpen: boolean }[],
+    expectedNames: string[],
+    expectedOpen: boolean[],
+  ) {
     expect(contents.length).eqls(expectedNames.length);
     for (let i = 0; i < expectedNames.length; i++) {
       const name = expectedNames[i];
@@ -1062,8 +1064,11 @@ test("MoveCopyContent has correct canOpen flags", async () => {
     loggedInUserId,
   });
   expect(results.parent).eqls(null);
-  expectedNames = ["ps1", "ps2", "qb1", "f1", "f2", "doc1"];
-  expectedOpen = [true, true, true, true, true, false];
+  expectContentsMatch(
+    results.contents,
+    ["ps1", "ps2", "qb1", "f1", "f2", "doc1"],
+    [true, true, true, true, true, false],
+  );
 
   // Root folder: add to problem set
   results = await getMoveCopyContentData({
@@ -1074,10 +1079,11 @@ test("MoveCopyContent has correct canOpen flags", async () => {
   expect(results.parent).eqls(null);
   // Folder 1 has a problem set inside it => can open
   // Folder 2 does not have a problem set => cannot open
-  expectedNames = ["ps1", "ps2", "qb1", "f1", "f2", "doc1"];
-  expectedOpen = [true, true, false, true, false, false];
-
-  expectContentsMatch(results.contents);
+  expectContentsMatch(
+    results.contents,
+    ["ps1", "ps2", "qb1", "f1", "f2", "doc1"],
+    [true, true, false, true, false, false],
+  );
 
   // Root folder: add to question bank
   results = await getMoveCopyContentData({
@@ -1089,9 +1095,11 @@ test("MoveCopyContent has correct canOpen flags", async () => {
   // Problem Set 1 has a question bank inside it => can open
   // Problem Set 2 does not have a question bank => cannot open
   // Same idea for Folder 1 and Folder 2
-  expectedNames = ["ps1", "ps2", "qb1", "f1", "f2", "doc1"];
-  expectedOpen = [true, false, true, true, false, false];
-  expectContentsMatch(results.contents);
+  expectContentsMatch(
+    results.contents,
+    ["ps1", "ps2", "qb1", "f1", "f2", "doc1"],
+    [true, false, true, true, false, false],
+  );
 
   // Folder 1: add to problem set
   results = await getMoveCopyContentData({
@@ -1107,9 +1115,11 @@ test("MoveCopyContent has correct canOpen flags", async () => {
     sharedWith: [],
     parent: null,
   });
-  expectedNames = ["f1_ps1", "f1_doc1", "f1_doc2"];
-  expectedOpen = [true, false, false];
-  expectContentsMatch(results.contents);
+  expectContentsMatch(
+    results.contents,
+    ["f1_ps1", "f1_doc1", "f1_doc2"],
+    [true, false, false],
+  );
 
   // Folder 1/Problem Set 1: add to question bank
   results = await getMoveCopyContentData({
@@ -1128,9 +1138,11 @@ test("MoveCopyContent has correct canOpen flags", async () => {
       type: "folder",
     },
   });
-  expectedNames = ["f1_ps1_qb1", "f1_ps1_doc1"];
-  expectedOpen = [true, false];
-  expectContentsMatch(results.contents);
+  expectContentsMatch(
+    results.contents,
+    ["f1_ps1_qb1", "f1_ps1_doc1"],
+    [true, false],
+  );
 
   // Folder 2 (empty folder): add to problem set
   results = await getMoveCopyContentData({
@@ -1146,7 +1158,5 @@ test("MoveCopyContent has correct canOpen flags", async () => {
     sharedWith: [],
     parent: null,
   });
-  expectedNames = [];
-  expectedOpen = [];
-  expectContentsMatch(results.contents);
+  expectContentsMatch(results.contents, [], []);
 });
