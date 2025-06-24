@@ -375,11 +375,6 @@ export async function getSharedContent({
     processContent(content, loggedInUserId),
   );
 
-  const owner = await prisma.users.findUniqueOrThrow({
-    where: { userId: ownerId },
-    select: { firstNames: true, lastNames: true },
-  });
-
   if (parent && !isEqualUUID(loggedInUserId, parent.ownerId)) {
     await recordContentView(parent.contentId, loggedInUserId);
   }
