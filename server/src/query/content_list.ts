@@ -386,7 +386,6 @@ export async function getSharedContent({
 
   return {
     content: publicContent,
-    owner,
     parent,
   };
 }

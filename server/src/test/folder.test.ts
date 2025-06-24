@@ -9,11 +9,11 @@ import {
   updateContentFeatures,
 } from "../query/activity";
 import {
+  makeContentPublic,
   modifyContentSharedWith,
   setContentIsPublic,
   shareContentWithEmail,
 } from "../query/share";
-import { updateUser } from "../query/user";
 import {
   getActivityEditorData,
   getActivityViewerData,
@@ -29,6 +29,7 @@ import {
   searchPossibleClassifications,
 } from "../query/classification";
 import { ContentType } from "@prisma/client";
+import { updateUser } from "../query/user";
 
 test("getMyContent returns both public and private content, getSharedContent returns only public", async () => {
   const owner = await createTestUser();
@@ -2111,4 +2112,23 @@ test("check if content contains content type", async () => {
       }),
     ).eqls({ containsType: ct === "singleDoc" });
   }
+});
+
+test("getSharedContent does not provide email", async () => {
+  const { userId } = await createTestUser();
+  const { contentId } = await createContent({
+    loggedInUserId: userId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  await makeContentPublic({
+    contentId,
+    loggedInUserId: userId,
+  });
+  const results = await getSharedContent({
+    ownerId: userId,
+    parentId: null,
+  });
+  expect(results.content.length).eqls(1);
+  expect(results.content[0].owner).not.toHaveProperty("email");
 });

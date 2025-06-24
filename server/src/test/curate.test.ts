@@ -1442,3 +1442,24 @@ test("Can only suggest single docs", async () => {
     suggestToBeCurated({ contentId: questionBankId, loggedInUserId: userId }),
   ).rejects.toThrowError();
 });
+
+test("getCurationQueue does not provide email", async () => {
+  const { userId } = await createTestEditorUser();
+  const { contentId } = await createContent({
+    contentType: "singleDoc",
+    loggedInUserId: userId,
+    parentId: null,
+  });
+  await makeContentPublic({
+    contentId,
+    loggedInUserId: userId,
+  });
+  await suggestToBeCurated({
+    contentId,
+    loggedInUserId: userId,
+  });
+
+  const { pendingContent } = await getCurationQueue({ loggedInUserId: userId });
+
+  expect(pendingContent[0].owner).not.toHaveProperty("email");
+});

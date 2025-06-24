@@ -35,7 +35,12 @@ import "../utils/score-table.css";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Label } from "recharts";
 import { Link as ReactRouterLink, useNavigate } from "react-router";
 import { createNameNoTag, lastNameFirst } from "../utils/names";
-import { AssignmentMode, Content, DoenetmlVersion, UserInfo } from "../types";
+import {
+  AssignmentMode,
+  Content,
+  DoenetmlVersion,
+  UserInfoWithEmail,
+} from "../types";
 // @ts-expect-error assignment-viewer doesn't publish types, see https://github.com/Doenet/assignment-viewer/issues/20
 import { isActivitySource } from "@doenet/assignment-viewer";
 import {
@@ -54,7 +59,10 @@ type ScoreItem = {
     | null;
   numContentAttempts: number;
   numItemAttempts: number[] | null;
-  user: UserInfo;
+  // We're including email here because it allows instructors to verify
+  // the identity of their students
+  // TODO: display emails on this page
+  user: UserInfoWithEmail;
 };
 
 export async function loader({ params, request }: ActionFunctionArgs) {
