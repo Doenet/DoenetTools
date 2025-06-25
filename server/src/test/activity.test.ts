@@ -794,7 +794,7 @@ test("activity editor data and my folder contents before and after assigned", as
   if (preAssignedData === undefined) {
     throw Error("shouldn't happen");
   }
-  preAssignedData.licenseCode = null; // skip trying to check big license object
+  preAssignedData.licenseCode = null;
   expect(preAssignedData).eqls(expectedData);
 
   // get my folder content returns same data
@@ -806,7 +806,7 @@ test("activity editor data and my folder contents before and after assigned", as
   if (folderData.notMe) {
     throw Error("shouldn't happen");
   }
-  folderData.content[0].licenseCode = null; // skip trying to check big license object
+  folderData.content[0].licenseCode = null;
   expect(folderData.content).eqls([expectedData]);
 
   // Opening assignment also assigns the activity
@@ -850,7 +850,7 @@ test("activity editor data and my folder contents before and after assigned", as
   if (openedData === undefined) {
     throw Error("shouldn't happen");
   }
-  openedData.licenseCode = null; // skip trying to check big license object
+  openedData.licenseCode = null;
   expect(openedData).eqls(expectedData);
 
   // get my folder content returns same data, with differences in some optional fields
@@ -863,7 +863,7 @@ test("activity editor data and my folder contents before and after assigned", as
   if (folderData.notMe) {
     throw Error("shouldn't happen");
   }
-  folderData.content[0].licenseCode = null; // skip trying to check big license object
+  folderData.content[0].licenseCode = null;
   expect(folderData.content).eqls([expectedData]);
 
   // closing the assignment without data also unassigns it
@@ -903,7 +903,7 @@ test("activity editor data and my folder contents before and after assigned", as
   if (closedData === undefined) {
     throw Error("shouldn't happen");
   }
-  closedData.licenseCode = null; // skip trying to check big license object
+  closedData.licenseCode = null;
   expect(closedData).eqls(expectedData);
 
   // get my folder content returns same data
@@ -915,7 +915,7 @@ test("activity editor data and my folder contents before and after assigned", as
   if (folderData.notMe) {
     throw Error("shouldn't happen");
   }
-  folderData.content[0].licenseCode = null; // skip trying to check big license object
+  folderData.content[0].licenseCode = null;
   expect(folderData.content).eqls([expectedData]);
 
   // re-opening, re-assigns with same code
@@ -961,7 +961,7 @@ test("activity editor data and my folder contents before and after assigned", as
   if (openedData2 === undefined) {
     throw Error("shouldn't happen");
   }
-  openedData2.licenseCode = null; // skip trying to check big license object
+  openedData2.licenseCode = null;
   expect(openedData2).eqls(expectedData);
 
   // get my folder content returns same data, with differences in some optional fields
@@ -974,7 +974,7 @@ test("activity editor data and my folder contents before and after assigned", as
   if (folderData.notMe) {
     throw Error("shouldn't happen");
   }
-  folderData.content[0].licenseCode = null; // skip trying to check big license object
+  folderData.content[0].licenseCode = null;
   expect(folderData.content).eqls([expectedData]);
 
   // create initial attempt
@@ -1028,7 +1028,7 @@ test("activity editor data and my folder contents before and after assigned", as
   if (openedData3 === undefined) {
     throw Error("shouldn't happen");
   }
-  openedData3.licenseCode = null; // skip trying to check big license object
+  openedData3.licenseCode = null;
   expect(openedData3).eqls(expectedData);
 
   // get my folder content returns same data, with differences in some optional fields
@@ -1041,7 +1041,7 @@ test("activity editor data and my folder contents before and after assigned", as
   if (folderData.notMe) {
     throw Error("shouldn't happen");
   }
-  folderData.content[0].licenseCode = null; // skip trying to check big license object
+  folderData.content[0].licenseCode = null;
   expect(folderData.content).eqls([expectedData]);
 
   // now closing does not unassign
@@ -1082,7 +1082,7 @@ test("activity editor data and my folder contents before and after assigned", as
   if (closedData2 === undefined) {
     throw Error("shouldn't happen");
   }
-  closedData2.licenseCode = null; // skip trying to check big license object
+  closedData2.licenseCode = null;
   expect(closedData2).eqls(expectedData);
 
   // get my folder content returns same data, with differences in some optional fields
@@ -1095,7 +1095,7 @@ test("activity editor data and my folder contents before and after assigned", as
   if (folderData.notMe) {
     throw Error("shouldn't happen");
   }
-  folderData.content[0].licenseCode = null; // skip trying to check big license object
+  folderData.content[0].licenseCode = null;
   expect(folderData.content).eqls([expectedData]);
 
   // explicitly unassigning fails due to the presence of data
