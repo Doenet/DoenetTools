@@ -19,7 +19,6 @@ import {
 } from "../utils/classificationsFeatures";
 import { fromUUID, isEqualUUID } from "../utils/uuid";
 import { getAllDoenetmlVersions } from "./activity";
-import { getAllLicenses } from "./share";
 import { recordContentView, recordRecentContent } from "./stats";
 
 export async function getMyContent({
@@ -111,7 +110,6 @@ export async function getMyContentOrLibraryContent({
   //TODO: Does this API need to provide this extra data?
   const { availableFeatures } = await getAvailableContentFeatures();
   const { allDoenetmlVersions } = await getAllDoenetmlVersions();
-  const { allLicenses } = await getAllLicenses();
 
   if (parentId !== null && !isLibrary) {
     await recordRecentContent(loggedInUserId, "edit", parentId);
@@ -123,7 +121,6 @@ export async function getMyContentOrLibraryContent({
     libraryRelations,
     availableFeatures,
     allDoenetmlVersions,
-    allLicenses,
     notMe: false as const,
   };
 }
@@ -268,7 +265,6 @@ export async function searchMyContentOrLibraryContent({
   //TODO: Do we need this extra data in this API?
   const { availableFeatures } = await getAvailableContentFeatures();
   const { allDoenetmlVersions } = await getAllDoenetmlVersions();
-  const { allLicenses } = await getAllLicenses();
 
   return {
     content,
@@ -276,7 +272,6 @@ export async function searchMyContentOrLibraryContent({
     libraryRelations,
     availableFeatures,
     allDoenetmlVersions,
-    allLicenses,
     notMe: false as const,
   };
 }

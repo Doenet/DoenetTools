@@ -55,7 +55,6 @@ import {
   Content,
   ContentFeature,
   DoenetmlVersion,
-  License,
   ContentDescription,
   LibraryRelations,
   ContentRevision,
@@ -168,10 +167,6 @@ export async function loader({ params }: { params: any }) {
   // }
 
   const {
-    data: { allLicenses },
-  } = await axios.get("/api/info/getAllLicenses");
-
-  const {
     data: { allDoenetmlVersions },
   } = await axios.get("/api/info/getAllDoenetmlVersions");
 
@@ -188,7 +183,6 @@ export async function loader({ params }: { params: any }) {
       contentId,
       // supportingFileData,
       allDoenetmlVersions,
-      allLicenses,
       availableFeatures,
       libraryRelations,
       revisions,
@@ -204,7 +198,6 @@ export async function loader({ params }: { params: any }) {
       contentId,
       // supportingFileData,
       allDoenetmlVersions,
-      allLicenses,
       availableFeatures,
       libraryRelations,
       revisions,
@@ -263,7 +256,6 @@ export function ActivityEditor() {
   const data = useLoaderData() as {
     contentId: string;
     allDoenetmlVersions: DoenetmlVersion[];
-    allLicenses: License[];
     availableFeatures: ContentFeature[];
     activityData: Content;
     addTo: ContentDescription | undefined;
@@ -285,11 +277,12 @@ export function ActivityEditor() {
     contentId,
     activityData,
     allDoenetmlVersions,
-    allLicenses,
     availableFeatures,
     libraryRelations,
     revisions,
   } = data;
+
+  const { allLicenses } = useOutletContext<SiteContext>();
 
   const finalFocusRef = useRef<HTMLElement | null>(null);
   const curateBtnRef = useRef<HTMLButtonElement>(null);

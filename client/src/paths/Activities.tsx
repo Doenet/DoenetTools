@@ -57,7 +57,6 @@ import {
   UserInfo,
   LibraryRelations,
   DoenetmlVersion,
-  License,
   ContentFeature,
 } from "../types";
 import { MdClose, MdOutlineSearch } from "react-icons/md";
@@ -189,7 +188,6 @@ export async function loader({ params, request }: any) {
     content: data.content,
     libraryRelations: data.libraryRelations,
     allDoenetmlVersions: data.allDoenetmlVersions,
-    allLicenses: data.allLicenses,
     availableFeatures: data.availableFeatures,
     userId: params.userId,
     parent: data.parent,
@@ -203,7 +201,6 @@ export function Activities() {
     content,
     libraryRelations,
     allDoenetmlVersions,
-    allLicenses,
     availableFeatures,
     userId,
     parent,
@@ -213,7 +210,6 @@ export function Activities() {
     content: Content[];
     libraryRelations: LibraryRelations[];
     allDoenetmlVersions: DoenetmlVersion[];
-    allLicenses: License[];
     availableFeatures: ContentFeature[];
     userId: string;
     parent: Content | null;
@@ -252,7 +248,8 @@ export function Activities() {
     onClose: deleteContentOnClose,
   } = useDisclosure();
 
-  const { addTo, setAddTo, user } = useOutletContext<SiteContext>();
+  const { addTo, setAddTo, user, allLicenses } =
+    useOutletContext<SiteContext>();
 
   // refs to the menu button of each content card,
   // which should be given focus when drawers are closed
@@ -979,7 +976,7 @@ export function Activities() {
         isPublic: activity.isPublic,
         isShared: activity.isShared,
         sharedWith: activity.sharedWith,
-        licenseCode: activity.license?.code ?? null,
+        licenseCode: activity.licenseCode ?? null,
         parentId: activity.parent?.contentId ?? null,
       }),
       cardLink:
@@ -997,6 +994,7 @@ export function Activities() {
       showActivityFeatures={true}
       emptyMessage={emptyMessage}
       content={cardContent}
+      allLicenses={allLicenses}
       selectedCards={selectedCards}
       setSelectedCards={setSelectedCards}
       disableSelectFor={addTo ? [addTo.contentId] : undefined}

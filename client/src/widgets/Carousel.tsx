@@ -20,16 +20,18 @@ import { Box, Flex, IconButton, MenuItem, Text } from "@chakra-ui/react";
 import Card, { CardContent } from "./Card";
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { createNameNoTag } from "../utils/names";
-import { Content } from "../types";
+import { Content, License } from "../types";
 
 export function Carousel({
   title = "",
   activities = [],
+  allLicenses,
   setInfoContentData,
   infoOnOpen,
 }: {
   title: string;
   activities: Content[];
+  allLicenses: License[];
   setInfoContentData: (arg: Content) => void;
   infoOnOpen: () => void;
 }) {
@@ -147,6 +149,7 @@ export function Carousel({
                 <SwiperSlide key={`swipercard${i}`}>
                   <Card
                     cardContent={cardObj}
+                    allLicenses={allLicenses}
                     showOwnerName={true}
                     showActivityFeatures={true}
                   />

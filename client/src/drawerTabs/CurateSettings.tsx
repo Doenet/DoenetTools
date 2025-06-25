@@ -1,8 +1,6 @@
 import React from "react";
 import { FetcherWithComponents } from "react-router";
 import {
-  Box,
-  List,
   Button,
   UnorderedList,
   ListItem,
@@ -11,8 +9,8 @@ import {
   Heading,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { Content, LibraryComment, LibraryRelations } from "../types";
-import { DisplayLicenseItem } from "../widgets/Licenses";
+import { Content, LibraryComment, LibraryRelations, License } from "../types";
+import { LicenseDrawerBox, LicenseDescription } from "../widgets/Licenses";
 import { createNameCheckIsMeTag, createNameNoTag } from "../utils/names";
 import { ChatConversation } from "../widgets/ChatConversation";
 import { DateTime } from "luxon";
@@ -55,15 +53,17 @@ export function CurateSettings({
   contentData,
   libraryRelations,
   libraryComments,
+  allLicenses,
   onClose,
 }: {
   fetcher: FetcherWithComponents<any>;
   contentData: Content;
   libraryRelations: LibraryRelations;
   libraryComments: LibraryComment[];
+  allLicenses: License[];
   onClose: () => void;
 }) {
-  const license = contentData.license!;
+  const licenseCode = contentData.licenseCode!;
 
   // Must have library source if in library
   const librarySource = libraryRelations.source!;
@@ -195,35 +195,13 @@ export function CurateSettings({
         />
       )}
 
-      <Box
-        marginTop="30px"
-        border="2px solid lightgray"
-        background="lightgray"
-        padding="10px"
-      >
-        <>
-          {license.isComposition ? (
-            <>
-              <p>Activity is shared with these licenses:</p>
-              <List spacing="20px" marginTop="10px">
-                {license.composedOf.map((comp) => (
-                  <DisplayLicenseItem licenseItem={comp} key={comp.code} />
-                ))}
-              </List>
-              <p style={{ marginTop: "10px" }}>
-                (You authorize reuse under any of these licenses.)
-              </p>
-            </>
-          ) : (
-            <>
-              <p>Activity is shared using the license:</p>
-              <List marginTop="10px">
-                <DisplayLicenseItem licenseItem={license} />
-              </List>
-            </>
-          )}
-        </>
-      </Box>
+      <LicenseDrawerBox>
+        <LicenseDescription
+          code={licenseCode}
+          contentType={contentData.type}
+          allLicenses={allLicenses}
+        />
+      </LicenseDrawerBox>
     </>
   );
 }

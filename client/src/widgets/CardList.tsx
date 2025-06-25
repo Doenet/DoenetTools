@@ -2,10 +2,11 @@ import React, { ReactElement } from "react";
 import { Text, Icon, Box, Flex } from "@chakra-ui/react";
 import Card, { CardContent } from "./Card";
 import { MdInfoOutline } from "react-icons/md";
-import { ContentDescription } from "../types";
+import { ContentDescription, License } from "../types";
 
 export default function CardList({
   content,
+  allLicenses,
   showOwnerName = false,
   showBlurb = false,
   showPublicStatus = false,
@@ -29,6 +30,7 @@ export default function CardList({
         empty: boolean;
       }
   )[];
+  allLicenses: License[];
   showOwnerName?: boolean;
   showBlurb?: boolean;
   showPublicStatus?: boolean;
@@ -134,6 +136,7 @@ export default function CardList({
         <Card
           key={`Card${cardContent.content.contentId}`}
           cardContent={cardContent}
+          allLicenses={allLicenses}
           showOwnerName={showOwnerName}
           showBlurb={showBlurb}
           showPublicStatus={showPublicStatus}

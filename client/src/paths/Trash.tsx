@@ -13,6 +13,7 @@ import {
   useFetcher,
   Link as ReactRouterLink,
   ActionFunctionArgs,
+  useOutletContext,
 } from "react-router";
 
 import { CardContent } from "../widgets/Card";
@@ -21,6 +22,7 @@ import axios from "axios";
 import {} from "../popups/MoveCopyContent";
 import { DateTime } from "luxon";
 import { Content } from "../types";
+import { SiteContext } from "./SiteHeader";
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
@@ -49,6 +51,8 @@ export function Trash() {
     content: Content[];
     deletionDates: string[];
   };
+
+  const { allLicenses } = useOutletContext<SiteContext>();
 
   useEffect(() => {
     document.title = `My Trash - Doenet`;
@@ -146,6 +150,7 @@ export function Trash() {
       showActivityFeatures={true}
       emptyMessage={emptyMessage}
       content={cardContent}
+      allLicenses={allLicenses}
     />
   );
 

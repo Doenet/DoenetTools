@@ -25,6 +25,7 @@ import {
   Link,
   Form,
   ActionFunctionArgs,
+  useOutletContext,
 } from "react-router";
 
 import { CardContent } from "../widgets/Card";
@@ -45,7 +46,6 @@ import {
   UserInfo,
   ContentType,
   DoenetmlVersion,
-  License,
   LibraryRelations,
 } from "../types";
 import { MdClose, MdOutlineSearch } from "react-icons/md";
@@ -55,6 +55,7 @@ import {
   createLocalContentActions,
 } from "../popups/CreateLocalContent";
 import { ShareDrawer, shareDrawerActions } from "../drawers/ShareDrawer";
+import { SiteContext } from "./SiteHeader";
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
@@ -135,7 +136,6 @@ export async function loader({
     content: data.content,
     libraryRelations: data.libraryRelations,
     allDoenetmlVersions: data.allDoenetmlVersions,
-    allLicenses: data.allLicenses,
     availableFeatures: data.availableFeatures,
     userId: params.userId,
     parent: data.parent,
@@ -149,7 +149,6 @@ export function LibraryActivities() {
     content,
     libraryRelations,
     allDoenetmlVersions,
-    allLicenses,
     availableFeatures,
     userId,
     parent,
@@ -159,12 +158,13 @@ export function LibraryActivities() {
     content: Content[];
     libraryRelations: LibraryRelations[];
     allDoenetmlVersions: DoenetmlVersion[];
-    allLicenses: License[];
     availableFeatures: ContentFeature[];
     userId: string;
     parent: Content | null;
     query: string | null;
   };
+
+  const { allLicenses } = useOutletContext<SiteContext>();
 
   const [settingsContentId, setSettingsContentId] = useState<string | null>(
     null,
@@ -667,7 +667,7 @@ export function LibraryActivities() {
         isPublic: activity.isPublic,
         isShared: activity.isShared,
         sharedWith: activity.sharedWith,
-        licenseCode: activity.license?.code ?? null,
+        licenseCode: activity.licenseCode ?? null,
         parentId: activity.parent?.contentId ?? null,
         isFolder: activity.type === "folder",
       }),
@@ -686,6 +686,7 @@ export function LibraryActivities() {
       showActivityFeatures={true}
       emptyMessage={emptyMessage}
       content={cardContent}
+      allLicenses={allLicenses}
     />
   );
 

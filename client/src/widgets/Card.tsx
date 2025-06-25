@@ -20,7 +20,7 @@ import {
   Hide,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink, useOutletContext } from "react-router";
-import { Content, ContentDescription } from "../types";
+import { Content, ContentDescription, License } from "../types";
 import { FaEllipsisVertical } from "react-icons/fa6";
 import { BsPeople } from "react-icons/bs";
 import {
@@ -49,6 +49,7 @@ export type CardContent = {
 
 export default function Card({
   cardContent,
+  allLicenses,
   showOwnerName = false,
   showBlurb = false,
   showPublicStatus = false,
@@ -65,6 +66,7 @@ export default function Card({
   idx = 1,
 }: {
   cardContent: CardContent;
+  allLicenses: License[];
   showOwnerName?: boolean;
   showBlurb?: boolean;
   showPublicStatus?: boolean;
@@ -90,7 +92,7 @@ export default function Card({
     name: title,
     isPublic,
     isShared,
-    license,
+    licenseCode,
     contentFeatures,
     type: contentType,
     parent,
@@ -168,10 +170,10 @@ export default function Card({
     )) {
       const id = contentFeatures.findIndex((f) => f.code === featureCode);
       if (id === -1) {
-        featureIcons.push(<Flex width={featureIconSize} />);
+        featureIcons.push(<Flex width={featureIconSize} key={featureCode} />);
       } else {
         featureIcons.push(
-          <Tooltip label={contentFeatures[id].description}>
+          <Tooltip label={contentFeatures[id].description} key={featureCode}>
             <Flex alignItems="center">
               <Icon
                 as={featureIcon}
@@ -287,12 +289,17 @@ export default function Card({
   // We'll show a particular if:
   // 1. it's public or shared
   // 2. `showLibraryEditor` is true -- we're assuming editors want to see license
-  const showThisBage = license && (isPublic || isShared || showLibraryEditor);
+  const showThisBage =
+    licenseCode && (isPublic || isShared || showLibraryEditor);
 
   const licenseBadges = (
     <Flex alignItems="center" marginLeft="3rem">
       {showThisBage ? (
-        <SmallLicenseBadges license={license} suppressLink={true} />
+        <SmallLicenseBadges
+          code={licenseCode}
+          suppressLink={true}
+          allLicenses={allLicenses}
+        />
       ) : (
         // Same width as `SmallLicenseBadges`
         <Flex width="80px" />

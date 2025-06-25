@@ -16,7 +16,6 @@ import {
 } from "./content_list";
 import { processContent, returnContentSelect } from "../utils/contentStructure";
 import { getAvailableContentFeatures } from "./classification";
-import { getAllLicenses } from "./share";
 
 export async function mustBeEditor(
   userId: Uint8Array,
@@ -853,7 +852,6 @@ export async function getCurationQueue({
 
   const { availableFeatures } = await getAvailableContentFeatures();
   const { allDoenetmlVersions } = await getAllDoenetmlVersions();
-  const { allLicenses } = await getAllLicenses();
 
   return {
     pendingContent,
@@ -866,6 +864,5 @@ export async function getCurationQueue({
     publishedLibraryRelations,
     availableFeatures,
     allDoenetmlVersions,
-    allLicenses,
   };
 }
