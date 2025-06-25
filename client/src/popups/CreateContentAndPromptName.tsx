@@ -38,6 +38,7 @@ export async function createContentAndPromptNameActions({
         {
           childSourceContentIds: contentIds,
           contentType: formObj.desiredType,
+          parentId: null,
         },
       );
 

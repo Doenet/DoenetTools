@@ -42,6 +42,7 @@ model content {
   selectByVariant     Boolean                  @default(false)
   // Assignments
   nonRootAssignmentId Bytes?                   @db.Binary(16)
+  // Relations
   nonRootAssignment   assignments?             @relation("nonRootAssignment", fields: [nonRootAssignmentId], references: [rootContentId], onDelete: SetNull, onUpdate: NoAction)
   rootAssignment      assignments?             @relation("rootAssignment")
   owner               users                    @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
