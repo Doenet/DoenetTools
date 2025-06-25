@@ -3,7 +3,7 @@ import { isEqualUUID } from "../utils/uuid";
 import { Prisma } from "@prisma/client";
 import { InvalidRequestError } from "../utils/error";
 import { filterEditableActivity } from "../utils/permissions";
-import { UserInfo } from "../types";
+import { UserInfoWithEmail } from "../types";
 
 // TODO: do we still save score and state if assignment isn't open?
 // If not, how do we communicate that fact
@@ -1102,6 +1102,8 @@ export async function getScoresOfAllStudents({
           firstNames: true,
           lastNames: true,
           userId: true,
+          // NOTE: we're including the email here because instructors want to know
+          // the emails of the people who have taken their assignment
           email: true,
         },
       },
@@ -1117,7 +1119,7 @@ export async function getScoresOfAllStudents({
     bestAttemptNumber: number;
     itemScores: ItemScores | null;
     latestAttempt: LatestAttempt | null;
-    user: UserInfo;
+    user: UserInfoWithEmail;
   }[] = [];
 
   for (const scoreObj of cachedScores) {

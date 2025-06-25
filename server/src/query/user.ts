@@ -1,5 +1,5 @@
 import { prisma } from "../model";
-import { UserInfo } from "../types";
+import { UserInfo, UserInfoWithEmail } from "../types";
 
 export async function findOrCreateUser({
   email,
@@ -52,7 +52,6 @@ export async function getUserInfo({
     where: { userId: loggedInUserId },
     select: {
       userId: true,
-      email: true,
       firstNames: true,
       lastNames: true,
       isAnonymous: true,
@@ -64,7 +63,7 @@ export async function getUserInfo({
 }
 
 export async function getAuthorInfo(userId: Uint8Array): Promise<UserInfo> {
-  const user = await prisma.users.findUniqueOrThrow({
+  return await prisma.users.findUniqueOrThrow({
     where: { userId },
     select: {
       userId: true,
@@ -72,10 +71,11 @@ export async function getAuthorInfo(userId: Uint8Array): Promise<UserInfo> {
       lastNames: true,
     },
   });
-  return { email: "", ...user };
 }
 
-export async function getUserInfoFromEmail(email: string) {
+export async function getUserInfoFromEmail(
+  email: string,
+): Promise<UserInfoWithEmail> {
   const user = await prisma.users.findUniqueOrThrow({
     where: { email },
     select: {
