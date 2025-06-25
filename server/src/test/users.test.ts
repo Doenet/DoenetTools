@@ -3,7 +3,9 @@ import { createTestAnonymousUser, createTestUser } from "./utils";
 import { fromUUID } from "../utils/uuid";
 import {
   findOrCreateUser,
+  getAuthorInfo,
   getUserInfo,
+  getUserInfoIfLoggedIn,
   setIsAuthor,
   updateUser,
   upgradeAnonymousUser,
@@ -95,4 +97,16 @@ test("turn author mode on and off", async () => {
   await setIsAuthor({ loggedInUserId: userId, isAuthor: false });
   userInfo = await getUserInfo({ loggedInUserId: userId });
   expect(userInfo.user.isAuthor).eq(false);
+});
+
+test("user apis do not provide email", async () => {
+  const { userId: loggedInUserId } = await createTestUser();
+  const results1 = await getUserInfo({ loggedInUserId });
+  expect(results1.user).not.toHaveProperty("email");
+
+  const results2 = await getAuthorInfo(loggedInUserId);
+  expect(results2).not.toHaveProperty("email");
+
+  const results3 = await getUserInfoIfLoggedIn({ loggedInUserId });
+  expect(results3!.user).not.toHaveProperty("email");
 });

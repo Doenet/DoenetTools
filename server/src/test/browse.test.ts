@@ -15,7 +15,11 @@ import {
   updateContent,
   updateContentFeatures,
 } from "../query/activity";
-import { modifyContentSharedWith, setContentIsPublic } from "../query/share";
+import {
+  makeContentPublic,
+  modifyContentSharedWith,
+  setContentIsPublic,
+} from "../query/share";
 import {
   browseClassificationCategoriesWithSharedContent,
   browseClassificationCategorySharedContent,
@@ -24,10 +28,14 @@ import {
   browseClassificationSubCategorySharedContent,
   browseClassificationsWithSharedContent,
   browseClassificationSystemsWithSharedContent,
+  browseSharedContent,
+  browseTrendingContent,
   browseUsersWithSharedContent,
+  searchSharedContent,
+  searchUsersWithSharedContent,
 } from "../query/explore";
-import { updateUser } from "../query/user";
 import { ContentType } from "@prisma/client";
+import { updateUser } from "../query/user";
 
 test("browseUsersWithSharedContent, no filter, filter by unclassified", async () => {
   const { userId } = await createTestUser();
@@ -7855,4 +7863,49 @@ test("browse categories and systems with shared content, search hits classificat
   expect(resultsSystem[0].numCommunity).eq(2);
   expect(resultsSystem[1].system!.id).eq(systemId2);
   expect(resultsSystem[1].numCommunity).eq(1);
+});
+
+test("Explore APIs do not provide email", async () => {
+  const code = Date.now().toString();
+  const { userId: loggedInUserId, lastNames: authorLastName } =
+    await createTestUser();
+  const { contentId } = await createContent({
+    loggedInUserId,
+    contentType: "singleDoc",
+    name: code,
+    parentId: null,
+  });
+  await makeContentPublic({
+    loggedInUserId,
+    contentId,
+  });
+
+  let results = await browseSharedContent({
+    isCurated: false,
+    loggedInUserId,
+  });
+  expect(results[0].owner).not.toHaveProperty("email");
+
+  results = await browseTrendingContent({
+    loggedInUserId,
+  });
+  expect(results[0].owner).not.toHaveProperty("email");
+
+  results = await searchSharedContent({
+    isCurated: false,
+    loggedInUserId,
+    query: code,
+  });
+  expect(results[0].owner).not.toHaveProperty("email");
+
+  let userResults = await browseUsersWithSharedContent({
+    loggedInUserId,
+  });
+  expect(userResults[0]).not.toHaveProperty("email");
+
+  userResults = await searchUsersWithSharedContent({
+    loggedInUserId,
+    query: authorLastName,
+  });
+  expect(userResults[0]).not.toHaveProperty("email");
 });

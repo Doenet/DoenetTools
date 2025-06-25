@@ -3,12 +3,14 @@ import {
   checkIfContentContains,
   copyContent,
   createContentCopyInChildren,
+  getMoveCopyContentData,
   moveContent,
 } from "../query/copy_move";
 import {
   checkIfContentContainsSchema,
   copyContentSchema,
   createContentCopyInChildrenSchema,
+  getMoveCopyContentDataSchema,
   moveContentSchema,
 } from "../schemas/copyMoveSchema";
 import { queryLoggedIn } from "../middleware/queryMiddleware";
@@ -28,6 +30,11 @@ copyMoveRouter.post(
 copyMoveRouter.post(
   "/createContentCopyInChildren",
   queryLoggedIn(createContentCopyInChildren, createContentCopyInChildrenSchema),
+);
+
+copyMoveRouter.get(
+  "/getMoveCopyContentData/:parentId?",
+  queryLoggedIn(getMoveCopyContentData, getMoveCopyContentDataSchema),
 );
 
 copyMoveRouter.get(

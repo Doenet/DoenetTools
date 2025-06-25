@@ -241,7 +241,6 @@ test("user privileges for library", async () => {
   });
   const editorUserInfo: UserInfo = {
     userId: editorUserInfoAll.userId,
-    email: editorUserInfoAll.email,
     firstNames: editorUserInfoAll.firstNames,
     lastNames: editorUserInfoAll.lastNames,
   };
@@ -669,7 +668,6 @@ test("published activity in library with unavailable source activity", async () 
   });
   const editorUser: UserInfo = {
     userId: editorUserAll.userId,
-    email: editorUserAll.email,
     firstNames: editorUserAll.firstNames,
     lastNames: editorUserAll.lastNames,
   };
@@ -1443,4 +1441,25 @@ test("Can only suggest single docs", async () => {
   await expect(() =>
     suggestToBeCurated({ contentId: questionBankId, loggedInUserId: userId }),
   ).rejects.toThrowError();
+});
+
+test("getCurationQueue does not provide email", async () => {
+  const { userId } = await createTestEditorUser();
+  const { contentId } = await createContent({
+    contentType: "singleDoc",
+    loggedInUserId: userId,
+    parentId: null,
+  });
+  await makeContentPublic({
+    contentId,
+    loggedInUserId: userId,
+  });
+  await suggestToBeCurated({
+    contentId,
+    loggedInUserId: userId,
+  });
+
+  const { pendingContent } = await getCurationQueue({ loggedInUserId: userId });
+
+  expect(pendingContent[0].owner).not.toHaveProperty("email");
 });

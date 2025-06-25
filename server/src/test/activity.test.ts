@@ -19,6 +19,7 @@ import {
 import {
   getActivityEditorData,
   getActivityViewerData,
+  getContent,
   getSharedEditorData,
 } from "../query/activity_edit_view";
 import { getMyContent, getMyTrash } from "../query/content_list";
@@ -1957,4 +1958,19 @@ test("revert to revision", async () => {
     revisionName: "Changed to save point",
     note: "Used the save point: Before changing to save point",
   });
+});
+
+test("getContent does not provide email", async () => {
+  const { userId: loggedInUserId } = await createTestUser();
+  const { contentId } = await createContent({
+    loggedInUserId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const result = await getContent({
+    contentId,
+    loggedInUserId,
+    includeOwnerDetails: true,
+  });
+  expect(result.owner).not.toHaveProperty("email");
 });

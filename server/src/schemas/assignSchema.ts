@@ -1,7 +1,8 @@
 import { z } from "zod";
-import { uuidSchema } from "./uuid";
+import { optionalUuidSchema, uuidSchema } from "./uuid";
 import { DateTime } from "luxon";
 import { stringAsBoolSchema } from "./boolean";
+import { rangedNumber, stringAsRangedNumber } from "./rangedNumber";
 
 export const assignmentCloseAtSchema = z.object({
   contentId: uuidSchema,
@@ -13,12 +14,7 @@ export const assignmentCloseAtSchema = z.object({
 
 export const assignmentMaxAttemptsSchema = z.object({
   contentId: uuidSchema,
-  maxAttempts: z
-    .number()
-    .int()
-    .refine((v) => v >= 0 && v <= 65535, {
-      message: "maxAttempts must be between 0 and 65535",
-    }),
+  maxAttempts: rangedNumber,
 });
 
 export const assignmentSettingsSchema = z.object({
@@ -28,57 +24,24 @@ export const assignmentSettingsSchema = z.object({
 });
 
 export const assignmentParentSchema = z.object({
-  parentId: uuidSchema.nullish().transform((val) => val ?? null),
+  parentId: optionalUuidSchema,
 });
 
 export const getStudentAssignmentScoresSchema = z.object({
   studentUserId: uuidSchema,
-  parentId: uuidSchema.nullish().transform((val) => val ?? null),
+  parentId: optionalUuidSchema,
 });
 
 export const recordSubmittedEventSchema = z.object({
   contentId: uuidSchema,
-  contentAttemptNumber: z
-    .number()
-    .int()
-    .refine((v) => v >= 1 && v <= 65535, {
-      message: "contentAttemptNumber must be between 1 and 65535",
-    }),
-  itemAttemptNumber: z
-    .number()
-    .int()
-    .refine((v) => v >= 1 && v <= 65535, {
-      message: "itemAttemptNumber must be between 1 and 65535",
-    })
-    .nullish()
-    .transform((val) => val ?? null),
+  contentAttemptNumber: rangedNumber,
+  itemAttemptNumber: rangedNumber.nullable(),
   answerId: z.string(),
   response: z.string(),
-  answerNumber: z
-    .number()
-    .int()
-    .refine((v) => v >= 1 && v <= 65535, {
-      message: "answerNumber must be between 1 and 65535",
-    })
-    .optional(),
-  componentNumber: z
-    .number()
-    .int()
-    .refine((v) => v >= 1 && v <= 65535, {
-      message: "componentNumber must be between 1 and 65535",
-    }),
-  itemNumber: z
-    .number()
-    .int()
-    .refine((v) => v >= 1 && v <= 65535, {
-      message: "itemNumber must be between 1 and 65535",
-    }),
-  shuffledItemNumber: z
-    .number()
-    .int()
-    .refine((v) => v >= 1 && v <= 65535, {
-      message: "shuffledItemNumber must be between 1 and 65535",
-    }),
+  answerNumber: rangedNumber.optional(),
+  componentNumber: rangedNumber,
+  itemNumber: rangedNumber,
+  shuffledItemNumber: rangedNumber,
   answerCreditAchieved: z.number(),
   componentCreditAchieved: z.number(),
   itemCreditAchieved: z.number(),
@@ -89,21 +52,9 @@ export const codeSchema = z.object({ code: z.string() });
 export const getAssignmentResponseStudentSchema = z.object({
   contentId: uuidSchema,
   studentUserId: uuidSchema.optional(),
-  shuffledOrder: z.string().transform((val) => val === "true"),
-  itemNumber: z
-    .string()
-    .transform((val) => parseInt(val))
-    .refine((v) => v >= 1 && v <= 65535, {
-      message: "itemNumber must be between 1 and 65535",
-    })
-    .optional(),
-  attemptNumber: z
-    .string()
-    .transform((val) => parseInt(val))
-    .refine((v) => v >= 1 && v <= 65535, {
-      message: "attemptNumber must be between 1 and 65535",
-    })
-    .optional(),
+  shuffledOrder: stringAsBoolSchema,
+  itemNumber: stringAsRangedNumber.optional(),
+  attemptNumber: stringAsRangedNumber.optional(),
 });
 
 export const getStudentSubmittedResponsesSchema = z.object({
@@ -111,24 +62,7 @@ export const getStudentSubmittedResponsesSchema = z.object({
   studentUserId: uuidSchema.optional(),
   answerId: z.string(),
   shuffledOrder: stringAsBoolSchema,
-  requestedItemNumber: z
-    .string()
-    .transform((val) => parseInt(val))
-    .refine((v) => v >= 1 && v <= 65535, {
-      message: "requestedItemNumber must be between 1 and 65535",
-    })
-    .optional(),
-  contentAttemptNumber: z
-    .string()
-    .transform((val) => parseInt(val))
-    .refine((v) => v >= 1 && v <= 65535, {
-      message: "contentAttemptNumber must be between 1 and 65535",
-    }),
-  itemAttemptNumber: z
-    .string()
-    .transform((val) => parseInt(val))
-    .refine((v) => v >= 1 && v <= 65535, {
-      message: "itemAttemptNumber must be between 1 and 65535",
-    })
-    .optional(),
+  requestedItemNumber: stringAsRangedNumber.optional(),
+  contentAttemptNumber: stringAsRangedNumber,
+  itemAttemptNumber: stringAsRangedNumber.optional(),
 });

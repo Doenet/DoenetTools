@@ -20,21 +20,23 @@ import axios, { AxiosError } from "axios";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { useFetcher, useNavigate } from "react-router";
 import MoveToSharedAlert from "./MoveToSharedAlert";
-import { Content, ContentType, LicenseCode, UserInfo } from "../types";
+import { ContentType, UserInfo } from "../types";
 import { contentTypeToName, getIconInfo } from "../utils/activity";
 
 type ActiveView = {
-  // If parentName and parentId are null, the active view is the root
-  // If grandparentId is null, then the parent of active view is the root
-  parentId: string | null;
-  parentName: string | null;
-  parentType: ContentType;
-  parentIsPublic: boolean;
-  parentIsShared: boolean;
-  parentSharedWith: UserInfo[];
-  parentLicenseCode: LicenseCode | null;
-  grandparentId: string | null;
-  grandparentType: ContentType;
+  // If parent is null, the active view is the root
+  // If parent.parent is null, then the parent of active view is the root
+  parent: {
+    id: string;
+    name: string;
+    type: ContentType;
+    isPublic: boolean;
+    sharedWith: string[];
+    parent: {
+      id: string;
+      type: ContentType;
+    } | null;
+  } | null;
   contents: {
     type: ContentType;
     canOpen: boolean;
@@ -146,15 +148,7 @@ export function MoveCopyContent({
 
   // Set whenever the user navigates to another parent
   const [activeView, setActiveView] = useState<ActiveView>({
-    parentName: null,
-    parentType: "folder",
-    parentIsPublic: false,
-    parentIsShared: false,
-    parentSharedWith: [],
-    parentLicenseCode: null,
-    parentId: null,
-    grandparentId: null,
-    grandparentType: "folder",
+    parent: null,
     contents: [],
   });
 
@@ -162,92 +156,15 @@ export function MoveCopyContent({
     newActiveParentId: string | null,
     modalJustOpened: boolean = false,
   ) {
-    const { data } = inCurationLibrary
-      ? await axios.get(
-          `/api/curate/getCurationFolderContent/${newActiveParentId ?? ""}`,
-        )
-      : await axios.get(
-          `/api/contentList/getMyContent/${userId}/${newActiveParentId ?? ""}`,
-        );
-
-    const parent: Content | null = data.parent;
-    const parentName: string | null = parent?.name ?? null;
-    const parentType: ContentType = parent?.type ?? "folder";
-    const parentIsPublic: boolean = parent?.isPublic ?? false;
-    const parentIsShared: boolean = parent?.isShared ?? false;
-    const parentSharedWith: UserInfo[] = parent?.sharedWith ?? [];
-    const parentLicenseCode: LicenseCode | null = parent?.licenseCode ?? null;
-    const grandparentId: string | null = parent?.parent?.contentId ?? null;
-    const grandparentType: ContentType = parent?.parent?.type ?? "folder";
-    const contentFromApi: Content[] = data.content;
-
-    const content: {
-      type: ContentType;
-      canOpen: boolean;
-      name: string;
-      contentId: string;
-    }[] = [];
-
-    for (const item of contentFromApi) {
-      let canOpen = false;
-      if (allowedParentTypes.includes(item.type)) {
-        if (
-          (item.assignmentInfo?.assignmentStatus ?? "Unassigned") ===
-          "Unassigned"
-        ) {
-          canOpen = true;
-        }
-      } else if (
-        (item.type === "folder" ||
-          (item.type === "sequence" &&
-            allowedParentTypes.includes("select"))) &&
-        (item.assignmentInfo?.assignmentStatus ?? "Unassigned") === "Unassigned"
-      ) {
-        // if items is a folder or item is a sequence and we are looking for a select,
-        // then it is possible that a descendant is of allowed parent type.
-        // Check for that possibility
-        for (const ct of allowedParentTypes) {
-          const { data: containsData } = await axios.get(
-            `/api/copyMove/checkIfContentContains`,
-            { params: { contentId: item.contentId, contentType: ct } },
-          );
-
-          if (containsData.containsType) {
-            canOpen = true;
-            break;
-          }
-        }
-      }
-      content.push({
-        type: item.type,
-        canOpen,
-        name: item.name,
-        contentId: item.contentId,
-      });
-    }
-
-    content.sort((a, b) => {
-      if (a.type !== "singleDoc" && b.type === "singleDoc") {
-        return -1;
-      } else if (b.type !== "singleDoc" && a.type === "singleDoc") {
-        return 1;
-      } else {
-        return 0;
-      }
-    });
-
-    setActiveView({
-      parentId: newActiveParentId,
-      parentName,
-      parentType,
-      parentIsPublic,
-      parentIsShared,
-      parentSharedWith,
-      parentLicenseCode,
-      grandparentId,
-      grandparentType,
-      contents: content,
-    });
+    let allowedTypesAsString = allowedParentTypes.reduce(
+      (result, val) => `${result},${val}`,
+      "",
+    );
+    allowedTypesAsString = allowedTypesAsString.substring(1);
+    const { data } = (await axios.get(
+      `/api/copyMove/getMoveCopyContentData/${newActiveParentId ?? ""}?allowedParentTypes=${allowedTypesAsString}${inCurationLibrary ? "&inCurationLibrary=true" : ""}`,
+    )) as { data: ActiveView };
+    setActiveView(data);
 
     if (modalJustOpened) {
       if (sourceContent.length === 1) {
@@ -322,6 +239,37 @@ export function MoveCopyContent({
     </SimpleGrid>
   );
 
+  let shareAlert = false;
+  if (action === "Move") {
+    // Sometimes moving content to a different folder means that the visibility of that content
+    // will change. When this is going to happen, we alert users with a popup.
+    // There are two cases where this can happen:
+    // 1. Destination folder is public, but at least some source content is private
+    // 2. Destination folder is shared with someone, but at least some of the source content is not
+    //    shared with that person
+    //    (Please note that this also means the offending piece of source content is private, since if
+    //     it were public, it would be implicitly shared with everyone)
+    // In the following code, we check for either of those two cases.
+
+    if (activeView.parent?.isPublic) {
+      shareAlert = !sourceContent.every((c) => c.isPublic);
+    } else if (activeView.parent?.sharedWith) {
+      const privateSources = sourceContent.filter((c) => !c.isPublic);
+      const sourceSharedWith = privateSources.flatMap(
+        (c) => c.sharedWith?.map((user) => user.userId) ?? [],
+      );
+      const count = new Map<string, number>();
+      for (userId of sourceSharedWith) {
+        count.set(userId, (count.get(userId) || 0) + 1);
+      }
+      // If the count of that userId is the same as the length of private sources,
+      // that means each private source was shared with that userId
+      shareAlert = !activeView.parent.sharedWith.every(
+        (user) => count.get(user) === privateSources.length,
+      );
+    }
+  }
+
   const executeButtons = (
     <>
       <Button
@@ -337,29 +285,14 @@ export function MoveCopyContent({
         width="10em"
         // Is disabled if the content is already in this parent
         isDisabled={
-          (activeView.parentId === null && parentId === null) ||
-          (activeView.parentId !== null &&
+          (activeView.parent === null && parentId === null) ||
+          (activeView.parent !== null &&
             parentId !== null &&
-            activeView.parentId === parentId) ||
-          !allowedParentTypes.includes(activeView.parentType)
+            activeView.parent.id === parentId) ||
+          !allowedParentTypes.includes(activeView.parent?.type ?? "folder")
         }
         onClick={() => {
-          if (
-            action === "Move" &&
-            ((activeView.parentIsPublic &&
-              !sourceContent.every((c) => c.isPublic)) ||
-              (activeView.parentIsShared &&
-                (!sourceContent.every((c) => c.isShared) ||
-                  activeView.parentSharedWith.some((parentUser) =>
-                    sourceContent.some(
-                      (c) =>
-                        !c.sharedWith ||
-                        c.sharedWith.findIndex(
-                          (u) => u.userId === parentUser.userId,
-                        ) === -1,
-                    ),
-                  ))))
-          ) {
+          if (shareAlert) {
             // moving non-public content into a public parent
             // or moving moving content into a parent that is shared with additional users
             sharedAlertOnOpen();
@@ -371,7 +304,7 @@ export function MoveCopyContent({
         <Text noOfLines={1}>
           {action} to{" "}
           <em>
-            {activeView.parentName ??
+            {activeView.parent?.name ??
               (inCurationLibrary ? "Library Activities" : "My Activities")}
           </em>
         </Text>
@@ -383,32 +316,32 @@ export function MoveCopyContent({
   let destinationAction: string;
   let destinationUrl: string;
 
-  if (activeView.parentId) {
-    const typeName = contentTypeToName[activeView.parentType].toLowerCase();
+  if (activeView.parent) {
+    const typeName = contentTypeToName[activeView.parent.type].toLowerCase();
     destinationDescription = (
       <>
-        <strong>{activeView.parentName}</strong>
+        <strong>{activeView.parent.name}</strong>
       </>
     );
-    if (activeView.parentType === "folder") {
+    if (activeView.parent.type === "folder") {
       destinationAction = "Go to folder";
 
       if (inCurationLibrary) {
-        destinationUrl = `/libraryActivities/${activeView.parentId}`;
+        destinationUrl = `/libraryActivities/${activeView.parent.id}`;
       } else {
-        destinationUrl = `/activities/${userId}/${activeView.parentId}`;
+        destinationUrl = `/activities/${userId}/${activeView.parent.id}`;
       }
     } else if (
-      activeView.parentType === "select" &&
-      activeView.grandparentType === "sequence"
+      activeView.parent.type === "select" &&
+      activeView.parent.parent?.type === "sequence"
     ) {
       // if we have a Question Bank whose parent is a Problem Set,
       // then we don't display the Question Bank by itself, just embedded in the Problem Set
       destinationAction = `Open containing problem set`;
-      destinationUrl = `/activityEditor/${activeView.grandparentId}`;
+      destinationUrl = `/activityEditor/${activeView.parent.parent.id}`;
     } else {
       destinationAction = `Open ${typeName}`;
-      destinationUrl = `/activityEditor/${activeView.parentId}`;
+      destinationUrl = `/activityEditor/${activeView.parent.id}`;
     }
   } else if (inCurationLibrary) {
     destinationDescription = <>Library Activities</>;
@@ -426,7 +359,7 @@ export function MoveCopyContent({
         isOpen={sharedAlertIsOpen}
         onClose={sharedAlertOnClose}
         performMove={performAction}
-        parentName={activeView.parentName}
+        parentName={activeView.parent?.name ?? null}
       />
       <Modal
         isOpen={isOpen}
@@ -452,16 +385,18 @@ export function MoveCopyContent({
               <em>{contentName}</em>
             </Heading>
             <HStack hidden={actionFinished || errMsg !== ""}>
-              {activeView.parentId ? (
+              {activeView.parent ? (
                 <>
                   <IconButton
                     data-test="Back Arrow"
                     icon={<ArrowBackIcon />}
                     aria-label="Back"
-                    onClick={() => updateActiveView(activeView.grandparentId)}
+                    onClick={() =>
+                      updateActiveView(activeView.parent?.parent?.id ?? null)
+                    }
                   />
                   <Text noOfLines={1} data-test="Current destination">
-                    {activeView.parentName}
+                    {activeView.parent.name}
                   </Text>
                 </>
               ) : (
@@ -525,7 +460,7 @@ export function MoveCopyContent({
       {
         _action: "Move or copy",
         contentIds: JSON.stringify(sourceContent.map((sc) => sc.contentId)),
-        parentId: activeView.parentId,
+        parentId: activeView.parent?.id ?? null,
         desiredPosition: activeView.contents.length, // place it as the last item
         action,
       },

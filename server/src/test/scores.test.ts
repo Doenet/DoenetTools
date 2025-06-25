@@ -10,6 +10,7 @@ import {
 import {
   createNewAttempt,
   getScore,
+  getScoresOfAllStudents,
   loadItemState,
   loadState,
   saveScoreAndState,
@@ -3843,4 +3844,34 @@ test("Setting maximum number of attempts, new item attempts", async () => {
       ],
     },
   });
+});
+
+test("getScoresOfAllStudents should provide emails", async () => {
+  const { userId: ownerId } = await createTestUser();
+  const { contentId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const closeAt = DateTime.now().plus({ days: 1 });
+  const { classCode } = await openAssignmentWithCode({
+    contentId: contentId,
+    closeAt: closeAt,
+    loggedInUserId: ownerId,
+  });
+  const { userId: studentId } = await createTestUser();
+  await createNewAttempt({
+    contentId: contentId,
+    code: classCode,
+    variant: 1,
+    loggedInUserId: studentId,
+    state: "document state 1",
+  });
+
+  const results = await getScoresOfAllStudents({
+    contentId,
+    loggedInUserId: ownerId,
+  });
+  expect(results.scores.length).eqls(1);
+  expect(results.scores[0].user).toHaveProperty("email");
 });

@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
-import { FetcherWithComponents, Form } from "react-router";
+import { FetcherWithComponents } from "react-router";
 import {
   Box,
   FormControl,
@@ -238,35 +238,34 @@ export function GeneralContentControls({
           </Box>
         ) : null}
       </Box>
-      <Form method="post">
-        <FormControl isInvalid={nameIsInvalid}>
-          <FormLabel mt="16px">Name</FormLabel>
 
-          <Input
-            maxLength={191}
-            ref={nameInput}
-            name="name"
-            size="sm"
-            // width="392px"
-            width="100%"
-            placeholder={`${contentType} 1`}
-            data-test="Content Name"
-            value={nameValue}
-            onChange={(e) => {
-              setName(e.target.value);
-            }}
-            onBlur={() => saveName()}
-            onKeyDown={(e) => {
-              if (e.key == "Enter") {
-                saveName();
-              }
-            }}
-          />
-          <FormErrorMessage>
-            Error - A name for the {contentTypeLower} is required.
-          </FormErrorMessage>
-        </FormControl>
-      </Form>
+      <FormControl isInvalid={nameIsInvalid}>
+        <FormLabel mt="16px">Name</FormLabel>
+
+        <Input
+          maxLength={191}
+          ref={nameInput}
+          name="name"
+          size="sm"
+          // width="392px"
+          width="100%"
+          placeholder={`${contentType} 1`}
+          data-test="Content Name"
+          value={nameValue}
+          onChange={(e) => {
+            setName(e.target.value);
+          }}
+          onBlur={() => saveName()}
+          onKeyDown={(e) => {
+            if (e.key == "Enter") {
+              saveName();
+            }
+          }}
+        />
+        <FormErrorMessage>
+          Error - A name for the {contentTypeLower} is required.
+        </FormErrorMessage>
+      </FormControl>
 
       {contentData.type !== "folder" ? (
         <Box padding="10px" marginTop="20px">
