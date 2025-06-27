@@ -18,9 +18,9 @@ import {
 import React, { ReactElement } from "react";
 import { createNameNoTag } from "../utils/names";
 import { CloseIcon } from "@chakra-ui/icons";
-import { activityFeatureIcons } from "../utils/activity";
+import { activityCategoryIcons } from "../utils/activity";
 import {
-  ContentFeature,
+  ContentCategory,
   PartialContentClassification,
   UserInfo,
 } from "../types";
@@ -36,9 +36,9 @@ export function FilterPanel({
   categoryBrowse,
   systemBrowse,
   classificationInfo,
-  countByFeature,
-  features,
-  availableFeatures,
+  countByCategory,
+  categories,
+  availableCategories,
   search,
   navigate,
 }: {
@@ -49,38 +49,38 @@ export function FilterPanel({
   categoryBrowse: PartialContentClassification[] | null;
   systemBrowse: PartialContentClassification[] | null;
   classificationInfo: PartialContentClassification | null;
-  countByFeature: Record<
+  countByCategory: Record<
     string,
     { numCurated?: number; numCommunity?: number }
   >;
-  features: Set<string>;
-  availableFeatures: ContentFeature[];
+  categories: Set<string>;
+  availableCategories: ContentCategory[];
   search: string;
   navigate: NavigateFunction;
 }) {
   let clearFilters: ReactElement | null = null;
-  if (authorInfo || classificationInfo || features.size > 0) {
+  if (authorInfo || classificationInfo || categories.size > 0) {
     const clearFilterButtons: ReactElement[] = [];
 
-    for (const feature of availableFeatures) {
-      if (features.has(feature.code)) {
+    for (const category of availableCategories) {
+      if (categories.has(category.code)) {
         clearFilterButtons.push(
           <Tooltip
-            label={`Clear filter: ${feature.term}`}
+            label={`Clear filter: ${category.term}`}
             openDelay={500}
-            key={`feature${feature.code}`}
+            key={`category${category.code}`}
           >
             <Button
               colorScheme="blue"
               rightIcon={<CloseIcon boxSize={2} />}
               size="xs"
-              aria-label={`Clear filter: ${feature.term}`}
+              aria-label={`Clear filter: ${category.term}`}
               onClick={() => {
-                const newSearch = clearQueryParameter(feature.code, search);
+                const newSearch = clearQueryParameter(category.code, search);
                 navigate(`.${newSearch}`);
               }}
             >
-              {feature.term}
+              {category.term}
             </Button>
           </Tooltip>,
         );
@@ -256,47 +256,47 @@ export function FilterPanel({
         pt="4px"
         pb="4px"
       >
-        Content features
+        Content categories
       </Heading>
       <VStack alignItems="flex-start" gap={0} ml="10px" mr="4px">
-        {availableFeatures.map((feature) => {
-          const isPresent = features.has(feature.code);
-          const c = countByFeature[feature.code];
+        {availableCategories.map((category) => {
+          const isPresent = categories.has(category.code);
+          const c = countByCategory[category.code];
           const numCurated = c.numCurated || 0;
           const numCommunity = c.numCommunity || 0;
-          // const icon = activityFeatureIcons[feature.code];
+          // const icon = activityCategoryIcons[category.code];
 
-          const featureCode = feature.code as
+          const categoryCode = category.code as
             | "isQuestion"
             | "isInteractive"
             | "containsVideo";
 
           return (
             <Checkbox
-              key={feature.code}
+              key={category.code}
               isChecked={isPresent}
-              data-test={`${feature.code} Checkbox`}
+              data-test={`${category.code} Checkbox`}
               disabled={numCurated + numCommunity === 0}
               onChange={() => {
                 let newSearch = search;
-                newSearch = clearQueryParameter(feature.code, newSearch);
+                newSearch = clearQueryParameter(category.code, newSearch);
                 if (!isPresent) {
                   if (newSearch) {
                     newSearch += "&";
                   } else {
                     newSearch = "?";
                   }
-                  newSearch += feature.code;
+                  newSearch += category.code;
                 }
                 navigate(`.${newSearch}`);
               }}
             >
               <HStack>
-                <Tooltip label={feature.description} openDelay={500}>
-                  {feature.term}
+                <Tooltip label={category.description} openDelay={500}>
+                  {category.term}
                   <Icon
                     paddingLeft="5px"
-                    as={activityFeatureIcons[featureCode]}
+                    as={activityCategoryIcons[categoryCode]}
                     color="#666699"
                     boxSize={5}
                     verticalAlign="middle"
@@ -809,12 +809,12 @@ function clearUnclassifiedFilter(search: string, navigate: NavigateFunction) {
 
 // function clearAllFilters(
 //   search: string,
-//   availableFeatures: ContentFeature[],
+//   availableCategories: ContentCategory[],
 //   navigate: NavigateFunction,
 // ) {
 //   let newSearch = search;
-//   for (const feature of availableFeatures) {
-//     newSearch = clearQueryParameter(feature.code, newSearch);
+//   for (const category of availableCategories) {
+//     newSearch = clearQueryParameter(category.code, newSearch);
 //   }
 //   newSearch = clearQueryParameter("author", newSearch);
 //   navigate(`/explore/${newSearch}`);

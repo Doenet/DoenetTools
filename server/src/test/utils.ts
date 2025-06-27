@@ -472,15 +472,21 @@ export async function deleteTestClassifications({
   }
 }
 
-export async function createTestFeature({
+export async function createTestCategory({
   word,
   code,
 }: {
   word: string;
   code: string;
 }) {
-  const feature = await prisma.contentFeatures.create({
+  const group = await prisma.categoryGroups.create({
     data: {
+      name: `${word}${code} group`,
+    },
+  });
+  const category = await prisma.categories.create({
+    data: {
+      groupId: group.id,
       code: `${word}${code}`,
       term: `${word}${code}`,
       description: `${word} ${code}`,
@@ -488,11 +494,29 @@ export async function createTestFeature({
     },
   });
 
-  onTestFinished(() => deleteTestFeature(feature.id));
+  onTestFinished(() => deleteTestCategory(category.id));
 
-  return feature;
+  return category;
 }
 
-export async function deleteTestFeature(featureId: number) {
-  await prisma.contentFeatures.delete({ where: { id: featureId } });
+export async function deleteTestCategory(categoryId: number) {
+  const { groupId } = await prisma.categories.findUniqueOrThrow({
+    where: { id: categoryId },
+    select: {
+      groupId: true,
+    },
+  });
+
+  const deleteCategory = prisma.categories.delete({
+    where: { id: categoryId },
+  });
+
+  if (groupId) {
+    const deleteGroup = prisma.categoryGroups.delete({
+      where: { id: groupId },
+    });
+    await prisma.$transaction([deleteCategory, deleteGroup]);
+  } else {
+    await deleteCategory;
+  }
 }

@@ -5,15 +5,15 @@ import {
   returnClassificationFilterWhereClauses,
   returnClassificationJoins,
   returnClassificationMatchClauses,
-  returnFeatureJoins,
-  returnFeatureWhereClauses,
-} from "../utils/classificationsFeatures";
+  returnCategoryJoins,
+  returnCategoryWhereClauses,
+} from "../utils/classificationsCategories";
 import { processContent, returnContentSelect } from "../utils/contentStructure";
 import { fromUUID } from "../utils/uuid";
 import { getLibraryAccountId, maskLibraryUserInfo } from "./curate";
 import { PartialContentClassification, UserInfo } from "../types";
 import {
-  getAvailableContentFeatures,
+  getAvailableCategories,
   getClassificationInfo,
 } from "./classification";
 import { getAuthorInfo } from "./user";
@@ -27,7 +27,7 @@ export async function searchSharedContent({
   subCategoryId,
   classificationId,
   isUnclassified,
-  features,
+  categories,
   ownerId,
   page = 1,
 }: {
@@ -39,7 +39,7 @@ export async function searchSharedContent({
   subCategoryId?: number;
   classificationId?: number;
   isUnclassified?: boolean;
-  features?: Set<string>;
+  categories?: Set<string>;
   ownerId?: Uint8Array;
   page?: number;
 }) {
@@ -73,7 +73,7 @@ export async function searchSharedContent({
   LEFT JOIN
     users ON content.ownerId = users.userId
   ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
-  ${returnFeatureJoins(features)}
+  ${returnCategoryJoins(categories)}
   WHERE
     content.isDeletedOn IS NULL
     AND users.isLibrary = ${isCurated ? Prisma.sql`TRUE` : Prisma.sql`FALSE`}
@@ -89,7 +89,7 @@ export async function searchSharedContent({
       ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification, matchSubCategory, matchCategory, prependOperator: true, operator: "OR" })}
     )
     ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
-    ${returnFeatureWhereClauses(features)}
+    ${returnCategoryWhereClauses(categories)}
     ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
   GROUP BY
     content.id
@@ -133,7 +133,7 @@ export async function browseSharedContent({
   subCategoryId,
   classificationId,
   isUnclassified,
-  features,
+  categories,
   ownerId,
   page = 1,
 }: {
@@ -144,7 +144,7 @@ export async function browseSharedContent({
   subCategoryId?: number;
   classificationId?: number;
   isUnclassified?: boolean;
-  features?: Set<string>;
+  categories?: Set<string>;
   ownerId?: Uint8Array;
   page?: number;
 }) {
@@ -176,7 +176,8 @@ export async function browseSharedContent({
           }
         : undefined;
 
-  const featuresToRequire = features === undefined ? [] : [...features.keys()];
+  const categoriesToRequire =
+    categories === undefined ? [] : [...categories.keys()];
 
   const preliminarySharedContent = await prisma.content.findMany({
     where: {
@@ -186,8 +187,8 @@ export async function browseSharedContent({
         { isPublic: true },
         { sharedWith: { some: { userId: loggedInUserId } } },
       ],
-      AND: featuresToRequire.map((feature) => ({
-        contentFeatures: { some: { code: feature } },
+      AND: categoriesToRequire.map((category) => ({
+        categories: { some: { code: category } },
       })),
       ownerId,
       classifications: classificationsFilter,
@@ -217,7 +218,7 @@ export async function browseTrendingContent({
   subCategoryId,
   classificationId,
   isUnclassified,
-  features,
+  categories,
   ownerId,
   page = 1,
   pageSize = 100,
@@ -228,7 +229,7 @@ export async function browseTrendingContent({
   subCategoryId?: number;
   classificationId?: number;
   isUnclassified?: boolean;
-  features?: Set<string>;
+  categories?: Set<string>;
   ownerId?: Uint8Array;
   page?: number;
   pageSize?: number;
@@ -258,7 +259,7 @@ export async function browseTrendingContent({
   LEFT JOIN
     users ON content.ownerId = users.userId
   ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
-  ${returnFeatureJoins(features)}
+  ${returnCategoryJoins(categories)}
   LEFT JOIN
     contentViews ON contentViews.contentId = content.id
   WHERE
@@ -269,7 +270,7 @@ export async function browseTrendingContent({
        OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
     )
     ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
-    ${returnFeatureWhereClauses(features)}
+    ${returnCategoryWhereClauses(categories)}
     ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
   GROUP BY
     content.id
@@ -312,7 +313,7 @@ export async function searchUsersWithSharedContent({
   subCategoryId,
   classificationId,
   isUnclassified,
-  features,
+  categories,
   page = 1,
 }: {
   query: string;
@@ -322,7 +323,7 @@ export async function searchUsersWithSharedContent({
   subCategoryId?: number;
   classificationId?: number;
   isUnclassified?: boolean;
-  features?: Set<string>;
+  categories?: Set<string>;
   page?: number;
 }) {
   const pageSize = 100;
@@ -358,14 +359,14 @@ export async function searchUsersWithSharedContent({
       SELECT ownerId 
         FROM content 
         ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
-        ${returnFeatureJoins(features)}
+        ${returnCategoryJoins(categories)}
         WHERE
           isDeletedOn IS NULL AND (
             isPublic = TRUE
             OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
           )
           ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
-          ${returnFeatureWhereClauses(features)}
+          ${returnCategoryWhereClauses(categories)}
       
     )
     AND
@@ -392,7 +393,7 @@ export async function browseUsersWithSharedContent({
   subCategoryId,
   classificationId,
   isUnclassified,
-  features,
+  categories,
   take = 100,
   skip = 0,
 }: {
@@ -403,7 +404,7 @@ export async function browseUsersWithSharedContent({
   subCategoryId?: number;
   classificationId?: number;
   isUnclassified?: boolean;
-  features?: Set<string>;
+  categories?: Set<string>;
   take?: number;
   skip?: number;
 }) {
@@ -442,7 +443,7 @@ export async function browseUsersWithSharedContent({
           SELECT content.id
           FROM content
           ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
-          ${returnFeatureJoins(features)}
+          ${returnCategoryJoins(categories)}
           WHERE
             content.isDeletedOn IS NULL
             AND (
@@ -455,7 +456,7 @@ export async function browseUsersWithSharedContent({
               ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification, matchSubCategory, matchCategory, prependOperator: true, operator: "OR" })}
             )
             ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
-            ${returnFeatureWhereClauses(features)}
+            ${returnCategoryWhereClauses(categories)}
         )
       GROUP BY
         users.userId
@@ -494,7 +495,7 @@ export async function browseUsersWithSharedContent({
           SELECT content.id
           FROM content
           ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
-          ${returnFeatureJoins(features)}
+          ${returnCategoryJoins(categories)}
           WHERE
             content.isDeletedOn IS NULL
             AND (
@@ -502,7 +503,7 @@ export async function browseUsersWithSharedContent({
               OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
             )
             ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
-            ${returnFeatureWhereClauses(features)}
+            ${returnCategoryWhereClauses(categories)}
         )
       GROUP BY
         users.userId
@@ -529,7 +530,7 @@ export async function searchClassificationsWithSharedContent({
   systemId,
   categoryId,
   subCategoryId,
-  features,
+  categories,
   ownerId,
 }: {
   query: string;
@@ -537,7 +538,7 @@ export async function searchClassificationsWithSharedContent({
   systemId?: number;
   categoryId?: number;
   subCategoryId?: number;
-  features?: Set<string>;
+  categories?: Set<string>;
   ownerId?: Uint8Array;
 }): Promise<PartialContentClassification[]> {
   const query_as_prefixes = sanitizeQuery(query);
@@ -589,7 +590,7 @@ export async function searchClassificationsWithSharedContent({
   FROM
     content
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
-  ${returnFeatureJoins(features)}
+  ${returnCategoryJoins(categories)}
   WHERE
     content.isDeletedOn IS NULL
     AND (
@@ -602,7 +603,7 @@ export async function searchClassificationsWithSharedContent({
       OR classifications.code REGEXP ${queryRegEx}
     )
     ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId })}
-    ${returnFeatureWhereClauses(features)}
+    ${returnCategoryWhereClauses(categories)}
     ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
   GROUP BY
     classificationId, descriptionId
@@ -643,14 +644,14 @@ export async function searchClassificationSubCategoriesWithSharedContent({
   loggedInUserId,
   systemId,
   categoryId,
-  features,
+  categories,
   ownerId,
 }: {
   query: string;
   loggedInUserId: Uint8Array;
   systemId?: number;
   categoryId?: number;
-  features?: Set<string>;
+  categories?: Set<string>;
   ownerId?: Uint8Array;
 }): Promise<PartialContentClassification[]> {
   const query_as_prefixes = sanitizeQuery(query);
@@ -687,7 +688,7 @@ export async function searchClassificationSubCategoriesWithSharedContent({
   FROM
     content
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
-  ${returnFeatureJoins(features)}
+  ${returnCategoryJoins(categories)}
   WHERE
     content.isDeletedOn IS NULL
     AND (
@@ -697,7 +698,7 @@ export async function searchClassificationSubCategoriesWithSharedContent({
     AND
     ${returnClassificationMatchClauses({ query_as_prefixes, matchSubCategory: true })}
     ${returnClassificationFilterWhereClauses({ systemId, categoryId })}
-    ${returnFeatureWhereClauses(features)}
+    ${returnCategoryWhereClauses(categories)}
     ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
 
   GROUP BY
@@ -732,13 +733,13 @@ export async function searchClassificationCategoriesWithSharedContent({
   query,
   loggedInUserId,
   systemId,
-  features,
+  categories,
   ownerId,
 }: {
   query: string;
   loggedInUserId: Uint8Array;
   systemId?: number;
-  features?: Set<string>;
+  categories?: Set<string>;
   ownerId?: Uint8Array;
 }): Promise<PartialContentClassification[]> {
   const query_as_prefixes = sanitizeQuery(query);
@@ -772,7 +773,7 @@ export async function searchClassificationCategoriesWithSharedContent({
   FROM
     content
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
-  ${returnFeatureJoins(features)}
+  ${returnCategoryJoins(categories)}
   WHERE
     content.isDeletedOn IS NULL
     AND (
@@ -782,7 +783,7 @@ export async function searchClassificationCategoriesWithSharedContent({
     AND
     ${returnClassificationMatchClauses({ query_as_prefixes, matchCategory: true })}
     ${returnClassificationFilterWhereClauses({ systemId })}
-    ${returnFeatureWhereClauses(features)}
+    ${returnCategoryWhereClauses(categories)}
     ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
 
   GROUP BY
@@ -812,19 +813,20 @@ export async function searchClassificationCategoriesWithSharedContent({
 export async function browseClassificationSharedContent({
   loggedInUserId,
   classificationId,
-  features,
+  categories,
   ownerId,
   page = 1,
 }: {
   loggedInUserId: Uint8Array;
   classificationId: number;
-  features?: Set<string>;
+  categories?: Set<string>;
   ownerId?: Uint8Array;
   page?: number;
 }) {
   const pageSize = 100;
 
-  const featuresToRequire = features === undefined ? [] : [...features.keys()];
+  const categoriesToRequire =
+    categories === undefined ? [] : [...categories.keys()];
 
   // TODO: how do we sort these?
   const results = await prisma.content.findMany({
@@ -834,8 +836,8 @@ export async function browseClassificationSharedContent({
         { isPublic: true },
         { sharedWith: { some: { userId: loggedInUserId } } },
       ],
-      AND: featuresToRequire.map((feature) => ({
-        contentFeatures: { some: { code: feature } },
+      AND: categoriesToRequire.map((category) => ({
+        categories: { some: { code: category } },
       })),
       classifications: { some: { classificationId } },
       ownerId,
@@ -854,17 +856,18 @@ export async function browseClassificationSharedContent({
 export async function browseClassificationSubCategorySharedContent({
   loggedInUserId,
   subCategoryId,
-  features,
+  categories,
   ownerId,
 }: {
   loggedInUserId: Uint8Array;
   subCategoryId: number;
-  features?: Set<string>;
+  categories?: Set<string>;
   ownerId?: Uint8Array;
 }) {
   // TODO: how do we sort the content within each classification
 
-  const featuresToRequire = features === undefined ? [] : [...features.keys()];
+  const categoriesToRequire =
+    categories === undefined ? [] : [...categories.keys()];
 
   const preliminaryResults =
     await prisma.classificationSubCategories.findUniqueOrThrow({
@@ -897,8 +900,8 @@ export async function browseClassificationSubCategorySharedContent({
                       { isPublic: true },
                       { sharedWith: { some: { userId: loggedInUserId } } },
                     ],
-                    AND: featuresToRequire.map((feature) => ({
-                      contentFeatures: { some: { code: feature } },
+                    AND: categoriesToRequire.map((category) => ({
+                      categories: { some: { code: category } },
                     })),
                     ownerId,
                   },
@@ -922,8 +925,8 @@ export async function browseClassificationSubCategorySharedContent({
                         { isPublic: true },
                         { sharedWith: { some: { userId: loggedInUserId } } },
                       ],
-                      AND: featuresToRequire.map((feature) => ({
-                        contentFeatures: { some: { code: feature } },
+                      AND: categoriesToRequire.map((category) => ({
+                        categories: { some: { code: category } },
                       })),
                       ownerId,
                     },
@@ -965,15 +968,16 @@ export async function browseClassificationSubCategorySharedContent({
 export async function browseClassificationCategorySharedContent({
   loggedInUserId,
   categoryId,
-  features,
+  categories,
   ownerId,
 }: {
   loggedInUserId: Uint8Array;
   categoryId: number;
-  features?: Set<string>;
+  categories?: Set<string>;
   ownerId?: Uint8Array;
 }) {
-  const featuresToRequire = features === undefined ? [] : [...features.keys()];
+  const categoriesToRequire =
+    categories === undefined ? [] : [...categories.keys()];
 
   // TODO: how do we sort the content within each classification
 
@@ -995,8 +999,8 @@ export async function browseClassificationCategorySharedContent({
                           { isPublic: true },
                           { sharedWith: { some: { userId: loggedInUserId } } },
                         ],
-                        AND: featuresToRequire.map((feature) => ({
-                          contentFeatures: { some: { code: feature } },
+                        AND: categoriesToRequire.map((category) => ({
+                          categories: { some: { code: category } },
                         })),
                         ownerId,
                       },
@@ -1036,8 +1040,8 @@ export async function browseClassificationCategorySharedContent({
                           { isPublic: true },
                           { sharedWith: { some: { userId: loggedInUserId } } },
                         ],
-                        AND: featuresToRequire.map((feature) => ({
-                          contentFeatures: { some: { code: feature } },
+                        AND: categoriesToRequire.map((category) => ({
+                          categories: { some: { code: category } },
                         })),
                         ownerId,
                       },
@@ -1063,8 +1067,8 @@ export async function browseClassificationCategorySharedContent({
                               sharedWith: { some: { userId: loggedInUserId } },
                             },
                           ],
-                          AND: featuresToRequire.map((feature) => ({
-                            contentFeatures: { some: { code: feature } },
+                          AND: categoriesToRequire.map((category) => ({
+                            categories: { some: { code: category } },
                           })),
                           ownerId,
                         },
@@ -1112,13 +1116,13 @@ export async function browseClassificationsWithSharedContent({
   query,
   loggedInUserId,
   subCategoryId,
-  features,
+  categories,
   ownerId,
 }: {
   query?: string;
   loggedInUserId: Uint8Array;
   subCategoryId: number;
-  features?: Set<string>;
+  categories?: Set<string>;
   ownerId?: Uint8Array;
 }): Promise<PartialContentClassification[]> {
   let matches;
@@ -1171,7 +1175,7 @@ export async function browseClassificationsWithSharedContent({
     libraryActivityInfos ON content.id = libraryActivityInfos.contentId
   ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
-  ${returnFeatureJoins(features)}
+  ${returnCategoryJoins(categories)}
   WHERE
     content.isDeletedOn IS NULL
     AND (
@@ -1184,7 +1188,7 @@ export async function browseClassificationsWithSharedContent({
       ${ownerId === undefined ? Prisma.sql`OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
     )
     ${returnClassificationFilterWhereClauses({ subCategoryId })}
-    ${returnFeatureWhereClauses(features)}
+    ${returnCategoryWhereClauses(categories)}
     ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
   GROUP BY
     classifications.id, classificationDescriptions.id
@@ -1236,7 +1240,7 @@ export async function browseClassificationsWithSharedContent({
   LEFT JOIN
     libraryActivityInfos ON content.id = libraryActivityInfos.contentId
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
-  ${returnFeatureJoins(features)}
+  ${returnCategoryJoins(categories)}
   WHERE
     content.isDeletedOn IS NULL
     AND (
@@ -1244,7 +1248,7 @@ export async function browseClassificationsWithSharedContent({
        OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
     )
     ${returnClassificationFilterWhereClauses({ subCategoryId })}
-    ${returnFeatureWhereClauses(features)}
+    ${returnCategoryWhereClauses(categories)}
     ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
   GROUP BY
     classifications.id, classificationDescriptions.id
@@ -1286,13 +1290,13 @@ export async function browseClassificationSubCategoriesWithSharedContent({
   query,
   loggedInUserId,
   categoryId,
-  features,
+  categories,
   ownerId,
 }: {
   query?: string;
   loggedInUserId: Uint8Array;
   categoryId: number;
-  features?: Set<string>;
+  categories?: Set<string>;
   ownerId?: Uint8Array;
 }): Promise<PartialContentClassification[]> {
   let matches;
@@ -1337,7 +1341,7 @@ export async function browseClassificationSubCategoriesWithSharedContent({
     libraryActivityInfos ON content.id = libraryActivityInfos.contentId        
   ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
-  ${returnFeatureJoins(features)}
+  ${returnCategoryJoins(categories)}
   WHERE
     content.isDeletedOn IS NULL
     AND (
@@ -1351,7 +1355,7 @@ export async function browseClassificationSubCategoriesWithSharedContent({
       ${ownerId === undefined ? Prisma.sql`OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
     )
     ${returnClassificationFilterWhereClauses({ categoryId })}
-    ${returnFeatureWhereClauses(features)}
+    ${returnCategoryWhereClauses(categories)}
     ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
   GROUP BY
     classificationSubCategories.id
@@ -1396,7 +1400,7 @@ export async function browseClassificationSubCategoriesWithSharedContent({
   LEFT JOIN
     libraryActivityInfos ON content.id = libraryActivityInfos.contentId    
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
-  ${returnFeatureJoins(features)}
+  ${returnCategoryJoins(categories)}
   WHERE
     content.isDeletedOn IS NULL
     AND (
@@ -1404,7 +1408,7 @@ export async function browseClassificationSubCategoriesWithSharedContent({
        OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
     )
     ${returnClassificationFilterWhereClauses({ categoryId })}
-    ${returnFeatureWhereClauses(features)}
+    ${returnCategoryWhereClauses(categories)}
     ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
   GROUP BY
     classificationSubCategories.id
@@ -1440,13 +1444,13 @@ export async function browseClassificationCategoriesWithSharedContent({
   query,
   loggedInUserId,
   systemId,
-  features,
+  categories,
   ownerId,
 }: {
   query?: string;
   loggedInUserId: Uint8Array;
   systemId: number;
-  features?: Set<string>;
+  categories?: Set<string>;
   ownerId?: Uint8Array;
 }): Promise<PartialContentClassification[]> {
   let matches;
@@ -1487,7 +1491,7 @@ export async function browseClassificationCategoriesWithSharedContent({
       libraryActivityInfos ON content.id = libraryActivityInfos.contentId
   ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
-  ${returnFeatureJoins(features)}
+  ${returnCategoryJoins(categories)}
   WHERE
     content.isDeletedOn IS NULL
     AND (
@@ -1501,7 +1505,7 @@ export async function browseClassificationCategoriesWithSharedContent({
       ${ownerId === undefined ? Prisma.sql`OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
     )
     ${returnClassificationFilterWhereClauses({ systemId })}
-    ${returnFeatureWhereClauses(features)}
+    ${returnCategoryWhereClauses(categories)}
     ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
   GROUP BY
     classificationCategories.id
@@ -1541,7 +1545,7 @@ export async function browseClassificationCategoriesWithSharedContent({
   LEFT JOIN
     libraryActivityInfos ON content.id = libraryActivityInfos.contentId
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
-  ${returnFeatureJoins(features)}
+  ${returnCategoryJoins(categories)}
   WHERE
     content.isDeletedOn IS NULL
     AND (
@@ -1549,7 +1553,7 @@ export async function browseClassificationCategoriesWithSharedContent({
        OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
     )
     ${returnClassificationFilterWhereClauses({ systemId })}
-    ${returnFeatureWhereClauses(features)}
+    ${returnCategoryWhereClauses(categories)}
     ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
   GROUP BY
     classificationCategories.id
@@ -1580,12 +1584,12 @@ export async function browseClassificationCategoriesWithSharedContent({
 export async function browseClassificationSystemsWithSharedContent({
   query,
   loggedInUserId,
-  features,
+  categories,
   ownerId,
 }: {
   query?: string;
   loggedInUserId: Uint8Array;
-  features?: Set<string>;
+  categories?: Set<string>;
   ownerId?: Uint8Array;
 }): Promise<PartialContentClassification[]> {
   let matches;
@@ -1624,7 +1628,7 @@ export async function browseClassificationSystemsWithSharedContent({
       libraryActivityInfos ON content.id = libraryActivityInfos.contentId
   ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
-  ${returnFeatureJoins(features)}
+  ${returnCategoryJoins(categories)}
   WHERE
     content.isDeletedOn IS NULL
     AND (
@@ -1637,7 +1641,7 @@ export async function browseClassificationSystemsWithSharedContent({
       ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification: true, matchSubCategory: true, matchCategory: true, prependOperator: true, operator: "OR" })}
       ${ownerId === undefined ? Prisma.sql`OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
     )
-    ${returnFeatureWhereClauses(features)}
+    ${returnCategoryWhereClauses(categories)}
     ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
   GROUP BY
     classificationSystems.id
@@ -1675,14 +1679,14 @@ export async function browseClassificationSystemsWithSharedContent({
   LEFT JOIN
     libraryActivityInfos ON content.id = libraryActivityInfos.contentId    
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
-  ${returnFeatureJoins(features)}
+  ${returnCategoryJoins(categories)}
   WHERE
     content.isDeletedOn IS NULL
     AND (
        content.isPublic = TRUE
        OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
     )
-    ${returnFeatureWhereClauses(features)}
+    ${returnCategoryWhereClauses(categories)}
     ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
   GROUP BY
     classificationSystems.id
@@ -1725,7 +1729,7 @@ export async function getSharedContentMatchCount({
   subCategoryId,
   classificationId,
   isUnclassified,
-  features,
+  categories,
   ownerId,
 }: {
   query?: string;
@@ -1735,7 +1739,7 @@ export async function getSharedContentMatchCount({
   subCategoryId?: number;
   classificationId?: number;
   isUnclassified?: boolean;
-  features?: Set<string>;
+  categories?: Set<string>;
   ownerId?: Uint8Array;
 }): Promise<{ numCommunity: number; numCurated: number }> {
   let matches;
@@ -1768,7 +1772,7 @@ export async function getSharedContentMatchCount({
       LEFT JOIN
         libraryActivityInfos ON content.id = libraryActivityInfos.contentId
       ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
-      ${returnFeatureJoins(features)}
+      ${returnCategoryJoins(categories)}
       WHERE
         content.isDeletedOn IS NULL
         AND (
@@ -1783,7 +1787,7 @@ export async function getSharedContentMatchCount({
           ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification, matchSubCategory, matchCategory, prependOperator: true, operator: "OR" })}
         )
         ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
-        ${returnFeatureWhereClauses(features)}
+        ${returnCategoryWhereClauses(categories)}
         ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
       `);
   } else {
@@ -1811,7 +1815,7 @@ export async function getSharedContentMatchCount({
       LEFT JOIN
         libraryActivityInfos ON content.id = libraryActivityInfos.contentId
       ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
-      ${returnFeatureJoins(features)}
+      ${returnCategoryJoins(categories)}
       WHERE
         content.isDeletedOn IS NULL
         AND (
@@ -1819,7 +1823,7 @@ export async function getSharedContentMatchCount({
            OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
         )
         ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
-        ${returnFeatureWhereClauses(features)}
+        ${returnCategoryWhereClauses(categories)}
         ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
       `);
   }
@@ -1834,7 +1838,7 @@ export async function getSharedContentMatchCount({
 }
 
 // TODO: add test
-export async function getSharedContentMatchCountPerAvailableFeature({
+export async function getSharedContentMatchCountPerAvailableCategory({
   query,
   loggedInUserId,
   systemId,
@@ -1842,7 +1846,7 @@ export async function getSharedContentMatchCountPerAvailableFeature({
   subCategoryId,
   classificationId,
   isUnclassified,
-  features,
+  categories,
   ownerId,
 }: {
   query?: string;
@@ -1852,15 +1856,15 @@ export async function getSharedContentMatchCountPerAvailableFeature({
   subCategoryId?: number;
   classificationId?: number;
   isUnclassified?: boolean;
-  features?: Set<string>;
+  categories?: Set<string>;
   ownerId?: Uint8Array;
 }): Promise<Record<string, { numCommunity?: number; numCurated?: number }>> {
-  const matchesPerFeature: Record<
+  const matchesPerCategory: Record<
     string,
     { numCommunity?: number; numCurated?: number }
   > = {};
 
-  const { availableFeatures } = await getAvailableContentFeatures();
+  const { availableCategories } = await getAvailableCategories();
 
   if (query) {
     const query_as_prefixes = sanitizeQuery(query);
@@ -1874,9 +1878,9 @@ export async function getSharedContentMatchCountPerAvailableFeature({
     const includeSubCategory = matchSubCategory;
     const includeCategory = matchCategory;
 
-    for (const feature of availableFeatures) {
-      const newFeatures = new Set(features);
-      newFeatures.add(feature.code);
+    for (const category of availableCategories) {
+      const newCategories = new Set(categories);
+      newCategories.add(category.code);
 
       const matches = await prisma.$queryRaw<
         {
@@ -1894,7 +1898,7 @@ export async function getSharedContentMatchCountPerAvailableFeature({
       LEFT JOIN
         libraryActivityInfos ON content.id = libraryActivityInfos.contentId
       ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
-      ${returnFeatureJoins(newFeatures)}
+      ${returnCategoryJoins(newCategories)}
       WHERE
         content.isDeletedOn IS NULL
         AND (
@@ -1909,14 +1913,14 @@ export async function getSharedContentMatchCountPerAvailableFeature({
           ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification, matchSubCategory, matchCategory, prependOperator: true, operator: "OR" })}
         )
         ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
-        ${returnFeatureWhereClauses(newFeatures)}
+        ${returnCategoryWhereClauses(newCategories)}
         ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
       `);
 
       if (matches.length > 0) {
         const numTotal = Number(matches[0].numContent);
         const numCurated = Number(matches[0].numCurated);
-        matchesPerFeature[feature.code] = {
+        matchesPerCategory[category.code] = {
           numCommunity: numTotal - numCurated,
           numCurated: numCurated,
         };
@@ -1931,9 +1935,9 @@ export async function getSharedContentMatchCountPerAvailableFeature({
       !includeClassification && categoryId !== undefined;
     const includeCategory = !includeSubCategory && systemId !== undefined;
 
-    for (const feature of availableFeatures) {
-      const newFeatures = new Set(features);
-      newFeatures.add(feature.code);
+    for (const category of availableCategories) {
+      const newCategories = new Set(categories);
+      newCategories.add(category.code);
 
       const matches = await prisma.$queryRaw<
         {
@@ -1951,7 +1955,7 @@ export async function getSharedContentMatchCountPerAvailableFeature({
       LEFT JOIN
         libraryActivityInfos ON content.id = libraryActivityInfos.contentId
       ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
-      ${returnFeatureJoins(newFeatures)}
+      ${returnCategoryJoins(newCategories)}
       WHERE
         content.isDeletedOn IS NULL
         AND (
@@ -1959,20 +1963,20 @@ export async function getSharedContentMatchCountPerAvailableFeature({
            OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
         )
         ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
-        ${returnFeatureWhereClauses(newFeatures)}
+        ${returnCategoryWhereClauses(newCategories)}
         ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
       `);
       if (matches.length > 0) {
         const numTotal = Number(matches[0].numContent);
         const numCurated = Number(matches[0].numCurated);
-        matchesPerFeature[feature.code] = {
+        matchesPerCategory[category.code] = {
           numCommunity: numTotal - numCurated,
           numCurated: numCurated,
         };
       }
     }
   }
-  return matchesPerFeature;
+  return matchesPerCategory;
 }
 
 export async function searchExplore({
@@ -1983,7 +1987,7 @@ export async function searchExplore({
   subCategoryId,
   classificationId,
   isUnclassified,
-  features,
+  categories,
   ownerId,
 }: {
   loggedInUserId?: Uint8Array;
@@ -1993,7 +1997,7 @@ export async function searchExplore({
   subCategoryId?: number;
   classificationId?: number;
   isUnclassified?: boolean;
-  features?: Set<string>;
+  categories?: Set<string>;
   ownerId?: Uint8Array;
 }) {
   isUnclassified =
@@ -2013,7 +2017,7 @@ export async function searchExplore({
         subCategoryId,
         classificationId,
         isUnclassified,
-        features,
+        categories,
         take: 10,
       });
 
@@ -2027,7 +2031,7 @@ export async function searchExplore({
         subCategoryId,
         classificationId,
         isUnclassified,
-        features,
+        categories,
       });
 
   const authorInfo = ownerId ? await getAuthorInfo(ownerId) : null;
@@ -2041,7 +2045,7 @@ export async function searchExplore({
     subCategoryId,
     classificationId,
     isUnclassified,
-    features,
+    categories,
     ownerId,
   });
 
@@ -2054,7 +2058,7 @@ export async function searchExplore({
     subCategoryId,
     classificationId,
     isUnclassified,
-    features,
+    categories,
     ownerId,
   });
 
@@ -2085,7 +2089,7 @@ export async function searchExplore({
       systemId,
       categoryId,
       subCategoryId,
-      features,
+      categories,
       ownerId,
     });
 
@@ -2094,7 +2098,7 @@ export async function searchExplore({
         query,
         loggedInUserId,
         subCategoryId,
-        features,
+        categories,
         ownerId,
       });
     } else {
@@ -2104,7 +2108,7 @@ export async function searchExplore({
           loggedInUserId,
           systemId,
           categoryId,
-          features,
+          categories,
           ownerId,
         });
       if (categoryId !== undefined) {
@@ -2113,7 +2117,7 @@ export async function searchExplore({
             query,
             loggedInUserId,
             categoryId,
-            features,
+            categories,
             ownerId,
           });
       } else {
@@ -2122,7 +2126,7 @@ export async function searchExplore({
             query,
             loggedInUserId,
             systemId,
-            features,
+            categories,
             ownerId,
           });
 
@@ -2132,14 +2136,14 @@ export async function searchExplore({
               query,
               loggedInUserId,
               systemId,
-              features,
+              categories,
               ownerId,
             });
         } else {
           systemBrowse = await browseClassificationSystemsWithSharedContent({
             query,
             loggedInUserId,
-            features,
+            categories,
             ownerId,
           });
         }
@@ -2164,11 +2168,11 @@ export async function searchExplore({
     subCategoryId,
     classificationId,
     isUnclassified,
-    features,
+    categories,
     ownerId,
   });
 
-  const countByFeature = await getSharedContentMatchCountPerAvailableFeature({
+  const countByCategory = await getSharedContentMatchCountPerAvailableCategory({
     query,
     loggedInUserId,
     systemId,
@@ -2176,7 +2180,7 @@ export async function searchExplore({
     subCategoryId,
     classificationId,
     isUnclassified,
-    features,
+    categories,
     ownerId,
   });
 
@@ -2195,7 +2199,7 @@ export async function searchExplore({
     systemBrowse,
     classificationInfo,
     totalCount,
-    countByFeature,
+    countByCategory,
   };
 }
 
@@ -2206,7 +2210,7 @@ export async function browseExplore({
   subCategoryId,
   classificationId,
   isUnclassified,
-  features,
+  categories,
   ownerId,
 }: {
   loggedInUserId?: Uint8Array;
@@ -2215,7 +2219,7 @@ export async function browseExplore({
   subCategoryId?: number;
   classificationId?: number;
   isUnclassified?: boolean;
-  features?: Set<string>;
+  categories?: Set<string>;
   ownerId?: Uint8Array;
 }) {
   isUnclassified =
@@ -2234,7 +2238,7 @@ export async function browseExplore({
         subCategoryId,
         classificationId,
         isUnclassified,
-        features,
+        categories,
         take: 10,
       });
 
@@ -2248,7 +2252,7 @@ export async function browseExplore({
     subCategoryId,
     classificationId,
     isUnclassified,
-    features,
+    categories,
     ownerId,
   });
 
@@ -2260,7 +2264,7 @@ export async function browseExplore({
     subCategoryId,
     classificationId,
     isUnclassified,
-    features,
+    categories,
     ownerId,
   });
 
@@ -2282,7 +2286,7 @@ export async function browseExplore({
     subCategoryId,
     classificationId,
     isUnclassified,
-    features,
+    categories,
     ownerId,
     pageSize: 10,
   });
@@ -2297,7 +2301,7 @@ export async function browseExplore({
       classificationBrowse = await browseClassificationsWithSharedContent({
         loggedInUserId,
         subCategoryId,
-        features,
+        categories,
         ownerId,
       });
     } else {
@@ -2306,7 +2310,7 @@ export async function browseExplore({
           await browseClassificationSubCategoriesWithSharedContent({
             loggedInUserId,
             categoryId,
-            features,
+            categories,
             ownerId,
           });
       } else {
@@ -2315,13 +2319,13 @@ export async function browseExplore({
             await browseClassificationCategoriesWithSharedContent({
               loggedInUserId,
               systemId,
-              features,
+              categories,
               ownerId,
             });
         } else {
           systemBrowse = await browseClassificationSystemsWithSharedContent({
             loggedInUserId,
-            features,
+            categories,
             ownerId,
           });
         }
@@ -2345,18 +2349,18 @@ export async function browseExplore({
     subCategoryId,
     classificationId,
     isUnclassified,
-    features,
+    categories,
     ownerId,
   });
 
-  const countByFeature = await getSharedContentMatchCountPerAvailableFeature({
+  const countByCategory = await getSharedContentMatchCountPerAvailableCategory({
     loggedInUserId,
     systemId,
     categoryId,
     subCategoryId,
     classificationId,
     isUnclassified,
-    features,
+    categories,
     ownerId,
   });
 
@@ -2372,6 +2376,6 @@ export async function browseExplore({
     systemBrowse,
     classificationInfo,
     totalCount,
-    countByFeature,
+    countByCategory,
   };
 }

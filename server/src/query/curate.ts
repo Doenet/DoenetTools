@@ -15,7 +15,7 @@ import {
   searchMyContentOrLibraryContent,
 } from "./content_list";
 import { processContent, returnContentSelect } from "../utils/contentStructure";
-import { getAvailableContentFeatures } from "./classification";
+import { getAvailableCategories } from "./classification";
 import { getAllLicenses } from "./share";
 
 export async function mustBeEditor(
@@ -851,7 +851,7 @@ export async function getCurationQueue({
       cap: 100,
     });
 
-  const { availableFeatures } = await getAvailableContentFeatures();
+  const { availableCategories } = await getAvailableCategories();
   const { allDoenetmlVersions } = await getAllDoenetmlVersions();
   const { allLicenses } = await getAllLicenses();
 
@@ -864,7 +864,7 @@ export async function getCurationQueue({
     rejectedLibraryRelations,
     publishedContent,
     publishedLibraryRelations,
-    availableFeatures,
+    availableCategories,
     allDoenetmlVersions,
     allLicenses,
   };

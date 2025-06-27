@@ -6,7 +6,7 @@ import {
   createContent,
   deleteContent,
   updateContent,
-  updateContentFeatures,
+  updateCategories,
 } from "../query/activity";
 import {
   makeContentPublic,
@@ -1837,7 +1837,7 @@ test("copyContent copies content classifications", async () => {
   expect(activityData.activity!.classifications[0].id).eq(classifyId);
 });
 
-test("copyContent copies content features", async () => {
+test("copyContent copies content categories", async () => {
   const originalOwnerId = (await createTestUser()).userId;
   const newOwnerId = (await createTestUser()).userId;
   const { contentId: contentId1 } = await createContent({
@@ -1851,15 +1851,15 @@ test("copyContent copies content features", async () => {
     parentId: null,
   });
 
-  await updateContentFeatures({
+  await updateCategories({
     contentId: contentId1,
     loggedInUserId: originalOwnerId,
-    features: { isQuestion: true },
+    categories: { isQuestion: true },
   });
-  await updateContentFeatures({
+  await updateCategories({
     contentId: contentId2,
     loggedInUserId: originalOwnerId,
-    features: { containsVideo: true, isInteractive: true },
+    categories: { containsVideo: true, isInteractive: true },
   });
 
   await setContentIsPublic({
@@ -1892,16 +1892,16 @@ test("copyContent copies content features", async () => {
     contentId: newContentId1,
     loggedInUserId: newOwnerId,
   });
-  expect(activityData1.activity!.contentFeatures).toHaveLength(1);
-  expect(activityData1.activity!.contentFeatures[0].code).eq("isQuestion");
+  expect(activityData1.activity!.categories).toHaveLength(1);
+  expect(activityData1.activity!.categories[0].code).eq("isQuestion");
 
   const activityData2 = await getActivityEditorData({
     contentId: newContentId2,
     loggedInUserId: newOwnerId,
   });
-  expect(activityData2.activity!.contentFeatures).toHaveLength(2);
-  expect(activityData2.activity!.contentFeatures[0].code).eq("isInteractive");
-  expect(activityData2.activity!.contentFeatures[1].code).eq("containsVideo");
+  expect(activityData2.activity!.categories).toHaveLength(2);
+  expect(activityData2.activity!.categories[0].code).eq("isInteractive");
+  expect(activityData2.activity!.categories[1].code).eq("containsVideo");
 });
 
 test("check if content contains content type", async () => {

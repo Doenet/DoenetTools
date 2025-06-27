@@ -148,7 +148,7 @@ export function Carousel({
                   <Card
                     cardContent={cardObj}
                     showOwnerName={true}
-                    showActivityFeatures={true}
+                    showActivityCategories={true}
                   />
                 </SwiperSlide>
               );
