@@ -296,98 +296,6 @@ async function addClassificationFromData({
   }
 }
 
-async function addClassificationFromLinks({
-  name,
-  shortName,
-  categoryLabel,
-  subCategoryLabel,
-  descriptionLabel,
-  linkedFrom,
-  sortIndex,
-  type,
-  categoriesInDescription,
-}: {
-  name: string;
-  shortName: string;
-  categoryLabel: string;
-  subCategoryLabel: string;
-  descriptionLabel: string;
-  linkedFrom: string[];
-  sortIndex: number;
-  type: string;
-  categoriesInDescription: boolean;
-}) {
-  const systemId = await upsertClassificationSystem(
-    name,
-    shortName,
-    categoryLabel,
-    subCategoryLabel,
-    descriptionLabel,
-    sortIndex,
-    type,
-    categoriesInDescription,
-  );
-
-  for (const systemName of linkedFrom) {
-    const classificationsToCopy =
-      await prisma.classificationSystems.findUniqueOrThrow({
-        where: { name: systemName },
-        select: {
-          sortIndex: true,
-          categories: {
-            select: {
-              category: true,
-              sortIndex: true,
-              subCategories: {
-                select: {
-                  subCategory: true,
-                  sortIndex: true,
-                  descriptions: {
-                    select: {
-                      description: true,
-                      sortIndex: true,
-                      classification: {
-                        select: {
-                          id: true,
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      });
-
-    const sortIndexDiff = (sortIndex - classificationsToCopy.sortIndex) * 1000;
-
-    for (const category of classificationsToCopy.categories) {
-      const categoryId = await upsertClassificationCategory(
-        category.category,
-        systemId,
-        category.sortIndex + sortIndexDiff,
-      );
-      for (const subCategory of category.subCategories) {
-        const subCategoryId = await upsertClassificationSubCategory(
-          subCategory.subCategory,
-          categoryId,
-          subCategory.sortIndex + sortIndexDiff,
-        );
-        for (const description of subCategory.descriptions) {
-          await upsertClassificationDescription(
-            description.description,
-            description.classification.id,
-            subCategoryId,
-            description.sortIndex + sortIndexDiff,
-            false,
-          );
-        }
-      }
-    }
-  }
-}
-
 export async function seedClassifications() {
   await addClassificationFromData({
     name: "High school and college math",
@@ -423,18 +331,6 @@ export async function seedClassifications() {
     sortIndex: 11,
     type: "Standards",
     categoriesInDescription: false,
-  });
-
-  await addClassificationFromLinks({
-    name: "WeBWorK taxonomy",
-    shortName: "WeBWorK",
-    categoryLabel: "Subject",
-    subCategoryLabel: "Chapter",
-    descriptionLabel: "Section",
-    linkedFrom: ["High school and college math"],
-    sortIndex: 21,
-    type: "Other",
-    categoriesInDescription: true,
   });
 
   await addClassificationFromData({

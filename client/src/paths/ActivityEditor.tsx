@@ -53,7 +53,7 @@ import {
 import { ShareDrawer, shareDrawerActions } from "../drawers/ShareDrawer";
 import {
   Content,
-  ContentFeature,
+  ContentCategory,
   DoenetmlVersion,
   License,
   ContentDescription,
@@ -139,7 +139,7 @@ export async function loader({ params }: { params: any }) {
     data: {
       editableByMe,
       activity: activityData,
-      availableFeatures,
+      availableCategories,
       revisions,
       libraryRelations,
     },
@@ -189,7 +189,7 @@ export async function loader({ params }: { params: any }) {
       // supportingFileData,
       allDoenetmlVersions,
       allLicenses,
-      availableFeatures,
+      availableCategories,
       libraryRelations,
       revisions,
     };
@@ -205,7 +205,7 @@ export async function loader({ params }: { params: any }) {
       // supportingFileData,
       allDoenetmlVersions,
       allLicenses,
-      availableFeatures,
+      availableCategories,
       libraryRelations,
       revisions,
     };
@@ -264,7 +264,7 @@ export function ActivityEditor() {
     contentId: string;
     allDoenetmlVersions: DoenetmlVersion[];
     allLicenses: License[];
-    availableFeatures: ContentFeature[];
+    availableCategories: ContentCategory[];
     activityData: Content;
     addTo: ContentDescription | undefined;
     libraryRelations: LibraryRelations;
@@ -286,7 +286,7 @@ export function ActivityEditor() {
     activityData,
     allDoenetmlVersions,
     allLicenses,
-    availableFeatures,
+    availableCategories,
     libraryRelations,
     revisions,
   } = data;
@@ -474,7 +474,7 @@ export function ActivityEditor() {
       fetcher={fetcher}
       contentData={contentData}
       allDoenetmlVersions={allDoenetmlVersions}
-      availableFeatures={availableFeatures}
+      availableCategories={availableCategories}
       displayTab={displaySettingsTab}
       highlightRename={highlightRename}
       isInLibrary={libraryRelations.source !== undefined}

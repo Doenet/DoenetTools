@@ -20,8 +20,8 @@ import {
   NumberIncrementStepper,
   NumberDecrementStepper,
 } from "@chakra-ui/react";
-import { ContentFeature, Content, DoenetmlVersion } from "../types";
-import { activityFeatureIcons } from "../utils/activity";
+import { ContentCategory, Content, DoenetmlVersion } from "../types";
+import { activityCategoryIcons } from "../utils/activity";
 import { MdError } from "react-icons/md";
 
 export async function generalContentActions({ formObj }: { [k: string]: any }) {
@@ -70,14 +70,14 @@ export async function generalContentActions({ formObj }: { [k: string]: any }) {
       return {
         updatedSettingMessage: `updated Paginate to ${formObj.paginate}`,
       };
-    } else if (formObj?._action === "update feature") {
-      const addFeature = formObj.value === "true";
-      await axios.post("/api/updateContent/updateContentFeatures", {
+    } else if (formObj?._action === "update category") {
+      const addCategory = formObj.value === "true";
+      await axios.post("/api/updateContent/updateCategories", {
         contentId: formObj.contentId,
-        features: { [formObj.code]: addFeature },
+        categories: { [formObj.code]: addCategory },
       });
       return {
-        updatedSettingMessage: `${addFeature ? "added" : "removed"} activity feature: ${formObj.term}`,
+        updatedSettingMessage: `${addCategory ? "added" : "removed"} activity category: ${formObj.term}`,
       };
     }
   } catch (_e) {
@@ -90,14 +90,14 @@ export function GeneralContentControls({
   fetcher,
   contentData,
   allDoenetmlVersions,
-  availableFeatures,
+  availableCategories,
   highlightRename = false,
   isOpen,
 }: {
   fetcher: FetcherWithComponents<any>;
   contentData: Content;
   allDoenetmlVersions: DoenetmlVersion[];
-  availableFeatures: ContentFeature[];
+  availableCategories: ContentCategory[];
   highlightRename?: boolean;
   isOpen: boolean;
 }) {
@@ -135,8 +135,8 @@ export function GeneralContentControls({
   const lastAcceptedNameValue = useRef(name);
   const [nameIsInvalid, setNameIsInvalid] = useState(false);
 
-  const [selectedFeatures, setSelectedFeatures] = useState(
-    contentData.contentFeatures.map((feature) => feature.code),
+  const [selectedCategories, setSelectedCategories] = useState(
+    contentData.categories.map((category) => category.code),
   );
 
   const [doenetmlVersion, setDoenetmlVersion] = useState(doenetmlVersionInit);
@@ -269,48 +269,48 @@ export function GeneralContentControls({
 
       {contentData.type !== "folder" ? (
         <Box padding="10px" marginTop="20px">
-          <Heading size="sm">Activity features</Heading>
+          <Heading size="sm">Activity categories</Heading>
           <VStack alignItems="flex-start" gap={0}>
-            {availableFeatures.map((feature) => {
-              const isPresent = selectedFeatures.includes(feature.code);
-              const featureCode = feature.code as
+            {availableCategories.map((category) => {
+              const isPresent = selectedCategories.includes(category.code);
+              const categoryCode = category.code as
                 | "isQuestion"
                 | "isInteractive"
                 | "containsVideo";
               return (
                 <Checkbox
-                  key={feature.code}
+                  key={category.code}
                   marginTop="10px"
                   isChecked={isPresent}
-                  data-test={`${feature.code} Checkbox`}
+                  data-test={`${category.code} Checkbox`}
                   onChange={() => {
-                    setSelectedFeatures((was) => {
-                      const newFeatures = [...was];
-                      const ind = newFeatures.indexOf(feature.code);
+                    setSelectedCategories((was) => {
+                      const newCategories = [...was];
+                      const ind = newCategories.indexOf(category.code);
                       if (ind === -1) {
-                        newFeatures.push(feature.code);
+                        newCategories.push(category.code);
                       } else {
-                        newFeatures.splice(ind, 1);
+                        newCategories.splice(ind, 1);
                       }
-                      return newFeatures;
+                      return newCategories;
                     });
                     fetcher.submit(
                       {
-                        _action: "update feature",
+                        _action: "update category",
                         contentId: contentData.contentId,
-                        code: feature.code,
+                        code: category.code,
                         value: !isPresent,
-                        term: feature.term,
+                        term: category.term,
                       },
                       { method: "post" },
                     );
                   }}
                 >
-                  <Tooltip label={feature.description}>
-                    {feature.term}
+                  <Tooltip label={category.description}>
+                    {category.term}
                     <Icon
                       paddingLeft="5px"
-                      as={activityFeatureIcons[featureCode]}
+                      as={activityCategoryIcons[categoryCode]}
                       color="#666699"
                       boxSize={5}
                       verticalAlign="middle"

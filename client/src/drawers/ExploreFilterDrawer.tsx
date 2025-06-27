@@ -7,7 +7,7 @@ import {
   DrawerOverlay,
 } from "@chakra-ui/react";
 import {
-  ContentFeature,
+  ContentCategory,
   PartialContentClassification,
   UserInfo,
 } from "../types";
@@ -25,9 +25,9 @@ export function ExploreFilterDrawer({
   categoryBrowse,
   systemBrowse,
   classificationInfo,
-  countByFeature,
-  features,
-  availableFeatures,
+  countByCategory,
+  categories,
+  availableCategories,
   search,
   navigate,
 }: {
@@ -41,12 +41,12 @@ export function ExploreFilterDrawer({
   categoryBrowse: PartialContentClassification[] | null;
   systemBrowse: PartialContentClassification[] | null;
   classificationInfo: PartialContentClassification | null;
-  countByFeature: Record<
+  countByCategory: Record<
     string,
     { numCurated?: number; numCommunity?: number }
   >;
-  features: Set<string>;
-  availableFeatures: ContentFeature[];
+  categories: Set<string>;
+  availableCategories: ContentCategory[];
   search: string;
   navigate: NavigateFunction;
 }) {
@@ -71,9 +71,9 @@ export function ExploreFilterDrawer({
             categoryBrowse={categoryBrowse}
             systemBrowse={systemBrowse}
             classificationInfo={classificationInfo}
-            countByFeature={countByFeature}
-            features={features}
-            availableFeatures={availableFeatures}
+            countByCategory={countByCategory}
+            categories={categories}
+            availableCategories={availableCategories}
             search={search}
             navigate={navigate}
           />

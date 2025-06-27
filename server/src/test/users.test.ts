@@ -24,7 +24,7 @@ test("New user has no content", async () => {
     throw Error("shouldn't happen");
   }
   const {
-    availableFeatures,
+    availableCategories,
     allDoenetmlVersions,
     allLicenses,
     notMe,
