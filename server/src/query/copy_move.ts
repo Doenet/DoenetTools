@@ -447,7 +447,7 @@ async function copySingleContent({
         omit: { email: true },
       },
       classifications: true,
-      contentFeatures: true,
+      categories: true,
       children: {
         where: { isDeletedOn: null },
         select: { id: true, type: true },
@@ -491,7 +491,7 @@ async function copySingleContent({
 
     const {
       children,
-      contentFeatures,
+      categories,
       classifications,
       licenseCode: originalLicenseCode,
       owner,
@@ -514,8 +514,8 @@ async function copySingleContent({
             classificationId: c.classificationId,
           })),
         },
-        contentFeatures: {
-          connect: contentFeatures.map((cf) => ({ id: cf.id })),
+        categories: {
+          connect: categories.map((cf) => ({ id: cf.id })),
         },
         sharedWith: {
           create: desiredParentShares.map((u) => ({ userId: u })),

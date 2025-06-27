@@ -152,7 +152,7 @@ export type ContentBase = {
   // Content should ~almost always~ have a license.
   // The exception: content without license from old doenet website
   licenseCode: LicenseCode | null;
-  contentFeatures: {
+  categories: {
     id: number;
     code: string;
     term: string;
@@ -240,7 +240,7 @@ export async function createContentInfo({
     sharedWith: [],
     licenseCode: null,
     parent: null,
-    contentFeatures: [],
+    categories: [],
     classifications: [],
   };
 

@@ -40,7 +40,7 @@ import { CardContent } from "../widgets/Card";
 import { createNameNoTag, createNameCheckCurateTag } from "../utils/names";
 import {
   ContentDescription,
-  ContentFeature,
+  Category,
   Content,
   UserInfo,
   PartialContentClassification,
@@ -112,17 +112,17 @@ export async function loader({
   }
 
   const {
-    data: { allContentFeatures },
-  }: { data: { allContentFeatures: ContentFeature[] } } = await axios.get(
-    `/api/info/getAllContentFeatures`,
+    data: { allCategories },
+  }: { data: { allCategories: Category[] } } = await axios.get(
+    `/api/info/getAllCategories`,
   );
 
   const url = new URL(request.url);
 
-  const features: Set<string> = new Set();
-  for (const feature of allContentFeatures) {
-    if (url.searchParams.has(feature.code)) {
-      features.add(feature.code);
+  const categories: Set<string> = new Set();
+  for (const category of allCategories) {
+    if (url.searchParams.has(category.code)) {
+      categories.add(category.code);
     }
   }
 
@@ -136,7 +136,7 @@ export async function loader({
       `/api/explore/searchExplore`,
       {
         query: q,
-        features: [...features.keys()],
+        categories: [...categories.keys()],
         isUnclassified,
         systemId,
         categoryId,
@@ -149,14 +149,14 @@ export async function loader({
     return {
       q,
       ...searchData,
-      features,
-      allContentFeatures,
+      categories,
+      allCategories,
     };
   } else {
     const { data: browseData } = await axios.post(
       "/api/explore/browseExplore",
       {
-        features: [...features.keys()],
+        categories: [...categories.keys()],
         isUnclassified,
         systemId,
         categoryId,
@@ -169,8 +169,8 @@ export async function loader({
     return {
       ...browseData,
       content: browseData.recentContent,
-      features,
-      allContentFeatures,
+      categories,
+      allCategories,
     };
   }
 }
@@ -193,9 +193,9 @@ export function Explore() {
     systemBrowse,
     classificationInfo,
     totalCount,
-    countByFeature,
-    features,
-    allContentFeatures,
+    countByCategory,
+    categories,
+    allCategories,
   } = useLoaderData() as {
     q?: string;
     topAuthors: UserInfo[] | null;
@@ -213,12 +213,12 @@ export function Explore() {
     systemBrowse: PartialContentClassification[] | null;
     classificationInfo: PartialContentClassification | null;
     totalCount: { numCurated?: number; numCommunity?: number };
-    countByFeature: Record<
+    countByCategory: Record<
       string,
       { numCurated?: number; numCommunity?: number }
     >;
-    features: Set<string>;
-    allContentFeatures: ContentFeature[];
+    categories: Set<string>;
+    allCategories: Category[];
   };
 
   const {
@@ -290,9 +290,9 @@ export function Explore() {
       categoryBrowse={categoryBrowse}
       systemBrowse={systemBrowse}
       classificationInfo={classificationInfo}
-      countByFeature={countByFeature}
-      features={features}
-      allContentFeatures={allContentFeatures}
+      countByCategory={countByCategory}
+      categories={categories}
+      allCategories={allCategories}
       search={search}
       navigate={navigate}
     />
@@ -408,7 +408,7 @@ export function Explore() {
         <CardList
           showPublicStatus={false}
           showBlurb={false}
-          showActivityFeatures={true}
+          showActivityCategories={true}
           showOwnerName={true}
           content={cardContent}
           emptyMessage={"No Matches Found!"}
@@ -690,10 +690,10 @@ export function Explore() {
       />,
     );
   }
-  for (const feature of allContentFeatures) {
-    if (features.has(feature.code)) {
+  for (const category of allCategories) {
+    if (categories.has(category.code)) {
       extraFormInputs.push(
-        <Input type="hidden" name={feature.code} key={feature.code} />,
+        <Input type="hidden" name={category.code} key={category.code} />,
       );
     }
   }
@@ -703,7 +703,7 @@ export function Explore() {
     );
   }
 
-  let numActiveFilters = features.size;
+  let numActiveFilters = categories.size;
 
   if (classificationInfo) {
     // add one for system or unclassified
@@ -977,9 +977,9 @@ export function Explore() {
               categoryBrowse={categoryBrowse}
               systemBrowse={systemBrowse}
               classificationInfo={classificationInfo}
-              countByFeature={countByFeature}
-              features={features}
-              allContentFeatures={allContentFeatures}
+              countByCategory={countByCategory}
+              categories={categories}
+              allCategories={allCategories}
               search={search}
               navigate={navigate}
             />

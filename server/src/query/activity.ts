@@ -385,20 +385,20 @@ export async function updateContent({
 }
 
 /**
- * Add or remove the content features specified in `features` to the content with `contentId`.
+ * Add or remove the content categories specified in `categories` to the content with `contentId`.
  *
  * For the change to succeed, either
  * - the content must be owned by `loggedInUserId`, or
  * - the content must be in the library and `loggedInUserId` must be an editor.
  */
-export async function updateContentFeatures({
+export async function updateCategories({
   contentId,
   loggedInUserId,
-  features,
+  categories,
 }: {
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
-  features: Record<string, boolean>;
+  categories: Record<string, boolean>;
 }) {
   const isEditor = await getIsEditor(loggedInUserId);
   await prisma.content.update({
@@ -407,11 +407,11 @@ export async function updateContentFeatures({
       ...filterEditableContent(loggedInUserId, isEditor),
     },
     data: {
-      contentFeatures: {
-        connect: Object.entries(features)
+      categories: {
+        connect: Object.entries(categories)
           .filter(([_, val]) => val)
           .map(([code, _]) => ({ code })),
-        disconnect: Object.entries(features)
+        disconnect: Object.entries(categories)
           .filter(([_, val]) => !val)
           .map(([code, _]) => ({ code })),
       },

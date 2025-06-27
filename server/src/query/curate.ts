@@ -16,7 +16,7 @@ import {
   searchMyContentOrLibraryContent,
 } from "./content_list";
 import { processContent, returnContentSelect } from "../utils/contentStructure";
-import { getAllContentFeatures } from "./classification";
+import { getAllCategories } from "./classification";
 import { getAllLicenses } from "./license";
 import { InvalidRequestError } from "../utils/error";
 
@@ -851,7 +851,7 @@ export async function getCurationQueue({
       cap: 100,
     });
 
-  const { allContentFeatures } = await getAllContentFeatures();
+  const { allCategories } = await getAllCategories();
   const { allDoenetmlVersions } = await getAllDoenetmlVersions();
   const { allLicenses } = await getAllLicenses();
 
@@ -864,7 +864,7 @@ export async function getCurationQueue({
     rejectedLibraryRelations,
     publishedContent,
     publishedLibraryRelations,
-    allContentFeatures,
+    allCategories,
     allDoenetmlVersions,
     allLicenses,
   };

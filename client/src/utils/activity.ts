@@ -19,9 +19,9 @@ import React, { ReactElement } from "react";
 import { Icon } from "@chakra-ui/react";
 
 /**
- * Content feature icons. Displayed in this order.
+ * Content category icons. Displayed in this order.
  */
-export const activityFeatureIcons = {
+export const activityCategoryIcons = {
   isQuestion: TbPuzzle,
   isInteractive: MdOutlineSwipeLeft,
   containsVideo: MdOutlineOndemandVideo,

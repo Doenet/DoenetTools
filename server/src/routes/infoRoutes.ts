@@ -1,5 +1,5 @@
 import express, { NextFunction, Request, Response } from "express";
-import { getAllContentFeatures } from "../query/classification";
+import { getAllCategories } from "../query/classification";
 import {
   getAllDoenetmlVersions,
   getContentDescription,
@@ -19,8 +19,8 @@ import { getRecentContent } from "../query/recent";
 export const infoRouter = express.Router();
 
 infoRouter.get(
-  "/getAllContentFeatures",
-  queryOptionalLoggedInNoArguments(getAllContentFeatures),
+  "/getAllCategories",
+  queryOptionalLoggedInNoArguments(getAllCategories),
 );
 
 infoRouter.get(

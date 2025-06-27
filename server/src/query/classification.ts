@@ -11,7 +11,7 @@ import {
   returnClassificationJoins,
   returnClassificationMatchClauses,
   sortClassifications,
-} from "../utils/classificationsFeatures";
+} from "../utils/classificationsCategories";
 import { returnClassificationListSelect } from "../utils/contentStructure";
 import {
   filterEditableActivity,
@@ -429,9 +429,9 @@ export async function getClassificationInfo({
   }
 }
 
-export async function getAllContentFeatures() {
-  const allContentFeatures = await prisma.contentFeatures.findMany({
+export async function getAllCategories() {
+  const allCategories = await prisma.categories.findMany({
     orderBy: { sortIndex: "asc" },
   });
-  return { allContentFeatures };
+  return { allCategories };
 }

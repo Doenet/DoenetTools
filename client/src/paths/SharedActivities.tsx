@@ -323,7 +323,7 @@ export function SharedActivities() {
       showOwnerName={false}
       showBlurb={false}
       showPublicStatus={false}
-      showActivityFeatures={true}
+      showActivityCategories={true}
       emptyMessage={"No Activities Yet"}
       content={cardContent}
       selectedCards={user ? selectedCards : undefined}

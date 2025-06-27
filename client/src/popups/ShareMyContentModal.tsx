@@ -230,7 +230,7 @@ function SharePublicly({
       </>
     );
   } else {
-    const disableSubmit = settings.contentFeatures.length === 0;
+    const disableSubmit = settings.categories.length === 0;
 
     return (
       <Box>

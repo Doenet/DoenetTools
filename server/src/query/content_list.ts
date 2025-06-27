@@ -7,13 +7,13 @@ import {
 } from "../utils/permissions";
 import { processContent, returnContentSelect } from "../utils/contentStructure";
 import { Content } from "../types";
-import { getAllContentFeatures } from "./classification";
+import { getAllCategories } from "./classification";
 import { sanitizeQuery } from "../utils/search";
 import { Prisma } from "@prisma/client";
 import {
   returnClassificationJoins,
   returnClassificationMatchClauses,
-} from "../utils/classificationsFeatures";
+} from "../utils/classificationsCategories";
 import { fromUUID, isEqualUUID } from "../utils/uuid";
 import { getAllDoenetmlVersions } from "./activity";
 import { getAllLicenses } from "./license";
@@ -107,7 +107,7 @@ export async function getMyContentOrLibraryContent({
   });
 
   //TODO: Does this API need to provide this extra data?
-  const { allContentFeatures } = await getAllContentFeatures();
+  const { allCategories } = await getAllCategories();
   const { allDoenetmlVersions } = await getAllDoenetmlVersions();
   const { allLicenses } = await getAllLicenses();
 
@@ -119,7 +119,7 @@ export async function getMyContentOrLibraryContent({
     content,
     parent,
     libraryRelations,
-    allContentFeatures,
+    allCategories,
     allDoenetmlVersions,
     allLicenses,
     notMe: false as const,
@@ -264,7 +264,7 @@ export async function searchMyContentOrLibraryContent({
   });
 
   //TODO: Do we need this extra data in this API?
-  const { allContentFeatures } = await getAllContentFeatures();
+  const { allCategories } = await getAllCategories();
   const { allDoenetmlVersions } = await getAllDoenetmlVersions();
   const { allLicenses } = await getAllLicenses();
 
@@ -272,7 +272,7 @@ export async function searchMyContentOrLibraryContent({
     content,
     parent,
     libraryRelations,
-    allContentFeatures,
+    allCategories,
     allDoenetmlVersions,
     allLicenses,
     notMe: false as const,

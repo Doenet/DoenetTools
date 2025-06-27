@@ -90,7 +90,7 @@ export type UserInfoWithEmail = UserInfo & {
   email: string;
 };
 
-export type ContentFeature = {
+export type Category = {
   id: number;
   code: string;
   description: string;
@@ -167,7 +167,7 @@ export type ContentBase = {
   // Content should ~almost always~ have a license.
   // The exception: content without license from old doenet website
   licenseCode: LicenseCode | null;
-  contentFeatures: {
+  categories: {
     id: number;
     code: string;
     term: string;

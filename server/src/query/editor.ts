@@ -177,7 +177,7 @@ export async function getEditorSettings({
             mode: true,
           },
         },
-        contentFeatures: {
+        categories: {
           select: {
             code: true,
           },

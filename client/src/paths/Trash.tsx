@@ -143,7 +143,7 @@ export function Trash() {
       showOwnerName={false}
       showBlurb={true}
       showPublicStatus={false}
-      showActivityFeatures={true}
+      showActivityCategories={true}
       emptyMessage={emptyMessage}
       content={cardContent}
     />

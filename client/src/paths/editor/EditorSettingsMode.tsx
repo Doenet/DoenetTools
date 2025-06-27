@@ -8,7 +8,7 @@ import {
 import {
   AssignmentMode,
   ContentClassification,
-  ContentFeature,
+  Category,
   DoenetmlVersion,
   LicenseCode,
 } from "../../types";
@@ -30,7 +30,7 @@ import { optimistic } from "../../utils/optimistic_ui";
 import { processRemixes } from "../../utils/processRemixes";
 import { EditorContext } from "./EditorHeader";
 import { EditAssignmentSettings } from "../../widgets/editor/EditAssignmentSettings";
-import { EditContentFeatures } from "../../widgets/editor/EditContentFeatures";
+import { EditCategories } from "../../widgets/editor/EditCategories";
 import { EditClassifications } from "../../widgets/editor/EditClassifications";
 import { EditLicense } from "../../widgets/editor/EditLicense";
 import { AuthorLicenseBox } from "../../widgets/Licenses";
@@ -41,8 +41,8 @@ export async function loader({ params }: { params: any }) {
   );
 
   const {
-    data: { allContentFeatures },
-  } = await axios.get(`/api/info/getAllContentFeatures/`);
+    data: { allCategories },
+  } = await axios.get(`/api/info/getAllCategories/`);
 
   // TODO: Add this information to `getEditorSettingsModeData` query
   // and return only the info we need
@@ -60,10 +60,10 @@ export async function loader({ params }: { params: any }) {
     maxAttempts: data.maxAttempts,
     individualizeByStudent: data.individualizeByStudent,
     licenseCode: data.licenseCode,
-    contentFeatures: data.contentFeatures,
+    categories: data.categories,
     classifications: data.classifications,
     remixSourceLicenseCode,
-    allContentFeatures,
+    allCategories,
   };
 
   if (data.doenetmlVersionId) {
@@ -89,10 +89,10 @@ export function EditorSettingsMode() {
     maxAttempts,
     individualizeByStudent,
     licenseCode,
-    contentFeatures,
+    categories,
     classifications,
     remixSourceLicenseCode,
-    allContentFeatures,
+    allCategories,
     doenetmlVersionId,
   } = useLoaderData() as {
     isPublic: boolean;
@@ -102,10 +102,10 @@ export function EditorSettingsMode() {
     maxAttempts: number;
     individualizeByStudent: boolean;
     licenseCode: LicenseCode | null;
-    contentFeatures: ContentFeature[];
+    categories: Category[];
     classifications: ContentClassification[];
     remixSourceLicenseCode: LicenseCode | null;
-    allContentFeatures: ContentFeature[];
+    allCategories: Category[];
     doenetmlVersionId?: number;
   };
 
@@ -140,9 +140,9 @@ export function EditorSettingsMode() {
             </Alert>
           )}
           <Box ml="1rem">
-            <EditContentFeatures
-              contentFeatures={contentFeatures}
-              allContentFeatures={allContentFeatures}
+            <EditCategories
+              categories={categories}
+              allCategories={allCategories}
             />
           </Box>
         </Box>

@@ -95,7 +95,7 @@ test("New activity starts out private, then delete it", async () => {
   expect(settings).eqls({
     licenseCode: "CCDUAL",
     licenseIsEditable: true,
-    contentFeatures: [],
+    categories: [],
     classifications: [],
     doenetmlVersionId: currentDoenetmlVersion.id,
   });
@@ -789,7 +789,7 @@ test("activity editor data and my folder contents before and after assigned", as
     loggedInUserId: ownerId,
   });
   expect(settings).eqls({
-    contentFeatures: [],
+    categories: [],
     licenseIsEditable: true,
     licenseCode: "CCDUAL",
     classifications: [],
@@ -812,7 +812,7 @@ test("activity editor data and my folder contents before and after assigned", as
     name: "Untitled Document",
     ownerId,
     isPublic: false,
-    contentFeatures: [],
+    categories: [],
     isShared: false,
     sharedWith: [],
     numVariants: 1,
@@ -842,7 +842,7 @@ test("activity editor data and my folder contents before and after assigned", as
   });
   expect(settings2).eqls({
     assigned: true,
-    contentFeatures: [],
+    categories: [],
     licenseIsEditable: true,
     doenetmlVersionId: currentDoenetmlVersion.id,
     licenseCode: "CCDUAL",
@@ -879,7 +879,7 @@ test("activity editor data and my folder contents before and after assigned", as
       doenetmlVersion: currentDoenetmlVersion,
       parent: null,
       classifications: [],
-      contentFeatures: [],
+      categories: [],
       assignmentInfo: {
         assignmentStatus: "Open",
         classCode,
@@ -929,7 +929,7 @@ test("activity editor data and my folder contents before and after assigned", as
       doenetmlVersion: currentDoenetmlVersion,
       parent: null,
       classifications: [],
-      contentFeatures: [],
+      categories: [],
       assignmentInfo: {
         assignmentStatus: "Unassigned",
         classCode,
@@ -984,7 +984,7 @@ test("activity editor data and my folder contents before and after assigned", as
       doenetmlVersion: currentDoenetmlVersion,
       parent: null,
       classifications: [],
-      contentFeatures: [],
+      categories: [],
       assignmentInfo: {
         assignmentStatus: "Open",
         classCode,
@@ -1048,7 +1048,7 @@ test("activity editor data and my folder contents before and after assigned", as
       doenetmlVersion: currentDoenetmlVersion,
       parent: null,
       classifications: [],
-      contentFeatures: [],
+      categories: [],
       assignmentInfo: {
         assignmentStatus: "Open",
         classCode,
@@ -1098,7 +1098,7 @@ test("activity editor data and my folder contents before and after assigned", as
       doenetmlVersion: currentDoenetmlVersion,
       parent: null,
       classifications: [],
-      contentFeatures: [],
+      categories: [],
       assignmentInfo: {
         assignmentStatus: "Closed",
         classCode,

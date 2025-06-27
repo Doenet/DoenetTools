@@ -1,8 +1,16 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { seedClassifications } from "./seed/seed-classifications";
 
 export const prisma = new PrismaClient();
 async function main() {
+  await seedDoenetMLVersions();
+  await seedUsers();
+  await seedLicenses();
+  await seedCategories();
+  await seedClassifications();
+}
+
+async function seedDoenetMLVersions() {
   await prisma.doenetmlVersions.upsert({
     where: { displayedVersion: "0.6" },
     update: { fullVersion: "0.6.7" },
@@ -22,7 +30,9 @@ async function main() {
       default: true,
     },
   });
+}
 
+async function seedUsers() {
   await prisma.users.upsert({
     where: { email: "library@doenet.org" },
     update: {},
@@ -63,45 +73,9 @@ async function main() {
       isEditor: true,
     },
   });
+}
 
-  await prisma.promotedContentGroups.upsert({
-    where: { groupName: "Homepage" },
-    update: { currentlyFeatured: true, sortIndex: 0, homepage: true },
-    create: {
-      groupName: "Homepage",
-      currentlyFeatured: true,
-      sortIndex: 0,
-      homepage: true,
-    },
-  });
-  await prisma.promotedContentGroups.upsert({
-    where: { groupName: "Sample" },
-    update: { currentlyFeatured: true, sortIndex: 2 ** 32 },
-    create: {
-      groupName: "Sample",
-      currentlyFeatured: true,
-      sortIndex: 2 ** 32,
-    },
-  });
-  await prisma.promotedContentGroups.upsert({
-    where: { groupName: "K-12" },
-    update: { currentlyFeatured: true, sortIndex: 2 ** 32 * 3 },
-    create: {
-      groupName: "K-12",
-      currentlyFeatured: true,
-      sortIndex: 2 ** 32 * 3,
-    },
-  });
-  await prisma.promotedContentGroups.upsert({
-    where: { groupName: "Unfeatured" },
-    update: { currentlyFeatured: false, sortIndex: 2 ** 32 * 2 },
-    create: {
-      groupName: "Unfeatured",
-      currentlyFeatured: false,
-      sortIndex: 2 ** 32 * 2,
-    },
-  });
-
+async function seedLicenses() {
   await prisma.licenses.upsert({
     where: { code: "CCBYSA" },
     update: {
@@ -186,57 +160,166 @@ async function main() {
     update: {},
     create: { composedOfCode: "CCBYNCSA", includedInCode: "CCDUAL" },
   });
+}
 
-  await prisma.contentFeatures.upsert({
-    where: { code: "isQuestion" },
-    update: {
-      term: "Single question",
-      description:
-        "Activity is a single question suitable to add to an assessment.",
-      sortIndex: 1,
-    },
-    create: {
-      code: "isQuestion",
-      term: "Single question",
-      description:
-        "Activity is a single question suitable to add to an assessment.",
-      sortIndex: 1,
-    },
+async function seedCategories() {
+  async function updateOrCreateCategory(
+    category: Prisma.categoriesCreateInput,
+  ) {
+    await prisma.categories.upsert({
+      where: { code: category.code },
+      update: category,
+      create: category,
+    });
+  }
+
+  const categoryType = await prisma.categoryGroups.upsert({
+    where: { name: "Type" },
+    update: { name: "Type" },
+    create: { name: "Type" },
+  });
+  await updateOrCreateCategory({
+    group: { connect: { id: categoryType.id } },
+    code: "isProblemSet",
+    term: "Problem set",
+    description: "Activity is a problem set.",
+    sortIndex: 1,
+  });
+  await updateOrCreateCategory({
+    group: { connect: { id: categoryType.id } },
+    code: "isQuestion",
+    term: "Single question",
+    description:
+      "Activity is a single question suitable to add to an assessment.",
+    sortIndex: 2,
+  });
+  // We will possibly add these later:
+  // - Course (sortIndex 3)
+  // - Chapter (sortIndex 4)
+  await updateOrCreateCategory({
+    group: { connect: { id: categoryType.id } },
+    code: "isWidget",
+    term: "Widget",
+    description: "Activity is a widget that can be reused in other documents.",
+    sortIndex: 5,
   });
 
-  await prisma.contentFeatures.upsert({
-    where: { code: "isInteractive" },
-    update: {
-      term: "Interactive",
-      description:
-        "Activity contains interactives, such as draggable graphics.",
-      sortIndex: 2,
-    },
-    create: {
-      code: "isInteractive",
-      term: "Interactive",
-      description:
-        "Activity contains interactives, such as draggable graphics.",
-      sortIndex: 2,
-    },
+  const categoryMode = await prisma.categoryGroups.upsert({
+    where: { name: "Mode" },
+    update: { name: "Mode" },
+    create: { name: "Mode" },
+  });
+  await updateOrCreateCategory({
+    group: { connect: { id: categoryMode.id } },
+    code: "isAssessment",
+    term: "Assessment",
+    description: "Activity is an assessment suitable to assign to students.",
+    sortIndex: 1,
+  });
+  await updateOrCreateCategory({
+    group: { connect: { id: categoryMode.id } },
+    code: "isPractice",
+    term: "Practice",
+    description: "Activity is suitable to be used as practice.",
+    sortIndex: 2,
+  });
+  await updateOrCreateCategory({
+    group: { connect: { id: categoryMode.id } },
+    code: "isExploration",
+    term: "Exploration",
+    // TODO: better description
+    description: "Activity is an exploration.",
+    sortIndex: 3,
+  });
+  await updateOrCreateCategory({
+    group: { connect: { id: categoryMode.id } },
+    code: "isDemonstration",
+    term: "Demonstration",
+    description:
+      "Activity is a demonstration that can be used to show students a concept.",
+    sortIndex: 4,
   });
 
-  await prisma.contentFeatures.upsert({
-    where: { code: "containsVideo" },
-    update: {
-      term: "Video",
-      description: "Activity contains videos.",
-      sortIndex: 3,
-    },
-    create: {
-      code: "containsVideo",
-      term: "Video",
-      description: "Activity contains videos.",
-      sortIndex: 3,
-    },
+  const categorySetting = await prisma.categoryGroups.upsert({
+    where: { name: "Setting" },
+    update: { name: "Setting" },
+    create: { name: "Setting" },
+  });
+  await updateOrCreateCategory({
+    group: { connect: { id: categorySetting.id } },
+    code: "forInClass",
+    term: "In-class",
+    description: "Activity is meant to be done in class.",
+    sortIndex: 1,
+  });
+  await updateOrCreateCategory({
+    group: { connect: { id: categorySetting.id } },
+    code: "forPreClass",
+    term: "Pre-class",
+    description: "Activity is meant to be done before class.",
+    sortIndex: 2,
+  });
+  await updateOrCreateCategory({
+    group: { connect: { id: categorySetting.id } },
+    code: "forHomework",
+    term: "Homework",
+    description: "Activity is meant to be done after class as homework.",
+    sortIndex: 3,
   });
 
-  await seedClassifications();
+  const categoryDuration = await prisma.categoryGroups.upsert({
+    where: { name: "Duration" },
+    update: { name: "Duration" },
+    create: { name: "Duration" },
+  });
+  await updateOrCreateCategory({
+    group: { connect: { id: categoryDuration.id } },
+    code: "takesLessThanFiveMinutes",
+    term: "Less than 5 minutes",
+    description: "Activity can be completed within 5 minutes.",
+    sortIndex: 1,
+  });
+  await updateOrCreateCategory({
+    group: { connect: { id: categoryDuration.id } },
+    code: "takesFiveToTwentyMinutes",
+    term: "5-20 minutes",
+    description: "Activity can be completed in 5 to 20 minutes.",
+    sortIndex: 2,
+  });
+  await updateOrCreateCategory({
+    group: { connect: { id: categoryDuration.id } },
+    code: "takesMoreThanTwentyMinutes",
+    term: "More than 20 minutes",
+    description: "Activity will take at least 20 minutes to be completed.",
+    sortIndex: 3,
+  });
+
+  const categoryCategory = await prisma.categoryGroups.upsert({
+    where: { name: "Feature" },
+    update: { name: "Feature" },
+    create: { name: "Feature" },
+  });
+  await updateOrCreateCategory({
+    group: { connect: { id: categoryCategory.id } },
+    code: "isInteractive",
+    term: "Interactive",
+    description: "Activity contains interactives, such as draggable graphics.",
+    sortIndex: 1,
+  });
+  await updateOrCreateCategory({
+    group: { connect: { id: categoryCategory.id } },
+    code: "containsVideo",
+    term: "Video",
+    description: "Activity contains videos.",
+    sortIndex: 2,
+  });
+  await updateOrCreateCategory({
+    group: { connect: { id: categoryCategory.id } },
+    code: "isAnimation",
+    term: "Animation",
+    description: "Activity contains animations.",
+    sortIndex: 3,
+  });
 }
 
 main()

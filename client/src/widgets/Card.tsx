@@ -24,7 +24,7 @@ import { Content, ContentDescription } from "../types";
 import { FaEllipsisVertical } from "react-icons/fa6";
 import { BsPeople } from "react-icons/bs";
 import {
-  activityFeatureIcons,
+  activityCategoryIcons,
   contentTypeToName,
   getIconInfo,
 } from "../utils/activity";
@@ -52,7 +52,7 @@ export default function Card({
   showOwnerName = false,
   showBlurb = false,
   showPublicStatus = false,
-  showActivityFeatures = false,
+  showActivityCategories = false,
   showAddButton = false,
   showLibraryEditor = false,
   indentLevel = 0,
@@ -68,7 +68,7 @@ export default function Card({
   showOwnerName?: boolean;
   showBlurb?: boolean;
   showPublicStatus?: boolean;
-  showActivityFeatures?: boolean;
+  showActivityCategories?: boolean;
   showAddButton?: boolean;
   showLibraryEditor?: boolean;
   indentLevel?: number;
@@ -93,7 +93,7 @@ export default function Card({
     isPublic,
     isShared,
     licenseCode,
-    contentFeatures,
+    categories,
     type: contentType,
     parent,
   } = cardContent.content;
@@ -118,7 +118,7 @@ export default function Card({
   const libraryEditorWidth = "20rem";
 
   const contentTypeIconSize = "1.6rem";
-  const featureIconSize = "1.2rem";
+  const categoryIconSize = "1.2rem";
   const sharedIconSize = "1.2rem";
   const variantsIconHeight = "1.6rem";
   const variantsBadgeWidth = "3.5rem";
@@ -163,24 +163,24 @@ export default function Card({
     </Tooltip>
   );
 
-  // Feature icons
-  const featureIcons: ReactElement[] = [];
-  if (showActivityFeatures) {
-    for (const [featureCode, featureIcon] of Object.entries(
-      activityFeatureIcons,
+  // Category icons
+  const categoryIcons: ReactElement[] = [];
+  if (showActivityCategories) {
+    for (const [categoryCode, categoryIcon] of Object.entries(
+      activityCategoryIcons,
     )) {
-      const id = contentFeatures.findIndex((f) => f.code === featureCode);
+      const id = categories.findIndex((f) => f.code === categoryCode);
       if (id === -1) {
-        featureIcons.push(<Flex width={featureIconSize} />);
+        categoryIcons.push(<Flex width={categoryIconSize} />);
       } else {
-        featureIcons.push(
-          <Tooltip label={contentFeatures[id].description}>
+        categoryIcons.push(
+          <Tooltip label={categories[id].description}>
             <Flex alignItems="center">
               <Icon
-                as={featureIcon}
+                as={categoryIcon}
                 color="#666699"
-                width={featureIconSize}
-                height={featureIconSize}
+                width={categoryIconSize}
+                height={categoryIconSize}
               />
             </Flex>
           </Tooltip>,
@@ -395,8 +395,8 @@ export default function Card({
           >
             <Flex>
               {contentTypeIcon}
-              <Hide below="md">{featureIcons}</Hide>
-              {/* <Hide below="lg">{featureIcons}</Hide> */}
+              <Hide below="md">{categoryIcons}</Hide>
+              {/* <Hide below="lg">{categoryIcons}</Hide> */}
               {sharedIcon}
               {titleBox}
               <Spacer />

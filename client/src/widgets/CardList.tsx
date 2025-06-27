@@ -9,7 +9,7 @@ export default function CardList({
   showOwnerName = false,
   showBlurb = false,
   showPublicStatus = false,
-  showActivityFeatures = false,
+  showActivityCategories = false,
   showAddButton = false,
   showLibraryEditor = false,
   emptyMessage,
@@ -32,7 +32,7 @@ export default function CardList({
   showOwnerName?: boolean;
   showBlurb?: boolean;
   showPublicStatus?: boolean;
-  showActivityFeatures?: boolean;
+  showActivityCategories?: boolean;
   showAddButton?: boolean;
   showLibraryEditor?: boolean;
   emptyMessage: string;
@@ -137,7 +137,7 @@ export default function CardList({
           showOwnerName={showOwnerName}
           showBlurb={showBlurb}
           showPublicStatus={showPublicStatus}
-          showActivityFeatures={showActivityFeatures}
+          showActivityCategories={showActivityCategories}
           showAddButton={showAddButton}
           showLibraryEditor={showLibraryEditor}
           indentLevel={cardContent.indentLevel}
