@@ -58,7 +58,7 @@ import {
   LibraryRelations,
   DoenetmlVersion,
   License,
-  ContentFeature,
+  ContentCategory,
 } from "../types";
 import { MdClose, MdOutlineSearch } from "react-icons/md";
 import { ShareDrawer, shareDrawerActions } from "../drawers/ShareDrawer";
@@ -190,7 +190,7 @@ export async function loader({ params, request }: any) {
     libraryRelations: data.libraryRelations,
     allDoenetmlVersions: data.allDoenetmlVersions,
     allLicenses: data.allLicenses,
-    availableFeatures: data.availableFeatures,
+    availableCategories: data.availableCategories,
     userId: params.userId,
     parent: data.parent,
     query: q,
@@ -204,7 +204,7 @@ export function Activities() {
     libraryRelations,
     allDoenetmlVersions,
     allLicenses,
-    availableFeatures,
+    availableCategories,
     userId,
     parent,
     query,
@@ -214,7 +214,7 @@ export function Activities() {
     libraryRelations: LibraryRelations[];
     allDoenetmlVersions: DoenetmlVersion[];
     allLicenses: License[];
-    availableFeatures: ContentFeature[];
+    availableCategories: ContentCategory[];
     userId: string;
     parent: Content | null;
     query: string | null;
@@ -552,7 +552,7 @@ export function Activities() {
         onClose={settingsOnClose}
         contentData={contentData}
         allDoenetmlVersions={allDoenetmlVersions}
-        availableFeatures={availableFeatures}
+        availableCategories={availableCategories}
         finalFocusRef={finalFocusRef}
         fetcher={fetcher}
         displayTab={displaySettingsTab}
@@ -994,7 +994,7 @@ export function Activities() {
       showOwnerName={false}
       showBlurb={true}
       showPublicStatus={true}
-      showActivityFeatures={true}
+      showActivityCategories={true}
       emptyMessage={emptyMessage}
       content={cardContent}
       selectedCards={selectedCards}

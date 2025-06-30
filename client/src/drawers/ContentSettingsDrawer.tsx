@@ -24,7 +24,7 @@ import {
   supportFilesActions,
   SupportFilesControls,
 } from "../drawerTabs/SupportFilesControls";
-import { ContentFeature, Content, DoenetmlVersion } from "../types";
+import { ContentCategory, Content, DoenetmlVersion } from "../types";
 import {
   ClassificationSettings,
   classificationSettingsActions,
@@ -69,7 +69,7 @@ export function ContentSettingsDrawer({
   finalFocusRef,
   contentData,
   allDoenetmlVersions,
-  availableFeatures,
+  availableCategories,
   supportingFileData,
   fetcher,
   displayTab = "general",
@@ -81,7 +81,7 @@ export function ContentSettingsDrawer({
   finalFocusRef?: RefObject<HTMLElement>;
   contentData: Content;
   allDoenetmlVersions: DoenetmlVersion[];
-  availableFeatures: ContentFeature[];
+  availableCategories: ContentCategory[];
   supportingFileData?: any;
   fetcher: FetcherWithComponents<any>;
   displayTab?: "general" | "files";
@@ -168,7 +168,7 @@ export function ContentSettingsDrawer({
                     fetcher={fetcher}
                     contentData={contentData}
                     allDoenetmlVersions={allDoenetmlVersions}
-                    availableFeatures={availableFeatures}
+                    availableCategories={availableCategories}
                     highlightRename={highlightRename}
                     isOpen={isOpen}
                   />

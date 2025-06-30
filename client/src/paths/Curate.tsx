@@ -28,7 +28,7 @@ import CardList from "../widgets/CardList";
 import axios from "axios";
 import {
   Content,
-  ContentFeature,
+  ContentCategory,
   DoenetmlVersion,
   LibraryRelations,
   License,
@@ -77,7 +77,7 @@ export function Curate() {
     publishedContent,
     publishedLibraryRelations,
     allDoenetmlVersions,
-    availableFeatures,
+    availableCategories,
     allLicenses,
   } = useLoaderData() as {
     pendingContent: Content[];
@@ -89,7 +89,7 @@ export function Curate() {
     publishedContent: Content[];
     publishedLibraryRelations: LibraryRelations[];
     allDoenetmlVersions: DoenetmlVersion[];
-    availableFeatures: ContentFeature[];
+    availableCategories: ContentCategory[];
     allLicenses: License[];
   };
 
@@ -183,7 +183,7 @@ export function Curate() {
         <CardList
           showPublicStatus={false}
           showBlurb={true}
-          showActivityFeatures={true}
+          showActivityCategories={true}
           showOwnerName={true}
           showLibraryEditor={showLibraryEditor}
           content={cardContent}
@@ -268,7 +268,7 @@ export function Curate() {
       onClose={settingsOnClose}
       contentData={activeContent}
       allDoenetmlVersions={allDoenetmlVersions}
-      availableFeatures={availableFeatures}
+      availableCategories={availableCategories}
       fetcher={fetcher}
       isInLibrary={true}
     />

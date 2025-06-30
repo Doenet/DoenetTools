@@ -11,7 +11,7 @@ import {
   returnClassificationJoins,
   returnClassificationMatchClauses,
   sortClassifications,
-} from "../utils/classificationsFeatures";
+} from "../utils/classificationsCategories";
 import { returnClassificationListSelect } from "../utils/contentStructure";
 import { getIsEditor } from "./curate";
 import {
@@ -429,10 +429,23 @@ export async function getClassificationInfo({
   }
 }
 
-export async function getAvailableContentFeatures() {
-  const availableFeatures = await prisma.contentFeatures.findMany({
-    orderBy: { sortIndex: "asc" },
+export async function getAvailableCategories() {
+  const availableCategories = await prisma.categoryGroups.findMany({
+    select: {
+      name: true,
+      isExclusive: true,
+      categories: {
+        select: {
+          code: true,
+          term: true,
+          description: true,
+          sortIndex: true,
+        },
+        orderBy: { sortIndex: "asc" },
+      },
+    },
+    orderBy: { id: "asc" },
   });
 
-  return { availableFeatures };
+  return { availableCategories };
 }

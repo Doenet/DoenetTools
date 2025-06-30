@@ -30,9 +30,9 @@ export const updateContentSettingsSchema = z.object({
   itemLevelAttempts: z.boolean().optional(),
 });
 
-export const updateContentFeaturesSchema = z.object({
+export const updateCategorySchema = z.object({
   contentId: uuidSchema,
-  features: z.record(z.string(), z.boolean()),
+  categoryCode: z.string(),
 });
 
 export const updateContentDoenetMLSchema = z

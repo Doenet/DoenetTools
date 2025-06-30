@@ -7,7 +7,7 @@ import {
   viewableContentWhere,
 } from "../utils/permissions";
 import { prisma } from "../model";
-import { getAvailableContentFeatures } from "./classification";
+import { getAvailableCategories } from "./classification";
 import { processContent, returnContentSelect } from "../utils/contentStructure";
 import {
   getIsEditor,
@@ -49,7 +49,7 @@ export async function getActivityEditorData({
     return { editableByMe: false, contentId };
   }
 
-  const { availableFeatures } = await getAvailableContentFeatures();
+  const { availableCategories } = await getAvailableCategories();
 
   const activity = await getContent({
     contentId,
@@ -71,7 +71,7 @@ export async function getActivityEditorData({
   return {
     editableByMe: true,
     activity,
-    availableFeatures,
+    availableCategories,
     revisions,
     libraryRelations,
   };

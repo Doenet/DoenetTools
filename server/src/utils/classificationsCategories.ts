@@ -188,63 +188,63 @@ export function returnClassificationFilterWhereClauses({
   }
 }
 
-export function returnFeatureJoins(features?: Set<string>) {
-  const numFeatures = features === undefined ? 0 : features.size;
+export function returnCategoryJoins(categories?: Set<string>) {
+  const numCategories = categories === undefined ? 0 : categories.size;
 
   // TODO: a better way to do this?
-  if (numFeatures === 0) {
+  if (numCategories === 0) {
     return Prisma.empty;
-  } else if (numFeatures === 1) {
+  } else if (numCategories === 1) {
     return Prisma.sql`
-      LEFT JOIN _contentTocontentFeatures AS ccf1 ON ccf1.A = content.id
-      LEFT JOIN contentFeatures as contentFeatures1 on contentFeatures1.id = ccf1.B 
+      LEFT JOIN _categoriesTocontent AS ccf1 ON ccf1.B = content.id
+      LEFT JOIN categories as categories1 on categories1.id = ccf1.A
     `;
-  } else if (numFeatures === 2) {
+  } else if (numCategories === 2) {
     return Prisma.sql`
-      LEFT JOIN _contentTocontentFeatures AS ccf1 ON ccf1.A = content.id
-      LEFT JOIN contentFeatures as contentFeatures1 on contentFeatures1.id = ccf1.B 
-      LEFT JOIN _contentTocontentFeatures AS ccf2 ON ccf2.A = content.id
-      LEFT JOIN contentFeatures as contentFeatures2 on contentFeatures2.id = ccf2.B 
+      LEFT JOIN _categoriesTocontent AS ccf1 ON ccf1.B = content.id
+      LEFT JOIN categories as categories1 on categories1.id = ccf1.A 
+      LEFT JOIN _categoriesTocontent AS ccf2 ON ccf2.B = content.id
+      LEFT JOIN categories as categories2 on categories2.id = ccf2.A 
     `;
   } else {
-    // stopping at 3 features for now
+    // stopping at 3 categories for now
     return Prisma.sql`
-      LEFT JOIN _contentTocontentFeatures AS ccf1 ON ccf1.A = content.id
-      LEFT JOIN contentFeatures as contentFeatures1 on contentFeatures1.id = ccf1.B 
-      LEFT JOIN _contentTocontentFeatures AS ccf2 ON ccf2.A = content.id
-      LEFT JOIN contentFeatures as contentFeatures2 on contentFeatures2.id = ccf2.B 
-      LEFT JOIN _contentTocontentFeatures AS ccf3 ON ccf3.A = content.id
-      LEFT JOIN contentFeatures as contentFeatures3 on contentFeatures3.id = ccf3.B 
+      LEFT JOIN _categoriesTocontent AS ccf1 ON ccf1.B = content.id
+      LEFT JOIN categories as categories1 on categories1.id = ccf1.A 
+      LEFT JOIN _categoriesTocontent AS ccf2 ON ccf2.B = content.id
+      LEFT JOIN categories as categories2 on categories2.id = ccf2.A 
+      LEFT JOIN _categoriesTocontent AS ccf3 ON ccf3.B = content.id
+      LEFT JOIN categories as categories3 on categories3.id = ccf3.A 
     `;
   }
 }
 
-export function returnFeatureWhereClauses(features?: Set<string>) {
+export function returnCategoryWhereClauses(categories?: Set<string>) {
   // TODO: is there a better way to code this?
 
-  if (features === undefined) {
+  if (categories === undefined) {
     return Prisma.empty;
   }
 
-  const featuresToRequire = [...features.keys()];
+  const categoriesToRequire = [...categories.keys()];
 
-  const numFeatures = featuresToRequire.length;
+  const numCategories = categoriesToRequire.length;
 
-  if (numFeatures === 0) {
+  if (numCategories === 0) {
     return Prisma.empty;
-  } else if (numFeatures === 1) {
-    return Prisma.sql`AND contentFeatures1.code = ${featuresToRequire[0]}`;
-  } else if (numFeatures === 2) {
+  } else if (numCategories === 1) {
+    return Prisma.sql`AND categories1.code = ${categoriesToRequire[0]}`;
+  } else if (numCategories === 2) {
     return Prisma.sql`
-    AND contentFeatures1.code = ${featuresToRequire[0]}
-    AND contentFeatures2.code = ${featuresToRequire[1]}
+    AND categories1.code = ${categoriesToRequire[0]}
+    AND categories2.code = ${categoriesToRequire[1]}
     `;
   } else {
-    // stopping at 3 features for now
+    // stopping at 3 categories for now
     return Prisma.sql`
-    AND contentFeatures1.code = ${featuresToRequire[0]}
-    AND contentFeatures2.code = ${featuresToRequire[1]}
-    AND contentFeatures3.code = ${featuresToRequire[2]}
+    AND categories1.code = ${categoriesToRequire[0]}
+    AND categories2.code = ${categoriesToRequire[1]}
+    AND categories3.code = ${categoriesToRequire[2]}
     `;
   }
 }
