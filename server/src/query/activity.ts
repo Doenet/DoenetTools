@@ -383,20 +383,69 @@ export async function updateContent({
 }
 
 /**
- * Add or remove the content categories specified in `categories` to the content with `contentId`.
+ * Add the category with `categoryCode` to the content with `contentId`.
+ *
+ * If the category's group `isExclusive`, this will remove the other categories
+ * in the group from this content.
  *
  * For the change to succeed, either
  * - the content must be owned by `loggedInUserId`, or
  * - the content must be in the library and `loggedInUserId` must be an editor.
  */
-export async function updateCategories({
+export async function addCategory({
   contentId,
   loggedInUserId,
-  categories,
+  categoryCode,
 }: {
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
-  categories: Record<string, boolean>;
+  categoryCode: string;
+}) {
+  const isEditor = await getIsEditor(loggedInUserId);
+  const { isExclusive } = await prisma.categoryGroups.findFirstOrThrow({
+    where: {
+      categories: {
+        some: {
+          code: categoryCode,
+        },
+      },
+    },
+    select: {
+      isExclusive: true,
+    },
+  });
+
+  await prisma.content.update({
+    where: {
+      id: contentId,
+      ...filterEditableContent(loggedInUserId, isEditor),
+    },
+    data: {
+      categories: {
+        // If the group is exclusive, we need to ensure only this category is connected.
+        // Otherwise, just add this category
+        set: isExclusive ? { code: categoryCode } : undefined,
+        connect: isExclusive ? undefined : { code: categoryCode },
+      },
+    },
+  });
+}
+
+/**
+ * Remove the category with `categoryCode` from the content with `contentId`.
+ *
+ * For the change to succeed, either
+ * - the content must be owned by `loggedInUserId`, or
+ * - the content must be in the library and `loggedInUserId` must be an editor.
+ */
+export async function removeCategory({
+  contentId,
+  loggedInUserId,
+  categoryCode,
+}: {
+  contentId: Uint8Array;
+  loggedInUserId: Uint8Array;
+  categoryCode: string;
 }) {
   const isEditor = await getIsEditor(loggedInUserId);
   await prisma.content.update({
@@ -406,15 +455,9 @@ export async function updateCategories({
     },
     data: {
       categories: {
-        connect: Object.entries(categories)
-          .filter(([_, val]) => val)
-          .map(([code, _]) => ({ code })),
-        disconnect: Object.entries(categories)
-          .filter(([_, val]) => !val)
-          .map(([code, _]) => ({ code })),
+        disconnect: { code: categoryCode },
       },
     },
-    select: { id: true },
   });
 }
 

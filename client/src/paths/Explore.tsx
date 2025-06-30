@@ -40,10 +40,10 @@ import { CardContent } from "../widgets/Card";
 import { createNameNoTag, createNameCheckCurateTag } from "../utils/names";
 import {
   ContentDescription,
-  ContentCategory,
   Content,
   UserInfo,
   PartialContentClassification,
+  ContentCategoryGroup,
 } from "../types";
 import { ContentInfoDrawer } from "../drawers/ContentInfoDrawer";
 import CardList from "../widgets/CardList";
@@ -113,16 +113,17 @@ export async function loader({
 
   const {
     data: { availableCategories },
-  }: { data: { availableCategories: ContentCategory[] } } = await axios.get(
-    `/api/info/getAvailableCategories`,
-  );
+  }: { data: { availableCategories: ContentCategoryGroup[] } } =
+    await axios.get(`/api/info/getAvailableCategories`);
 
   const url = new URL(request.url);
 
   const categories: Set<string> = new Set();
-  for (const category of availableCategories) {
-    if (url.searchParams.has(category.code)) {
-      categories.add(category.code);
+  for (const categoryGroup of availableCategories) {
+    for (const category of categoryGroup.categories) {
+      if (url.searchParams.has(category.code)) {
+        categories.add(category.code);
+      }
     }
   }
 
@@ -218,7 +219,7 @@ export function Explore() {
       { numCurated?: number; numCommunity?: number }
     >;
     categories: Set<string>;
-    availableCategories: ContentCategory[];
+    availableCategories: ContentCategoryGroup[];
   };
 
   const {
@@ -690,11 +691,13 @@ export function Explore() {
       />,
     );
   }
-  for (const category of availableCategories) {
-    if (categories.has(category.code)) {
-      extraFormInputs.push(
-        <Input type="hidden" name={category.code} key={category.code} />,
-      );
+  for (const categoryGroup of availableCategories) {
+    for (const category of categoryGroup.categories) {
+      if (categories.has(category.code)) {
+        extraFormInputs.push(
+          <Input type="hidden" name={category.code} key={category.code} />,
+        );
+      }
     }
   }
   if (addTo) {

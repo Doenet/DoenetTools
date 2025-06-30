@@ -19,9 +19,16 @@ import {
   NumberInputStepper,
   NumberIncrementStepper,
   NumberDecrementStepper,
+  Radio,
+  RadioGroup,
+  Stack,
 } from "@chakra-ui/react";
-import { ContentCategory, Content, DoenetmlVersion } from "../types";
-import { activityCategoryIcons } from "../utils/activity";
+import {
+  Content,
+  ContentCategory,
+  ContentCategoryGroup,
+  DoenetmlVersion,
+} from "../types";
 import { MdError } from "react-icons/md";
 
 export async function generalContentActions({ formObj }: { [k: string]: any }) {
@@ -70,14 +77,21 @@ export async function generalContentActions({ formObj }: { [k: string]: any }) {
       return {
         updatedSettingMessage: `updated Paginate to ${formObj.paginate}`,
       };
-    } else if (formObj?._action === "update category") {
-      const addCategory = formObj.value === "true";
-      await axios.post("/api/updateContent/updateCategories", {
+    } else if (formObj?._action === "add category") {
+      await axios.post("/api/updateContent/addCategory", {
         contentId: formObj.contentId,
-        categories: { [formObj.code]: addCategory },
+        categoryCode: formObj.code,
       });
       return {
-        updatedSettingMessage: `${addCategory ? "added" : "removed"} activity category: ${formObj.term}`,
+        updatedSettingMessage: `added activity category`,
+      };
+    } else if (formObj?._action === "remove category") {
+      await axios.post("/api/updateContent/removeCategory", {
+        contentId: formObj.contentId,
+        categoryCode: formObj.code,
+      });
+      return {
+        updatedSettingMessage: `removed activity category`,
       };
     }
   } catch (_e) {
@@ -97,7 +111,7 @@ export function GeneralContentControls({
   fetcher: FetcherWithComponents<any>;
   contentData: Content;
   allDoenetmlVersions: DoenetmlVersion[];
-  availableCategories: ContentCategory[];
+  availableCategories: ContentCategoryGroup[];
   highlightRename?: boolean;
   isOpen: boolean;
 }) {
@@ -135,9 +149,9 @@ export function GeneralContentControls({
   const lastAcceptedNameValue = useRef(name);
   const [nameIsInvalid, setNameIsInvalid] = useState(false);
 
-  const [selectedCategories, setSelectedCategories] = useState(
-    contentData.categories.map((category) => category.code),
-  );
+  // const [selectedCategories, setSelectedCategories] = useState(
+  //   contentData.categories.map((category) => category.code),
+  // );
 
   const [doenetmlVersion, setDoenetmlVersion] = useState(doenetmlVersionInit);
 
@@ -207,121 +221,170 @@ export function GeneralContentControls({
     );
   }
 
-  return (
-    <>
-      <Box height="35px">
-        {statusText !== "" || errMsg !== "" ? (
-          <Box
-            data-test="Status message"
-            border="solid 1px lightgray"
-            borderRadius="5px"
-            padding="5px 10px"
-            backgroundColor={
-              errMsg !== ""
-                ? "red.100"
-                : ["green.100", "green.200"][statusStyleIdx % 2]
-            }
-          >
-            {errMsg !== "" ? (
-              <Text>
-                <Icon
-                  fontSize="24pt"
-                  color="red.800"
-                  as={MdError}
-                  verticalAlign="middle"
-                  marginRight="5px"
-                />
-                {errMsg}
-              </Text>
-            ) : null}
-            {statusText}
-          </Box>
-        ) : null}
-      </Box>
-
-      <FormControl isInvalid={nameIsInvalid}>
-        <FormLabel mt="16px">Name</FormLabel>
-
-        <Input
-          maxLength={191}
-          ref={nameInput}
-          name="name"
-          size="sm"
-          // width="392px"
-          width="100%"
-          placeholder={`${contentType} 1`}
-          data-test="Content Name"
-          value={nameValue}
-          onChange={(e) => {
-            setName(e.target.value);
-          }}
-          onBlur={() => saveName()}
-          onKeyDown={(e) => {
-            if (e.key == "Enter") {
-              saveName();
-            }
-          }}
-        />
-        <FormErrorMessage>
-          Error - A name for the {contentTypeLower} is required.
-        </FormErrorMessage>
-      </FormControl>
-
-      {contentData.type !== "folder" ? (
-        <Box padding="10px" marginTop="20px">
-          <Heading size="sm">Activity categories</Heading>
-          <VStack alignItems="flex-start" gap={0}>
-            {availableCategories.map((category) => {
-              const isPresent = selectedCategories.includes(category.code);
-              const categoryCode = category.code as
-                | "isQuestion"
-                | "isInteractive"
-                | "containsVideo";
-              return (
-                <Checkbox
-                  key={category.code}
-                  marginTop="10px"
-                  isChecked={isPresent}
-                  data-test={`${category.code} Checkbox`}
-                  onChange={() => {
-                    setSelectedCategories((was) => {
-                      const newCategories = [...was];
-                      const ind = newCategories.indexOf(category.code);
-                      if (ind === -1) {
-                        newCategories.push(category.code);
-                      } else {
-                        newCategories.splice(ind, 1);
-                      }
-                      return newCategories;
-                    });
-                    fetcher.submit(
-                      {
-                        _action: "update category",
-                        contentId: contentData.contentId,
-                        code: category.code,
-                        value: !isPresent,
-                        term: category.term,
-                      },
-                      { method: "post" },
-                    );
-                  }}
-                >
-                  <Tooltip label={category.description}>
-                    {category.term}
-                    <Icon
-                      paddingLeft="5px"
-                      as={activityCategoryIcons[categoryCode]}
-                      color="#666699"
-                      boxSize={5}
-                      verticalAlign="middle"
-                    />
-                  </Tooltip>
-                </Checkbox>
-              );
-            })}
-          </VStack>
+  const statusTextDisplay = (
+    <Box height="35px">
+      {statusText !== "" || errMsg !== "" ? (
+        <Box
+          data-test="Status message"
+          border="solid 1px lightgray"
+          borderRadius="5px"
+          padding="5px 10px"
+          backgroundColor={
+            errMsg !== ""
+              ? "red.100"
+              : ["green.100", "green.200"][statusStyleIdx % 2]
+          }
+        >
+          {errMsg !== "" ? (
+            <Text>
+              <Icon
+                fontSize="24pt"
+                color="red.800"
+                as={MdError}
+                verticalAlign="middle"
+                marginRight="5px"
+              />
+              {errMsg}
+            </Text>
+          ) : null}
+          {statusText}
         </Box>
       ) : null}
+    </Box>
+  );
+
+  const titleInputDisplay = (
+    <FormControl isInvalid={nameIsInvalid}>
+      <FormLabel mt="16px">Name</FormLabel>
+
+      <Input
+        maxLength={191}
+        ref={nameInput}
+        name="name"
+        size="sm"
+        // width="392px"
+        width="100%"
+        placeholder={`${contentType} 1`}
+        data-test="Content Name"
+        value={nameValue}
+        onChange={(e) => {
+          setName(e.target.value);
+        }}
+        onBlur={() => saveName()}
+        onKeyDown={(e) => {
+          if (e.key == "Enter") {
+            saveName();
+          }
+        }}
+      />
+      <FormErrorMessage>
+        Error - A name for the {contentTypeLower} is required.
+      </FormErrorMessage>
+    </FormControl>
+  );
+
+  function getCategoryIcon(category: ContentCategory) {
+    return (
+      <Tooltip label={category.description}>
+        {category.term}
+        {/* <Icon
+          paddingLeft="5px"
+          as={activityCategoryIcons[category.code]}
+          color="#666699"
+          boxSize={5}
+          verticalAlign="middle"
+        /> */}
+      </Tooltip>
+    );
+  }
+
+  function fetcherAdd(code: string) {
+    fetcher.submit(
+      {
+        _action: "add category",
+        contentId: contentData.contentId,
+        code,
+      },
+      { method: "post" },
+    );
+  }
+
+  function fetcherRemove(code: string) {
+    fetcher.submit(
+      {
+        _action: "remove category",
+        contentId: contentData.contentId,
+        code,
+      },
+      { method: "post" },
+    );
+  }
+
+  function displayCategoryGroup(group: ContentCategoryGroup) {
+    if (group.isExclusive) {
+      return (
+        <>
+          <Text>{group.name}</Text>
+          <RadioGroup onChange={fetcherAdd}>
+            <Stack>
+              {group.categories.map((category) => (
+                <Radio
+                  key={category.code}
+                  value={category.code}
+                  data-test={`${category.code} Radio`}
+                >
+                  {getCategoryIcon(category)}
+                </Radio>
+              ))}
+            </Stack>
+          </RadioGroup>
+        </>
+      );
+    } else {
+      return (
+        <>
+          <Text>{group.name}</Text>
+          {group.categories.map((category) => {
+            const isChecked = contentData.categories
+              .map((c) => c.code)
+              .includes(category.code);
+
+            return (
+              <Checkbox
+                key={category.code}
+                isChecked={isChecked}
+                data-test={`${category.code} Checkbox`}
+                onChange={() => {
+                  if (isChecked) {
+                    fetcherRemove(category.code);
+                  } else {
+                    fetcherAdd(category.code);
+                  }
+                }}
+              >
+                {getCategoryIcon(category)}
+              </Checkbox>
+            );
+          })}
+        </>
+      );
+    }
+  }
+
+  const allCategoriesDisplay = (
+    <Box padding="10px" marginTop="20px">
+      <Heading size="sm">Activity categories</Heading>
+      <VStack alignItems="flex-start" gap={0}>
+        {availableCategories.map(displayCategoryGroup)}
+      </VStack>
+    </Box>
+  );
+
+  return (
+    <>
+      {statusTextDisplay}
+      {titleInputDisplay}
+      {contentData.type !== "folder" && allCategoriesDisplay}
 
       {contentData.type === "singleDoc" ? (
         <>

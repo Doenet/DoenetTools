@@ -14,13 +14,18 @@ import {
   Tooltip,
   VStack,
   Wrap,
+  Accordion,
+  AccordionButton,
+  AccordionItem,
+  AccordionPanel,
+  AccordionIcon,
 } from "@chakra-ui/react";
 import React, { ReactElement } from "react";
 import { createNameNoTag } from "../utils/names";
 import { CloseIcon } from "@chakra-ui/icons";
 import { activityCategoryIcons } from "../utils/activity";
 import {
-  ContentCategory,
+  ContentCategoryGroup,
   PartialContentClassification,
   UserInfo,
 } from "../types";
@@ -54,7 +59,7 @@ export function FilterPanel({
     { numCurated?: number; numCommunity?: number }
   >;
   categories: Set<string>;
-  availableCategories: ContentCategory[];
+  availableCategories: ContentCategoryGroup[];
   search: string;
   navigate: NavigateFunction;
 }) {
@@ -62,28 +67,30 @@ export function FilterPanel({
   if (authorInfo || classificationInfo || categories.size > 0) {
     const clearFilterButtons: ReactElement[] = [];
 
-    for (const category of availableCategories) {
-      if (categories.has(category.code)) {
-        clearFilterButtons.push(
-          <Tooltip
-            label={`Clear filter: ${category.term}`}
-            openDelay={500}
-            key={`category${category.code}`}
-          >
-            <Button
-              colorScheme="blue"
-              rightIcon={<CloseIcon boxSize={2} />}
-              size="xs"
-              aria-label={`Clear filter: ${category.term}`}
-              onClick={() => {
-                const newSearch = clearQueryParameter(category.code, search);
-                navigate(`.${newSearch}`);
-              }}
+    for (const categoryGroup of availableCategories) {
+      for (const category of categoryGroup.categories) {
+        if (categories.has(category.code)) {
+          clearFilterButtons.push(
+            <Tooltip
+              label={`Clear filter: ${category.term}`}
+              openDelay={500}
+              key={`category${category.code}`}
             >
-              {category.term}
-            </Button>
-          </Tooltip>,
-        );
+              <Button
+                colorScheme="blue"
+                rightIcon={<CloseIcon boxSize={2} />}
+                size="xs"
+                aria-label={`Clear filter: ${category.term}`}
+                onClick={() => {
+                  const newSearch = clearQueryParameter(category.code, search);
+                  navigate(`.${newSearch}`);
+                }}
+              >
+                {category.term}
+              </Button>
+            </Tooltip>,
+          );
+        }
       }
     }
 
@@ -245,71 +252,82 @@ export function FilterPanel({
     );
   }
 
-  const categoryFilterSection = (
-    <>
-      <Heading
-        size="sm"
-        marginBottom="4px"
-        marginTop="10px"
-        backgroundColor="gray.100"
-        pl="10px"
-        pt="4px"
-        pb="4px"
-      >
-        Content categories
-      </Heading>
-      <VStack alignItems="flex-start" gap={0} ml="10px" mr="4px">
-        {availableCategories.map((category) => {
-          const isPresent = categories.has(category.code);
-          const c = countByCategory[category.code];
-          const numCurated = c.numCurated || 0;
-          const numCommunity = c.numCommunity || 0;
-          // const icon = activityCategoryIcons[category.code];
+  function formatAccordionButton(title: string) {
+    return (
+      <AccordionButton>
+        <Box as="b" flex="1" textAlign="left">
+          {title}
+        </Box>
+        <AccordionIcon />
+      </AccordionButton>
+    );
+  }
 
-          const categoryCode = category.code as
-            | "isQuestion"
-            | "isInteractive"
-            | "containsVideo";
+  const groupType = availableCategories.find((v) => v.name === "Type")!;
+  const groupMode = availableCategories.find((v) => v.name === "Mode")!;
+  const groupSetting = availableCategories.find((v) => v.name === "Setting")!;
+  const groupDuration = availableCategories.find((v) => v.name === "Duration")!;
+  const groupFeature = availableCategories.find((v) => v.name === "Feature")!;
 
-          return (
-            <Checkbox
-              key={category.code}
-              isChecked={isPresent}
-              data-test={`${category.code} Checkbox`}
-              disabled={numCurated + numCommunity === 0}
-              onChange={() => {
-                let newSearch = search;
-                newSearch = clearQueryParameter(category.code, newSearch);
-                if (!isPresent) {
-                  if (newSearch) {
-                    newSearch += "&";
-                  } else {
-                    newSearch = "?";
-                  }
-                  newSearch += category.code;
-                }
-                navigate(`.${newSearch}`);
-              }}
-            >
-              <HStack>
-                <Tooltip label={category.description} openDelay={500}>
-                  {category.term}
-                  <Icon
-                    paddingLeft="5px"
-                    as={activityCategoryIcons[categoryCode]}
-                    color="#666699"
-                    boxSize={5}
-                    verticalAlign="middle"
-                  />
-                </Tooltip>
-                {numItemsBadge(c)}
-              </HStack>
-            </Checkbox>
-          );
-        })}
-      </VStack>
-    </>
-  );
+  function categoryGroupFilterSection(group: ContentCategoryGroup) {
+    return (
+      <AccordionItem>
+        {formatAccordionButton(group.name)}
+        <AccordionPanel>
+          <VStack alignItems="flex-start" gap={0} ml="10px" mr="4px">
+            {group.categories.map((category) => {
+              const isPresent = categories.has(category.code);
+              const c = countByCategory[category.code];
+              const numCurated = c.numCurated || 0;
+              const numCommunity = c.numCommunity || 0;
+              // const icon = activityCategoryIcons[category.code];
+
+              const categoryCode = category.code as
+                | "isQuestion"
+                | "isInteractive"
+                | "containsVideo";
+
+              return (
+                <Checkbox
+                  key={category.code}
+                  isChecked={isPresent}
+                  data-test={`${category.code} Checkbox`}
+                  disabled={numCurated + numCommunity === 0}
+                  onChange={() => {
+                    let newSearch = search;
+                    newSearch = clearQueryParameter(category.code, newSearch);
+                    if (!isPresent) {
+                      if (newSearch) {
+                        newSearch += "&";
+                      } else {
+                        newSearch = "?";
+                      }
+                      newSearch += category.code;
+                    }
+                    navigate(`.${newSearch}`);
+                  }}
+                >
+                  <HStack>
+                    <Tooltip label={category.description} openDelay={500}>
+                      {category.term}
+                      <Icon
+                        paddingLeft="5px"
+                        as={activityCategoryIcons[categoryCode]}
+                        color="#666699"
+                        boxSize={5}
+                        verticalAlign="middle"
+                      />
+                    </Tooltip>
+                    {numItemsBadge(c)}
+                  </HStack>
+                </Checkbox>
+              );
+            })}
+          </VStack>
+        </AccordionPanel>
+      </AccordionItem>
+    );
+  }
 
   let classificationStatusSection: ReactElement | null = null;
 
@@ -438,50 +456,24 @@ export function FilterPanel({
       }
     }
 
-    classificationStatusSection = (
-      <>
-        <Heading
-          size="sm"
-          marginBottom="5px"
-          backgroundColor="gray.100"
-          pl="10px"
-          pt="4px"
-          pb="4px"
-        >
-          Classifications
-        </Heading>
-        <List marginLeft="10px">{filteredBy}</List>
-      </>
-    );
+    classificationStatusSection = <List marginLeft="10px">{filteredBy}</List>;
   } else {
     classificationStatusSection = (
-      <>
-        <Heading
-          size="sm"
-          marginBottom="5px"
-          backgroundColor="gray.100"
-          pl="10px"
-          pt="4px"
-          pb="4px"
-        >
-          Classifications
-        </Heading>
-        <List marginLeft="10px">
-          <ListItem>
-            <HStack gap={0}>
-              <Text>Unclassified</Text>
-              <Tooltip label={`Clear filter: Unclassified`} openDelay={500}>
-                <CloseButton
-                  variant="ghost"
-                  size="sm"
-                  aria-label={`Clear filter: Unclassified`}
-                  onClick={() => clearUnclassifiedFilter(search, navigate)}
-                />
-              </Tooltip>
-            </HStack>
-          </ListItem>
-        </List>
-      </>
+      <List marginLeft="10px">
+        <ListItem>
+          <HStack gap={0}>
+            <Text>Unclassified</Text>
+            <Tooltip label={`Clear filter: Unclassified`} openDelay={500}>
+              <CloseButton
+                variant="ghost"
+                size="sm"
+                aria-label={`Clear filter: Unclassified`}
+                onClick={() => clearUnclassifiedFilter(search, navigate)}
+              />
+            </Tooltip>
+          </HStack>
+        </ListItem>
+      </List>
     );
   }
 
@@ -491,16 +483,6 @@ export function FilterPanel({
     const unclassified = systemBrowse.filter((s) => s.system === undefined);
     classificationsBrowseSection = (
       <>
-        <Heading
-          size="sm"
-          marginBottom="5px"
-          paddingTop="4px"
-          paddingBottom="4px"
-          paddingLeft="10px"
-          backgroundColor="gray.100"
-        >
-          Classifications
-        </Heading>
         <List marginLeft="10px" marginRight="4px">
           {systemBrowse.map((c) => {
             if (c.system === undefined) {
@@ -674,76 +656,51 @@ export function FilterPanel({
 
   if (topAuthors && topAuthors.length > 0) {
     authorBrowseSection = (
-      <>
-        <Heading
-          size="sm"
-          marginBottom="5px"
-          paddingTop="4px"
-          paddingBottom="4px"
-          paddingLeft="10px"
-          backgroundColor="gray.100"
-        >
-          Authors
-        </Heading>
-        <List marginLeft="10px" marginRight="4px">
-          {topAuthors.map((u) => {
-            let newSearch = search;
-            newSearch = clearQueryParameter("author", newSearch);
-            if (newSearch) {
-              newSearch += "&";
-            } else {
-              newSearch = "?";
-            }
-            newSearch += `author=${u.userId}`;
-            const authorName = createNameNoTag(u);
-            return (
-              <ListItem key={u.userId}>
-                <ChakraLink as={ReactRouterLink} to={`./${newSearch}`}>
-                  <HStack>
-                    <Text>{authorName}</Text>
-                    {numItemsBadge(u)}
-                  </HStack>
-                </ChakraLink>
-              </ListItem>
-            );
-          })}
-        </List>
-      </>
+      <List marginLeft="10px" marginRight="4px">
+        {topAuthors.map((u) => {
+          let newSearch = search;
+          newSearch = clearQueryParameter("author", newSearch);
+          if (newSearch) {
+            newSearch += "&";
+          } else {
+            newSearch = "?";
+          }
+          newSearch += `author=${u.userId}`;
+          const authorName = createNameNoTag(u);
+          return (
+            <ListItem key={u.userId}>
+              <ChakraLink as={ReactRouterLink} to={`./${newSearch}`}>
+                <HStack>
+                  <Text>{authorName}</Text>
+                  {numItemsBadge(u)}
+                </HStack>
+              </ChakraLink>
+            </ListItem>
+          );
+        })}
+      </List>
     );
   } else if (authorInfo) {
     const authorName = createNameNoTag(authorInfo);
     authorBrowseSection = (
-      <>
-        {" "}
-        <Heading
-          size="sm"
-          marginBottom="5px"
-          paddingTop="4px"
-          paddingBottom="4px"
-          paddingLeft="10px"
-          backgroundColor="gray.100"
-        >
-          Authors
-        </Heading>
-        <List marginLeft="10px">
-          <ListItem>
-            <HStack gap={0}>
-              <Text>{authorName}</Text>
-              <Tooltip label={`Clear filter: ${authorName}`} openDelay={500}>
-                <CloseButton
-                  variant="ghost"
-                  size="sm"
-                  aria-label={`Clear filter: ${authorName}`}
-                  onClick={() => {
-                    const newSearch = clearQueryParameter("author", search);
-                    navigate(`.${newSearch}`);
-                  }}
-                />
-              </Tooltip>
-            </HStack>
-          </ListItem>
-        </List>
-      </>
+      <List marginLeft="10px">
+        <ListItem>
+          <HStack gap={0}>
+            <Text>{authorName}</Text>
+            <Tooltip label={`Clear filter: ${authorName}`} openDelay={500}>
+              <CloseButton
+                variant="ghost"
+                size="sm"
+                aria-label={`Clear filter: ${authorName}`}
+                onClick={() => {
+                  const newSearch = clearQueryParameter("author", search);
+                  navigate(`.${newSearch}`);
+                }}
+              />
+            </Tooltip>
+          </HStack>
+        </ListItem>
+      </List>
     );
   }
 
@@ -755,10 +712,24 @@ export function FilterPanel({
       <Box marginTop="5px" minHeight="25px">
         {clearFilters}
       </Box>
-      <Box>{categoryFilterSection}</Box>
-      <Box marginTop="20px">{classificationStatusSection}</Box>
-      <Box marginTop="20px">{classificationsBrowseSection}</Box>
-      <Box marginTop="20px">{authorBrowseSection}</Box>
+      <Accordion allowToggle allowMultiple reduceMotion defaultIndex={[0, 1]}>
+        {categoryGroupFilterSection(groupType)}
+        {categoryGroupFilterSection(groupMode)}
+        {categoryGroupFilterSection(groupSetting)}
+        {categoryGroupFilterSection(groupDuration)}
+        <AccordionItem>
+          {formatAccordionButton("Standard")}
+          <AccordionPanel>
+            <Box>{classificationStatusSection}</Box>
+            <Box>{classificationsBrowseSection}</Box>
+          </AccordionPanel>
+        </AccordionItem>
+        {categoryGroupFilterSection(groupFeature)}
+        <AccordionItem>
+          {formatAccordionButton("Author")}
+          <AccordionPanel>{authorBrowseSection}</AccordionPanel>
+        </AccordionItem>
+      </Accordion>
     </>
   );
 }

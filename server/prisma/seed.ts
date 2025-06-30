@@ -11,132 +11,99 @@ async function main() {
 }
 
 async function seedDoenetMLVersions() {
-  await prisma.doenetmlVersions.upsert({
-    where: { displayedVersion: "0.6" },
-    update: { fullVersion: "0.6.7" },
-    create: {
-      displayedVersion: "0.6",
-      fullVersion: "0.6.7",
-      deprecated: true,
-      deprecationMessage: "It will be removed after June 2026.",
-    },
+  async function updateOrCreateDoenetMLVersion(
+    version: Prisma.doenetmlVersionsCreateInput,
+  ) {
+    await prisma.doenetmlVersions.upsert({
+      where: { displayedVersion: version.displayedVersion },
+      update: version,
+      create: version,
+    });
+  }
+
+  await updateOrCreateDoenetMLVersion({
+    displayedVersion: "0.6",
+    fullVersion: "0.6.7",
+    deprecated: true,
+    deprecationMessage: "It will be removed after June 2026.",
   });
-  await prisma.doenetmlVersions.upsert({
-    where: { displayedVersion: "0.7" },
-    update: { fullVersion: "0.7.0-alpha39" },
-    create: {
-      displayedVersion: "0.7",
-      fullVersion: "0.7.0-alpha39",
-      default: true,
-    },
+  await updateOrCreateDoenetMLVersion({
+    displayedVersion: "0.7",
+    fullVersion: "0.7.0-alpha39",
+    default: true,
   });
 }
 
 async function seedUsers() {
-  await prisma.users.upsert({
-    where: { email: "library@doenet.org" },
-    update: {},
-    create: {
-      email: "library@doenet.org",
-      lastNames: "Library",
-      isLibrary: true,
-    },
-  });
+  async function updateOrCreateUser(user: Prisma.usersCreateInput) {
+    await prisma.users.upsert({
+      where: { email: user.email },
+      update: user,
+      create: user,
+    });
+  }
 
-  await prisma.users.upsert({
-    where: { email: "devuser@doenet.org" },
-    update: {},
-    create: {
-      email: "devuser@doenet.org",
-      firstNames: "Dev",
-      lastNames: "User",
-    },
+  await updateOrCreateUser({
+    email: "library@doenet.org",
+    lastNames: "Library",
+    isLibrary: true,
   });
-
-  await prisma.users.upsert({
-    where: { email: "editor@doenet.org" },
-    update: {},
-    create: {
-      email: "editor@doenet.org",
-      firstNames: "Editor",
-      lastNames: "User",
-      isEditor: true,
-    },
+  await updateOrCreateUser({
+    email: "devuser@doenet.org",
+    firstNames: "Dev",
+    lastNames: "User",
   });
-  await prisma.users.upsert({
-    where: { email: "editor2@doenet.org" },
-    update: {},
-    create: {
-      email: "editor2@doenet.org",
-      firstNames: "Second",
-      lastNames: "Editor",
-      isEditor: true,
-    },
+  await updateOrCreateUser({
+    email: "editor@doenet.org",
+    firstNames: "Editor",
+    lastNames: "User",
+    isEditor: true,
+  });
+  await updateOrCreateUser({
+    email: "editor2@doenet.org",
+    firstNames: "Second",
+    lastNames: "Editor",
+    isEditor: true,
   });
 }
 
 async function seedLicenses() {
-  await prisma.licenses.upsert({
-    where: { code: "CCBYSA" },
-    update: {
-      name: "Creative Commons Attribution-ShareAlike 4.0",
-      description:
-        "This license requires that reusers give credit to the creator. It allows reusers to distribute, remix, adapt, and build upon the material in any medium or format, even for commercial purposes. If others remix, adapt, or build upon the material, they must license the modified material under identical terms.",
-      imageURL: "/creative_commons_by_sa.png",
-      smallImageURL: "/by-sa-sm.png",
-      licenseURL: "https://creativecommons.org/licenses/by-sa/4.0/",
-      sortIndex: 2,
-    },
-    create: {
-      code: "CCBYSA",
-      name: "Creative Commons Attribution-ShareAlike 4.0",
-      description:
-        "This license requires that reusers give credit to the creator. It allows reusers to distribute, remix, adapt, and build upon the material in any medium or format, even for commercial purposes. If others remix, adapt, or build upon the material, they must license the modified material under identical terms.",
-      imageURL: "/creative_commons_by_sa.png",
-      smallImageURL: "/by-sa-sm.png",
-      licenseURL: "https://creativecommons.org/licenses/by-sa/4.0/",
-      sortIndex: 2,
-    },
+  async function updateOrCreateLicense(license: Prisma.licensesCreateInput) {
+    await prisma.licenses.upsert({
+      where: { code: license.code },
+      update: license,
+      create: license,
+    });
+  }
+
+  await updateOrCreateLicense({
+    code: "CCBYSA",
+    name: "Creative Commons Attribution-ShareAlike 4.0",
+    description:
+      "This license requires that reusers give credit to the creator. It allows reusers to distribute, remix, adapt, and build upon the material in any medium or format, even for commercial purposes. If others remix, adapt, or build upon the material, they must license the modified material under identical terms.",
+    imageURL: "/creative_commons_by_sa.png",
+    smallImageURL: "/by-sa-sm.png",
+    licenseURL: "https://creativecommons.org/licenses/by-sa/4.0/",
+    sortIndex: 2,
   });
 
-  await prisma.licenses.upsert({
-    where: { code: "CCBYNCSA" },
-    update: {
-      name: "Creative Commons Attribution-NonCommercial-ShareAlike 4.0",
-      description:
-        "This license requires that reusers give credit to the creator. It allows reusers to distribute, remix, adapt, and build upon the material in any medium or format, for noncommercial purposes only. If others modify or adapt the material, they must license the modified material under identical terms.",
-      imageURL: "/creative_commons_by_nc_sa.png",
-      smallImageURL: "/by-nc-sa-sm.png",
-      licenseURL: "https://creativecommons.org/licenses/by-nc-sa/4.0/",
-      sortIndex: 3,
-    },
-    create: {
-      code: "CCBYNCSA",
-      name: "Creative Commons Attribution-NonCommercial-ShareAlike 4.0",
-      description:
-        "This license requires that reusers give credit to the creator. It allows reusers to distribute, remix, adapt, and build upon the material in any medium or format, for noncommercial purposes only. If others modify or adapt the material, they must license the modified material under identical terms.",
-      imageURL: "/creative_commons_by_nc_sa.png",
-      smallImageURL: "/by-nc-sa-sm.png",
-      licenseURL: "https://creativecommons.org/licenses/by-nc-sa/4.0/",
-      sortIndex: 3,
-    },
+  await updateOrCreateLicense({
+    code: "CCBYNCSA",
+    name: "Creative Commons Attribution-NonCommercial-ShareAlike 4.0",
+    description:
+      "This license requires that reusers give credit to the creator. It allows reusers to distribute, remix, adapt, and build upon the material in any medium or format, for noncommercial purposes only. If others modify or adapt the material, they must license the modified material under identical terms.",
+    imageURL: "/creative_commons_by_nc_sa.png",
+    smallImageURL: "/by-nc-sa-sm.png",
+    licenseURL: "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+    sortIndex: 3,
   });
 
-  await prisma.licenses.upsert({
-    where: { code: "CCDUAL" },
-    update: {
-      name: "Dual license Creative Commons Attribution-ShareAlike 4.0 OR Attribution-NonCommercial-ShareAlike 4.0",
-      description:
-        "Allow reusers to use either the Creative Commons Attribution-ShareAlike 4.0 license or the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 license.",
-      sortIndex: 1,
-    },
-    create: {
-      code: "CCDUAL",
-      name: "Dual license Creative Commons Attribution-ShareAlike 4.0 OR Attribution-NonCommercial-ShareAlike 4.0",
-      description:
-        "Allow reusers to use either the Creative Commons Attribution-ShareAlike 4.0 license or the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 license.",
-      sortIndex: 1,
-    },
+  await updateOrCreateLicense({
+    code: "CCDUAL",
+    name: "Dual license Creative Commons Attribution-ShareAlike 4.0 OR Attribution-NonCommercial-ShareAlike 4.0",
+    description:
+      "Allow reusers to use either the Creative Commons Attribution-ShareAlike 4.0 license or the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 license.",
+    sortIndex: 1,
   });
 
   await prisma.licenseCompositions.upsert({
@@ -175,8 +142,8 @@ async function seedCategories() {
 
   const categoryType = await prisma.categoryGroups.upsert({
     where: { name: "Type" },
-    update: { name: "Type" },
-    create: { name: "Type" },
+    update: { name: "Type", isExclusive: true },
+    create: { name: "Type", isExclusive: true },
   });
   await updateOrCreateCategory({
     group: { connect: { id: categoryType.id } },
@@ -269,8 +236,8 @@ async function seedCategories() {
 
   const categoryDuration = await prisma.categoryGroups.upsert({
     where: { name: "Duration" },
-    update: { name: "Duration" },
-    create: { name: "Duration" },
+    update: { name: "Duration", isExclusive: true },
+    create: { name: "Duration", isExclusive: true },
   });
   await updateOrCreateCategory({
     group: { connect: { id: categoryDuration.id } },
@@ -282,7 +249,7 @@ async function seedCategories() {
   await updateOrCreateCategory({
     group: { connect: { id: categoryDuration.id } },
     code: "takesFiveToTwentyMinutes",
-    term: "5-20 minutes",
+    term: "Between 5-20 minutes",
     description: "Activity can be completed in 5 to 20 minutes.",
     sortIndex: 2,
   });
