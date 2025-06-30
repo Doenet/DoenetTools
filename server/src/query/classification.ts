@@ -430,8 +430,21 @@ export async function getClassificationInfo({
 }
 
 export async function getAllCategories() {
-  const allCategories = await prisma.categories.findMany({
-    orderBy: { sortIndex: "asc" },
+  const allCategories = await prisma.categoryGroups.findMany({
+    select: {
+      name: true,
+      isExclusive: true,
+      categories: {
+        select: {
+          code: true,
+          term: true,
+          description: true,
+          sortIndex: true,
+        },
+        orderBy: { sortIndex: "asc" },
+      },
+    },
+    orderBy: { id: "asc" },
   });
   return { allCategories };
 }

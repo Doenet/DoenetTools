@@ -148,9 +148,10 @@ model categories {
 }
 
 model categoryGroups {
-  id         Int          @id @default(autoincrement())
-  name       String       @unique
-  categories categories[]
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+  isExclusive Boolean      @default(false)
+  categories  categories[]
 }
 
 model contributorHistory {

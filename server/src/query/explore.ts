@@ -1875,16 +1875,17 @@ export async function getSharedContentMatchCountPerAvailableCategory({
     const includeSubCategory = matchSubCategory;
     const includeCategory = matchCategory;
 
-    for (const category of allCategories) {
-      const newCategories = new Set(categories);
-      newCategories.add(category.code);
+    for (const categoryGroup of allCategories) {
+      for (const category of categoryGroup.categories) {
+        const newCategories = new Set(categories);
+        newCategories.add(category.code);
 
-      const matches = await prisma.$queryRaw<
-        {
-          numContent: bigint;
-          numCurated: bigint;
-        }[]
-      >(Prisma.sql`
+        const matches = await prisma.$queryRaw<
+          {
+            numContent: bigint;
+            numCurated: bigint;
+          }[]
+        >(Prisma.sql`
       SELECT
         COUNT(distinct content.id) as numContent,
         COUNT(distinct libraryActivityInfos.contentId) as numCurated
@@ -1914,13 +1915,14 @@ export async function getSharedContentMatchCountPerAvailableCategory({
         ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
       `);
 
-      if (matches.length > 0) {
-        const numTotal = Number(matches[0].numContent);
-        const numCurated = Number(matches[0].numCurated);
-        matchesPerCategory[category.code] = {
-          numCommunity: numTotal - numCurated,
-          numCurated: numCurated,
-        };
+        if (matches.length > 0) {
+          const numTotal = Number(matches[0].numContent);
+          const numCurated = Number(matches[0].numCurated);
+          matchesPerCategory[category.code] = {
+            numCommunity: numTotal - numCurated,
+            numCurated: numCurated,
+          };
+        }
       }
     }
   } else {
@@ -1932,16 +1934,17 @@ export async function getSharedContentMatchCountPerAvailableCategory({
       !includeClassification && categoryId !== undefined;
     const includeCategory = !includeSubCategory && systemId !== undefined;
 
-    for (const category of allCategories) {
-      const newCategories = new Set(categories);
-      newCategories.add(category.code);
+    for (const categoryGroup of allCategories) {
+      for (const category of categoryGroup.categories) {
+        const newCategories = new Set(categories);
+        newCategories.add(category.code);
 
-      const matches = await prisma.$queryRaw<
-        {
-          numContent: bigint;
-          numCurated: bigint;
-        }[]
-      >(Prisma.sql`
+        const matches = await prisma.$queryRaw<
+          {
+            numContent: bigint;
+            numCurated: bigint;
+          }[]
+        >(Prisma.sql`
       SELECT
         COUNT(distinct content.id) as numContent,
         COUNT(distinct libraryActivityInfos.contentId) as numCurated
@@ -1963,13 +1966,14 @@ export async function getSharedContentMatchCountPerAvailableCategory({
         ${returnCategoryWhereClauses(newCategories)}
         ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
       `);
-      if (matches.length > 0) {
-        const numTotal = Number(matches[0].numContent);
-        const numCurated = Number(matches[0].numCurated);
-        matchesPerCategory[category.code] = {
-          numCommunity: numTotal - numCurated,
-          numCurated: numCurated,
-        };
+        if (matches.length > 0) {
+          const numTotal = Number(matches[0].numContent);
+          const numCurated = Number(matches[0].numCurated);
+          matchesPerCategory[category.code] = {
+            numCommunity: numTotal - numCurated,
+            numCurated: numCurated,
+          };
+        }
       }
     }
   }

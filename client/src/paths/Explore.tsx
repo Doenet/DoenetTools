@@ -44,6 +44,7 @@ import {
   Content,
   UserInfo,
   PartialContentClassification,
+  CategoryGroup,
 } from "../types";
 import { ContentInfoDrawer } from "../drawers/ContentInfoDrawer";
 import CardList from "../widgets/CardList";
@@ -120,9 +121,11 @@ export async function loader({
   const url = new URL(request.url);
 
   const categories: Set<string> = new Set();
-  for (const category of allCategories) {
-    if (url.searchParams.has(category.code)) {
-      categories.add(category.code);
+  for (const categoryGroup of allCategories) {
+    for (const category of categoryGroup.categories) {
+      if (url.searchParams.has(category.code)) {
+        categories.add(category.code);
+      }
     }
   }
 
@@ -218,7 +221,7 @@ export function Explore() {
       { numCurated?: number; numCommunity?: number }
     >;
     categories: Set<string>;
-    allCategories: Category[];
+    allCategories: ContentCategoryGroup[];
   };
 
   const {
@@ -690,11 +693,14 @@ export function Explore() {
       />,
     );
   }
-  for (const category of allCategories) {
-    if (categories.has(category.code)) {
-      extraFormInputs.push(
-        <Input type="hidden" name={category.code} key={category.code} />,
-      );
+
+  for (const categoryGroup of allCategories) {
+    for (const category of categoryGroup.categories) {
+      if (categories.has(category.code)) {
+        extraFormInputs.push(
+          <Input type="hidden" name={category.code} key={category.code} />,
+        );
+      }
     }
   }
   if (addTo) {

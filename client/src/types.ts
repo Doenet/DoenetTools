@@ -90,6 +90,12 @@ export type UserInfoWithEmail = UserInfo & {
   email: string;
 };
 
+export type CategoryGroup = {
+  name: string;
+  isExclusive: boolean;
+  categories: Category[];
+};
+
 export type Category = {
   id: number;
   code: string;
