@@ -698,6 +698,18 @@ export function Activities() {
               </MenuButton>
               <MenuList>
                 <MenuItem
+                  data-test="Add Document Button"
+                  onClick={() => {
+                    if (user?.isAuthor) {
+                      createNewDocument();
+                    } else {
+                      authorModePromptOnOpen();
+                    }
+                  }}
+                >
+                  Document {!user?.isAuthor && <>(with source code)</>}
+                </MenuItem>
+                <MenuItem
                   data-test="Add Problem Set Button"
                   onClick={() => {
                     setHaveContentSpinner(true);
@@ -728,18 +740,6 @@ export function Activities() {
                   }}
                 >
                   Question Bank
-                </MenuItem>
-                <MenuItem
-                  data-test="Add Document Button"
-                  onClick={() => {
-                    if (user?.isAuthor) {
-                      createNewDocument();
-                    } else {
-                      authorModePromptOnOpen();
-                    }
-                  }}
-                >
-                  Document {!user?.isAuthor && <>(with source code)</>}
                 </MenuItem>
               </MenuList>
             </Menu>
