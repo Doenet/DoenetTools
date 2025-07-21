@@ -3,8 +3,8 @@ import { prisma } from "../model";
 import {
   filterEditableContent,
   filterViewableContent,
+  getIsEditor,
 } from "../utils/permissions";
-import { getIsEditor } from "./curate";
 import { cidFromText } from "../utils/cid";
 
 export async function getDoenetMLComparison({

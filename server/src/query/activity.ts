@@ -1,11 +1,13 @@
 import { ContentType, Prisma } from "@prisma/client";
 import { prisma } from "../model";
-import { getIsEditor, getLibraryAccountId, mustBeEditor } from "./curate";
+import { getLibraryAccountId } from "./curate";
 import {
   filterEditableActivity,
   filterEditableContent,
   filterViewableContent,
   getEarliestRecoverableDate,
+  getIsEditor,
+  mustBeEditor,
 } from "../utils/permissions";
 import { getNextSortIndexForParent } from "../utils/sort";
 import { DateTime } from "luxon";
@@ -414,7 +416,6 @@ export async function updateContentFeatures({
           .map(([code, _]) => ({ code })),
       },
     },
-    select: { id: true },
   });
 }
 

@@ -3,15 +3,9 @@ import {
   createContentRevision,
   createContent,
   getAllDoenetmlVersions,
-  getContentSource,
   updateContent,
-  getContentRevisions,
 } from "../query/activity";
-import {
-  modifyContentSharedWith,
-  setContentIsPublic,
-  setContentLicense,
-} from "../query/share";
+import { modifyContentSharedWith, setContentIsPublic } from "../query/share";
 import { getContent } from "../query/activity_edit_view";
 import { copyContent } from "../query/copy_move";
 import { createTestUser } from "./utils";
@@ -21,6 +15,8 @@ import {
   updateOriginContentToRemix,
   updateRemixedContentToOrigin,
 } from "../query/remix";
+import { setContentLicense } from "../query/license";
+import { getDocEditorDoenetML, getDocEditorHistory } from "../query/editor";
 
 describe("Remix tests", () => {
   test("remix sources and remixes show only activities user can view", async () => {
@@ -629,7 +625,7 @@ describe("Remix tests", () => {
       });
     }
 
-    let newContent = await getContentSource({
+    let newContent = await getDocEditorDoenetML({
       contentId: contentIds[secondUpdated],
       loggedInUserId: ownerIds[secondUpdated],
     });
@@ -655,7 +651,7 @@ describe("Remix tests", () => {
       });
     }
 
-    newContent = await getContentSource({
+    newContent = await getDocEditorDoenetML({
       contentId: contentIds[thirdUpdated],
       loggedInUserId: ownerIds[thirdUpdated],
     });
@@ -786,7 +782,7 @@ describe("Remix tests", () => {
     expect(remixSources[1].remixContent.revisionNum).eq(1);
 
     // 1 content at first update
-    let newContent = await getContentSource({
+    let newContent = await getDocEditorDoenetML({
       contentId: contentIds[1],
       loggedInUserId: ownerIds[1],
     });
@@ -828,14 +824,14 @@ describe("Remix tests", () => {
     expect(remixSources[1].remixContent.revisionNum).eq(2);
 
     // 2 is also at first update
-    newContent = await getContentSource({
+    newContent = await getDocEditorDoenetML({
       contentId: contentIds[2],
       loggedInUserId: ownerIds[2],
     });
     expect(newContent.source).eq("Changed content 1");
 
     // 0 is at second update
-    newContent = await getContentSource({
+    newContent = await getDocEditorDoenetML({
       contentId: contentIds[0],
       loggedInUserId: ownerIds[0],
     });
@@ -843,7 +839,7 @@ describe("Remix tests", () => {
 
     // content 1 and 2 should have revisions before and after updating
     for (let idx = 1; idx <= 2; idx++) {
-      const allManualRevisions = await getContentRevisions({
+      const { revisions: allManualRevisions } = await getDocEditorHistory({
         contentId: contentIds[idx],
         loggedInUserId: ownerIds[idx],
       });
@@ -955,7 +951,7 @@ describe("Remix tests", () => {
     expect(remixSources[1].remixContent.revisionNum).eq(1);
 
     // 9 content at first update
-    let newContent = await getContentSource({
+    let newContent = await getDocEditorDoenetML({
       contentId: contentIds[0],
       loggedInUserId: ownerIds[0],
     });
@@ -997,14 +993,14 @@ describe("Remix tests", () => {
     expect(remixSources[1].remixContent.revisionNum).eq(2);
 
     // 2 is also at first update
-    newContent = await getContentSource({
+    newContent = await getDocEditorDoenetML({
       contentId: contentIds[2],
       loggedInUserId: ownerIds[2],
     });
     expect(newContent.source).eq("Changed content 1");
 
     // 1 is at second update
-    newContent = await getContentSource({
+    newContent = await getDocEditorDoenetML({
       contentId: contentIds[1],
       loggedInUserId: ownerIds[1],
     });
@@ -1012,7 +1008,7 @@ describe("Remix tests", () => {
 
     // content 0 and 2 should have revisions before and after updating
     for (let idx = 0; idx <= 2; idx += 2) {
-      const allManualRevisions = await getContentRevisions({
+      const { revisions: allManualRevisions } = await getDocEditorHistory({
         contentId: contentIds[idx],
         loggedInUserId: ownerIds[idx],
       });
@@ -1149,19 +1145,19 @@ describe("Remix tests", () => {
     expect(remixSources[1].remixContent.revisionNum).eq(1);
 
     // 0 and 2 are at original content
-    let newContent = await getContentSource({
+    let newContent = await getDocEditorDoenetML({
       contentId: contentIds[0],
       loggedInUserId: ownerIds[0],
     });
     expect(newContent.source).eq("Initial content");
-    newContent = await getContentSource({
+    newContent = await getDocEditorDoenetML({
       contentId: contentIds[2],
       loggedInUserId: ownerIds[2],
     });
     expect(newContent.source).eq("Initial content");
 
     // 1 is updated
-    newContent = await getContentSource({
+    newContent = await getDocEditorDoenetML({
       contentId: contentIds[1],
       loggedInUserId: ownerIds[1],
     });
@@ -1281,19 +1277,19 @@ describe("Remix tests", () => {
     expect(remixSources[1].remixContent.revisionNum).eq(2);
 
     // 1 is at original content
-    let newContent = await getContentSource({
+    let newContent = await getDocEditorDoenetML({
       contentId: contentIds[1],
       loggedInUserId: ownerIds[1],
     });
     expect(newContent.source).eq("Initial content");
 
     // 0 and 2 are updated
-    newContent = await getContentSource({
+    newContent = await getDocEditorDoenetML({
       contentId: contentIds[0],
       loggedInUserId: ownerIds[0],
     });
     expect(newContent.source).eq("Changed content");
-    newContent = await getContentSource({
+    newContent = await getDocEditorDoenetML({
       contentId: contentIds[2],
       loggedInUserId: ownerIds[2],
     });

@@ -16,24 +16,7 @@ import {
 import React, { RefObject, useEffect, useState } from "react";
 import { ContentRevision } from "../types";
 import { DateTime } from "luxon";
-import axios from "axios";
 import { FetcherWithComponents } from "react-router";
-
-export async function savePointInfoActions({ formObj }: { [k: string]: any }) {
-  if (formObj?._action === "update revision") {
-    const {
-      data: { createdNew },
-    } = await axios.post("/api/updateContent/updateContentRevision", {
-      contentId: formObj.contentId,
-      revisionName: formObj.revisionName,
-      note: formObj.note,
-      revisionNum: Number(formObj.revisionNum),
-    });
-    return { contentRevision: true, createdNew };
-  }
-
-  return null;
-}
 
 export function SavePointInfo({
   isOpen,
@@ -112,13 +95,13 @@ export function SavePointInfo({
             onClick={() => {
               fetcher.submit(
                 {
-                  _action: "update revision",
+                  path: "updateContent/updateContentRevision",
                   contentId,
                   revisionName,
                   note,
                   revisionNum: revision.revisionNum,
                 },
-                { method: "post" },
+                { method: "post", encType: "application/json" },
               );
               onClose();
             }}

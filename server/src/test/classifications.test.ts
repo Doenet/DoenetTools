@@ -11,7 +11,6 @@ import {
 import { createContent, updateContent } from "../query/activity";
 import { setContentIsPublic } from "../query/share";
 import { prisma } from "../model";
-import { getActivityEditorData } from "../query/activity_edit_view";
 
 test("Content classifications can only be edited by activity owner", async () => {
   const { userId } = await createTestUser();
@@ -461,28 +460,26 @@ test("Classifications show as primary, sorted by primary", async () => {
     loggedInUserId: userId,
   });
 
-  const { activity } = await getActivityEditorData({
+  const classifications = await getClassifications({
     contentId,
     loggedInUserId: userId,
   });
-  expect(activity!.classifications[0].code).eq("CalcMV.CV.1");
-  expect(activity!.classifications[1].code).eq("Alg.FN.1");
-  expect(activity!.classifications[2].code).eq("Trig.PC.1");
-  expect(activity!.classifications[3].code).eq("DiffEq.IC.1");
+  expect(classifications[0].code).eq("CalcMV.CV.1");
+  expect(classifications[1].code).eq("Alg.FN.1");
+  expect(classifications[2].code).eq("Trig.PC.1");
+  expect(classifications[3].code).eq("DiffEq.IC.1");
 
+  expect(classifications[1].descriptions[0].subCategory.category.category).eq(
+    "Algebra",
+  );
   expect(
-    activity!.classifications[1].descriptions[0].subCategory.category.category,
-  ).eq("Algebra");
-  expect(
-    activity!.classifications[1].descriptions[0].subCategory.category.system
-      .name,
+    classifications[1].descriptions[0].subCategory.category.system.name,
   ).eq("High school and college math");
 
+  expect(classifications[2].descriptions[0].subCategory.category.category).eq(
+    "Trigonometry",
+  );
   expect(
-    activity!.classifications[2].descriptions[0].subCategory.category.category,
-  ).eq("Trigonometry");
-  expect(
-    activity!.classifications[2].descriptions[0].subCategory.category.system
-      .name,
+    classifications[2].descriptions[0].subCategory.category.system.name,
   ).eq("High school and college math");
 });

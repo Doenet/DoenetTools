@@ -13,10 +13,10 @@ import {
   sortClassifications,
 } from "../utils/classificationsFeatures";
 import { returnClassificationListSelect } from "../utils/contentStructure";
-import { getIsEditor } from "./curate";
 import {
   filterEditableActivity,
   filterViewableActivity,
+  getIsEditor,
 } from "../utils/permissions";
 import { InvalidRequestError } from "../utils/error";
 
@@ -429,10 +429,9 @@ export async function getClassificationInfo({
   }
 }
 
-export async function getAvailableContentFeatures() {
-  const availableFeatures = await prisma.contentFeatures.findMany({
+export async function getAllContentFeatures() {
+  const allContentFeatures = await prisma.contentFeatures.findMany({
     orderBy: { sortIndex: "asc" },
   });
-
-  return { availableFeatures };
+  return { allContentFeatures };
 }

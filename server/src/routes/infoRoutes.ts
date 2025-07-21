@@ -1,11 +1,9 @@
 import express, { NextFunction, Request, Response } from "express";
-import { getAvailableContentFeatures } from "../query/classification";
+import { getAllContentFeatures } from "../query/classification";
 import {
   getAllDoenetmlVersions,
   getContentDescription,
-  getContentHistory,
 } from "../query/activity";
-import { getAllLicenses } from "../query/share";
 import { getAssignmentViewerDataFromCode } from "../query/assign";
 import {
   queryLoggedIn,
@@ -14,14 +12,15 @@ import {
 } from "../middleware/queryMiddleware";
 import { codeSchema } from "../schemas/assignSchema";
 import { contentIdSchema } from "../schemas/contentSchema";
-import { getRecentContent } from "../query/stats";
 import { getRecentContentSchema } from "../schemas/infoSchemas";
+import { getAllLicenses } from "../query/license";
+import { getRecentContent } from "../query/recent";
 
 export const infoRouter = express.Router();
 
 infoRouter.get(
-  "/getAvailableContentFeatures",
-  queryOptionalLoggedInNoArguments(getAvailableContentFeatures),
+  "/getAllContentFeatures",
+  queryOptionalLoggedInNoArguments(getAllContentFeatures),
 );
 
 infoRouter.get(
@@ -58,9 +57,4 @@ infoRouter.get(
 infoRouter.get(
   "/getRecentContent",
   queryLoggedIn(getRecentContent, getRecentContentSchema),
-);
-
-infoRouter.get(
-  "/getContentHistory/:contentId",
-  queryLoggedIn(getContentHistory, contentIdSchema),
 );

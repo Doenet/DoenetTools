@@ -1,16 +1,13 @@
-import {
-  getLibraryAccountId,
-  getMultipleLibraryRelations,
-  mustBeEditor,
-} from "./curate";
+import { getLibraryAccountId, getMultipleLibraryRelations } from "./curate";
 import { prisma } from "../model";
 import {
   filterEditableContent,
   getEarliestRecoverableDate,
+  mustBeEditor,
 } from "../utils/permissions";
 import { processContent, returnContentSelect } from "../utils/contentStructure";
 import { Content } from "../types";
-import { getAvailableContentFeatures } from "./classification";
+import { getAllContentFeatures } from "./classification";
 import { sanitizeQuery } from "../utils/search";
 import { Prisma } from "@prisma/client";
 import {
@@ -19,8 +16,9 @@ import {
 } from "../utils/classificationsFeatures";
 import { fromUUID, isEqualUUID } from "../utils/uuid";
 import { getAllDoenetmlVersions } from "./activity";
-import { getAllLicenses } from "./share";
-import { recordContentView, recordRecentContent } from "./stats";
+import { getAllLicenses } from "./license";
+import { recordRecentContent } from "./recent";
+import { recordContentView } from "./popularity";
 
 export async function getMyContent({
   ownerId,
@@ -109,7 +107,7 @@ export async function getMyContentOrLibraryContent({
   });
 
   //TODO: Does this API need to provide this extra data?
-  const { availableFeatures } = await getAvailableContentFeatures();
+  const { allContentFeatures } = await getAllContentFeatures();
   const { allDoenetmlVersions } = await getAllDoenetmlVersions();
   const { allLicenses } = await getAllLicenses();
 
@@ -121,7 +119,7 @@ export async function getMyContentOrLibraryContent({
     content,
     parent,
     libraryRelations,
-    availableFeatures,
+    allContentFeatures,
     allDoenetmlVersions,
     allLicenses,
     notMe: false as const,
@@ -266,7 +264,7 @@ export async function searchMyContentOrLibraryContent({
   });
 
   //TODO: Do we need this extra data in this API?
-  const { availableFeatures } = await getAvailableContentFeatures();
+  const { allContentFeatures } = await getAllContentFeatures();
   const { allDoenetmlVersions } = await getAllDoenetmlVersions();
   const { allLicenses } = await getAllLicenses();
 
@@ -274,7 +272,7 @@ export async function searchMyContentOrLibraryContent({
     content,
     parent,
     libraryRelations,
-    availableFeatures,
+    allContentFeatures,
     allDoenetmlVersions,
     allLicenses,
     notMe: false as const,

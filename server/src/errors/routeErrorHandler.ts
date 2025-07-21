@@ -1,7 +1,10 @@
 import { Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { ZodError, ZodIssue } from "zod";
-import { InvalidRequestError } from "../utils/error";
+import {
+  InvalidRequestError,
+  PermissionDeniedRedirectError,
+} from "../utils/error";
 import { Prisma } from "@prisma/client";
 
 export function handleErrors(res: Response, e: unknown) {
@@ -17,6 +20,11 @@ export function handleErrors(res: Response, e: unknown) {
     res
       .status(e.errorCode)
       .json({ error: "Invalid request", details: e.message });
+  } else if (e instanceof PermissionDeniedRedirectError) {
+    res.status(e.errorCode).json({
+      error: "Permission denied but can redirect",
+      details: e.message,
+    });
   } else if (e instanceof Prisma.PrismaClientKnownRequestError) {
     if (e.code === "P2001" || e.code === "P2003" || e.code === "P2025") {
       res.status(StatusCodes.NOT_FOUND).json({ error: "Not found" });

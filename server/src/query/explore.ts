@@ -12,10 +12,7 @@ import { processContent, returnContentSelect } from "../utils/contentStructure";
 import { fromUUID } from "../utils/uuid";
 import { getLibraryAccountId, maskLibraryUserInfo } from "./curate";
 import { PartialContentClassification, UserInfo } from "../types";
-import {
-  getAvailableContentFeatures,
-  getClassificationInfo,
-} from "./classification";
+import { getAllContentFeatures, getClassificationInfo } from "./classification";
 import { getAuthorInfo } from "./user";
 
 export async function searchSharedContent({
@@ -1860,7 +1857,7 @@ export async function getSharedContentMatchCountPerAvailableFeature({
     { numCommunity?: number; numCurated?: number }
   > = {};
 
-  const { availableFeatures } = await getAvailableContentFeatures();
+  const { allContentFeatures } = await getAllContentFeatures();
 
   if (query) {
     const query_as_prefixes = sanitizeQuery(query);
@@ -1874,7 +1871,7 @@ export async function getSharedContentMatchCountPerAvailableFeature({
     const includeSubCategory = matchSubCategory;
     const includeCategory = matchCategory;
 
-    for (const feature of availableFeatures) {
+    for (const feature of allContentFeatures) {
       const newFeatures = new Set(features);
       newFeatures.add(feature.code);
 
@@ -1931,7 +1928,7 @@ export async function getSharedContentMatchCountPerAvailableFeature({
       !includeClassification && categoryId !== undefined;
     const includeCategory = !includeSubCategory && systemId !== undefined;
 
-    for (const feature of availableFeatures) {
+    for (const feature of allContentFeatures) {
       const newFeatures = new Set(features);
       newFeatures.add(feature.code);
 

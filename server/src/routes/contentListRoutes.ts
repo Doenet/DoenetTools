@@ -18,32 +18,17 @@ import { z } from "zod";
 export const contentListRouter = express.Router();
 
 contentListRouter.get(
-  "/getMyContent/:ownerId",
+  "/getMyContent/:ownerId/:parentId?",
   queryOptionalLoggedIn(getMyContent, getContentSchema),
 );
 
 contentListRouter.get(
-  "/getMyContent/:ownerId/:parentId",
-  queryOptionalLoggedIn(getMyContent, getContentSchema),
-);
-
-contentListRouter.get(
-  "/searchMyContent/:ownerId",
+  "/searchMyContent/:ownerId/:parentId?",
   queryOptionalLoggedIn(searchMyContent, searchMyContentSchema),
 );
 
 contentListRouter.get(
-  "/searchMyContent/:ownerId/:parentId",
-  queryOptionalLoggedIn(searchMyContent, searchMyContentSchema),
-);
-
-contentListRouter.get(
-  "/getSharedContent/:ownerId",
-  queryOptionalLoggedIn(getSharedContent, getContentSchema),
-);
-
-contentListRouter.get(
-  "/getSharedContent/:ownerId/:parentId",
+  "/getSharedContent/:ownerId/:parentId?",
   queryOptionalLoggedIn(getSharedContent, getContentSchema),
 );
 

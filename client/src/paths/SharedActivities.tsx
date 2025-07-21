@@ -69,10 +69,14 @@ export async function loader({ params }: { params: any }) {
     `/api/contentList/getSharedContent/${params.ownerId}/${params.parentId ?? ""}`,
   );
 
+  const { data: owner } = await axios.get(
+    `/api/user/getUser/${params.ownerId}`,
+  );
+
   return {
     content: data.content,
     ownerId: params.ownerId,
-    owner: data.owner,
+    owner,
     parent: data.parent,
   };
 }
@@ -88,7 +92,12 @@ export function SharedActivities() {
     parent: Content | null;
   };
 
-  const { user, addTo, setAddTo } = useOutletContext<SiteContext>();
+  const { user, addTo, setAddTo, allLicenses } =
+    useOutletContext<SiteContext>();
+
+  const parentLicense = parent
+    ? (allLicenses.find((l) => l.code === parent.licenseCode) ?? null)
+    : null;
 
   const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
   const selectedCardsFiltered = selectedCards.filter((c) => c);
@@ -347,15 +356,15 @@ export function SharedActivities() {
         minHeight="20vh"
       >
         {parent ? (
-          parent.license ? (
-            parent.license.isComposition ? (
+          parentLicense ? (
+            parentLicense.isComposition ? (
               <>
                 <p>
                   <strong>{parent.name}</strong> by {owner.firstNames}{" "}
                   {owner.lastNames} is shared with these licenses:
                 </p>
                 <List spacing="20px" marginTop="10px">
-                  {parent.license.composedOf.map((comp) => (
+                  {parentLicense.composedOf.map((comp) => (
                     <DisplayLicenseItem licenseItem={comp} key={comp.code} />
                   ))}
                 </List>
@@ -370,7 +379,7 @@ export function SharedActivities() {
                   {owner.lastNames} is shared using the license:
                 </p>
                 <List marginTop="10px">
-                  <DisplayLicenseItem licenseItem={parent.license} />
+                  <DisplayLicenseItem licenseItem={parentLicense} />
                 </List>
               </>
             )

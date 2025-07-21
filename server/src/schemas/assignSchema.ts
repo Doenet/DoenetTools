@@ -2,7 +2,11 @@ import { z } from "zod";
 import { optionalUuidSchema, uuidSchema } from "./uuid";
 import { DateTime } from "luxon";
 import { stringAsBoolSchema } from "./boolean";
-import { rangedNumber, stringAsRangedNumber } from "./rangedNumber";
+import {
+  rangedNumber,
+  stringAsRangedNumber,
+  stringAsRangedNumberIncludingZero,
+} from "./rangedNumber";
 
 export const assignmentCloseAtSchema = z.object({
   contentId: uuidSchema,
@@ -14,7 +18,7 @@ export const assignmentCloseAtSchema = z.object({
 
 export const assignmentMaxAttemptsSchema = z.object({
   contentId: uuidSchema,
-  maxAttempts: rangedNumber,
+  maxAttempts: stringAsRangedNumberIncludingZero,
 });
 
 export const assignmentSettingsSchema = z.object({

@@ -40,10 +40,10 @@ export function getUserInfoIfLoggedIn({
     return;
   }
 
-  return getUserInfo({ loggedInUserId });
+  return getMyUserInfo({ loggedInUserId });
 }
 
-export async function getUserInfo({
+export async function getMyUserInfo({
   loggedInUserId,
 }: {
   loggedInUserId: Uint8Array;
@@ -60,6 +60,10 @@ export async function getUserInfo({
     },
   });
   return { user };
+}
+
+export async function getUser({ userId }: { userId: Uint8Array }) {
+  return getAuthorInfo(userId);
 }
 
 export async function getAuthorInfo(userId: Uint8Array): Promise<UserInfo> {

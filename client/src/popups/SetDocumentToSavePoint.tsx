@@ -15,29 +15,8 @@ import {
 import React, { RefObject, useEffect, useState } from "react";
 import { FetcherWithComponents } from "react-router";
 import { ContentRevision } from "../types";
-import axios from "axios";
 import { DateTime } from "luxon";
 import { MdError } from "react-icons/md";
-
-export async function setDocumentToSavePointActions({
-  formObj,
-}: {
-  [k: string]: any;
-}) {
-  if (formObj?._action === "revert to revision") {
-    try {
-      const { data } = await axios.post("/api/updateContent/revertToRevision", {
-        contentId: formObj.contentId,
-        revisionNum: Number(formObj.revisionNum),
-      });
-      return { revertedRevision: true, revision: data };
-    } catch (_e) {
-      return { revertedRevision: false };
-    }
-  }
-
-  return null;
-}
 
 export function SetDocumentToSavePoint({
   isOpen,
@@ -164,11 +143,11 @@ export function SetDocumentToSavePoint({
                 await doenetmlChangeCallback();
                 fetcher.submit(
                   {
-                    _action: "revert to revision",
+                    path: "updateContent/revertToRevision",
                     contentId,
                     revisionNum: revision.revisionNum,
                   },
-                  { method: "post" },
+                  { method: "post", encType: "application/json" },
                 );
               }}
             >

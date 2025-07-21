@@ -3,16 +3,15 @@ import {
   contentIdEmailSchema,
   setLicenseCodeSchema,
   contentIdUserIdSchema,
+  setContentIsPublicSchema,
 } from "../schemas/shareSchema";
 import {
-  makeContentPrivate,
-  makeContentPublic,
-  setContentLicense,
+  setContentIsPublic,
   shareContentWithEmail,
   unshareContent,
 } from "../query/share";
-import { contentIdSchema } from "../schemas/contentSchema";
 import { queryLoggedIn } from "../middleware/queryMiddleware";
+import { setContentLicense } from "../query/license";
 
 export const shareRouter = express.Router();
 
@@ -22,13 +21,8 @@ shareRouter.post(
 );
 
 shareRouter.post(
-  "/makeContentPublic",
-  queryLoggedIn(makeContentPublic, contentIdSchema),
-);
-
-shareRouter.post(
-  "/makeContentPrivate",
-  queryLoggedIn(makeContentPrivate, contentIdSchema),
+  "/setContentIsPublic",
+  queryLoggedIn(setContentIsPublic, setContentIsPublicSchema),
 );
 
 shareRouter.post(

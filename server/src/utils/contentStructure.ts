@@ -35,7 +35,7 @@ import { InvalidRequestError } from "./error";
  * - isShared: `false`
  * - sharedWith: an empty array
  */
-function processSharedWith(
+export function processSharedWith(
   sharedWithOrig: FullShareInfo | IdShareInfo | null | undefined,
   forUser?: Uint8Array,
 ): { isShared: boolean; sharedWith: UserInfoWithEmail[] } {
@@ -195,14 +195,7 @@ export function returnContentSelect({
     isPublic: true,
     contentFeatures: true,
     sharedWith,
-    license: {
-      include: {
-        composedOf: {
-          select: { composedOf: true },
-          orderBy: { composedOf: { sortIndex: "asc" as const } },
-        },
-      },
-    },
+    licenseCode: true,
     parent: {
       select: {
         id: true,
@@ -323,7 +316,7 @@ type PreliminaryContent = {
     sortIndex: number;
   }[];
   sharedWith: { userId: Uint8Array }[] | { user: UserInfoWithEmail }[];
-  license: PreliminaryLicense | null;
+  licenseCode: LicenseCode | null;
   parent?: {
     id: Uint8Array;
     name: string;
@@ -385,6 +378,37 @@ type PreliminaryContent = {
   paginate: boolean;
 };
 
+/**
+ * Converts fields `assigned` and `codeValidUntil` to field `assignmentStatus`
+ * Leaves any additional fields the same.
+ */
+export function processAssignmentStatus({
+  assigned,
+  codeValidUntil,
+}: {
+  assigned: boolean;
+  codeValidUntil: Date | null;
+}) {
+  const isOpen = codeValidUntil
+    ? DateTime.now() <= DateTime.fromJSDate(codeValidUntil)
+    : false;
+  const assignmentStatus: AssignmentStatus = assigned
+    ? isOpen
+      ? "Open"
+      : "Closed"
+    : "Unassigned";
+
+  return assignmentStatus;
+}
+
+export function processClassifications(
+  queryResult: Pick<PreliminaryContent, "classifications">,
+) {
+  return sortClassifications(
+    (queryResult.classifications ?? []).map((c) => c.classification),
+  );
+}
+
 export function processContent(
   preliminaryContent: PreliminaryContent,
   forUserId?: Uint8Array,
@@ -395,7 +419,7 @@ export function processContent(
     activityLevelAttempts,
     itemLevelAttempts,
     sharedWith: sharedWithOrig,
-    license,
+    licenseCode,
     parent,
     classifications,
     rootAssignment,
@@ -420,57 +444,21 @@ export function processContent(
   const assignmentInfoObj: { assignmentInfo?: AssignmentInfo } = {};
 
   if (rootAssignment) {
-    const {
-      codeValidUntil,
-      classCode,
-      assigned,
-      maxAttempts,
-      mode,
-      individualizeByStudent,
-      _count,
-    } = rootAssignment;
-    const isOpen = codeValidUntil
-      ? DateTime.now() <= DateTime.fromJSDate(codeValidUntil)
-      : false;
-    const assignmentStatus: AssignmentStatus = assigned
-      ? isOpen
-        ? "Open"
-        : "Closed"
-      : "Unassigned";
+    const { assigned, codeValidUntil, _count, ...other } = rootAssignment;
+
     assignmentInfoObj.assignmentInfo = {
-      assignmentStatus,
-      classCode,
+      ...other,
+      assignmentStatus: processAssignmentStatus({ assigned, codeValidUntil }),
       codeValidUntil,
-      mode,
-      individualizeByStudent,
-      maxAttempts,
       hasScoreData: _count ? _count.contentState > 0 : false,
     };
   } else if (nonRootAssignment) {
-    const {
-      codeValidUntil,
-      classCode,
-      assigned,
-      maxAttempts,
-      mode,
-      individualizeByStudent,
-      rootContent,
-    } = nonRootAssignment;
-    const isOpen = codeValidUntil
-      ? DateTime.now() <= DateTime.fromJSDate(codeValidUntil)
-      : false;
-    const assignmentStatus: AssignmentStatus = assigned
-      ? isOpen
-        ? "Open"
-        : "Closed"
-      : "Unassigned";
+    const { codeValidUntil, assigned, rootContent, ...other } =
+      nonRootAssignment;
     assignmentInfoObj.assignmentInfo = {
-      assignmentStatus,
-      classCode,
+      ...other,
+      assignmentStatus: processAssignmentStatus({ assigned, codeValidUntil }),
       codeValidUntil,
-      mode,
-      individualizeByStudent,
-      maxAttempts,
       otherRoot: {
         rootContentId: rootContent.id,
         rootName: rootContent.name,
@@ -488,10 +476,8 @@ export function processContent(
     ...assignmentInfoObj,
     isShared,
     sharedWith,
-    license: license ? processLicense(license) : null,
-    classifications: sortClassifications(
-      (classifications ?? []).map((c) => c.classification),
-    ),
+    licenseCode,
+    classifications: processClassifications({ classifications }),
     parent: parent ? processParent(parent, forUserId) : null,
   };
 

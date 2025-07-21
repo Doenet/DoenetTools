@@ -3,13 +3,14 @@ import { prisma } from "../model";
 import {
   filterEditableActivity,
   filterEditableContent,
+  getIsEditor,
+  isInLibrary,
 } from "../utils/permissions";
 import { getRandomValues } from "crypto";
 import { AssignmentMode, ContentType, Prisma } from "@prisma/client";
 import { Content, UserInfo } from "../types";
 import { isEqualUUID } from "../utils/uuid";
 import { processContent, returnContentSelect } from "../utils/contentStructure";
-import { recordContentView } from "./stats";
 import { InvalidRequestError } from "../utils/error";
 import { getContent } from "./activity_edit_view";
 import {
@@ -18,9 +19,10 @@ import {
   getScoresOfAllStudents,
   ItemScores,
 } from "./scores";
-import { getUserInfo } from "./user";
+import { getMyUserInfo } from "./user";
 import { StatusCodes } from "http-status-codes";
 import { getDescendantIds } from "./activity";
+import { recordContentView } from "./popularity";
 
 /**
  * Assigned the content `contentId` owned by `loggedInUserId`
@@ -249,8 +251,13 @@ export async function updateAssignmentMaxAttempts({
   maxAttempts: number;
   loggedInUserId: Uint8Array;
 }) {
-  // verify content exists and is not assigned as part of another root assignment
-  await verifyNotAssignedAsNonRoot({ contentId, loggedInUserId });
+  const isEditor = await getIsEditor(loggedInUserId);
+  const inLibrary = await isInLibrary(contentId);
+
+  if (!inLibrary) {
+    // verify content exists and is not assigned as part of another root assignment
+    await verifyNotAssignedAsNonRoot({ contentId, loggedInUserId });
+  }
 
   if (maxAttempts && maxAttempts > 65535) {
     throw new InvalidRequestError(
@@ -261,7 +268,7 @@ export async function updateAssignmentMaxAttempts({
   await prisma.content.update({
     where: {
       id: contentId,
-      ...filterEditableActivity(loggedInUserId),
+      ...filterEditableActivity(loggedInUserId, isEditor),
     },
     data: {
       rootAssignment: {
@@ -301,30 +308,35 @@ export async function updateAssignmentSettings({
   individualizeByStudent?: boolean;
   loggedInUserId: Uint8Array;
 }) {
-  // verify content exists and is not assigned as part of another root assignment
-  await verifyNotAssignedAsNonRoot({ contentId, loggedInUserId });
+  const isEditor = await getIsEditor(loggedInUserId);
+  const inLibrary = await isInLibrary(contentId);
 
-  // verify that content is not currently assigned
-  const assignment = await prisma.assignments.findUnique({
-    where: {
-      rootContentId: contentId,
-      rootContent: {
-        ...filterEditableActivity(loggedInUserId),
+  if (!inLibrary) {
+    // verify content exists and is not assigned as part of another root assignment
+    await verifyNotAssignedAsNonRoot({ contentId, loggedInUserId });
+
+    // verify that content is not currently assigned
+    const assignment = await prisma.assignments.findUnique({
+      where: {
+        rootContentId: contentId,
+        rootContent: {
+          ...filterEditableActivity(loggedInUserId),
+        },
       },
-    },
-    select: { assigned: true },
-  });
+      select: { assigned: true },
+    });
 
-  if (assignment?.assigned) {
-    throw new InvalidRequestError(
-      "Cannot update assignment mode or individualizeByStudent of assigned content",
-    );
+    if (assignment?.assigned) {
+      throw new InvalidRequestError(
+        "Cannot update assignment mode or individualizeByStudent of assigned content",
+      );
+    }
   }
 
   await prisma.content.update({
     where: {
       id: contentId,
-      ...filterEditableActivity(loggedInUserId),
+      ...filterEditableActivity(loggedInUserId, isEditor),
     },
     data: {
       rootAssignment: {
@@ -1040,7 +1052,7 @@ export async function getAssignmentResponseStudent({
     ? DateTime.now() <= DateTime.fromJSDate(assignment.codeValidUntil)
     : false;
 
-  const { user } = await getUserInfo({ loggedInUserId: responseUserId });
+  const { user } = await getMyUserInfo({ loggedInUserId: responseUserId });
 
   const overallScores = await getScore({
     contentId,

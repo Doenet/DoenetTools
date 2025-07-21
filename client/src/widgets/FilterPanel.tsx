@@ -38,7 +38,7 @@ export function FilterPanel({
   classificationInfo,
   countByFeature,
   features,
-  availableFeatures,
+  allContentFeatures,
   search,
   navigate,
 }: {
@@ -54,7 +54,7 @@ export function FilterPanel({
     { numCurated?: number; numCommunity?: number }
   >;
   features: Set<string>;
-  availableFeatures: ContentFeature[];
+  allContentFeatures: ContentFeature[];
   search: string;
   navigate: NavigateFunction;
 }) {
@@ -62,7 +62,7 @@ export function FilterPanel({
   if (authorInfo || classificationInfo || features.size > 0) {
     const clearFilterButtons: ReactElement[] = [];
 
-    for (const feature of availableFeatures) {
+    for (const feature of allContentFeatures) {
       if (features.has(feature.code)) {
         clearFilterButtons.push(
           <Tooltip
@@ -259,7 +259,7 @@ export function FilterPanel({
         Content features
       </Heading>
       <VStack alignItems="flex-start" gap={0} ml="10px" mr="4px">
-        {availableFeatures.map((feature) => {
+        {allContentFeatures.map((feature) => {
           const isPresent = features.has(feature.code);
           const c = countByFeature[feature.code];
           const numCurated = c.numCurated || 0;
@@ -809,11 +809,11 @@ function clearUnclassifiedFilter(search: string, navigate: NavigateFunction) {
 
 // function clearAllFilters(
 //   search: string,
-//   availableFeatures: ContentFeature[],
+//   allContentFeatures: ContentFeature[],
 //   navigate: NavigateFunction,
 // ) {
 //   let newSearch = search;
-//   for (const feature of availableFeatures) {
+//   for (const feature of allContentFeatures) {
 //     newSearch = clearQueryParameter(feature.code, newSearch);
 //   }
 //   newSearch = clearQueryParameter("author", newSearch);

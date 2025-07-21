@@ -4,7 +4,12 @@ import {
   MdOutlineOndemandVideo,
   MdOutlineSwipeLeft,
 } from "react-icons/md";
-import { ContentClassification, Content, ContentType } from "../types";
+import {
+  ContentClassification,
+  Content,
+  ContentType,
+  DoenetmlVersion,
+} from "../types";
 import { ActivitySource } from "../viewerTypes";
 import { IconType } from "react-icons/lib";
 import { FaFolder } from "react-icons/fa";
@@ -200,4 +205,20 @@ for (const t of ["folder", "sequence", "select", "singleDoc"]) {
   });
 
   menuIcons[t] = icon;
+}
+
+export function getDoenetMLDeprecationWarnings(
+  doenetmlVersion: DoenetmlVersion,
+) {
+  return doenetmlVersion.deprecated
+    ? [
+        {
+          level: 1,
+          message: `DoenetML version
+            ${doenetmlVersion.displayedVersion} is deprecated.
+            ${doenetmlVersion.deprecationMessage}`,
+          doenetMLrange: {},
+        },
+      ]
+    : [];
 }

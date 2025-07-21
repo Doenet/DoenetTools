@@ -3,7 +3,7 @@ import { optionalUuidSchema, uuidOrNullSchema, uuidSchema } from "./uuid";
 import { stringAsBoolSchema } from "./boolean";
 
 export const curationParentIdSchema = z.object({
-  parentId: uuidOrNullSchema,
+  parentId: optionalUuidSchema,
 });
 
 export const searchCurationFolderContentSchema = z.object({

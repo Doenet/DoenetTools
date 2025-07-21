@@ -15,11 +15,7 @@ import {
   updateContent,
   updateContentFeatures,
 } from "../query/activity";
-import {
-  makeContentPublic,
-  modifyContentSharedWith,
-  setContentIsPublic,
-} from "../query/share";
+import { modifyContentSharedWith, setContentIsPublic } from "../query/share";
 import {
   browseClassificationCategoriesWithSharedContent,
   browseClassificationCategorySharedContent,
@@ -7875,9 +7871,10 @@ test("Explore APIs do not provide email", async () => {
     name: code,
     parentId: null,
   });
-  await makeContentPublic({
+  await setContentIsPublic({
     loggedInUserId,
     contentId,
+    isPublic: true,
   });
 
   let results = await browseSharedContent({

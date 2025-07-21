@@ -1,97 +1,63 @@
-import React, {
-  ReactElement,
-  RefObject,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { ReactElement, useEffect, useMemo, useState } from "react";
 import { DoenetEditor } from "@doenet/doenetml-iframe";
-import { PanelPair } from "../widgets/PanelPair";
-import { ContentRevision, DoenetmlVersion } from "../types";
+import { PanelPair } from "../../widgets/PanelPair";
+import { ContentRevision, DoenetmlVersion } from "../../types";
 import {
   Box,
   Button,
+  Center,
   Flex,
   Heading,
   Hide,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
   Select,
   Show,
-  Text,
   Tooltip,
   useDisclosure,
-  Drawer,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
-  DrawerHeader,
-  DrawerBody,
-  DrawerFooter,
 } from "@chakra-ui/react";
 import { MdOutlineCameraAlt } from "react-icons/md";
-import { FetcherWithComponents } from "react-router";
-
 import {
-  CreateDocumentSavePoint,
-  createDocumentSavePointActions,
-} from "../popups/CreateDocumentSavePoint";
-import { SavePointInfo, savePointInfoActions } from "../popups/SavePointInfo";
+  useFetcher,
+  useLoaderData,
+  useNavigate,
+  useOutletContext,
+} from "react-router";
+
+import { CreateDocumentSavePoint } from "../../popups/CreateDocumentSavePoint";
+import { SavePointInfo } from "../../popups/SavePointInfo";
 import { DateTime } from "luxon";
-import { cidFromText } from "../utils/cid";
-import {
-  SetDocumentToSavePoint,
-  setDocumentToSavePointActions,
-} from "../popups/SetDocumentToSavePoint";
+import { cidFromText } from "../../utils/cid";
+import { SetDocumentToSavePoint } from "../../popups/SetDocumentToSavePoint";
+import { EditorContext } from "./EditorHeader";
+import axios from "axios";
 
-export async function doenetMLHistoryActions({
-  formObj,
-}: {
-  [k: string]: any;
-}) {
-  const resultTSM = await createDocumentSavePointActions({ formObj });
-  if (resultTSM) {
-    return resultTSM;
-  }
+export async function loader({ params }: { params: any }) {
+  const { data } = await axios.get(
+    `/api/editor/getDocEditorHistory/${params.contentId}`,
+  );
 
-  const resultRM = await setDocumentToSavePointActions({ formObj });
-  if (resultRM) {
-    return resultRM;
-  }
-
-  const resultRIM = await savePointInfoActions({ formObj });
-  if (resultRIM) {
-    return resultRIM;
-  }
-
-  return null;
+  return data;
 }
 
-export function DoenetMLHistoryDrawer({
-  doenetML,
-  doenetmlChangeCallback,
-  immediateDoenetmlChangeCallback,
-  documentStructureCallback: _documentStructureCallback, /// TODO: how to handle document structure changes
-  doenetmlVersion,
-  isOpen,
-  onClose,
-  finalFocusRef,
-  fetcher,
-  contentId,
-  activityName = "",
-  revisions,
-}: {
-  doenetML: string;
-  doenetmlChangeCallback: () => Promise<void>;
-  immediateDoenetmlChangeCallback: (arg: string) => void;
-  documentStructureCallback: (arg: any) => void;
-  doenetmlVersion: DoenetmlVersion;
-  isOpen: boolean;
-  onClose: () => void;
-  finalFocusRef?: RefObject<HTMLElement>;
-  fetcher: FetcherWithComponents<any>;
-  contentId: string;
-  activityName?: string;
-  revisions: ContentRevision[];
-}) {
+/**
+ * This page allows you to create save points (revisions) of your document and revert back to them.
+ * Context: `documentEditor`
+ */
+export function DocEditorHistoryMode() {
+  const { doenetML, doenetmlVersion, revisions } = useLoaderData() as {
+    doenetML: string;
+    doenetmlVersion: DoenetmlVersion;
+    revisions: ContentRevision[];
+  };
+  const { contentId, contentName } = useOutletContext<EditorContext>();
+
+  const fetcher = useFetcher();
+  const navigate = useNavigate();
+
   const [revNum, setRevNum] = useState(0);
 
   const selectedRevision = useMemo(() => {
@@ -193,8 +159,8 @@ export function DoenetMLHistoryDrawer({
       contentId={contentId}
       revision={selectedRevision}
       fetcher={fetcher}
-      doenetmlChangeCallback={doenetmlChangeCallback}
-      immediateDoenetmlChangeCallback={immediateDoenetmlChangeCallback}
+      doenetmlChangeCallback={async () => {}}
+      immediateDoenetmlChangeCallback={async () => {}}
       setRevNum={setRevNum}
     />
   );
@@ -363,39 +329,28 @@ export function DoenetMLHistoryDrawer({
       {createRevisionModel}
       {revisionRemixInfoModal}
       {setToRevisionModal}
-      <Drawer
-        isOpen={isOpen}
-        placement="right"
-        onClose={onClose}
-        finalFocusRef={finalFocusRef}
+      <Modal
         size="full"
+        motionPreset="none"
+        isOpen={true}
+        onClose={() => {
+          navigate(-1);
+        }}
       >
-        <DrawerOverlay />
-        <DrawerContent>
-          <DrawerCloseButton data-test="Close History Drawer Button" />
-          <DrawerHeader textAlign="center" height="70px">
-            Document history
-            <Tooltip label={activityName} openDelay={1000}>
-              <Text fontSize="smaller" noOfLines={1}>
-                {activityName}
-              </Text>
-            </Tooltip>
-          </DrawerHeader>
-
-          <DrawerBody pb="0">
+        <ModalContent>
+          <ModalHeader>
+            <Center>{contentName} - Document history</Center>
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
             <PanelPair
               panelA={currentEditor}
               panelB={otherEditor}
               height={`calc(100vh - 138px)`}
             />
-          </DrawerBody>
-          <DrawerFooter height="60px">
-            <Button variant="outline" mr={3} onClick={onClose}>
-              Close
-            </Button>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </>
   );
 }

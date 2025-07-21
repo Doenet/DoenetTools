@@ -1,6 +1,15 @@
 import React from "react";
 import { License } from "../types";
-import { Box, HStack, Image, ListItem, Text, Tooltip } from "@chakra-ui/react";
+import {
+  Box,
+  Card,
+  HStack,
+  Image,
+  List,
+  ListItem,
+  Text,
+  Tooltip,
+} from "@chakra-ui/react";
 import { Link } from "react-router";
 
 export function SmallLicenseBadges({
@@ -122,5 +131,62 @@ export function DisplayLicenseItem({
     <ListItem>
       <HStack>{item}</HStack>
     </ListItem>
+  );
+}
+
+/**
+ * This widget displays info for an author about the selected license on their activity.
+ */
+export function AuthorLicenseBox({
+  license,
+  contentTypeName,
+  isShared,
+  skipExplanation = false,
+}: {
+  license: License;
+  contentTypeName: string;
+  isShared: boolean;
+  skipExplanation?: boolean;
+}) {
+  return (
+    <Card
+      // marginTop="20px"
+      border="2px solid lightgray"
+      background="lightgray"
+      padding="10px"
+    >
+      <>
+        {license.isComposition ? (
+          <>
+            {!skipExplanation && (
+              <p>
+                This {contentTypeName} {isShared ? "is" : "will be"} shared with
+                these licenses:
+              </p>
+            )}
+            <List spacing="20px" marginTop="10px">
+              {license.composedOf.map((comp) => (
+                <DisplayLicenseItem licenseItem={comp} key={comp.code} />
+              ))}
+            </List>
+            <p style={{ marginTop: "10px" }}>
+              (You authorize reuse under any of these licenses.)
+            </p>
+          </>
+        ) : (
+          <>
+            {!skipExplanation && (
+              <p>
+                This {contentTypeName} {isShared ? "is" : "will be"} shared
+                using the license:
+              </p>
+            )}
+            <List marginTop="10px">
+              <DisplayLicenseItem licenseItem={license} />
+            </List>
+          </>
+        )}
+      </>
+    </Card>
   );
 }

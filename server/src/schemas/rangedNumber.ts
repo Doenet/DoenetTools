@@ -12,3 +12,9 @@ export const rangedNumber = z.number().int().gte(1).lte(65535);
  * Use this alternative to `rangedNumber` for `GET` requests where all parameters are inherently strings.
  */
 export const stringAsRangedNumber = z.coerce.number().int().gte(1).lte(65535);
+
+export const stringAsRangedNumberIncludingZero = z.coerce
+  .number()
+  .int()
+  .gte(0)
+  .lte(65535);

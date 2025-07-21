@@ -85,16 +85,20 @@ export default function Card({
   disableAsSelected?: boolean;
   idx?: number;
 }) {
+  const { user, setAddTo, allLicenses } = useOutletContext<SiteContext>();
+
   const {
     contentId,
     name: title,
     isPublic,
     isShared,
-    license,
+    licenseCode,
     contentFeatures,
     type: contentType,
     parent,
   } = cardContent.content;
+
+  const license = allLicenses.find((l) => l.code === licenseCode) ?? null;
 
   const {
     menuItems,
@@ -106,7 +110,6 @@ export default function Card({
     libraryEditorAvatarName,
   } = cardContent;
   const contentTypeName = contentTypeToName[contentType];
-  const { user, setAddTo } = useOutletContext<SiteContext>();
 
   // === SIZE SETTINGS ===
   const itemHeight = "2.3rem";
@@ -292,7 +295,7 @@ export default function Card({
   const licenseBadges = (
     <Flex alignItems="center" marginLeft="3rem">
       {showThisBage ? (
-        <SmallLicenseBadges license={license} suppressLink={true} />
+        <SmallLicenseBadges license={license!} suppressLink={true} />
       ) : (
         // Same width as `SmallLicenseBadges`
         <Flex width="80px" />

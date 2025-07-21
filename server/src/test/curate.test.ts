@@ -17,23 +17,14 @@ import {
   addComment,
   getComments,
 } from "../query/curate";
-import {
-  createContent,
-  deleteContent,
-  getContentSource,
-  updateContent,
-} from "../query/activity";
-import {
-  makeContentPrivate,
-  makeContentPublic,
-  modifyContentSharedWith,
-  setContentIsPublic,
-} from "../query/share";
+import { createContent, deleteContent, updateContent } from "../query/activity";
+import { modifyContentSharedWith, setContentIsPublic } from "../query/share";
 import { getContent } from "../query/activity_edit_view";
 import { fromUUID } from "../utils/uuid";
 import { getActivityIdFromSourceId } from "./testQueries";
-import { getUserInfo } from "../query/user";
+import { getMyUserInfo } from "../query/user";
 import { moveContent } from "../query/copy_move";
+import { getDocEditorDoenetML } from "../query/editor";
 
 async function expectStatusIs(
   sourceId: Uint8Array,
@@ -236,7 +227,7 @@ test("user privileges for library", async () => {
   await expectStatusIs(sourceId, statusClaimedEditor, editorId);
   await expectStatusIs(sourceId, statusNone, ownerId);
 
-  const { user: editorUserInfoAll } = await getUserInfo({
+  const { user: editorUserInfoAll } = await getMyUserInfo({
     loggedInUserId: editorId,
   });
   const editorUserInfo: UserInfo = {
@@ -453,7 +444,6 @@ test("owner requests library review, has conversation, editor publishes", async 
   comments = await getComments({
     contentId: draftId,
     loggedInUserId: editorId,
-    asEditor: true,
   });
   expect(comments.length).eqls(1);
   expect(comments[0].user.userId).eqls(ownerId);
@@ -481,7 +471,6 @@ test("owner requests library review, has conversation, editor publishes", async 
   comments = await getComments({
     contentId: draftId,
     loggedInUserId: editorId,
-    asEditor: true,
   });
   expect(comments.length).eqls(2);
   expect(comments[0].user.userId).eqls(ownerId);
@@ -508,7 +497,7 @@ test("owner requests library review, has conversation, editor publishes", async 
   });
   expect(status.activity?.activityContentId).eqls(draftId);
 
-  const curatedActivity = await getContentSource({
+  const curatedActivity = await getDocEditorDoenetML({
     contentId: draftId,
     loggedInUserId: ownerId,
   });
@@ -524,7 +513,6 @@ test("owner requests library review, has conversation, editor publishes", async 
   comments = await getComments({
     contentId: draftId,
     loggedInUserId: editorId,
-    asEditor: true,
   });
   expect(comments.length).eqls(3);
   expect(comments[0].user.userId).eqls(ownerId);
@@ -605,7 +593,6 @@ test("random user requests, editor publishes", async () => {
   comments = await getComments({
     contentId: draftId,
     loggedInUserId: editorId,
-    asEditor: true,
   });
   expect(comments.length).eqls(1);
   expect(comments[0].user.userId).eqls(ownerId);
@@ -663,7 +650,7 @@ test("published activity in library with unavailable source activity", async () 
       sourceContentId: contentId,
     },
   };
-  const { user: editorUserAll } = await getUserInfo({
+  const { user: editorUserAll } = await getMyUserInfo({
     loggedInUserId: editorId,
   });
   const editorUser: UserInfo = {
@@ -1288,9 +1275,10 @@ test("Cannot use normal sharing endpoints for library activities", async () => {
   ).rejects.toThrowError();
 
   await expect(() =>
-    makeContentPublic({
+    setContentIsPublic({
       contentId: draftId,
       loggedInUserId: editorId,
+      isPublic: true,
     }),
   ).rejects.toThrowError();
 
@@ -1300,9 +1288,10 @@ test("Cannot use normal sharing endpoints for library activities", async () => {
   });
 
   await expect(() =>
-    makeContentPrivate({
+    setContentIsPublic({
       contentId: draftId,
       loggedInUserId: editorId,
+      isPublic: false,
     }),
   ).rejects.toThrowError();
 });
@@ -1450,9 +1439,10 @@ test("getCurationQueue does not provide email", async () => {
     loggedInUserId: userId,
     parentId: null,
   });
-  await makeContentPublic({
+  await setContentIsPublic({
     contentId,
     loggedInUserId: userId,
+    isPublic: true,
   });
   await suggestToBeCurated({
     contentId,

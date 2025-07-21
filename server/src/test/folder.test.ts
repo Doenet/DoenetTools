@@ -9,16 +9,11 @@ import {
   updateContentFeatures,
 } from "../query/activity";
 import {
-  makeContentPublic,
   modifyContentSharedWith,
   setContentIsPublic,
   shareContentWithEmail,
 } from "../query/share";
-import {
-  getActivityEditorData,
-  getActivityViewerData,
-  getContent,
-} from "../query/activity_edit_view";
+import { getActivityViewerData, getContent } from "../query/activity_edit_view";
 import {
   checkIfContentContains,
   copyContent,
@@ -26,10 +21,12 @@ import {
 } from "../query/copy_move";
 import {
   addClassification,
+  getClassifications,
   searchPossibleClassifications,
 } from "../query/classification";
 import { ContentType } from "@prisma/client";
 import { updateUser } from "../query/user";
+import { getEditorSettings } from "../query/editor";
 
 test("getMyContent returns both public and private content, getSharedContent returns only public", async () => {
   const owner = await createTestUser();
@@ -1828,13 +1825,13 @@ test("copyContent copies content classifications", async () => {
     parentId: null,
   });
 
-  const activityData = await getActivityEditorData({
+  const classifications = await getClassifications({
     contentId: newContentId,
     loggedInUserId: newOwnerId,
   });
 
-  expect(activityData.activity!.classifications).toHaveLength(1);
-  expect(activityData.activity!.classifications[0].id).eq(classifyId);
+  expect(classifications).toHaveLength(1);
+  expect(classifications[0].id).eq(classifyId);
 });
 
 test("copyContent copies content features", async () => {
@@ -1888,20 +1885,20 @@ test("copyContent copies content features", async () => {
     parentId: null,
   });
 
-  const activityData1 = await getActivityEditorData({
+  const { contentFeatures: contentFeatures1 } = await getEditorSettings({
     contentId: newContentId1,
     loggedInUserId: newOwnerId,
   });
-  expect(activityData1.activity!.contentFeatures).toHaveLength(1);
-  expect(activityData1.activity!.contentFeatures[0].code).eq("isQuestion");
+  expect(contentFeatures1).toHaveLength(1);
+  expect(contentFeatures1[0].code).eq("isQuestion");
 
-  const activityData2 = await getActivityEditorData({
+  const { contentFeatures: contentFeatures2 } = await getEditorSettings({
     contentId: newContentId2,
     loggedInUserId: newOwnerId,
   });
-  expect(activityData2.activity!.contentFeatures).toHaveLength(2);
-  expect(activityData2.activity!.contentFeatures[0].code).eq("isInteractive");
-  expect(activityData2.activity!.contentFeatures[1].code).eq("containsVideo");
+  expect(contentFeatures2).toHaveLength(2);
+  expect(contentFeatures2[0].code).eq("isInteractive");
+  expect(contentFeatures2[1].code).eq("containsVideo");
 });
 
 test("check if content contains content type", async () => {
@@ -2121,9 +2118,10 @@ test("getSharedContent does not provide email", async () => {
     contentType: "singleDoc",
     parentId: null,
   });
-  await makeContentPublic({
+  await setContentIsPublic({
     contentId,
     loggedInUserId: userId,
+    isPublic: true,
   });
   const results = await getSharedContent({
     ownerId: userId,

@@ -5,9 +5,10 @@ import {
   Button,
   Avatar,
   HStack,
-  Spacer,
-  Tooltip,
   Heading,
+  Grid,
+  GridItem,
+  VStack,
 } from "@chakra-ui/react";
 import { DateTime } from "luxon";
 import React, { useState } from "react";
@@ -43,29 +44,40 @@ export function ChatConversation({
           <Text as="i">No messages yet.</Text>
         </Box>
       ) : (
-        messages.map((msg, i) => (
-          <Box key={`message${i}`} justifyContent="left">
-            <HStack justify="left">
-              <Tooltip label={msg.user}>
-                <Avatar
-                  key={`avatar${i}`}
-                  margin="6px 12px"
-                  border="0"
-                  size="sm"
-                  name={msg.user}
-                />
-              </Tooltip>
-              <Text>{msg.message}</Text>
-              <Spacer />
-              <Text>{msg.dateTime.toLocaleString(timeFormat)}</Text>
-            </HStack>
-          </Box>
-        ))
+        <Grid templateColumns="repeat(5, 1fr)">
+          {messages.map((msg, i) => (
+            <>
+              <GridItem>
+                <HStack>
+                  <Avatar
+                    key={`avatar${i}`}
+                    marginBottom="5px"
+                    border="0"
+                    size="sm"
+                    name={msg.user}
+                  />
+                  <VStack>
+                    <Text as="b" minWidth="7.5rem">
+                      {msg.user}
+                    </Text>
+                  </VStack>
+                </HStack>
+              </GridItem>
+              <GridItem colSpan={3}>
+                <Text>{msg.message}</Text>
+              </GridItem>
+              <GridItem>
+                <Text>{msg.dateTime.toLocaleString(timeFormat)}</Text>
+              </GridItem>
+            </>
+          ))}
+        </Grid>
       )}
 
       {canComment && (
-        <Box>
+        <>
           <Textarea
+            display="inline-block"
             placeholder="Message"
             value={newComment}
             onChange={(e) => {
@@ -78,16 +90,19 @@ export function ChatConversation({
               }
             }}
           />
-          <Button
-            justifySelf="right"
-            onClick={() => {
-              onAddComment(newComment);
-              setNewComment("");
-            }}
-          >
-            Post
-          </Button>
-        </Box>
+          <Box>
+            <Button
+              justifySelf="right"
+              isDisabled={newComment.trim() === ""}
+              onClick={() => {
+                onAddComment(newComment);
+                setNewComment("");
+              }}
+            >
+              Post
+            </Button>
+          </Box>
+        </>
       )}
     </Box>
   );

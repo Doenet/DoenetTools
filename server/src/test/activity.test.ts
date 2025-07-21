@@ -1,7 +1,6 @@
 import { expect, test, vi } from "vitest";
 
 import { DateTime } from "luxon";
-import { Content, Doc } from "../types";
 
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { createTestUser } from "./utils";
@@ -9,26 +8,21 @@ import {
   createContent,
   deleteContent,
   getAllDoenetmlVersions,
-  getContentSource,
   updateContent,
   getContentDescription,
   createContentRevision,
   revertToRevision,
   restoreDeletedContent,
+  getContentSource,
 } from "../query/activity";
 import {
-  getActivityEditorData,
   getActivityViewerData,
   getContent,
   getSharedEditorData,
 } from "../query/activity_edit_view";
 import { getMyContent, getMyTrash } from "../query/content_list";
-import { InvalidRequestError } from "../utils/error";
-import {
-  modifyContentSharedWith,
-  setContentIsPublic,
-  setContentLicense,
-} from "../query/share";
+import { PermissionDeniedRedirectError } from "../utils/error";
+import { modifyContentSharedWith, setContentIsPublic } from "../query/share";
 import {
   assignActivity,
   closeAssignmentWithCode,
@@ -38,6 +32,14 @@ import {
 import { createNewAttempt, saveScoreAndState } from "../query/scores";
 import { moveContent } from "../query/copy_move";
 import { prisma } from "../model";
+import {
+  getDocEditorDoenetML,
+  getEditor,
+  getEditorSettings,
+  getEditorShareStatus,
+} from "../query/editor";
+import { setContentLicense } from "../query/license";
+import { isEqualUUID } from "../utils/uuid";
 
 // const EMPTY_DOC_CID =
 //   "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku";
@@ -60,38 +62,53 @@ test("New activity starts out private, then delete it", async () => {
     contentType: "singleDoc",
     parentId: null,
   });
-  const { activity: activityContent } = await getActivityEditorData({
+  const header = await getEditor({
+    contentId: contentId,
+    loggedInUserId: userId,
+  });
+  const settings = await getEditorSettings({
+    contentId: contentId,
+    loggedInUserId: userId,
+  });
+  const doc = await getDocEditorDoenetML({
+    contentId: contentId,
+    loggedInUserId: userId,
+  });
+  const sharing = await getEditorShareStatus({
     contentId: contentId,
     loggedInUserId: userId,
   });
 
-  if (!activityContent) {
-    throw Error("Shouldn't happen");
-  }
-
-  const expectedContent: Doc = {
+  expect(header).eqls({
     contentId: contentId,
-    name: "Untitled Document",
-    ownerId: userId,
+    contentType: "singleDoc",
+    contentName: "Untitled Document",
     isPublic: false,
-    isShared: false,
+    inLibrary: false,
+    remixSourceHasChanged: false,
+    assignmentStatus: "Unassigned",
+    assignmentClassCode: "",
+    assignmentHasScoreData: false,
+  });
+  //TODO: include assignment settings when they are part of `content` table
+
+  expect(settings).eqls({
+    licenseCode: "CCDUAL",
+    licenseIsEditable: true,
     contentFeatures: [],
-    sharedWith: [],
-    numVariants: 1,
-    license: null,
-    type: "singleDoc",
     classifications: [],
-    doenetML: "",
+    doenetmlVersionId: currentDoenetmlVersion.id,
+  });
+  expect(doc).eqls({
+    source: "",
     doenetmlVersion: currentDoenetmlVersion,
-    parent: null,
-  };
-
-  expect(activityContent.license?.code).eq("CCDUAL");
-
-  // set license to null as it is too long to compare in its entirety.
-  activityContent.license = null;
-
-  expect(activityContent).toStrictEqual(expectedContent);
+  });
+  expect(sharing).eqls({
+    isPublic: false,
+    sharedWith: [],
+    parentIsPublic: false,
+    parentSharedWith: [],
+  });
 
   const data = await getMyContent({
     ownerId: userId,
@@ -104,14 +121,14 @@ test("New activity starts out private, then delete it", async () => {
   }
   expect(data.content).toBeDefined();
   expect(data.content.length).toBe(1);
-  expect(data.content[0].isPublic).eq(false);
-  expect(data.content[0].assignmentInfo).eq(undefined);
+  expect(data.content[0].isPublic).eqls(false);
+  expect(data.content[0].assignmentInfo).eqls(undefined);
 
   await deleteContent({ contentId: contentId, loggedInUserId: userId });
 
   await expect(
-    getActivityEditorData({ contentId: contentId, loggedInUserId: userId }),
-  ).rejects.toThrow(InvalidRequestError);
+    getEditor({ contentId: contentId, loggedInUserId: userId }),
+  ).rejects.toThrow(PrismaClientKnownRequestError);
 
   const dataAfterDelete = await getMyContent({
     ownerId: userId,
@@ -166,15 +183,17 @@ test("Test updating various activity properties", async () => {
     loggedInUserId: userId,
     source,
   });
-  const { activity: activityContent } = await getActivityEditorData({
+  const { contentName } = await getEditor({
     contentId: contentId,
     loggedInUserId: userId,
   });
-  if (activityContent === undefined || activityContent.type !== "singleDoc") {
-    throw Error("shouldn't happen");
-  }
-  expect(activityContent.name).toBe(activityName);
-  expect(activityContent.doenetML).toBe(source);
+  const { source: doenetML } = await getDocEditorDoenetML({
+    contentId: contentId,
+    loggedInUserId: userId,
+  });
+
+  expect(contentName).toBe(activityName);
+  expect(doenetML).toBe(source);
 
   const activityViewerContent = await getActivityViewerData({
     contentId: contentId,
@@ -201,11 +220,11 @@ test("deleteContent marks a activity and document as deleted and prevents its re
     contentId: contentId,
     loggedInUserId: userId,
   });
-  await getActivityEditorData({
+  await getEditor({
     contentId: contentId,
     loggedInUserId: userId,
   });
-  await getContentSource({ contentId: contentId, loggedInUserId: userId });
+  await getDocEditorDoenetML({ contentId: contentId, loggedInUserId: userId });
 
   await deleteContent({ contentId: contentId, loggedInUserId: userId });
 
@@ -214,10 +233,10 @@ test("deleteContent marks a activity and document as deleted and prevents its re
     getActivityViewerData({ contentId: contentId, loggedInUserId: userId }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
   await expect(
-    getActivityEditorData({ contentId: contentId, loggedInUserId: userId }),
-  ).rejects.toThrow(InvalidRequestError);
+    getEditor({ contentId: contentId, loggedInUserId: userId }),
+  ).rejects.toThrow(PrismaClientKnownRequestError);
   await expect(
-    getContentSource({ contentId: contentId, loggedInUserId: userId }),
+    getDocEditorDoenetML({ contentId: contentId, loggedInUserId: userId }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
 });
 
@@ -385,6 +404,10 @@ test("Deleted content shows up in trash, ordered by most recent first", async ()
   await deleteContent({ contentId: sequenceId, loggedInUserId: userId });
 
   const trash = await getMyTrash({ loggedInUserId: userId });
+  trash.content = trash.content.filter(
+    (c) =>
+      isEqualUUID(c.contentId, sequenceId) || isEqualUUID(c.contentId, doc1Id),
+  );
   expect(trash.content.length).eqls(2);
   expect(trash.content[0].contentId).eqls(sequenceId);
   expect(trash.content[1].contentId).eqls(doc1Id);
@@ -581,7 +604,7 @@ test("get activity/document data only if owner or limited data for public/shared
     parentId: null,
   });
 
-  await getActivityEditorData({
+  await getEditor({
     contentId: contentId,
     loggedInUserId: ownerId,
   });
@@ -589,16 +612,16 @@ test("get activity/document data only if owner or limited data for public/shared
     contentId: contentId,
     loggedInUserId: ownerId,
   });
-  await getContentSource({ contentId: contentId, loggedInUserId: ownerId });
+  await getDocEditorDoenetML({ contentId: contentId, loggedInUserId: ownerId });
 
   await expect(
-    getActivityEditorData({ contentId: contentId, loggedInUserId: user1Id }),
-  ).rejects.toThrow(InvalidRequestError);
+    getEditor({ contentId: contentId, loggedInUserId: user1Id }),
+  ).rejects.toThrow(PrismaClientKnownRequestError);
   await expect(
     getActivityViewerData({ contentId: contentId, loggedInUserId: user1Id }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
   await expect(
-    getContentSource({ contentId: contentId, loggedInUserId: user1Id }),
+    getDocEditorDoenetML({ contentId: contentId, loggedInUserId: user1Id }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
 
   await setContentIsPublic({
@@ -614,29 +637,24 @@ test("get activity/document data only if owner or limited data for public/shared
     loggedInUserId: ownerId,
   });
 
-  let data = await getActivityEditorData({
+  const { assignmentStatus } = await getEditor({
     contentId: contentId,
     loggedInUserId: ownerId,
   });
-  expect(data.editableByMe).eq(true);
-  if (data.activity === undefined) {
-    throw Error("Shouldn't happen");
-  }
-  expect(data.activity.assignmentInfo?.assignmentStatus).eq("Open");
+  expect(assignmentStatus).eqls("Open");
 
-  data = await getActivityEditorData({
-    contentId: contentId,
-    loggedInUserId: user1Id,
-  });
-  expect(data.editableByMe).eq(false);
-  expect(data.activity).eq(undefined);
-  expect(data.contentId).eq(contentId);
+  await expect(
+    getEditor({
+      contentId: contentId,
+      loggedInUserId: user1Id,
+    }),
+  ).rejects.toThrow(PermissionDeniedRedirectError);
 
   await getActivityViewerData({
     contentId: contentId,
     loggedInUserId: user1Id,
   });
-  await getContentSource({ contentId: contentId, loggedInUserId: user1Id });
+  await getDocEditorDoenetML({ contentId: contentId, loggedInUserId: user1Id });
 
   await setContentIsPublic({
     contentId: contentId,
@@ -644,13 +662,13 @@ test("get activity/document data only if owner or limited data for public/shared
     isPublic: false,
   });
   await expect(
-    getActivityEditorData({ contentId: contentId, loggedInUserId: user1Id }),
-  ).rejects.toThrow(InvalidRequestError);
+    getEditor({ contentId: contentId, loggedInUserId: user1Id }),
+  ).rejects.toThrow(PrismaClientKnownRequestError);
   await expect(
     getActivityViewerData({ contentId: contentId, loggedInUserId: user1Id }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
   await expect(
-    getContentSource({ contentId: contentId, loggedInUserId: user1Id }),
+    getDocEditorDoenetML({ contentId: contentId, loggedInUserId: user1Id }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
 
   await modifyContentSharedWith({
@@ -659,28 +677,24 @@ test("get activity/document data only if owner or limited data for public/shared
     loggedInUserId: ownerId,
     users: [user1Id],
   });
-  data = await getActivityEditorData({
-    contentId: contentId,
-    loggedInUserId: user1Id,
-  });
-  expect(data.editableByMe).eq(false);
-  expect(data.activity).eq(undefined);
-  expect(data.contentId).eq(contentId);
+  await expect(
+    getEditor({ contentId: contentId, loggedInUserId: user1Id }),
+  ).rejects.toThrow(PermissionDeniedRedirectError);
 
   await getActivityViewerData({
     contentId: contentId,
     loggedInUserId: user1Id,
   });
-  await getContentSource({ contentId: contentId, loggedInUserId: user1Id });
+  await getDocEditorDoenetML({ contentId: contentId, loggedInUserId: user1Id });
 
   await expect(
-    getActivityEditorData({ contentId: contentId, loggedInUserId: user2Id }),
-  ).rejects.toThrow(InvalidRequestError);
+    getEditor({ contentId: contentId, loggedInUserId: user2Id }),
+  ).rejects.toThrow(PrismaClientKnownRequestError);
   await expect(
     getActivityViewerData({ contentId: contentId, loggedInUserId: user2Id }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
   await expect(
-    getContentSource({ contentId: contentId, loggedInUserId: user2Id }),
+    getDocEditorDoenetML({ contentId: contentId, loggedInUserId: user2Id }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
 });
 
@@ -727,8 +741,8 @@ test("get public activity editor data only if public or shared", async () => {
   if (sharedData.type !== "singleDoc") {
     throw Error("shouldn't happen");
   }
-  expect(sharedData.name).eq("Some content");
-  expect(sharedData.doenetML).eq(doenetML);
+  expect(sharedData.name).eqls("Some content");
+  expect(sharedData.doenetML).eqls(doenetML);
 
   await setContentIsPublic({
     contentId: contentId,
@@ -754,8 +768,8 @@ test("get public activity editor data only if public or shared", async () => {
   if (sharedData.type !== "singleDoc") {
     throw Error("shouldn't happen");
   }
-  expect(sharedData.name).eq("Some content");
-  expect(sharedData.doenetML).eq(doenetML);
+  expect(sharedData.name).eqls("Some content");
+  expect(sharedData.doenetML).eqls(doenetML);
 
   await expect(
     getSharedEditorData({ contentId: contentId, loggedInUserId: user2Id }),
@@ -763,39 +777,24 @@ test("get public activity editor data only if public or shared", async () => {
 });
 
 test("activity editor data and my folder contents before and after assigned", async () => {
-  const owner = await createTestUser();
-  const ownerId = owner.userId;
+  const { userId: ownerId } = await createTestUser();
   const { contentId: contentId } = await createContent({
     loggedInUserId: ownerId,
     contentType: "singleDoc",
     parentId: null,
   });
 
-  const { activity: preAssignedData } = await getActivityEditorData({
+  const settings = await getEditorSettings({
     contentId: contentId,
     loggedInUserId: ownerId,
   });
-  let expectedData: Content = {
-    contentId: contentId,
-    name: "Untitled Document",
-    ownerId,
-    isPublic: false,
+  expect(settings).eqls({
     contentFeatures: [],
-    isShared: false,
-    sharedWith: [],
-    numVariants: 1,
-    license: null,
-    type: "singleDoc",
+    licenseIsEditable: true,
+    licenseCode: "CCDUAL",
     classifications: [],
-    doenetML: "",
-    doenetmlVersion: currentDoenetmlVersion,
-    parent: null,
-  };
-  if (preAssignedData === undefined) {
-    throw Error("shouldn't happen");
-  }
-  preAssignedData.license = null; // skip trying to check big license object
-  expect(preAssignedData).eqls(expectedData);
+    doenetmlVersionId: currentDoenetmlVersion.id,
+  });
 
   // get my folder content returns same data
   let folderData = await getMyContent({
@@ -806,8 +805,24 @@ test("activity editor data and my folder contents before and after assigned", as
   if (folderData.notMe) {
     throw Error("shouldn't happen");
   }
-  folderData.content[0].license = null; // skip trying to check big license object
-  expect(folderData.content).eqls([expectedData]);
+
+  expect(folderData.content.length).eqls(1);
+  expect(folderData.content[0]).eqls({
+    contentId: contentId,
+    name: "Untitled Document",
+    ownerId,
+    isPublic: false,
+    contentFeatures: [],
+    isShared: false,
+    sharedWith: [],
+    numVariants: 1,
+    licenseCode: "CCDUAL",
+    type: "singleDoc",
+    classifications: [],
+    doenetML: "",
+    doenetmlVersion: currentDoenetmlVersion,
+    parent: null,
+  });
 
   // Opening assignment also assigns the activity
   let closeAt = DateTime.now().plus({ days: 1 });
@@ -817,41 +832,28 @@ test("activity editor data and my folder contents before and after assigned", as
     loggedInUserId: ownerId,
   });
 
-  const { activity: openedData } = await getActivityEditorData({
+  const settings2 = await getEditorSettings({
     contentId: contentId,
     loggedInUserId: ownerId,
   });
-  expectedData = {
+  const header2 = await getEditor({
     contentId: contentId,
-    name: "Untitled Document",
-    ownerId,
-    isPublic: false,
+    loggedInUserId: ownerId,
+  });
+  expect(settings2).eqls({
+    assigned: true,
     contentFeatures: [],
-    isShared: false,
-    sharedWith: [],
-    numVariants: 1,
-    license: null,
-    type: "singleDoc",
+    licenseIsEditable: true,
+    doenetmlVersionId: currentDoenetmlVersion.id,
+    licenseCode: "CCDUAL",
     classifications: [],
-    doenetML: "",
-    doenetmlVersion: currentDoenetmlVersion,
-    parent: null,
-    assignmentInfo: {
-      assignmentStatus: "Open",
-      classCode,
-      codeValidUntil: closeAt.toJSDate(),
-      hasScoreData: false,
-      maxAttempts: 1,
-      mode: "formative",
-      individualizeByStudent: false,
-    },
-  };
-
-  if (openedData === undefined) {
-    throw Error("shouldn't happen");
-  }
-  openedData.license = null; // skip trying to check big license object
-  expect(openedData).eqls(expectedData);
+    maxAttempts: 1,
+    individualizeByStudent: false,
+    mode: "formative",
+  });
+  expect(header2.assignmentStatus).eqls("Open");
+  expect(header2.assignmentHasScoreData).eqls(false);
+  expect(header2.assignmentClassCode).eqls(classCode);
 
   // get my folder content returns same data, with differences in some optional fields
   folderData = await getMyContent({
@@ -859,52 +861,49 @@ test("activity editor data and my folder contents before and after assigned", as
     parentId: null,
     loggedInUserId: ownerId,
   });
-  delete expectedData.revisionNum;
   if (folderData.notMe) {
     throw Error("shouldn't happen");
   }
-  folderData.content[0].license = null; // skip trying to check big license object
-  expect(folderData.content).eqls([expectedData]);
+  expect(folderData.content).eqls([
+    {
+      contentId: contentId,
+      name: "Untitled Document",
+      ownerId,
+      isPublic: false,
+      isShared: false,
+      sharedWith: [],
+      numVariants: 1,
+      licenseCode: "CCDUAL",
+      type: "singleDoc",
+      doenetML: "",
+      doenetmlVersion: currentDoenetmlVersion,
+      parent: null,
+      classifications: [],
+      contentFeatures: [],
+      assignmentInfo: {
+        assignmentStatus: "Open",
+        classCode,
+        codeValidUntil: closeAt.toJSDate(),
+        hasScoreData: false,
+        maxAttempts: 1,
+        mode: "formative",
+        individualizeByStudent: false,
+      },
+    },
+  ]);
 
   // closing the assignment without data also unassigns it
   await closeAssignmentWithCode({
     contentId: contentId,
     loggedInUserId: ownerId,
   });
-  const { activity: closedData } = await getActivityEditorData({
+  const header3 = await getEditor({
     contentId: contentId,
     loggedInUserId: ownerId,
   });
-  expectedData = {
-    contentId: contentId,
-    name: "Untitled Document",
-    ownerId,
-    isPublic: false,
-    contentFeatures: [],
-    isShared: false,
-    sharedWith: [],
-    numVariants: 1,
-    license: null,
-    type: "singleDoc",
-    classifications: [],
-    doenetML: "",
-    doenetmlVersion: currentDoenetmlVersion,
-    parent: null,
-    assignmentInfo: {
-      assignmentStatus: "Unassigned",
-      classCode,
-      codeValidUntil: null,
-      hasScoreData: false,
-      maxAttempts: 1,
-      mode: "formative",
-      individualizeByStudent: false,
-    },
-  };
-  if (closedData === undefined) {
-    throw Error("shouldn't happen");
-  }
-  closedData.license = null; // skip trying to check big license object
-  expect(closedData).eqls(expectedData);
+  expect(header3.assignmentStatus).eqls("Unassigned");
+  expect(header3.assignmentHasScoreData).eqls(false);
+  expect(header3.assignmentClassCode).eqls(classCode);
 
   // get my folder content returns same data
   folderData = await getMyContent({
@@ -915,8 +914,33 @@ test("activity editor data and my folder contents before and after assigned", as
   if (folderData.notMe) {
     throw Error("shouldn't happen");
   }
-  folderData.content[0].license = null; // skip trying to check big license object
-  expect(folderData.content).eqls([expectedData]);
+  expect(folderData.content).eqls([
+    {
+      contentId: contentId,
+      name: "Untitled Document",
+      ownerId,
+      isPublic: false,
+      isShared: false,
+      sharedWith: [],
+      numVariants: 1,
+      licenseCode: "CCDUAL",
+      type: "singleDoc",
+      doenetML: "",
+      doenetmlVersion: currentDoenetmlVersion,
+      parent: null,
+      classifications: [],
+      contentFeatures: [],
+      assignmentInfo: {
+        assignmentStatus: "Unassigned",
+        classCode,
+        codeValidUntil: null,
+        hasScoreData: false,
+        maxAttempts: 1,
+        mode: "formative",
+        individualizeByStudent: false,
+      },
+    },
+  ]);
 
   // re-opening, re-assigns with same code
   closeAt = DateTime.now().plus({ days: 1 });
@@ -926,43 +950,15 @@ test("activity editor data and my folder contents before and after assigned", as
     loggedInUserId: ownerId,
   });
 
-  expect(newClassCode).eq(classCode);
+  expect(newClassCode).eqls(classCode);
 
-  const { activity: openedData2 } = await getActivityEditorData({
+  const header4 = await getEditor({
     contentId: contentId,
     loggedInUserId: ownerId,
   });
-  expectedData = {
-    contentId: contentId,
-    name: "Untitled Document",
-    ownerId,
-    isPublic: false,
-    contentFeatures: [],
-    isShared: false,
-    sharedWith: [],
-    numVariants: 1,
-    license: null,
-    type: "singleDoc",
-    classifications: [],
-    doenetML: "",
-    doenetmlVersion: currentDoenetmlVersion,
-    parent: null,
-    assignmentInfo: {
-      assignmentStatus: "Open",
-      classCode,
-      codeValidUntil: closeAt.toJSDate(),
-      hasScoreData: false,
-      maxAttempts: 1,
-      mode: "formative",
-      individualizeByStudent: false,
-    },
-  };
-
-  if (openedData2 === undefined) {
-    throw Error("shouldn't happen");
-  }
-  openedData2.license = null; // skip trying to check big license object
-  expect(openedData2).eqls(expectedData);
+  expect(header4.assignmentStatus).eqls("Open");
+  expect(header4.assignmentHasScoreData).eqls(false);
+  expect(header4.assignmentClassCode).eqls(classCode);
 
   // get my folder content returns same data, with differences in some optional fields
   folderData = await getMyContent({
@@ -970,12 +966,36 @@ test("activity editor data and my folder contents before and after assigned", as
     parentId: null,
     loggedInUserId: ownerId,
   });
-  delete expectedData.revisionNum;
   if (folderData.notMe) {
     throw Error("shouldn't happen");
   }
-  folderData.content[0].license = null; // skip trying to check big license object
-  expect(folderData.content).eqls([expectedData]);
+  expect(folderData.content).eqls([
+    {
+      contentId: contentId,
+      name: "Untitled Document",
+      ownerId,
+      isPublic: false,
+      isShared: false,
+      sharedWith: [],
+      numVariants: 1,
+      licenseCode: "CCDUAL",
+      type: "singleDoc",
+      doenetML: "",
+      doenetmlVersion: currentDoenetmlVersion,
+      parent: null,
+      classifications: [],
+      contentFeatures: [],
+      assignmentInfo: {
+        assignmentStatus: "Open",
+        classCode,
+        codeValidUntil: closeAt.toJSDate(),
+        hasScoreData: false,
+        maxAttempts: 1,
+        mode: "formative",
+        individualizeByStudent: false,
+      },
+    },
+  ]);
 
   // create initial attempt
   await createNewAttempt({
@@ -996,40 +1016,13 @@ test("activity editor data and my folder contents before and after assigned", as
     code: classCode,
   });
 
-  const { activity: openedData3 } = await getActivityEditorData({
+  const header5 = await getEditor({
     contentId: contentId,
     loggedInUserId: ownerId,
   });
-  expectedData = {
-    contentId: contentId,
-    name: "Untitled Document",
-    ownerId,
-    isPublic: false,
-    contentFeatures: [],
-    isShared: false,
-    sharedWith: [],
-    numVariants: 1,
-    license: null,
-    type: "singleDoc",
-    classifications: [],
-    doenetML: "",
-    doenetmlVersion: currentDoenetmlVersion,
-    parent: null,
-    assignmentInfo: {
-      assignmentStatus: "Open",
-      classCode,
-      codeValidUntil: closeAt.toJSDate(),
-      hasScoreData: true,
-      maxAttempts: 1,
-      mode: "formative",
-      individualizeByStudent: false,
-    },
-  };
-  if (openedData3 === undefined) {
-    throw Error("shouldn't happen");
-  }
-  openedData3.license = null; // skip trying to check big license object
-  expect(openedData3).eqls(expectedData);
+  expect(header5.assignmentStatus).eqls("Open");
+  expect(header5.assignmentHasScoreData).eqls(true);
+  expect(header5.assignmentClassCode).eqls(classCode);
 
   // get my folder content returns same data, with differences in some optional fields
   folderData = await getMyContent({
@@ -1037,53 +1030,49 @@ test("activity editor data and my folder contents before and after assigned", as
     parentId: null,
     loggedInUserId: ownerId,
   });
-  delete expectedData.revisionNum;
   if (folderData.notMe) {
     throw Error("shouldn't happen");
   }
-  folderData.content[0].license = null; // skip trying to check big license object
-  expect(folderData.content).eqls([expectedData]);
+  expect(folderData.content).eqls([
+    {
+      contentId: contentId,
+      name: "Untitled Document",
+      ownerId,
+      isPublic: false,
+      isShared: false,
+      sharedWith: [],
+      numVariants: 1,
+      licenseCode: "CCDUAL",
+      type: "singleDoc",
+      doenetML: "",
+      doenetmlVersion: currentDoenetmlVersion,
+      parent: null,
+      classifications: [],
+      contentFeatures: [],
+      assignmentInfo: {
+        assignmentStatus: "Open",
+        classCode,
+        codeValidUntil: closeAt.toJSDate(),
+        hasScoreData: true,
+        maxAttempts: 1,
+        mode: "formative",
+        individualizeByStudent: false,
+      },
+    },
+  ]);
 
   // now closing does not unassign
   await closeAssignmentWithCode({
     contentId: contentId,
     loggedInUserId: ownerId,
   });
-  const { activity: closedData2 } = await getActivityEditorData({
+  const header6 = await getEditor({
     contentId: contentId,
     loggedInUserId: ownerId,
   });
-  expectedData = {
-    contentId: contentId,
-    name: "Untitled Document",
-    ownerId,
-    isPublic: false,
-    contentFeatures: [],
-    isShared: false,
-    sharedWith: [],
-    numVariants: 1,
-    license: null,
-    type: "singleDoc",
-    classifications: [],
-    doenetML: "",
-    doenetmlVersion: currentDoenetmlVersion,
-    parent: null,
-    assignmentInfo: {
-      assignmentStatus: "Closed",
-      classCode,
-      codeValidUntil: null,
-      hasScoreData: true,
-      maxAttempts: 1,
-      mode: "formative",
-      individualizeByStudent: false,
-    },
-  };
-
-  if (closedData2 === undefined) {
-    throw Error("shouldn't happen");
-  }
-  closedData2.license = null; // skip trying to check big license object
-  expect(closedData2).eqls(expectedData);
+  expect(header6.assignmentStatus).eqls("Closed");
+  expect(header6.assignmentHasScoreData).eqls(true);
+  expect(header6.assignmentClassCode).eqls(classCode);
 
   // get my folder content returns same data, with differences in some optional fields
   folderData = await getMyContent({
@@ -1091,12 +1080,36 @@ test("activity editor data and my folder contents before and after assigned", as
     parentId: null,
     loggedInUserId: ownerId,
   });
-  delete expectedData.revisionNum;
   if (folderData.notMe) {
     throw Error("shouldn't happen");
   }
-  folderData.content[0].license = null; // skip trying to check big license object
-  expect(folderData.content).eqls([expectedData]);
+  expect(folderData.content).eqls([
+    {
+      contentId: contentId,
+      name: "Untitled Document",
+      ownerId,
+      isPublic: false,
+      isShared: false,
+      sharedWith: [],
+      numVariants: 1,
+      licenseCode: "CCDUAL",
+      type: "singleDoc",
+      doenetML: "",
+      doenetmlVersion: currentDoenetmlVersion,
+      parent: null,
+      classifications: [],
+      contentFeatures: [],
+      assignmentInfo: {
+        assignmentStatus: "Closed",
+        classCode,
+        codeValidUntil: null,
+        hasScoreData: true,
+        maxAttempts: 1,
+        mode: "formative",
+        individualizeByStudent: false,
+      },
+    },
+  ]);
 
   // explicitly unassigning fails due to the presence of data
   expect(
@@ -1114,15 +1127,17 @@ test("activity editor data shows its parent folder is public", async () => {
     parentId: null,
   });
 
-  let { activity: data } = await getActivityEditorData({
+  let status = await getEditorShareStatus({
     contentId: contentId,
     loggedInUserId: ownerId,
   });
-  if (data === undefined) {
-    throw Error("shouldn't happen");
-  }
-  expect(data.isPublic).eq(false);
-  expect(data.parent).eq(null);
+  let { licenseCode } = await getEditorSettings({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+  });
+  expect(status.isPublic).eqls(false);
+  expect(status.parentIsPublic).eqls(false);
+  expect(licenseCode).eqls("CCDUAL");
 
   await setContentLicense({
     contentId: contentId,
@@ -1134,16 +1149,17 @@ test("activity editor data shows its parent folder is public", async () => {
     loggedInUserId: ownerId,
     isPublic: true,
   });
-  ({ activity: data } = await getActivityEditorData({
+  status = await getEditorShareStatus({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+  });
+  ({ licenseCode } = await getEditorSettings({
     contentId: contentId,
     loggedInUserId: ownerId,
   }));
-  if (data === undefined) {
-    throw Error("shouldn't happen");
-  }
-  expect(data.isPublic).eq(true);
-  expect(data.license?.code).eq("CCBYSA");
-  expect(data.parent).eq(null);
+  expect(status.isPublic).eqls(true);
+  expect(status.parentIsPublic).eqls(false);
+  expect(licenseCode).eqls("CCBYSA");
 
   const { contentId: folderId } = await createContent({
     loggedInUserId: ownerId,
@@ -1157,16 +1173,17 @@ test("activity editor data shows its parent folder is public", async () => {
     loggedInUserId: ownerId,
   });
 
-  ({ activity: data } = await getActivityEditorData({
+  status = await getEditorShareStatus({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+  });
+  ({ licenseCode } = await getEditorSettings({
     contentId: contentId,
     loggedInUserId: ownerId,
   }));
-  if (data === undefined) {
-    throw Error("shouldn't happen");
-  }
-  expect(data.isPublic).eq(true);
-  expect(data.license?.code).eq("CCBYSA");
-  expect(data.parent?.isPublic).eq(false);
+  expect(status.isPublic).eqls(true);
+  expect(status.parentIsPublic).eqls(false);
+  expect(licenseCode).eqls("CCBYSA");
 
   await setContentLicense({
     contentId: folderId,
@@ -1178,34 +1195,32 @@ test("activity editor data shows its parent folder is public", async () => {
     loggedInUserId: ownerId,
     isPublic: true,
   });
-  ({ activity: data } = await getActivityEditorData({
+  status = await getEditorShareStatus({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+  });
+  ({ licenseCode } = await getEditorSettings({
     contentId: contentId,
     loggedInUserId: ownerId,
   }));
-  if (data === undefined) {
-    throw Error("shouldn't happen");
-  }
   // setting folder public also sets children to be public
-  expect(data.isPublic).eq(true);
+  expect(status.isPublic).eqls(true);
   // changing license of folder does not change license of content
-  expect(data.license?.code).eq("CCBYSA");
-  expect(data.parent?.isPublic).eq(true);
+  expect(licenseCode).eqls("CCBYSA");
+  expect(status.isPublic).eqls(true);
 
   await setContentIsPublic({
     contentId: folderId,
     loggedInUserId: ownerId,
     isPublic: false,
   });
-  ({ activity: data } = await getActivityEditorData({
+  status = await getEditorShareStatus({
     contentId: contentId,
     loggedInUserId: ownerId,
-  }));
-  if (data === undefined) {
-    throw Error("shouldn't happen");
-  }
+  });
   // setting folder private also sets children to be private
-  expect(data.isPublic).eq(false);
-  expect(data.parent?.isPublic).eq(false);
+  expect(status.isPublic).eqls(false);
+  expect(status.parentIsPublic).eqls(false);
 
   await setContentLicense({
     contentId: folderId,
@@ -1217,17 +1232,18 @@ test("activity editor data shows its parent folder is public", async () => {
     loggedInUserId: ownerId,
     isPublic: true,
   });
-  ({ activity: data } = await getActivityEditorData({
+  status = await getEditorShareStatus({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+  });
+  ({ licenseCode } = await getEditorSettings({
     contentId: contentId,
     loggedInUserId: ownerId,
   }));
-  if (data === undefined) {
-    throw Error("shouldn't happen");
-  }
-  expect(data.isPublic).eq(true);
+  expect(status.isPublic).eqls(true);
+  expect(status.parentIsPublic).eqls(true);
   // changing license of folder does not change license of content
-  expect(data.license?.code).eq("CCBYSA");
-  expect(data.parent?.isPublic).eq(true);
+  expect(licenseCode).eqls("CCBYSA");
 });
 
 test("getActivitySource gets source", async () => {
@@ -1244,11 +1260,11 @@ test("getActivitySource gets source", async () => {
     loggedInUserId: ownerId,
   });
 
-  const activitySource = await getContentSource({
+  const activitySource = await getDocEditorDoenetML({
     contentId: contentId,
     loggedInUserId: ownerId,
   });
-  expect(activitySource.source).eq("some content");
+  expect(activitySource.source).eqls("some content");
 });
 
 test("getContentDescription gets name, type, and parent type", async () => {
@@ -1428,7 +1444,7 @@ test("get compound activity", async () => {
   }
 
   expect(sequence.contentId).eqls(sequenceId);
-  expect(sequence.type).eq("sequence");
+  expect(sequence.type).eqls("sequence");
 
   expect(sequence.children.map((c) => c.contentId)).eqls([
     selectId,
@@ -1439,7 +1455,7 @@ test("get compound activity", async () => {
   if (select.type !== "select") {
     throw Error("shouldn't happen");
   }
-  expect(select.type).eq("select");
+  expect(select.type).eqls("select");
   expect(select.children.map((c) => c.contentId)).eqls([
     contentId1,
     contentId2,
@@ -1560,8 +1576,8 @@ test("manual createContentRevision updates if no later manual revisions, else cr
     autoGenerated: true,
   });
 
-  expect(createResult.createdNew).eq(true);
-  expect(createResult.revisionNum).eq(1);
+  expect(createResult.createdNew).eqls(true);
+  expect(createResult.revisionNum).eqls(1);
 
   let revision = await getContentSource({
     contentId,
@@ -1592,8 +1608,8 @@ test("manual createContentRevision updates if no later manual revisions, else cr
     autoGenerated: true,
   });
 
-  expect(createResult.createdNew).eq(true);
-  expect(createResult.revisionNum).eq(2);
+  expect(createResult.createdNew).eqls(true);
+  expect(createResult.revisionNum).eqls(2);
 
   // change content back to original
   await updateContent({
@@ -1609,8 +1625,8 @@ test("manual createContentRevision updates if no later manual revisions, else cr
     revisionName: "Manual name",
     note: "Manual note",
   });
-  expect(createResult.createdNew).eq(false);
-  expect(createResult.revisionNum).eq(1);
+  expect(createResult.createdNew).eqls(false);
+  expect(createResult.revisionNum).eqls(1);
 
   revision = await getContentSource({
     contentId,
@@ -1653,8 +1669,8 @@ test("manual createContentRevision updates if no later manual revisions, else cr
     revisionName: "Manual name 2",
     note: "Manual note 2",
   });
-  expect(createResult.createdNew).eq(false);
-  expect(createResult.revisionNum).eq(2);
+  expect(createResult.createdNew).eqls(false);
+  expect(createResult.revisionNum).eqls(2);
 
   // now a manual revision revision of original content creates a new revision
   await updateContent({
@@ -1670,8 +1686,8 @@ test("manual createContentRevision updates if no later manual revisions, else cr
     revisionName: "Manual name 3",
     note: "Manual note 3",
   });
-  expect(createResult.createdNew).eq(true);
-  expect(createResult.revisionNum).eq(3);
+  expect(createResult.createdNew).eqls(true);
+  expect(createResult.revisionNum).eqls(3);
 
   // can get all three manual revision
   revision = await getContentSource({
@@ -1741,8 +1757,8 @@ test("manual createContentRevision with `renameMatching` only renames autoGenera
     autoGenerated: true,
   });
 
-  expect(createResult.createdNew).eq(true);
-  expect(createResult.revisionNum).eq(1);
+  expect(createResult.createdNew).eqls(true);
+  expect(createResult.revisionNum).eqls(1);
 
   let revision = await getContentSource({
     contentId,
@@ -1766,8 +1782,8 @@ test("manual createContentRevision with `renameMatching` only renames autoGenera
     note: "Manual note",
     renameMatching: false,
   });
-  expect(createResult.createdNew).eq(false);
-  expect(createResult.revisionNum).eq(1);
+  expect(createResult.createdNew).eqls(false);
+  expect(createResult.revisionNum).eqls(1);
 
   revision = await getContentSource({
     contentId,
@@ -1791,8 +1807,8 @@ test("manual createContentRevision with `renameMatching` only renames autoGenera
     note: "New manual note",
     renameMatching: false,
   });
-  expect(createResult.createdNew).eq(false);
-  expect(createResult.revisionNum).eq(1);
+  expect(createResult.createdNew).eqls(false);
+  expect(createResult.revisionNum).eqls(1);
 
   revision = await getContentSource({
     contentId,
@@ -1815,8 +1831,8 @@ test("manual createContentRevision with `renameMatching` only renames autoGenera
     revisionName: "Even newer manual name",
     note: "Even newer manual note",
   });
-  expect(createResult.createdNew).eq(false);
-  expect(createResult.revisionNum).eq(1);
+  expect(createResult.createdNew).eqls(false);
+  expect(createResult.revisionNum).eqls(1);
 
   revision = await getContentSource({
     contentId,
@@ -1859,8 +1875,8 @@ test("revert to revision", async () => {
     note: "Got to start somewhere",
   });
 
-  expect(createResult.createdNew).eq(true);
-  expect(createResult.revisionNum).eq(1);
+  expect(createResult.createdNew).eqls(true);
+  expect(createResult.revisionNum).eqls(1);
 
   // update content
   await updateContent({

@@ -22,6 +22,7 @@ import { useFetcher, useNavigate } from "react-router";
 import MoveToSharedAlert from "./MoveToSharedAlert";
 import { ContentType, UserInfo } from "../types";
 import { contentTypeToName, getIconInfo } from "../utils/activity";
+import { editorUrl } from "../utils/url";
 
 type ActiveView = {
   // If parent is null, the active view is the root
@@ -338,10 +339,13 @@ export function MoveCopyContent({
       // if we have a Question Bank whose parent is a Problem Set,
       // then we don't display the Question Bank by itself, just embedded in the Problem Set
       destinationAction = `Open containing problem set`;
-      destinationUrl = `/activityEditor/${activeView.parent.parent.id}`;
+      destinationUrl = editorUrl(
+        activeView.parent.parent.id,
+        activeView.parent.parent.type,
+      );
     } else {
       destinationAction = `Open ${typeName}`;
-      destinationUrl = `/activityEditor/${activeView.parent.id}`;
+      destinationUrl = editorUrl(activeView.parent.id, activeView.parent.type);
     }
   } else if (inCurationLibrary) {
     destinationDescription = <>Library Activities</>;
