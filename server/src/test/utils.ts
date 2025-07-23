@@ -1,7 +1,7 @@
 import { onTestFinished } from "vitest";
 import { prisma } from "../model";
 import { findOrCreateUser } from "../query/user";
-import { filterEditableActivity } from "../utils/permissions";
+import { filterEditableRootAssignment } from "../utils/permissions";
 
 // create an isolated user for each test, will allow tests to be run in parallel
 export async function createTestUser(isEditor = false, isAnonymous = false) {
@@ -49,8 +49,7 @@ export async function getTestAssignment(
   const assignment = await prisma.content.findUniqueOrThrow({
     where: {
       id: contentId,
-      rootAssignment: { isNot: null },
-      ...filterEditableActivity(loggedInUserId),
+      ...filterEditableRootAssignment(loggedInUserId),
     },
     include: { rootAssignment: true },
   });

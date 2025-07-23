@@ -194,6 +194,9 @@ export function returnContentSelect({
     owner,
     isPublic: true,
     contentFeatures: true,
+    mode: true,
+    individualizeByStudent: true,
+    maxAttempts: true,
     sharedWith,
     licenseCode: true,
     parent: {
@@ -211,12 +214,8 @@ export function returnContentSelect({
   const rootAssignment = includeAssignInfo
     ? {
         select: {
-          assigned: true,
           classCode: true,
           codeValidUntil: true,
-          mode: true,
-          individualizeByStudent: true,
-          maxAttempts: true,
           _count: { select: { contentState: true } },
         },
       }
@@ -225,17 +224,16 @@ export function returnContentSelect({
   const nonRootAssignment = includeAssignInfo
     ? {
         select: {
-          assigned: true,
           classCode: true,
           codeValidUntil: true,
-          mode: true,
-          individualizeByStudent: true,
-          maxAttempts: true,
           rootContent: {
             select: {
               name: true,
               id: true,
               type: true,
+              mode: true,
+              individualizeByStudent: true,
+              maxAttempts: true,
             },
           },
         },
@@ -308,6 +306,9 @@ type PreliminaryContent = {
   ownerId: Uint8Array;
   owner?: UserInfo;
   isPublic: boolean;
+  mode: AssignmentMode;
+  individualizeByStudent: boolean;
+  maxAttempts: number;
   contentFeatures: {
     id: number;
     code: string;
@@ -332,23 +333,15 @@ type PreliminaryContent = {
 
   // if `includeAssignInfo` is specified
   rootAssignment?: {
-    assigned: boolean;
     classCode: string;
     codeValidUntil: Date | null;
-    mode: AssignmentMode;
-    individualizeByStudent: boolean;
-    maxAttempts: number;
     _count?: {
       contentState: number;
     };
   } | null;
   nonRootAssignment?: {
-    assigned: boolean;
     classCode: string;
     codeValidUntil: Date | null;
-    mode: AssignmentMode;
-    individualizeByStudent: boolean;
-    maxAttempts: number;
     rootContent: {
       name: string;
       id: Uint8Array;
@@ -383,20 +376,14 @@ type PreliminaryContent = {
  * Leaves any additional fields the same.
  */
 export function processAssignmentStatus({
-  assigned,
   codeValidUntil,
 }: {
-  assigned: boolean;
   codeValidUntil: Date | null;
 }) {
   const isOpen = codeValidUntil
     ? DateTime.now() <= DateTime.fromJSDate(codeValidUntil)
     : false;
-  const assignmentStatus: AssignmentStatus = assigned
-    ? isOpen
-      ? "Open"
-      : "Closed"
-    : "Unassigned";
+  const assignmentStatus: AssignmentStatus = isOpen ? "Open" : "Closed";
 
   return assignmentStatus;
 }
@@ -427,6 +414,11 @@ export function processContent(
     licenseCode,
     parent,
     classifications,
+
+    individualizeByStudent,
+    maxAttempts,
+    mode,
+
     rootAssignment,
     nonRootAssignment,
 
@@ -449,20 +441,22 @@ export function processContent(
   const assignmentInfoObj: { assignmentInfo?: AssignmentInfo } = {};
 
   if (rootAssignment) {
-    const { assigned, codeValidUntil, _count, ...other } = rootAssignment;
+    const { codeValidUntil, _count, ...other } = rootAssignment;
 
     assignmentInfoObj.assignmentInfo = {
       ...other,
-      assignmentStatus: processAssignmentStatus({ assigned, codeValidUntil }),
+      assignmentStatus: processAssignmentStatus({ codeValidUntil }),
       codeValidUntil,
       hasScoreData: _count ? _count.contentState > 0 : false,
+      individualizeByStudent,
+      maxAttempts,
+      mode,
     };
   } else if (nonRootAssignment) {
-    const { codeValidUntil, assigned, rootContent, ...other } =
-      nonRootAssignment;
+    const { codeValidUntil, rootContent, ...other } = nonRootAssignment;
     assignmentInfoObj.assignmentInfo = {
       ...other,
-      assignmentStatus: processAssignmentStatus({ assigned, codeValidUntil }),
+      assignmentStatus: processAssignmentStatus({ codeValidUntil }),
       codeValidUntil,
       otherRoot: {
         rootContentId: rootContent.id,
@@ -470,6 +464,9 @@ export function processContent(
         rootType: rootContent.type,
       },
       hasScoreData: false,
+      individualizeByStudent,
+      maxAttempts,
+      mode,
     };
   }
 

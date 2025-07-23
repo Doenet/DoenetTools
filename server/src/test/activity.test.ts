@@ -24,10 +24,8 @@ import { getMyContent, getMyTrash } from "../query/content_list";
 import { PermissionDeniedRedirectError } from "../utils/error";
 import { modifyContentSharedWith, setContentIsPublic } from "../query/share";
 import {
-  assignActivity,
   closeAssignmentWithCode,
   openAssignmentWithCode,
-  unassignActivity,
 } from "../query/assign";
 import { createNewAttempt, saveScoreAndState } from "../query/scores";
 import { moveContent } from "../query/copy_move";
@@ -156,7 +154,12 @@ test("Cannot create new content inside assigned content", async () => {
     parentId: sequenceId,
   });
 
-  await assignActivity({ contentId: sequenceId, loggedInUserId: userId });
+  await openAssignmentWithCode({
+    contentId: sequenceId,
+    loggedInUserId: userId,
+    destinationParentId: null,
+    closeAt: DateTime.now(),
+  });
 
   await expect(
     createContent({
@@ -289,7 +292,12 @@ test("Cannot delete content from inside assigned content", async () => {
 
   await deleteContent({ contentId: doc1Id, loggedInUserId: userId });
 
-  await assignActivity({ contentId: sequenceId, loggedInUserId: userId });
+  await openAssignmentWithCode({
+    contentId: sequenceId,
+    loggedInUserId: userId,
+    destinationParentId: null,
+    closeAt: DateTime.now(),
+  });
 
   await expect(
     deleteContent({ contentId: doc2Id, loggedInUserId: userId }),
@@ -518,7 +526,12 @@ test("Cannot update most content settings when assigned", async () => {
     paginate: true,
   });
 
-  await assignActivity({ contentId: sequenceId, loggedInUserId: userId });
+  await openAssignmentWithCode({
+    contentId: sequenceId,
+    loggedInUserId: userId,
+    destinationParentId: null,
+    closeAt: DateTime.now(),
+  });
 
   // can change name
   await updateContent({
@@ -635,6 +648,7 @@ test("get activity/document data only if owner or limited data for public/shared
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
 
   const { assignmentStatus } = await getEditor({
@@ -830,6 +844,7 @@ test("activity editor data and my folder contents before and after assigned", as
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
 
   const settings2 = await getEditorSettings({
@@ -948,6 +963,7 @@ test("activity editor data and my folder contents before and after assigned", as
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
 
   expect(newClassCode).eqls(classCode);
@@ -1110,11 +1126,6 @@ test("activity editor data and my folder contents before and after assigned", as
       },
     },
   ]);
-
-  // explicitly unassigning fails due to the presence of data
-  expect(
-    await unassignActivity({ contentId: contentId, loggedInUserId: ownerId }),
-  ).eqls({ success: false });
 });
 
 test("activity editor data shows its parent folder is public", async () => {

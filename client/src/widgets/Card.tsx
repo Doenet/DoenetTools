@@ -144,7 +144,10 @@ export default function Card({
   );
 
   // Content type icon
-  const { iconImage, iconColor } = getIconInfo(contentType);
+  const { iconImage, iconColor } = getIconInfo(
+    contentType,
+    cardContent.content.assignmentInfo ? true : false,
+  );
   const contentTypeIcon = (
     <Tooltip label={contentTypeName}>
       <Flex

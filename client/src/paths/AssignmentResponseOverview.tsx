@@ -1,5 +1,5 @@
 import React, { ReactElement, useEffect, useState } from "react";
-import { ActionFunctionArgs, useLoaderData } from "react-router";
+import { ActionFunctionArgs, useFetcher, useLoaderData } from "react-router";
 // @ts-expect-error math-expression doesn't have types
 import me from "math-expressions";
 
@@ -27,6 +27,9 @@ import {
   TabPanels,
   Tab,
   TabPanel,
+  Heading as ChakraHeading,
+  Stack,
+  Input,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { DoenetHeading as Heading } from "../widgets/Heading";
@@ -50,6 +53,9 @@ import {
 } from "../utils/activity";
 import { BiDownArrowAlt, BiUpArrowAlt } from "react-icons/bi";
 import { ActivitySource } from "../viewerTypes";
+import { EditAssignmentSettings } from "../widgets/editor/EditAssignmentSettings";
+import { DateTime } from "luxon";
+import { EditableName } from "../widgets/EditableName";
 
 type ScoreItem = {
   score: number;
@@ -138,6 +144,7 @@ export async function loader({ params, request }: ActionFunctionArgs) {
   const stdScores = numStudents > 0 ? me.math.std(...scoreNumbers) : 0;
 
   const baseData = {
+    contentName: assignment.name,
     assignment,
     scores,
     numItems,
@@ -223,11 +230,15 @@ export function AssignmentData() {
     sortDir,
   } = data;
 
+  const info = assignment.assignmentInfo!;
+
   useEffect(() => {
     document.title = `${assignment.name} - Doenet`;
   }, [assignment.name]);
 
   const navigate = useNavigate();
+
+  const fetcher = useFetcher();
 
   const [scoreData, setScoreData] = useState<
     { count: number; score: number }[]
@@ -560,7 +571,10 @@ export function AssignmentData() {
   }
 
   const contentTypeName = contentTypeToName[data.type];
-  const { iconImage, iconColor } = getIconInfo(data.type);
+  const { iconImage, iconColor } = getIconInfo(
+    data.type,
+    data.assignment.assignmentInfo ? true : false,
+  );
 
   const typeIcon = (
     <Tooltip label={contentTypeName}>
@@ -578,6 +592,10 @@ export function AssignmentData() {
       </Box>
     </Tooltip>
   );
+
+  const localValidUntil = DateTime.fromISO(info.codeValidUntil!).toISO({
+    includeOffset: false,
+  })!;
 
   return (
     <>
@@ -615,11 +633,49 @@ export function AssignmentData() {
         <GridItem area="label">
           <Flex justifyContent="center" alignItems="center">
             {typeIcon}
-            <Text noOfLines={1}>{assignment.name}</Text> &mdash; Data (
-            {assignment.assignmentInfo?.classCode})
+            <EditableName dataTest="Assignment Name Editable" />
           </Flex>
         </GridItem>
       </Grid>
+      <Stack spacing="1rem" mb="2rem">
+        <ChakraHeading size="md" ml="1rem">
+          Assignment is {info.assignmentStatus}
+        </ChakraHeading>
+        <Text ml="1rem">Class code: {info.classCode}</Text>
+
+        <Text ml="1rem">
+          {info.assignmentStatus === "Open" ? `Closes` : `Closed`} at{" "}
+          <Input
+            zIndex="overlay"
+            type="datetime-local"
+            size="sm"
+            step="60"
+            width="220px"
+            value={localValidUntil}
+            onChange={(e) => {
+              fetcher.submit(
+                {
+                  path: "assign/updateAssignmentCloseAt",
+                  closeAt: DateTime.fromISO(e.target.value).toISO(),
+                },
+                { method: "post", encType: "application/json" },
+              );
+            }}
+          />
+          {/* {DateTime.fromISO(info.codeValidUntil!).toLocaleString(
+            DateTime.DATETIME_MED,
+          )} */}
+        </Text>
+        <EditAssignmentSettings
+          maxAttempts={assignment.assignmentInfo!.maxAttempts}
+          individualizeByStudent={
+            assignment.assignmentInfo!.individualizeByStudent
+          }
+          mode={assignment.assignmentInfo!.mode}
+          includeMode={assignment.type !== "singleDoc"}
+          isAssigned={true}
+        />
+      </Stack>
       <Tabs>
         <TabList>
           <Tab>Scores</Tab>

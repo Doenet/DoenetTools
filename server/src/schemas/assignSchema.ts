@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { optionalUuidSchema, uuidSchema } from "./uuid";
+import { optionalUuidSchema, uuidOrNullSchema, uuidSchema } from "./uuid";
 import { DateTime } from "luxon";
 import { stringAsBoolSchema } from "./boolean";
 import {
@@ -14,6 +14,10 @@ export const assignmentCloseAtSchema = z.object({
     .string()
     .datetime({ offset: true })
     .transform((val) => DateTime.fromISO(val)),
+});
+
+export const createAssignmentSchema = assignmentCloseAtSchema.extend({
+  destinationParentId: uuidOrNullSchema,
 });
 
 export const assignmentMaxAttemptsSchema = z.object({

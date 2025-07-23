@@ -65,17 +65,14 @@ export async function moveContent({
       isPublic: true,
       parent: {
         select: {
-          rootAssignment: { select: { assigned: true } },
-          nonRootAssignment: { select: { assigned: true } },
+          rootAssignment: { select: { rootContentId: true } },
+          nonRootAssignment: { select: { rootContentId: true } },
         },
       },
     },
   });
 
-  if (
-    content.parent?.rootAssignment?.assigned ||
-    content.parent?.nonRootAssignment?.assigned
-  ) {
+  if (content.parent?.rootAssignment || content.parent?.nonRootAssignment) {
     throw new InvalidRequestError(
       "Cannot move content in an assigned activity",
     );
@@ -101,12 +98,12 @@ export async function moveContent({
         isPublic: true,
         licenseCode: true,
         sharedWith: { select: { userId: true } },
-        rootAssignment: { select: { assigned: true } },
-        nonRootAssignment: { select: { assigned: true } },
+        rootAssignment: { select: { rootContentId: true } },
+        nonRootAssignment: { select: { rootContentId: true } },
       },
     });
 
-    if (parent.rootAssignment?.assigned || parent.nonRootAssignment?.assigned) {
+    if (parent.rootAssignment || parent.nonRootAssignment) {
       throw new InvalidRequestError(
         "Cannot move content into an assigned activity",
       );
@@ -318,12 +315,12 @@ export async function copyContent({
         type: true,
         licenseCode: true,
         sharedWith: { select: { userId: true } },
-        rootAssignment: { select: { assigned: true } },
-        nonRootAssignment: { select: { assigned: true } },
+        rootAssignment: { select: { rootContentId: true } },
+        nonRootAssignment: { select: { rootContentId: true } },
       },
     });
 
-    if (parent.rootAssignment?.assigned || parent.nonRootAssignment?.assigned) {
+    if (parent.rootAssignment || parent.nonRootAssignment) {
       throw new InvalidRequestError(
         "Cannot copy content into an assigned activity",
       );
@@ -729,12 +726,12 @@ export async function getMoveCopyContentData({
       type: true,
       rootAssignment: {
         select: {
-          assigned: true,
+          rootContentId: true,
         },
       },
       nonRootAssignment: {
         select: {
-          assigned: true,
+          rootContentId: true,
         },
       },
     },
@@ -771,7 +768,7 @@ export async function getMoveCopyContentData({
 
   for (const child of results) {
     let canOpen = true;
-    if (child.nonRootAssignment?.assigned || child.rootAssignment?.assigned) {
+    if (child.rootAssignment || child.nonRootAssignment) {
       canOpen = false;
     } else if (!allowedParentTypes.includes(child.type)) {
       // We'll assume this cannot be opened unless we find a child (or grandchild) that is the allowed parent type

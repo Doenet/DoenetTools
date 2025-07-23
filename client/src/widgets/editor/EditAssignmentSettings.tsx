@@ -29,17 +29,22 @@ export function EditAssignmentSettings({
   individualizeByStudent,
   mode,
   includeMode,
+  isAssigned = false,
 }: {
   maxAttempts: number;
   individualizeByStudent: boolean;
   mode: AssignmentMode | null;
   includeMode: boolean;
+  isAssigned?: boolean;
 }) {
   return (
     <VStack align="left" ml="1rem">
       {includeMode && <AssignmentModeSelection mode={mode!} />}
       <MaxAttemptsSelectionBox attempts={maxAttempts ?? 0} />
-      <VariantSelectionBox isIndividualized={individualizeByStudent} />
+      <VariantSelectionBox
+        editable={!isAssigned}
+        isIndividualized={individualizeByStudent}
+      />
     </VStack>
   );
 }
@@ -49,7 +54,6 @@ export function EditAssignmentSettings({
  * If `attempts` is 0, that means unlimited
  */
 function MaxAttemptsSelectionBox({ attempts }: { attempts: number }) {
-  console.log(attempts);
   const fetcher = useFetcher();
 
   const optimisticAttempts = optimistic<number>(
@@ -130,8 +134,10 @@ function MaxAttemptsSelectionBox({ attempts }: { attempts: number }) {
 
 function VariantSelectionBox({
   isIndividualized,
+  editable = true,
 }: {
   isIndividualized: boolean;
+  editable?: boolean;
 }) {
   const fetcher = useFetcher();
   const optimisticIsIndividualized = optimistic<boolean>(
@@ -148,6 +154,7 @@ function VariantSelectionBox({
         </Text>
         <Switch
           isChecked={!optimisticIsIndividualized}
+          isDisabled={!editable}
           onChange={(e) => {
             fetcher.submit(
               {

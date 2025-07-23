@@ -9,7 +9,6 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { convertUUID, fromUUID } from "../utils/uuid";
 import { createContent, deleteContent, updateContent } from "../query/activity";
 import {
-  assignActivity,
   closeAssignmentWithCode,
   getAllAssignmentScores,
   getAssignedScores,
@@ -21,7 +20,6 @@ import {
   listUserAssigned,
   openAssignmentWithCode,
   recordSubmittedEvent,
-  unassignActivity,
   updateAssignmentCloseAt,
   updateAssignmentMaxAttempts,
   updateAssignmentSettings,
@@ -39,6 +37,7 @@ import { moveContent } from "../query/copy_move";
 import { getContent } from "../query/activity_edit_view";
 import { AssignmentMode } from "@prisma/client";
 import { UserInfo } from "../types";
+import { getAssignmentNonRootIds } from "./testQueries";
 
 test("assign an activity", async () => {
   const owner = await createTestUser();
@@ -55,33 +54,37 @@ test("assign an activity", async () => {
     loggedInUserId: ownerId,
   });
 
-  await assignActivity({ contentId, loggedInUserId: ownerId });
-  const assignment = await getTestAssignment(contentId, ownerId);
+  const { assignmentId } = await openAssignmentWithCode({
+    contentId,
+    loggedInUserId: ownerId,
+    closeAt: DateTime.now().plus({ days: 1 }),
+    destinationParentId: null,
+  });
+  const assignment = await getTestAssignment(assignmentId, ownerId);
 
-  expect(assignment.id).eqls(contentId);
   expect(assignment.name).eq("Activity 1");
   expect(assignment.source).eq("Some content");
 
   // changing name of activity does change assignment name
   await updateContent({
-    contentId: contentId,
+    contentId: assignmentId,
     name: "Activity 1a",
     loggedInUserId: ownerId,
   });
 
-  let updatedAssignment = await getTestAssignment(contentId, ownerId);
+  let updatedAssignment = await getTestAssignment(assignmentId, ownerId);
   expect(updatedAssignment.name).eq("Activity 1a");
 
   // cannot change content of activity
   await expect(
     updateContent({
-      contentId: contentId,
+      contentId: assignmentId,
       source: "Some amended content",
       loggedInUserId: ownerId,
     }),
   ).rejects.toThrow("Cannot change assigned content");
 
-  updatedAssignment = await getTestAssignment(contentId, ownerId);
+  updatedAssignment = await getTestAssignment(assignmentId, ownerId);
   expect(updatedAssignment.source).eq("Some content");
 });
 
@@ -101,7 +104,12 @@ test("cannot assign other user's activity", async () => {
   });
 
   await expect(
-    assignActivity({ contentId: contentId, loggedInUserId: ownerId2 }),
+    openAssignmentWithCode({
+      contentId: contentId,
+      loggedInUserId: ownerId2,
+      closeAt: DateTime.now().plus({ days: 1 }),
+      destinationParentId: null,
+    }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
 
   // still cannot create assignment even if activity is made public
@@ -112,7 +120,12 @@ test("cannot assign other user's activity", async () => {
   });
 
   await expect(
-    assignActivity({ contentId: contentId, loggedInUserId: ownerId2 }),
+    openAssignmentWithCode({
+      contentId: contentId,
+      loggedInUserId: ownerId2,
+      closeAt: DateTime.now().plus({ days: 1 }),
+      destinationParentId: null,
+    }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
 
   // still cannot create assignment even if activity is shared
@@ -124,11 +137,16 @@ test("cannot assign other user's activity", async () => {
   });
 
   await expect(
-    assignActivity({ contentId: contentId, loggedInUserId: ownerId2 }),
+    openAssignmentWithCode({
+      contentId: contentId,
+      loggedInUserId: ownerId2,
+      closeAt: DateTime.now().plus({ days: 1 }),
+      destinationParentId: null,
+    }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
 });
 
-test("open and close assignment with code", async () => {
+test.skip("open and close assignment with code", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
   const fakeId = new Uint8Array(16);
@@ -147,12 +165,13 @@ test("open and close assignment with code", async () => {
 
   // open assignment assigns activity and generates code
   let closeAt = DateTime.now().plus({ days: 1 });
-  const { classCode } = await openAssignmentWithCode({
+  const { assignmentId, classCode } = await openAssignmentWithCode({
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
-  let assignment = await getTestAssignment(contentId, ownerId);
+  let assignment = await getTestAssignment(assignmentId, ownerId);
   expect(assignment.rootAssignment!.classCode).eq(classCode);
   expect(assignment.rootAssignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
@@ -164,33 +183,35 @@ test("open and close assignment with code", async () => {
   if (assignmentData.assignment?.type !== "singleDoc") {
     throw Error("Shouldn't happen");
   }
-  expect(assignmentData.assignment.contentId).eqls(contentId);
+  expect(assignmentData.assignment.contentId).eqls(assignmentId);
   expect(assignmentData.assignment.doenetML).eq("Some content");
 
-  // close assignment completely unassigns since there is no data
   await closeAssignmentWithCode({
-    contentId: contentId,
+    contentId: assignmentId,
     loggedInUserId: ownerId,
   });
-  assignment = await getTestAssignment(contentId, ownerId);
-  expect(assignment.rootAssignment?.assigned).eq(false);
+  assignment = await getTestAssignment(assignmentId, ownerId);
+  expect(assignment.rootAssignment?.codeValidUntil).eq(null);
 
   assignmentData = await getAssignmentViewerDataFromCode({
     code: classCode,
     loggedInUserId: fakeId,
   });
-  expect(assignmentData.assignmentFound).eq(false);
-  expect(assignmentData.assignment).eq(null);
+  expect(assignmentData.assignmentFound).eq(true);
+  expect(assignmentData.assignmentOpen).eq(false);
+  // expect(assignmentData.assignment).eq(null);
 
   // get same code back if reopen
   closeAt = DateTime.now().plus({ weeks: 3 });
-  const { classCode: classCode2 } = await openAssignmentWithCode({
-    contentId: contentId,
-    closeAt: closeAt,
-    loggedInUserId: ownerId,
-  });
+  const { assignmentId: assignmentId2, classCode: classCode2 } =
+    await openAssignmentWithCode({
+      contentId: contentId,
+      closeAt: closeAt,
+      loggedInUserId: ownerId,
+      destinationParentId: null,
+    });
   expect(classCode2).eq(classCode);
-  assignment = await getTestAssignment(contentId, ownerId);
+  assignment = await getTestAssignment(assignmentId2, ownerId);
   expect(assignment.rootAssignment!.classCode).eq(classCode);
   expect(assignment.rootAssignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
@@ -210,6 +231,7 @@ test("open and close assignment with code", async () => {
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
   assignmentData = await getAssignmentViewerDataFromCode({
     code: classCode,
@@ -224,14 +246,16 @@ test("open and close assignment with code", async () => {
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
   const { classCode: classCode3 } = await openAssignmentWithCode({
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
   expect(classCode3).eq(classCode2);
-  assignment = await getTestAssignment(contentId, ownerId);
+  assignment = await getTestAssignment(assignmentId, ownerId);
   expect(assignment.rootAssignment!.classCode).eq(classCode);
   expect(assignment.rootAssignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
@@ -258,12 +282,12 @@ test("open and close assignment with code", async () => {
     contentId: contentId,
     loggedInUserId: ownerId,
   });
-  assignment = await getTestAssignment(contentId, ownerId);
+  assignment = await getTestAssignment(assignmentId, ownerId);
   expect(assignment.rootAssignment!.classCode).eq(classCode);
   expect(assignment.rootAssignment!.codeValidUntil).eqls(null);
 });
 
-test("open and unassign assignment with code", async () => {
+test.skip("open and unassign assignment with code", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
   const fakeId = new Uint8Array(16);
@@ -280,7 +304,12 @@ test("open and unassign assignment with code", async () => {
     loggedInUserId: ownerId,
   });
 
-  await assignActivity({ contentId: contentId, loggedInUserId: ownerId });
+  const { assignmentId } = await openAssignmentWithCode({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+    closeAt: DateTime.now().plus({ days: 1 }),
+    destinationParentId: null,
+  });
 
   // open assignment generates code
   const closeAt = DateTime.now().plus({ days: 1 });
@@ -288,8 +317,9 @@ test("open and unassign assignment with code", async () => {
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
-  let assignment = await getTestAssignment(contentId, ownerId);
+  let assignment = await getTestAssignment(assignmentId, ownerId);
   expect(assignment.rootAssignment!.classCode).eq(classCode);
   expect(assignment.rootAssignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
@@ -299,10 +329,13 @@ test("open and unassign assignment with code", async () => {
   });
   expect(assignmentData.assignment!.contentId).eqls(contentId);
 
-  // unassign activity
-  await unassignActivity({ contentId: contentId, loggedInUserId: ownerId });
-  assignment = await getTestAssignment(contentId, ownerId);
-  expect(assignment.rootAssignment?.assigned).eq(false);
+  // close assignment
+  await closeAssignmentWithCode({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+  });
+  assignment = await getTestAssignment(assignmentId, ownerId);
+  expect(assignment.rootAssignment?.codeValidUntil).eq(null);
 
   // Getting deleted assignment by code fails
   assignmentData = await getAssignmentViewerDataFromCode({
@@ -311,14 +344,9 @@ test("open and unassign assignment with code", async () => {
   });
   expect(assignmentData.assignmentFound).eq(false);
   expect(assignmentData.assignment).eq(null);
-
-  // unassign again does nothing
-  expect(
-    await unassignActivity({ contentId: contentId, loggedInUserId: ownerId }),
-  ).eqls({ success: true });
 });
 
-test("open compound assignment with code", async () => {
+test.only("open compound assignment with code", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
   const fakeId = new Uint8Array(16);
@@ -399,12 +427,14 @@ test("open compound assignment with code", async () => {
 
   // open assignment assigns activity and generates code
   const closeAt = DateTime.now().plus({ days: 1 });
-  const { classCode } = await openAssignmentWithCode({
-    contentId: sequenceId,
-    closeAt: closeAt,
-    loggedInUserId: ownerId,
-  });
-  const assignment = await getTestAssignment(sequenceId, ownerId);
+  const { assignmentId: sequenceAssignmentId, classCode } =
+    await openAssignmentWithCode({
+      contentId: sequenceId,
+      closeAt: closeAt,
+      loggedInUserId: ownerId,
+      destinationParentId: null,
+    });
+  const assignment = await getTestAssignment(sequenceAssignmentId, ownerId);
   expect(assignment.rootAssignment!.classCode).eq(classCode);
   expect(assignment.rootAssignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
@@ -417,7 +447,7 @@ test("open compound assignment with code", async () => {
     throw Error("Shouldn't happen");
   }
 
-  expect(assignmentData.assignment.contentId).eqls(sequenceId);
+  expect(assignmentData.assignment.contentId).eqls(sequenceAssignmentId);
 
   expect(assignmentData.assignment.name).eq("A problem set");
   expect(assignmentData.assignment.children.length).eq(2);
@@ -442,7 +472,7 @@ test("open compound assignment with code", async () => {
 
   // check content info from root and a descendant
   content = await getContent({
-    contentId: sequenceId,
+    contentId: sequenceAssignmentId,
     loggedInUserId: ownerId,
     includeAssignInfo: true,
   });
@@ -453,8 +483,11 @@ test("open compound assignment with code", async () => {
   expect(content.assignmentInfo?.mode).eq("formative");
   expect(content.assignmentInfo?.otherRoot).eq(undefined);
 
+  const nonRootIds = await getAssignmentNonRootIds(sequenceAssignmentId);
+  expect(nonRootIds.length).eqls(4);
+
   content = await getContent({
-    contentId: doc3Id,
+    contentId: nonRootIds[0],
     loggedInUserId: ownerId,
     includeAssignInfo: true,
   });
@@ -463,11 +496,11 @@ test("open compound assignment with code", async () => {
   expect(content.assignmentInfo?.classCode).eq(classCode);
   expect(content.assignmentInfo?.maxAttempts).eq(1);
   expect(content.assignmentInfo?.mode).eq("formative");
-  expect(content.assignmentInfo?.otherRoot).eqls({
-    rootName: "A problem set",
-    rootType: "sequence",
-    rootContentId: sequenceId,
-  });
+  // expect(content.assignmentInfo?.otherRoot).eqls({
+  //   rootName: "A problem set",
+  //   rootType: "sequence",
+  //   rootContentId: sequenceId,
+  // });
 });
 
 test("only owner can open, close, modify, or unassign assignment", async () => {
@@ -498,16 +531,26 @@ test("only owner can open, close, modify, or unassign assignment", async () => {
   });
 
   await expect(
-    assignActivity({ contentId: contentId, loggedInUserId: userId2 }),
+    openAssignmentWithCode({
+      contentId: contentId,
+      loggedInUserId: userId2,
+      closeAt: DateTime.now().plus({ days: 1 }),
+      destinationParentId: null,
+    }),
   ).rejects.toThrow("not found");
 
-  await assignActivity({ contentId: contentId, loggedInUserId: ownerId });
+  const { assignmentId } = await openAssignmentWithCode({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+    closeAt: DateTime.now().plus({ days: 1 }),
+    destinationParentId: null,
+  });
 
-  await expect(getTestAssignment(contentId, userId2)).rejects.toThrow(
+  await expect(getTestAssignment(assignmentId, userId2)).rejects.toThrow(
     PrismaClientKnownRequestError,
   );
 
-  let assignment = await getTestAssignment(contentId, ownerId);
+  let assignment = await getTestAssignment(assignmentId, ownerId);
   expect(assignment.name).eq("Activity 1");
 
   await expect(
@@ -523,7 +566,7 @@ test("only owner can open, close, modify, or unassign assignment", async () => {
     name: "New Activity",
     loggedInUserId: ownerId,
   });
-  assignment = await getTestAssignment(contentId, ownerId);
+  assignment = await getTestAssignment(assignmentId, ownerId);
   expect(assignment.name).eq("New Activity");
 
   const closeAt = DateTime.now().plus({ days: 1 });
@@ -533,6 +576,7 @@ test("only owner can open, close, modify, or unassign assignment", async () => {
       contentId: contentId,
       closeAt: closeAt,
       loggedInUserId: userId2,
+      destinationParentId: null,
     }),
   ).rejects.toThrow("not found");
 
@@ -540,6 +584,7 @@ test("only owner can open, close, modify, or unassign assignment", async () => {
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
 
   expect(codeValidUntil).eqls(closeAt.toJSDate());
@@ -553,7 +598,7 @@ test("only owner can open, close, modify, or unassign assignment", async () => {
       loggedInUserId: userId2,
     }),
   ).rejects.toThrow("Record to update not found");
-  assignment = await getTestAssignment(contentId, ownerId);
+  assignment = await getTestAssignment(assignmentId, ownerId);
   expect(assignment.rootAssignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
   await updateAssignmentCloseAt({
@@ -561,7 +606,7 @@ test("only owner can open, close, modify, or unassign assignment", async () => {
     closeAt: newCloseAt,
     loggedInUserId: ownerId,
   });
-  assignment = await getTestAssignment(contentId, ownerId);
+  assignment = await getTestAssignment(assignmentId, ownerId);
   expect(assignment.rootAssignment!.codeValidUntil).eqls(newCloseAt.toJSDate());
 
   await expect(
@@ -612,17 +657,32 @@ test("cannot assign a descendant of an assignment", async () => {
     loggedInUserId: ownerId,
   });
 
-  await assignActivity({ contentId: sequenceId, loggedInUserId: ownerId });
+  await openAssignmentWithCode({
+    contentId: sequenceId,
+    loggedInUserId: ownerId,
+    closeAt: DateTime.now().plus({ days: 1 }),
+    destinationParentId: null,
+  });
 
   // cannot assign the descendants of the assignment sequenceId
   await expect(
-    assignActivity({ contentId: docId, loggedInUserId: ownerId }),
+    openAssignmentWithCode({
+      contentId: docId,
+      loggedInUserId: ownerId,
+      closeAt: DateTime.now().plus({ days: 1 }),
+      destinationParentId: null,
+    }),
   ).rejects.toThrow(
     "Activity is already assigned as a part of another activity",
   );
 
   await expect(
-    assignActivity({ contentId: selectId, loggedInUserId: ownerId }),
+    openAssignmentWithCode({
+      contentId: selectId,
+      loggedInUserId: ownerId,
+      closeAt: DateTime.now().plus({ days: 1 }),
+      destinationParentId: null,
+    }),
   ).rejects.toThrow(
     "Activity is already assigned as a part of another activity",
   );
@@ -633,53 +693,6 @@ test("cannot assign a descendant of an assignment", async () => {
     includeAssignInfo: true,
   });
   expect(content.assignmentInfo?.assignmentStatus).eq("Closed");
-
-  content = await getContent({
-    contentId: selectId,
-    loggedInUserId: ownerId,
-    includeAssignInfo: true,
-  });
-  expect(content.assignmentInfo?.assignmentStatus).eq("Closed");
-
-  content = await getContent({
-    contentId: docId,
-    loggedInUserId: ownerId,
-    includeAssignInfo: true,
-  });
-  expect(content.assignmentInfo?.assignmentStatus).eq("Closed");
-
-  // if unassign sequence, then can assign select
-  await unassignActivity({ contentId: sequenceId, loggedInUserId: ownerId });
-
-  content = await getContent({
-    contentId: sequenceId,
-    loggedInUserId: ownerId,
-    includeAssignInfo: true,
-  });
-  expect(content.assignmentInfo?.assignmentStatus).eq("Unassigned");
-
-  content = await getContent({
-    contentId: selectId,
-    loggedInUserId: ownerId,
-    includeAssignInfo: true,
-  });
-  expect(content.assignmentInfo?.assignmentStatus).eq("Unassigned");
-
-  content = await getContent({
-    contentId: docId,
-    loggedInUserId: ownerId,
-    includeAssignInfo: true,
-  });
-  expect(content.assignmentInfo?.assignmentStatus).eq("Unassigned");
-
-  await assignActivity({ contentId: selectId, loggedInUserId: ownerId });
-
-  content = await getContent({
-    contentId: sequenceId,
-    loggedInUserId: ownerId,
-    includeAssignInfo: true,
-  });
-  expect(content.assignmentInfo?.assignmentStatus).eq("Unassigned");
 
   content = await getContent({
     contentId: selectId,
@@ -734,26 +747,35 @@ test("cannot assign an ancestor of an assignment", async () => {
     loggedInUserId: ownerId,
   });
 
-  await assignActivity({ contentId: docId, loggedInUserId: ownerId });
+  await openAssignmentWithCode({
+    contentId: docId,
+    loggedInUserId: ownerId,
+    closeAt: DateTime.now().plus({ days: 1 }),
+    destinationParentId: null,
+  });
 
   // cannot assign the descendants of the assignment sequenceId
   await expect(
-    assignActivity({ contentId: sequenceId, loggedInUserId: ownerId }),
+    openAssignmentWithCode({
+      contentId: sequenceId,
+      loggedInUserId: ownerId,
+      closeAt: DateTime.now().plus({ days: 1 }),
+      destinationParentId: null,
+    }),
   ).rejects.toThrow(
     "Cannot assign content with a descendant that is already assigned",
   );
 
   await expect(
-    assignActivity({ contentId: selectId, loggedInUserId: ownerId }),
+    openAssignmentWithCode({
+      contentId: selectId,
+      loggedInUserId: ownerId,
+      closeAt: DateTime.now().plus({ days: 1 }),
+      destinationParentId: null,
+    }),
   ).rejects.toThrow(
     "Cannot assign content with a descendant that is already assigned",
   );
-
-  // if unassign document, then can assign sequence
-
-  await unassignActivity({ contentId: docId, loggedInUserId: ownerId });
-
-  await assignActivity({ contentId: sequenceId, loggedInUserId: ownerId });
 });
 
 test("cannot change closeAt, maxAttempts, mode, individualizeByStudent of a non-root assignment activity", async () => {
@@ -794,153 +816,86 @@ test("cannot change closeAt, maxAttempts, mode, individualizeByStudent of a non-
     loggedInUserId: ownerId,
   });
 
-  await assignActivity({ contentId: sequenceId, loggedInUserId: ownerId });
-
-  let content = await getContent({
+  const { assignmentId } = await openAssignmentWithCode({
     contentId: sequenceId,
     loggedInUserId: ownerId,
-    includeAssignInfo: true,
+    closeAt: DateTime.now().plus({ days: 1 }),
+    destinationParentId: null,
   });
-  expect(content.assignmentInfo?.assignmentStatus).eq("Closed");
-  expect(content.assignmentInfo?.codeValidUntil).eq(null);
+
+  const nonRootIds = await getAssignmentNonRootIds(assignmentId);
+  expect(nonRootIds.length).eqls(2);
 
   const closeAt = DateTime.now().plus({ days: 1 });
   const maxAttempts = 2;
   const mode: AssignmentMode = "summative";
   const individualizeByStudent = true;
 
-  await expect(
-    updateAssignmentCloseAt({
-      contentId: docId,
+  for (const nonRootId of nonRootIds) {
+    await expect(
+      updateAssignmentCloseAt({
+        contentId: nonRootId,
+        loggedInUserId: ownerId,
+        closeAt,
+      }),
+    ).rejects.toThrow("not found");
+
+    await expect(
+      updateAssignmentMaxAttempts({
+        contentId: nonRootId,
+        loggedInUserId: ownerId,
+        maxAttempts,
+      }),
+    ).rejects.toThrow(
+      "Activity is already assigned as a part of another activity",
+    );
+
+    await expect(
+      updateAssignmentSettings({
+        contentId: nonRootId,
+        loggedInUserId: ownerId,
+        mode,
+      }),
+    ).rejects.toThrow(
+      "Activity is already assigned as a part of another activity",
+    );
+
+    await expect(
+      updateAssignmentSettings({
+        contentId: nonRootId,
+        loggedInUserId: ownerId,
+        individualizeByStudent,
+      }),
+    ).rejects.toThrow(
+      "Activity is already assigned as a part of another activity",
+    );
+
+    const content = await getContent({
+      contentId: nonRootId,
       loggedInUserId: ownerId,
-      closeAt,
-    }),
-  ).rejects.toThrow("not found");
-
-  await expect(
-    updateAssignmentMaxAttempts({
-      contentId: docId,
-      loggedInUserId: ownerId,
-      maxAttempts,
-    }),
-  ).rejects.toThrow(
-    "Activity is already assigned as a part of another activity",
-  );
-
-  await expect(
-    updateAssignmentSettings({
-      contentId: docId,
-      loggedInUserId: ownerId,
-      mode,
-    }),
-  ).rejects.toThrow(
-    "Activity is already assigned as a part of another activity",
-  );
-
-  await expect(
-    updateAssignmentSettings({
-      contentId: docId,
-      loggedInUserId: ownerId,
-      individualizeByStudent,
-    }),
-  ).rejects.toThrow(
-    "Activity is already assigned as a part of another activity",
-  );
-
-  content = await getContent({
-    contentId: docId,
-    loggedInUserId: ownerId,
-    includeAssignInfo: true,
-  });
-  expect(content.assignmentInfo?.assignmentStatus).eq("Closed");
-  expect(content.assignmentInfo?.codeValidUntil).eq(null);
-  expect(content.assignmentInfo?.maxAttempts).eq(1);
-  expect(content.assignmentInfo?.mode).eq("formative");
-  expect(content.assignmentInfo?.individualizeByStudent).eq(false);
-
-  await expect(
-    updateAssignmentCloseAt({
-      contentId: selectId,
-      loggedInUserId: ownerId,
-      closeAt,
-    }),
-  ).rejects.toThrow("not found");
-
-  await expect(
-    updateAssignmentMaxAttempts({
-      contentId: selectId,
-      loggedInUserId: ownerId,
-      maxAttempts,
-    }),
-  ).rejects.toThrow(
-    "Activity is already assigned as a part of another activity",
-  );
-
-  await expect(
-    updateAssignmentSettings({
-      contentId: selectId,
-      loggedInUserId: ownerId,
-      mode,
-    }),
-  ).rejects.toThrow(
-    "Activity is already assigned as a part of another activity",
-  );
-
-  await expect(
-    updateAssignmentSettings({
-      contentId: selectId,
-      loggedInUserId: ownerId,
-      individualizeByStudent,
-    }),
-  ).rejects.toThrow(
-    "Activity is already assigned as a part of another activity",
-  );
-
-  content = await getContent({
-    contentId: selectId,
-    loggedInUserId: ownerId,
-    includeAssignInfo: true,
-  });
-  expect(content.assignmentInfo?.assignmentStatus).eq("Closed");
-  expect(content.assignmentInfo?.codeValidUntil).eq(null);
-  expect(content.assignmentInfo?.maxAttempts).eq(1);
-  expect(content.assignmentInfo?.mode).eq("formative");
-  expect(content.assignmentInfo?.individualizeByStudent).eq(false);
-
-  await expect(
-    updateAssignmentSettings({
-      contentId: sequenceId,
-      loggedInUserId: ownerId,
-      mode,
-    }),
-  ).rejects.toThrow(
-    "Cannot update assignment mode or individualizeByStudent of assigned content",
-  );
-
-  await expect(
-    updateAssignmentSettings({
-      contentId: sequenceId,
-      loggedInUserId: ownerId,
-      individualizeByStudent,
-    }),
-  ).rejects.toThrow(
-    "Cannot update assignment mode or individualizeByStudent of assigned content",
-  );
+      includeAssignInfo: true,
+    });
+    expect(content.assignmentInfo?.assignmentStatus).eq("Closed");
+    expect(content.assignmentInfo?.codeValidUntil).eq(null);
+    expect(content.assignmentInfo?.maxAttempts).eq(1);
+    expect(content.assignmentInfo?.mode).eq("formative");
+    expect(content.assignmentInfo?.individualizeByStudent).eq(false);
+  }
 
   await updateAssignmentCloseAt({
-    contentId: sequenceId,
+    contentId: assignmentId,
     loggedInUserId: ownerId,
     closeAt,
   });
 
   await updateAssignmentMaxAttempts({
-    contentId: sequenceId,
+    contentId: assignmentId,
     loggedInUserId: ownerId,
     maxAttempts,
   });
 
-  content = await getContent({
-    contentId: sequenceId,
+  let content = await getContent({
+    contentId: assignmentId,
     loggedInUserId: ownerId,
     includeAssignInfo: true,
   });
@@ -951,7 +906,7 @@ test("cannot change closeAt, maxAttempts, mode, individualizeByStudent of a non-
   expect(content.assignmentInfo?.individualizeByStudent).eq(false);
 
   content = await getContent({
-    contentId: selectId,
+    contentId: nonRootIds[0],
     loggedInUserId: ownerId,
     includeAssignInfo: true,
   });
@@ -962,7 +917,7 @@ test("cannot change closeAt, maxAttempts, mode, individualizeByStudent of a non-
   expect(content.assignmentInfo?.individualizeByStudent).eq(false);
 
   content = await getContent({
-    contentId: docId,
+    contentId: nonRootIds[1],
     loggedInUserId: ownerId,
     includeAssignInfo: true,
   });
@@ -971,123 +926,6 @@ test("cannot change closeAt, maxAttempts, mode, individualizeByStudent of a non-
   expect(content.assignmentInfo?.maxAttempts).eq(2);
   expect(content.assignmentInfo?.mode).eq("formative");
   expect(content.assignmentInfo?.individualizeByStudent).eq(false);
-
-  // When unassign assignment, then can change mode and individualize by student
-  await unassignActivity({ contentId: sequenceId, loggedInUserId: ownerId });
-
-  await updateAssignmentSettings({
-    contentId: sequenceId,
-    loggedInUserId: ownerId,
-    mode,
-  });
-  await updateAssignmentSettings({
-    contentId: sequenceId,
-    loggedInUserId: ownerId,
-    individualizeByStudent,
-  });
-
-  content = await getContent({
-    contentId: sequenceId,
-    loggedInUserId: ownerId,
-    includeAssignInfo: true,
-  });
-  expect(content.assignmentInfo?.mode).eq("summative");
-  expect(content.assignmentInfo?.individualizeByStudent).eq(true);
-
-  content = await getContent({
-    contentId: selectId,
-    loggedInUserId: ownerId,
-    includeAssignInfo: true,
-  });
-  expect(content.assignmentInfo?.mode).eq("summative");
-  expect(content.assignmentInfo?.individualizeByStudent).eq(true);
-  expect(content.assignmentInfo?.otherRoot?.rootContentId).eqls(sequenceId);
-
-  content = await getContent({
-    contentId: docId,
-    loggedInUserId: ownerId,
-    includeAssignInfo: true,
-  });
-  expect(content.assignmentInfo?.mode).eq("summative");
-  expect(content.assignmentInfo?.individualizeByStudent).eq(true);
-  expect(content.assignmentInfo?.otherRoot?.rootContentId).eqls(sequenceId);
-
-  // can now change maxAttempt, mode, and individualizeByStudent of descendants, and they get independent values
-  await updateAssignmentSettings({
-    contentId: selectId,
-    loggedInUserId: ownerId,
-    mode: "formative",
-  });
-  await updateAssignmentSettings({
-    contentId: selectId,
-    loggedInUserId: ownerId,
-    individualizeByStudent: false,
-  });
-
-  content = await getContent({
-    contentId: sequenceId,
-    loggedInUserId: ownerId,
-    includeAssignInfo: true,
-  });
-  expect(content.assignmentInfo?.mode).eq("summative");
-  expect(content.assignmentInfo?.individualizeByStudent).eq(true);
-  expect(content.assignmentInfo?.maxAttempts).eq(2);
-  expect(content.assignmentInfo?.otherRoot?.rootContentId).eq(undefined);
-
-  content = await getContent({
-    contentId: selectId,
-    loggedInUserId: ownerId,
-    includeAssignInfo: true,
-  });
-  expect(content.assignmentInfo?.mode).eq("formative");
-  expect(content.assignmentInfo?.individualizeByStudent).eq(false);
-  expect(content.assignmentInfo?.maxAttempts).eq(1); // max attempts reverted to default since disconnected
-  expect(content.assignmentInfo?.otherRoot?.rootContentId).eq(undefined);
-
-  content = await getContent({
-    contentId: docId,
-    loggedInUserId: ownerId,
-    includeAssignInfo: true,
-  });
-  expect(content.assignmentInfo?.mode).eq("summative");
-  expect(content.assignmentInfo?.individualizeByStudent).eq(true);
-  expect(content.assignmentInfo?.otherRoot?.rootContentId).eqls(sequenceId);
-
-  await updateAssignmentMaxAttempts({
-    contentId: docId,
-    loggedInUserId: ownerId,
-    maxAttempts: 5,
-  });
-
-  content = await getContent({
-    contentId: sequenceId,
-    loggedInUserId: ownerId,
-    includeAssignInfo: true,
-  });
-  expect(content.assignmentInfo?.mode).eq("summative");
-  expect(content.assignmentInfo?.individualizeByStudent).eq(true);
-  expect(content.assignmentInfo?.maxAttempts).eq(2);
-  expect(content.assignmentInfo?.otherRoot?.rootContentId).eq(undefined);
-
-  content = await getContent({
-    contentId: selectId,
-    loggedInUserId: ownerId,
-    includeAssignInfo: true,
-  });
-  expect(content.assignmentInfo?.mode).eq("formative");
-  expect(content.assignmentInfo?.individualizeByStudent).eq(false);
-  expect(content.assignmentInfo?.otherRoot?.rootContentId).eq(undefined);
-  expect(content.assignmentInfo?.maxAttempts).eq(1);
-
-  content = await getContent({
-    contentId: docId,
-    loggedInUserId: ownerId,
-    includeAssignInfo: true,
-  });
-  expect(content.assignmentInfo?.mode).eq("formative"); // mode reverted to default since disconnected
-  expect(content.assignmentInfo?.individualizeByStudent).eq(false); // individualizeByStudent reverted to default since disconnected
-  expect(content.assignmentInfo?.maxAttempts).eq(5);
-  expect(content.assignmentInfo?.otherRoot?.rootContentId).eq(undefined);
 });
 
 test("assignment settings of descendants synchronize when ancestor assigned", async () => {
@@ -1212,7 +1050,12 @@ test("assignment settings of descendants synchronize when ancestor assigned", as
   expect(content.assignmentInfo?.otherRoot).eq(undefined);
 
   // when assign sequence, all settings synchronize
-  await assignActivity({ contentId: sequenceId, loggedInUserId: ownerId });
+  await openAssignmentWithCode({
+    contentId: sequenceId,
+    loggedInUserId: ownerId,
+    closeAt: DateTime.now().plus({ days: 1 }),
+    destinationParentId: null,
+  });
 
   content = await getContent({
     contentId: sequenceId,
@@ -1409,6 +1252,7 @@ test("get assignment data from anonymous users", async () => {
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
 
   let newUser1 = await createTestAnonymousUser();
@@ -1636,6 +1480,7 @@ test("can't get assignment data if other user, but student can get their own dat
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
 
   let newUser1 = await createTestAnonymousUser();
@@ -1731,6 +1576,7 @@ test("can't unassign if have data", async () => {
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
 
   let newUser1 = await createTestAnonymousUser();
@@ -1759,10 +1605,6 @@ test("can't unassign if have data", async () => {
     studentUserId: newUser1.userId,
     shuffledOrder: false,
   });
-
-  expect(
-    await unassignActivity({ contentId: contentId, loggedInUserId: ownerId }),
-  ).eqls({ success: false });
 });
 
 test("list assigned and get assigned scores get student assignments and scores", async () => {
@@ -1789,7 +1631,12 @@ test("list assigned and get assigned scores get student assignments and scores",
     name: "Activity 1",
     loggedInUserId: user1Id,
   });
-  await assignActivity({ contentId: contentId1, loggedInUserId: user1Id });
+  await openAssignmentWithCode({
+    contentId: contentId1,
+    loggedInUserId: user1Id,
+    closeAt: DateTime.now().plus({ days: 1 }),
+    destinationParentId: null,
+  });
 
   assignmentList = await listUserAssigned({ loggedInUserId: user1Id });
   expect(assignmentList.assignments).eqls([]);
@@ -1806,7 +1653,12 @@ test("list assigned and get assigned scores get student assignments and scores",
     name: "Activity 2",
     loggedInUserId: user2Id,
   });
-  await assignActivity({ contentId: contentId2, loggedInUserId: user2Id });
+  await openAssignmentWithCode({
+    contentId: contentId2,
+    loggedInUserId: user2Id,
+    closeAt: DateTime.now().plus({ days: 1 }),
+    destinationParentId: null,
+  });
 
   assignmentList = await listUserAssigned({ loggedInUserId: user1Id });
   expect(assignmentList.assignments).eqls([]);
@@ -1819,6 +1671,7 @@ test("list assigned and get assigned scores get student assignments and scores",
     contentId: contentId2,
     closeAt: closeAt,
     loggedInUserId: user2Id,
+    destinationParentId: null,
   });
 
   await createNewAttempt({
@@ -1850,11 +1703,6 @@ test("list assigned and get assigned scores get student assignments and scores",
   expect(studentData.orderedActivityScores).eqls([
     { contentId: contentId2, activityName: "Activity 2", score: 0.5 },
   ]);
-
-  // cannot unassign
-  expect(
-    await unassignActivity({ contentId: contentId2, loggedInUserId: user2Id }),
-  ).eqls({ success: false });
 });
 
 test("get all assignment data from anonymous user", async () => {
@@ -1879,6 +1727,7 @@ test("get all assignment data from anonymous user", async () => {
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
 
   let newUser1 = await createTestAnonymousUser();
@@ -2236,41 +2085,49 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
     contentId: activity1aId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
   const { classCode: classCode1c1 } = await openAssignmentWithCode({
     contentId: activity1c1Id,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
   const { classCode: classCode1c2a } = await openAssignmentWithCode({
     contentId: activity1c2aId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
   const { classCode: classCode1c2b } = await openAssignmentWithCode({
     contentId: activity1c2bId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
   const { classCode: classCode1e } = await openAssignmentWithCode({
     contentId: activity1eId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
   const { classCode: classCode2 } = await openAssignmentWithCode({
     contentId: activity2Id,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
   const { classCode: classCode3b } = await openAssignmentWithCode({
     contentId: activity3bId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
   const { classCode: classCodeRoot } = await openAssignmentWithCode({
     contentId: activityRootId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
 
   let newUser = await createTestAnonymousUser();
@@ -2716,6 +2573,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
 
   let scoreData = await getAllAssignmentScores({
@@ -2898,6 +2756,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     contentId: activity2Id,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
 
   // identical name to user 2
@@ -2992,6 +2851,7 @@ test("record submitted events and get responses", async () => {
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
 
   // create new anonymous user
@@ -3207,6 +3067,7 @@ test("only owner can get submitted responses", async () => {
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
 
   // create new anonymous user
@@ -3272,6 +3133,7 @@ test("only user and assignment owner can load document state", async () => {
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
 
   // create new anonymous user

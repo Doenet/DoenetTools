@@ -30,6 +30,7 @@ test("Create and save responses for new attempts, no items", async () => {
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
 
   // create new anonymous user
@@ -345,6 +346,7 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
 
   // create new anonymous user
@@ -960,6 +962,7 @@ test("Create and save responses for new item attempts, two items", async () => {
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
 
   // create new anonymous user
@@ -1652,6 +1655,7 @@ test("Create attempts before responding, no items", async () => {
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
 
   // create new anonymous user
@@ -1840,6 +1844,7 @@ test("Create item attempts before responding, two items", async () => {
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
 
   // create new anonymous user
@@ -2108,6 +2113,7 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
 
   // create new anonymous user
@@ -2669,6 +2675,7 @@ test("New item attempt does not affect other item", async () => {
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
 
   // create new anonymous user
@@ -2974,6 +2981,7 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
 
   // create new anonymous user
@@ -3226,6 +3234,7 @@ test("Cannot create activity-wide attempt on formative assessment", async () => 
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
 
   // create new anonymous user
@@ -3317,6 +3326,7 @@ test("Cannot create item attempt on summative assessment", async () => {
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
 
   // create new anonymous user
@@ -3362,6 +3372,7 @@ test("Setting maximum number of attempts, no items", async () => {
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
 
   // create new anonymous user
@@ -3567,6 +3578,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
 
   // create new anonymous user
@@ -3858,6 +3870,7 @@ test("getScoresOfAllStudents should provide emails", async () => {
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
+    destinationParentId: null,
   });
   const { userId: studentId } = await createTestUser();
   await createNewAttempt({

@@ -103,6 +103,8 @@ export function MoveCopyContent({
   allowedParentTypes,
   action,
   inCurationLibrary = false,
+  createAssignment = false,
+  createAssignmentCallback = () => {},
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -120,6 +122,8 @@ export function MoveCopyContent({
   allowedParentTypes: ContentType[];
   action: "Move" | "Add" | "Copy";
   inCurationLibrary?: boolean;
+  createAssignment?: boolean;
+  createAssignmentCallback?: (parentId: string | null) => void;
 }) {
   // Set when the modal opens
   const [parentId, setParentId] = useState<string | null>(null);
@@ -271,6 +275,19 @@ export function MoveCopyContent({
     }
   }
 
+  let actionIsDisabled =
+    (activeView.parent === null && parentId === null) ||
+    (activeView.parent !== null &&
+      parentId !== null &&
+      activeView.parent.id === parentId) ||
+    !allowedParentTypes.includes(activeView.parent?.type ?? "folder");
+
+  if (createAssignment) {
+    actionIsDisabled = !allowedParentTypes.includes(
+      activeView.parent?.type ?? "folder",
+    );
+  }
+
   const executeButtons = (
     <>
       <Button
@@ -285,20 +302,18 @@ export function MoveCopyContent({
         data-test="Execute MoveCopy Button"
         width="10em"
         // Is disabled if the content is already in this parent
-        isDisabled={
-          (activeView.parent === null && parentId === null) ||
-          (activeView.parent !== null &&
-            parentId !== null &&
-            activeView.parent.id === parentId) ||
-          !allowedParentTypes.includes(activeView.parent?.type ?? "folder")
-        }
+        isDisabled={actionIsDisabled}
         onClick={() => {
           if (shareAlert) {
             // moving non-public content into a public parent
             // or moving moving content into a parent that is shared with additional users
             sharedAlertOnOpen();
           } else {
-            performAction();
+            if (createAssignment) {
+              createAssignmentCallback(activeView.parent?.id ?? null);
+            } else {
+              performAction();
+            }
           }
         }}
       >

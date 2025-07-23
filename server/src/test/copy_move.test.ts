@@ -11,8 +11,9 @@ import { setContentIsPublic } from "../query/share";
 import { getMyContent } from "../query/content_list";
 import { getContent } from "../query/activity_edit_view";
 import { isEqualUUID } from "../utils/uuid";
-import { assignActivity } from "../query/assign";
 import { ContentType } from "@prisma/client";
+import { openAssignmentWithCode } from "../query/assign";
+import { DateTime } from "luxon";
 
 test("copy folder", async () => {
   const { userId: ownerId } = await createTestUser();
@@ -911,8 +912,18 @@ test("cannot copy/move into assigned problem set or question bank or move out", 
   expect(contentList.content.map((c) => c.contentId)).eqls([doc4Id, doc1cId]);
 
   // assigned sequence and select2
-  await assignActivity({ contentId: sequenceId, loggedInUserId: ownerId });
-  await assignActivity({ contentId: select2Id, loggedInUserId: ownerId });
+  await openAssignmentWithCode({
+    contentId: sequenceId,
+    loggedInUserId: ownerId,
+    destinationParentId: null,
+    closeAt: DateTime.now(),
+  });
+  await openAssignmentWithCode({
+    contentId: select2Id,
+    loggedInUserId: ownerId,
+    destinationParentId: null,
+    closeAt: DateTime.now(),
+  });
 
   // cannot copy doc1 into sequence, select1, or select2
   await expect(

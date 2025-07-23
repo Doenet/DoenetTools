@@ -1,6 +1,5 @@
 import express from "express";
 import {
-  assignActivity,
   closeAssignmentWithCode,
   getAllAssignmentScores,
   getAssignedScores,
@@ -11,7 +10,6 @@ import {
   listUserAssigned,
   openAssignmentWithCode,
   recordSubmittedEvent,
-  unassignActivity,
   updateAssignmentCloseAt,
   updateAssignmentMaxAttempts,
   updateAssignmentSettings,
@@ -26,6 +24,7 @@ import {
   assignmentSettingsSchema,
   getAssignmentResponseStudentSchema,
   getStudentSubmittedResponsesSchema,
+  createAssignmentSchema,
 } from "../schemas/assignSchema";
 import {
   queryLoggedIn,
@@ -35,13 +34,8 @@ import {
 export const assignRouter = express.Router();
 
 assignRouter.post(
-  "/assignActivity",
-  queryLoggedIn(assignActivity, contentIdSchema),
-);
-
-assignRouter.post(
   "/openAssignmentWithCode",
-  queryLoggedIn(openAssignmentWithCode, assignmentCloseAtSchema),
+  queryLoggedIn(openAssignmentWithCode, createAssignmentSchema),
 );
 
 assignRouter.post(
@@ -62,11 +56,6 @@ assignRouter.post(
 assignRouter.post(
   "/closeAssignmentWithCode",
   queryLoggedIn(closeAssignmentWithCode, contentIdSchema),
-);
-
-assignRouter.post(
-  "/unassignActivity",
-  queryLoggedIn(unassignActivity, contentIdSchema),
 );
 
 assignRouter.get("/getAssigned", queryLoggedInNoArguments(listUserAssigned));

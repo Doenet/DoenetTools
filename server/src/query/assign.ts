@@ -3,6 +3,8 @@ import { prisma } from "../model";
 import {
   filterEditableActivity,
   filterEditableContent,
+  filterEditableRootAssignment,
+  filterViewableRootAssignment,
   getIsEditor,
   isInLibrary,
 } from "../utils/permissions";
@@ -23,6 +25,7 @@ import { getMyUserInfo } from "./user";
 import { StatusCodes } from "http-status-codes";
 import { getDescendantIds } from "./activity";
 import { recordContentView } from "./popularity";
+import { copyContent } from "./copy_move";
 
 /**
  * Assigned the content `contentId` owned by `loggedInUserId`
@@ -35,98 +38,98 @@ import { recordContentView } from "./popularity";
  * If `contentId` is not assigned, then assign it and its children, creating a new `classCode`
  * if it doesn't already exist, and return the `classCode`.
  */
-export async function assignActivity({
+async function assignActivity({
   contentId,
   loggedInUserId,
+  destinationParentId,
 }: {
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
+  destinationParentId: Uint8Array | null;
 }) {
   // verify content exists and is not assigned as part of another root assignment
   await verifyNotAssignedAsNonRoot({ contentId, loggedInUserId });
 
-  const content = await prisma.content.findUniqueOrThrow({
+  const existingAssignment = await prisma.assignments.findUnique({
     where: {
-      id: contentId,
-      ...filterEditableActivity(loggedInUserId),
+      rootContentId: contentId,
+      rootContent: {
+        // ...filterEditableContent(loggedInUserId),
+        ...filterEditableRootAssignment(loggedInUserId),
+      },
     },
     select: {
-      rootAssignment: { select: { assigned: true, classCode: true } },
+      classCode: true,
+      rootContentId: true,
     },
   });
 
   //  If content was already assigned as the root, then there's nothing to do. Just report the code.
-  if (content.rootAssignment?.assigned) {
-    return { classCode: content.rootAssignment.classCode };
+  if (existingAssignment) {
+    return {
+      assignmentId: existingAssignment.rootContentId,
+      classCode: existingAssignment.classCode,
+    };
   }
 
   // Verify that no descendants of `contentId` are already assigned as a root.
   // Note: we don't have to check for non-root assignment, as either the root is a descendant of `contentId`
   // or `contentId` itself would have been assigned
-  const descendantAssigned = await prisma.$queryRaw<
-    {
-      id: Uint8Array;
-      assigned: boolean;
-    }[]
-  >(Prisma.sql`
-    WITH RECURSIVE content_tree(id, assigned) AS (
-      SELECT content.id, assignments.assigned
-      FROM content
-        LEFT JOIN assignments ON assignments.rootContentId = content.id
-      WHERE parentId = ${contentId}
-        AND content.isDeletedOn IS NULL
-      UNION ALL
-      SELECT content.id, assignments.assigned
-      FROM content
-        INNER JOIN content_tree AS ct ON content.parentId = ct.id
-        LEFT JOIN assignments ON assignments.rootContentId = content.id
-      WHERE 
-        content.isDeletedOn IS NULL
-    )
-    SELECT id, assigned from content_tree
-    WHERE assigned IS NOT NULL
-  `);
 
-  if (descendantAssigned.some((d) => d.assigned)) {
+  const descendantIds = await getDescendantIds(contentId);
+  const descendantAssigned = await prisma.assignments.findFirst({
+    where: {
+      rootContentId: {
+        in: descendantIds,
+      },
+    },
+    select: { rootContentId: true },
+  });
+
+  if (descendantAssigned) {
     throw new InvalidRequestError(
       "Cannot assign content with a descendant that is already assigned",
     );
   }
 
-  // delete any assignment records from descendants that were previously assigned as their own root
-  await prisma.assignments.deleteMany({
-    where: { rootContentId: { in: descendantAssigned.map((d) => d.id) } },
+  // Copy the content to the destination folders
+  const { newContentIds } = await copyContent({
+    contentIds: [contentId],
+    parentId: destinationParentId,
+    loggedInUserId,
   });
 
-  const updatedContent = await prisma.content.update({
-    where: { id: contentId },
-    data: {
-      rootAssignment: {
-        upsert: {
-          update: { assigned: true },
-          create: {
-            assigned: true,
-            classCode: generateClassCode(),
-          },
-        },
-      },
+  // Find the root assignment id and its chilren ids
+  const { id: assignmentId } = await prisma.content.findFirstOrThrow({
+    where: {
+      id: { in: newContentIds },
+      parentId: destinationParentId,
     },
     select: {
-      rootAssignment: { select: { classCode: true } },
-      type: true,
-      children: { select: { id: true }, where: { isDeletedOn: null } },
+      id: true,
     },
   });
 
-  if (updatedContent.type !== "singleDoc") {
-    const descendantIds = await getDescendantIds(contentId);
-    await prisma.content.updateMany({
-      where: { id: { in: descendantIds } },
-      data: { nonRootAssignmentId: contentId },
-    });
-  }
+  const newDescendantIds = newContentIds.filter(
+    (id) => !isEqualUUID(id, assignmentId),
+  );
 
-  return { classCode: updatedContent.rootAssignment!.classCode };
+  // Create the assignment linking it to the root
+  // Point all descendants to the new assignment
+  // If the type was single doc, there won't be any descendants
+  const { classCode } = await prisma.assignments.create({
+    data: {
+      rootContentId: assignmentId,
+      codeValidStarting: new Date(),
+      codeValidUntil: null,
+      classCode: generateClassCode(),
+      nonRootContent: {
+        connect: newDescendantIds.map((id) => ({ id })),
+      },
+    },
+  });
+
+  return { assignmentId, classCode };
 }
 
 /**
@@ -145,13 +148,16 @@ async function verifyNotAssignedAsNonRoot({
   const content = await prisma.content.findUniqueOrThrow({
     where: {
       id: contentId,
-      ...filterEditableActivity(loggedInUserId),
+      OR: [
+        filterEditableActivity(loggedInUserId),
+        filterEditableRootAssignment(loggedInUserId),
+      ],
     },
-    select: { nonRootAssignment: { select: { assigned: true } } },
+    select: { nonRootAssignment: { select: { rootContentId: true } } },
   });
 
   if (content.nonRootAssignment) {
-    if (content.nonRootAssignment.assigned) {
+    if (content.nonRootAssignment) {
       throw new InvalidRequestError(
         "Activity is already assigned as a part of another activity",
       );
@@ -182,21 +188,33 @@ function generateClassCode() {
 export async function openAssignmentWithCode({
   contentId,
   closeAt,
+  destinationParentId,
   loggedInUserId,
 }: {
   contentId: Uint8Array;
   closeAt: DateTime;
   loggedInUserId: Uint8Array;
+  destinationParentId: Uint8Array | null;
 }) {
-  const { classCode } = await assignActivity({ contentId, loggedInUserId });
+  const { assignmentId, classCode } = await assignActivity({
+    contentId,
+    destinationParentId,
+    loggedInUserId,
+  });
 
   const codeValidUntil = closeAt.toJSDate();
 
   await prisma.assignments.update({
-    where: { rootContentId: contentId },
+    where: {
+      rootContentId: assignmentId,
+      rootContent: {
+        ...filterEditableContent(loggedInUserId),
+      },
+    },
     data: { codeValidUntil },
   });
-  return { classCode, codeValidUntil };
+
+  return { assignmentId, classCode, codeValidUntil };
 }
 
 /**
@@ -219,7 +237,7 @@ export async function updateAssignmentCloseAt({
     where: {
       rootContentId: contentId,
       rootContent: {
-        ...filterEditableActivity(loggedInUserId),
+        ...filterEditableContent(loggedInUserId),
       },
     },
     data: { codeValidUntil },
@@ -228,6 +246,7 @@ export async function updateAssignmentCloseAt({
 
 /**
  * Update `maxAttempts` of the assignment `contentId` owned by `loggedInUserId`.
+ * This can be called on either an activity or an assignment
  *
  * The meaning of `maxAttempts` depends on the the assignment mode:
  * - For `formative` mode, students can create new attempts of individual assignments,
@@ -237,8 +256,6 @@ export async function updateAssignmentCloseAt({
  *
  * Verifies that `contentId` is not assigned as a part of another root assignment,
  * throwing an `InvalidRequestError` in that case.
- *
- * Creates a root assignment record for `contentId` if it doesn't exist.
  *
  * Note: updating `maxAttempts` is possible even if an `contentId` is assigned.
  */
@@ -268,19 +285,13 @@ export async function updateAssignmentMaxAttempts({
   await prisma.content.update({
     where: {
       id: contentId,
-      ...filterEditableActivity(loggedInUserId, isEditor),
+      OR: [
+        filterEditableActivity(loggedInUserId, isEditor),
+        filterEditableRootAssignment(loggedInUserId),
+      ],
     },
     data: {
-      rootAssignment: {
-        upsert: {
-          where: { rootContentId: contentId },
-          create: {
-            maxAttempts,
-            classCode: generateClassCode(),
-          },
-          update: { maxAttempts },
-        },
-      },
+      maxAttempts,
     },
   });
 
@@ -309,29 +320,6 @@ export async function updateAssignmentSettings({
   loggedInUserId: Uint8Array;
 }) {
   const isEditor = await getIsEditor(loggedInUserId);
-  const inLibrary = await isInLibrary(contentId);
-
-  if (!inLibrary) {
-    // verify content exists and is not assigned as part of another root assignment
-    await verifyNotAssignedAsNonRoot({ contentId, loggedInUserId });
-
-    // verify that content is not currently assigned
-    const assignment = await prisma.assignments.findUnique({
-      where: {
-        rootContentId: contentId,
-        rootContent: {
-          ...filterEditableActivity(loggedInUserId),
-        },
-      },
-      select: { assigned: true },
-    });
-
-    if (assignment?.assigned) {
-      throw new InvalidRequestError(
-        "Cannot update assignment mode or individualizeByStudent of assigned content",
-      );
-    }
-  }
 
   await prisma.content.update({
     where: {
@@ -339,17 +327,8 @@ export async function updateAssignmentSettings({
       ...filterEditableActivity(loggedInUserId, isEditor),
     },
     data: {
-      rootAssignment: {
-        upsert: {
-          where: { rootContentId: contentId },
-          create: {
-            mode,
-            individualizeByStudent,
-            classCode: generateClassCode(),
-          },
-          update: { mode, individualizeByStudent },
-        },
-      },
+      mode,
+      individualizeByStudent,
     },
   });
 
@@ -367,75 +346,12 @@ export async function closeAssignmentWithCode({
     where: {
       rootContentId: contentId,
       rootContent: {
-        ...filterEditableActivity(loggedInUserId),
+        ...filterEditableContent(loggedInUserId),
+        // ...filterEditableRootAssignment(loggedInUserId),
       },
     },
     data: { codeValidUntil: null },
   });
-
-  // attempt to unassign activity, which will succeed
-  // only if there is no student data
-  await unassignActivity({ contentId, loggedInUserId });
-}
-
-/**
- * Attempt to completely unassign assignment `contentId` owned by `loggedInUserId`.
- *
- * An assignment can be unassigned only if no students have begun the assignment,
- * which is defined by the presence of data in the `contentState` table corresponding
- * to `contentId`.
- *
- * Return a promise that resolves to an object with field
- * - success: whether or not the assignment was successfully unassigned.
- */
-export async function unassignActivity({
-  contentId,
-  loggedInUserId,
-}: {
-  contentId: Uint8Array;
-  loggedInUserId: Uint8Array;
-}) {
-  try {
-    await prisma.content.update({
-      where: {
-        id: contentId,
-        rootAssignment: { contentState: { none: { contentId } } },
-        ...filterEditableActivity(loggedInUserId),
-      },
-      data: {
-        rootAssignment: { update: { assigned: false, codeValidUntil: null } },
-      },
-    });
-
-    return { success: true };
-  } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError &&
-      e.code === "P2025"
-    ) {
-      // Check to see if the reason for failure was simply due to the presence of student data
-      // or the fact that assignment had not yet been assigned
-      // (rather than the assignment just not existing)
-
-      // If the content simply doesn't exist, then still throw an error
-      const checkResult = await prisma.content.findUniqueOrThrow({
-        where: {
-          id: contentId,
-          ...filterEditableActivity(loggedInUserId),
-        },
-        select: {
-          rootAssignment: { select: { assigned: true } },
-        },
-      });
-
-      // otherwise, if the original error was just thrown due to the presence of student data
-      // or the fact that an assignment record had not yet been created,
-      // then simply report success as whether or not the assignment is still assigned
-      return { success: checkResult.rootAssignment?.assigned !== true };
-    } else {
-      throw e;
-    }
-  }
 }
 
 /**
@@ -827,26 +743,10 @@ export async function getAssignmentViewerDataFromCode({
   try {
     preliminaryAssignment = await prisma.content.findFirstOrThrow({
       where: {
+        ...filterViewableRootAssignment(loggedInUserId),
         rootAssignment: {
           classCode: code,
-          assigned: true,
-          OR: [
-            {
-              codeValidUntil: {
-                gte: DateTime.now().toISO(), // TODO - confirm this works with timezone stuff
-              },
-            },
-            {
-              assignmentScores: {
-                some: {
-                  userId: loggedInUserId,
-                },
-              },
-            },
-          ],
         },
-        isDeletedOn: null,
-        type: { not: "folder" },
       },
       select: {
         id: true,
@@ -1018,7 +918,9 @@ export async function getAssignmentResponseStudent({
   const assignment = await prisma.assignments.findUniqueOrThrow({
     where: {
       rootContentId: contentId,
-      assigned: true,
+      NOT: {
+        codeValidStarting: null,
+      },
       rootContent: {
         // if getting data for other person, you must be the owner
         ownerId: isEqualUUID(responseUserId, loggedInUserId)
@@ -1029,7 +931,6 @@ export async function getAssignmentResponseStudent({
       },
     },
     select: {
-      mode: true,
       codeValidUntil: true,
       rootContent: {
         select: {
@@ -1038,6 +939,7 @@ export async function getAssignmentResponseStudent({
           ownerId: true,
           numToSelect: true,
           shuffle: true,
+          mode: true,
           children: {
             where: { isDeletedOn: null },
             orderBy: { sortIndex: "asc" },
@@ -1099,7 +1001,7 @@ export async function getAssignmentResponseStudent({
   }
 
   const baseData = {
-    mode: assignment.mode,
+    mode: assignment.rootContent.mode,
     user,
     assignment: {
       name: rootContent.name,
@@ -1120,7 +1022,7 @@ export async function getAssignmentResponseStudent({
     const { attemptNumber, attemptScores, itemAttemptState } =
       await getAttemptScoresAndState({
         contentId,
-        mode: assignment.mode,
+        mode: assignment.rootContent.mode,
         haveItems,
         userId: responseUserId,
         shuffledOrder,
@@ -1130,7 +1032,7 @@ export async function getAssignmentResponseStudent({
 
     let itemScores: ItemScores = [];
     if (haveItems) {
-      if (assignment.mode === "formative") {
+      if (assignment.rootContent.mode === "formative") {
         // items scores for formative are just the overall item scores
         itemScores = overallScores.itemScores;
       } else {
@@ -1164,7 +1066,7 @@ export async function getAssignmentResponseStudent({
 
     const responseCounts = await getResponseCounts({
       contentId,
-      mode: assignment.mode,
+      mode: assignment.rootContent.mode,
       contentType: rootContent.type,
       requestedItemNumber,
       attemptNumber,
@@ -1188,7 +1090,7 @@ export async function getAssignmentResponseStudent({
 
     const allAttemptScores = await getAllAttemptScores({
       contentId,
-      mode: assignment.mode,
+      mode: assignment.rootContent.mode,
       haveItems,
       userId: responseUserId,
       shuffledOrder,

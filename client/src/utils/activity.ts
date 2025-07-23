@@ -17,6 +17,7 @@ import { FaListOl } from "react-icons/fa6";
 import { RiArchive2Fill } from "react-icons/ri";
 import React, { ReactElement } from "react";
 import { Icon } from "@chakra-ui/react";
+import { IoStatsChart } from "react-icons/io5";
 
 /**
  * Content feature icons. Displayed in this order.
@@ -171,10 +172,16 @@ export function getAllowedParentTypes(childTypes: ContentType[]) {
   return allowedParentTypes.reverse();
 }
 
-export function getIconInfo(contentType: ContentType) {
+export function getIconInfo(
+  contentType: ContentType,
+  isAssignment: boolean = false,
+) {
   let iconImage: IconType;
   let iconColor: string;
-  if (contentType === "folder") {
+  if (isAssignment) {
+    iconImage = IoStatsChart;
+    iconColor = "blue";
+  } else if (contentType === "folder") {
     iconImage = FaFolder;
     iconColor = "#e6b800";
   } else if (contentType === "singleDoc") {
