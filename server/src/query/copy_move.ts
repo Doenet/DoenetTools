@@ -840,28 +840,12 @@ export async function checkIfContentContains({
   // Would it be better to do a single recursive query rather than recurse will individual queries
   // even though we may be able to short circuit with an early return?
 
-  const filterOutAssigned = countAssigned
-    ? []
-    : [
-        {
-          OR: [
-            { rootAssignment: { is: null } },
-            { rootAssignment: { assigned: false } },
-          ],
-        },
-        {
-          OR: [
-            { nonRootAssignment: { is: null } },
-            { nonRootAssignment: { assigned: false } },
-          ],
-        },
-      ];
-
   const children = await prisma.content.findMany({
     where: {
       parentId: contentId,
+      rootAssignment: { is: null },
+      nonRootAssignmentId: null,
       ...filterEditableContent(loggedInUserId),
-      AND: filterOutAssigned,
     },
     select: {
       id: true,

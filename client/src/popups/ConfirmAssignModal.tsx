@@ -185,10 +185,9 @@ export function ConfirmAssignModal({
                   .plus(JSON.parse(duration))
                   .toISO();
 
-          console.log(parentId);
           submitFetcher.submit(
             {
-              path: "/assign/openAssignmentWithCode",
+              path: "/assign/createAssignment",
               contentId,
               closeAt,
               destinationParentId: parentId,

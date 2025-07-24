@@ -8,7 +8,7 @@ import {
   getStudentAssignmentScores,
   getStudentSubmittedResponses,
   listUserAssigned,
-  openAssignmentWithCode,
+  createAssignment,
   recordSubmittedEvent,
   updateAssignmentCloseAt,
   updateAssignmentMaxAttempts,
@@ -34,8 +34,8 @@ import {
 export const assignRouter = express.Router();
 
 assignRouter.post(
-  "/openAssignmentWithCode",
-  queryLoggedIn(openAssignmentWithCode, createAssignmentSchema),
+  "/createAssignment",
+  queryLoggedIn(createAssignment, createAssignmentSchema),
 );
 
 assignRouter.post(

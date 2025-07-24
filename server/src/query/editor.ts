@@ -11,6 +11,7 @@ import {
 } from "../utils/contentStructure";
 import {
   filterEditableActivity,
+  filterEditableRootAssignment,
   filterViewableActivity,
   getIsEditor,
 } from "../utils/permissions";
@@ -45,7 +46,10 @@ export async function getEditor({
     } = await prisma.content.findUniqueOrThrow({
       where: {
         id: contentId,
-        ...filterEditableActivity(loggedInUserId, isEditor),
+        OR: [
+          filterEditableActivity(loggedInUserId, isEditor),
+          filterEditableRootAssignment(loggedInUserId),
+        ],
       },
       select: {
         id: true,
@@ -152,11 +156,14 @@ export async function getEditorSettings({
 }) {
   const isEditor = await getIsEditor(loggedInUserId);
 
-  const { _count, isPublic, classifications, ...other } =
+  const { isPublic, _count, classifications, ...other } =
     await prisma.content.findUniqueOrThrow({
       where: {
         id: contentId,
-        ...filterEditableActivity(loggedInUserId, isEditor),
+        OR: [
+          filterEditableActivity(loggedInUserId, isEditor),
+          filterEditableRootAssignment(loggedInUserId),
+        ],
       },
       select: {
         isPublic: true,
