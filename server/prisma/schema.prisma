@@ -192,8 +192,8 @@ model doenetmlVersions {
 model assignments {
   rootContentId     Bytes              @id @db.Binary(16)
   classCode         String             @db.VarChar(45)
-  codeValidStarting DateTime?
-  codeValidUntil    DateTime?
+  codeValidStarting DateTime
+  codeValidUntil    DateTime
   rootContent       content            @relation("rootAssignment", fields: [rootContentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   nonRootContent    content[]          @relation("nonRootAssignment")
   contentState      contentState[]
