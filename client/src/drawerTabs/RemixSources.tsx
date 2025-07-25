@@ -31,11 +31,9 @@ export async function remixSourcesActions({
 
 export function RemixSources({
   contributorHistory,
-  onClose,
   haveChangedSource = false,
 }: {
   contributorHistory: ActivityRemixItem[];
-  onClose?: () => void;
   haveChangedSource?: boolean;
 }) {
   if (contributorHistory === null) {
@@ -139,30 +137,27 @@ export function RemixSources({
                     )}
                   </Td>
                 </Show>
-                {onClose && (
-                  <Td>
-                    {ch.originContent.changed && (
-                      <Text fontSize="small" marginRight="5px" as="span">
-                        &#x1f534;
-                      </Text>
-                    )}
-                    <Tooltip
-                      label={compareLabel}
-                      openDelay={500}
-                      placement="bottom-end"
+                <Td>
+                  {ch.originContent.changed && (
+                    <Text fontSize="small" marginRight="5px" as="span">
+                      &#x1f534;
+                    </Text>
+                  )}
+                  <Tooltip
+                    label={compareLabel}
+                    openDelay={500}
+                    placement="bottom-end"
+                  >
+                    <ChakraLink
+                      as={ReactRouterLink}
+                      to={`/activityCompare/${ch.remixContent.contentId}/${ch.originContent.contentId}`}
+                      textDecoration="underline"
+                      aria-label={compareLabel}
                     >
-                      <ChakraLink
-                        as={ReactRouterLink}
-                        to={`/activityCompare/${ch.remixContent.contentId}/${ch.originContent.contentId}`}
-                        textDecoration="underline"
-                        onClick={onClose}
-                        aria-label={compareLabel}
-                      >
-                        Compare
-                      </ChakraLink>
-                    </Tooltip>
-                  </Td>
-                )}
+                      Compare
+                    </ChakraLink>
+                  </Tooltip>
+                </Td>
               </Tr>
             );
           })}
