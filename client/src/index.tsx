@@ -23,11 +23,7 @@ import {
   action as siteAction,
   SiteHeader,
 } from "./paths/SiteHeader";
-import {
-  loader as carouselLoader,
-  // action as homeAction,
-  Home,
-} from "./paths/Home";
+import { loader as carouselLoader, Home } from "./paths/Home";
 
 import {
   loader as activitiesLoader,
@@ -157,20 +153,9 @@ const theme = extendTheme({
       fontFamily: "Jost",
     },
   },
-  // components: {
-  //   FormLabel: {
-  //     sizes: {
-  //       md: {
-  //         fontSize: "xs",
-  //       },
-  //     },
-  //   },
-  // },
   config: {
     initialColorMode: "light",
     useSystemColorMode: false,
-    // initialColorMode: "system",
-    // useSystemColorMode: true,
   },
   colors: {
     doenet_blue: {
@@ -481,6 +466,12 @@ async function genericContentIdAction({ request, params }: ActionFunctionArgs) {
 
     return null;
   } catch (e) {
+    /**
+     * Special case: sharing content with specific people by email address
+     * Normally, when the server returns an error, we want to go the error page.
+     * However, in this case, it might mean that the owner entered an invalid email address.
+     * If that's the case, catch it and let the route deal with it (handled in component EditorHeader).
+     */
     if (path === "share/shareContent" && e instanceof AxiosError) {
       const error = e.response!.data!.error;
       const details = e.response!.data!.details;
