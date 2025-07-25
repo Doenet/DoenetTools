@@ -174,16 +174,20 @@ export function ConfirmAssignModal({
         action={"Copy"}
         createAssignment={true}
         createAssignmentCallback={(parentId) => {
-          const closeAt =
+          const closeAtDateTime =
             duration === "custom"
-              ? DateTime.fromISO(customCloseAt).toISO({
-                  suppressSeconds: true,
-                  // suppressMilliseconds: true,
-                })!
+              ? DateTime.fromISO(customCloseAt).set({
+                  second: 0,
+                  millisecond: 0,
+                })
               : DateTime.now()
-                  .set({ second: 0 })
-                  .plus(JSON.parse(duration))
-                  .toISO();
+                  .set({ second: 0, millisecond: 0 })
+                  .plus(JSON.parse(duration));
+
+          const closeAt = closeAtDateTime.toISO({
+            suppressSeconds: true,
+            suppressMilliseconds: true,
+          });
 
           submitFetcher.submit(
             {

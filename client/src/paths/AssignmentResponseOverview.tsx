@@ -671,18 +671,21 @@ export function AssignmentData() {
             width="220px"
             value={localValidUntil}
             onChange={(e) => {
+              const closeAt = DateTime.fromISO(e.target.value)
+                .set({ second: 0, millisecond: 0 })
+                .toISO({
+                  suppressSeconds: true,
+                  suppressMilliseconds: true,
+                });
               fetcher.submit(
                 {
                   path: "assign/updateAssignmentCloseAt",
-                  closeAt: DateTime.fromISO(e.target.value).toISO(),
+                  closeAt,
                 },
                 { method: "post", encType: "application/json" },
               );
             }}
           />
-          {/* {DateTime.fromISO(info.codeValidUntil!).toLocaleString(
-            DateTime.DATETIME_MED,
-          )} */}
         </Text>
         <Text>Class code: {info.classCode}</Text>
         <Button
