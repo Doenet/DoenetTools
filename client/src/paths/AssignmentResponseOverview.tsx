@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from "react";
+import React, { ReactElement, useEffect } from "react";
 import { ActionFunctionArgs, useFetcher, useLoaderData } from "react-router";
 // @ts-expect-error math-expression doesn't have types
 import me from "math-expressions";
@@ -30,6 +30,8 @@ import {
   Heading as ChakraHeading,
   Stack,
   Input,
+  useDisclosure,
+  Button,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { DoenetHeading as Heading } from "../widgets/Heading";
@@ -56,6 +58,7 @@ import { ActivitySource } from "../viewerTypes";
 import { EditAssignmentSettings } from "../widgets/editor/EditAssignmentSettings";
 import { DateTime } from "luxon";
 import { EditableName } from "../widgets/EditableName";
+import { AssignmentInvitation } from "../views/AssignmentInvitation";
 
 type ScoreItem = {
   score: number;
@@ -232,32 +235,30 @@ export function AssignmentData() {
 
   const info = assignment.assignmentInfo!;
 
+  const minScore = 0;
+  const numBins = 11;
+  const size = 1 / (numBins - 1);
+
+  const hist = new Array(numBins).fill(0);
+  for (const item of scores) {
+    hist[Math.round((item.score - minScore) / size)]++;
+  }
+  const scoreData = hist.map((v, i) => ({
+    count: v,
+    score: Math.round(i * size * 10) / 10,
+  }));
+
+  const navigate = useNavigate();
+  const fetcher = useFetcher();
+  const {
+    isOpen: inviteIsOpen,
+    onOpen: inviteOnOpen,
+    onClose: inviteOnClose,
+  } = useDisclosure();
+
   useEffect(() => {
     document.title = `${assignment.name} - Doenet`;
   }, [assignment.name]);
-
-  const navigate = useNavigate();
-
-  const fetcher = useFetcher();
-
-  const [scoreData, setScoreData] = useState<
-    { count: number; score: number }[]
-  >([]);
-
-  useEffect(() => {
-    const minScore = 0;
-    const numBins = 11;
-    const size = 1 / (numBins - 1);
-
-    const hist = new Array(numBins).fill(0);
-    for (const item of scores) {
-      hist[Math.round((item.score - minScore) / size)]++;
-    }
-
-    setScoreData(
-      hist.map((v, i) => ({ count: v, score: Math.round(i * size * 10) / 10 })),
-    );
-  }, [scores]);
 
   const sortArrow = (
     <Tooltip
@@ -599,6 +600,13 @@ export function AssignmentData() {
 
   return (
     <>
+      <AssignmentInvitation
+        isOpen={inviteIsOpen}
+        onClose={inviteOnClose}
+        classCode={info.classCode}
+        assignmentStatus={info.assignmentStatus}
+        assignmentName={assignment.name}
+      />
       <Grid
         height="40px"
         background="doenet.canvas"
@@ -637,13 +645,23 @@ export function AssignmentData() {
           </Flex>
         </GridItem>
       </Grid>
-      <Stack spacing="1rem" mb="2rem">
-        <ChakraHeading size="md" ml="1rem">
+      <Stack spacing="1rem" mb="2rem" ml="1rem" alignItems="flex-start">
+        <ChakraHeading size="md">
           Assignment is {info.assignmentStatus}
         </ChakraHeading>
-        <Text ml="1rem">Class code: {info.classCode}</Text>
+        <ChakraHeading size="sm">Settings</ChakraHeading>
+        <EditAssignmentSettings
+          maxAttempts={assignment.assignmentInfo!.maxAttempts}
+          individualizeByStudent={
+            assignment.assignmentInfo!.individualizeByStudent
+          }
+          mode={assignment.assignmentInfo!.mode}
+          includeMode={assignment.type !== "singleDoc"}
+          isAssigned={true}
+        />
 
-        <Text ml="1rem">
+        <ChakraHeading size="sm">Availability</ChakraHeading>
+        <Text>
           {info.assignmentStatus === "Open" ? `Closes` : `Closed`} at{" "}
           <Input
             zIndex="overlay"
@@ -666,15 +684,14 @@ export function AssignmentData() {
             DateTime.DATETIME_MED,
           )} */}
         </Text>
-        <EditAssignmentSettings
-          maxAttempts={assignment.assignmentInfo!.maxAttempts}
-          individualizeByStudent={
-            assignment.assignmentInfo!.individualizeByStudent
-          }
-          mode={assignment.assignmentInfo!.mode}
-          includeMode={assignment.type !== "singleDoc"}
-          isAssigned={true}
-        />
+        <Text>Class code: {info.classCode}</Text>
+        <Button
+          onClick={inviteOnOpen}
+          colorScheme="blue"
+          isDisabled={info.assignmentStatus !== "Open"}
+        >
+          Invite students
+        </Button>
       </Stack>
       <Tabs>
         <TabList>

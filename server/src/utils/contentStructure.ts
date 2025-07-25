@@ -334,14 +334,14 @@ type PreliminaryContent = {
   // if `includeAssignInfo` is specified
   rootAssignment?: {
     classCode: string;
-    codeValidUntil: Date | null;
+    codeValidUntil: Date;
     _count?: {
       contentState: number;
     };
   } | null;
   nonRootAssignment?: {
     classCode: string;
-    codeValidUntil: Date | null;
+    codeValidUntil: Date;
     rootContent: {
       name: string;
       id: Uint8Array;
@@ -378,11 +378,9 @@ type PreliminaryContent = {
 export function processAssignmentStatus({
   codeValidUntil,
 }: {
-  codeValidUntil: Date | null;
+  codeValidUntil: Date;
 }) {
-  const isOpen = codeValidUntil
-    ? DateTime.now() <= DateTime.fromJSDate(codeValidUntil)
-    : false;
+  const isOpen = DateTime.now() <= DateTime.fromJSDate(codeValidUntil);
   const assignmentStatus: AssignmentStatus = isOpen ? "Open" : "Closed";
 
   return assignmentStatus;

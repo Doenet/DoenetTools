@@ -521,19 +521,7 @@ export function EditorHeader() {
                 <Button
                   colorScheme="blue"
                   isDisabled={inLibrary}
-                  onClick={() => {
-                    if (assignmentStatus === "Open") {
-                      fetcher.submit(
-                        {
-                          path: "assign/closeAssignmentWithCode",
-                          contentId,
-                        },
-                        { method: "post", encType: "application/json" },
-                      );
-                    } else {
-                      confirmAssignOnOpen();
-                    }
-                  }}
+                  onClick={confirmAssignOnOpen}
                 >
                   {assignmentStatus === "Open"
                     ? "Close assignment"

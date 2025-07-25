@@ -191,12 +191,18 @@ test("open and close assignment with code", async () => {
   expect(assignmentData.assignment.contentId).eqls(assignmentId);
   expect(assignmentData.assignment.doenetML).eq("Some content");
 
+  let closeDate = new Date();
   await closeAssignmentWithCode({
     contentId: assignmentId,
     loggedInUserId: ownerId,
   });
   assignment = await getTestAssignment(assignmentId, ownerId);
-  expect(assignment.rootAssignment?.codeValidUntil).eq(null);
+  expect(assignment.rootAssignment?.codeValidUntil.getTime()).gte(
+    closeDate.getTime(),
+  );
+  expect(assignment.rootAssignment?.codeValidUntil.getTime()).lte(
+    closeDate.getTime() + 30 * 1000,
+  );
 
   assignmentData = await getAssignmentViewerDataFromCode({
     code: classCode,
@@ -270,13 +276,19 @@ test("open and close assignment with code", async () => {
   });
 
   // closing assignment doesn't close completely due to the data
+  closeDate = new Date();
   await closeAssignmentWithCode({
     contentId: assignmentId,
     loggedInUserId: ownerId,
   });
   assignment = await getTestAssignment(assignmentId, ownerId);
   expect(assignment.rootAssignment!.classCode).eq(classCode);
-  expect(assignment.rootAssignment!.codeValidUntil).eqls(null);
+  expect(assignment.rootAssignment!.codeValidUntil.getTime()).gte(
+    closeDate.getTime(),
+  );
+  expect(assignment.rootAssignment!.codeValidUntil.getTime()).lte(
+    closeDate.getTime() + 30 * 1000,
+  );
 });
 
 test("open compound assignment with code", async () => {

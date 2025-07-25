@@ -224,8 +224,8 @@ export type Content = Doc | QuestionBank | ProblemSet | Folder;
 
 export type AssignmentInfo = {
   assignmentStatus: AssignmentStatus;
-  classCode: string | null;
-  codeValidUntil: string | null;
+  classCode: string;
+  codeValidUntil: string;
   otherRoot?: {
     rootContentId: string;
     rootName: string;
