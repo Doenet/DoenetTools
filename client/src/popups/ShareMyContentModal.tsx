@@ -235,7 +235,7 @@ function SharePublicly({
             Before sharing publicly, make sure the{" "}
             <ChakraLink
               as={ReactRouterLink}
-              to={`${editorUrl(contentId, contentType, "settings")}?showRequired=true`}
+              to={`${editorUrl(contentId, contentType, "settings")}?showRequired`}
               textDecoration="underline"
               onClick={closeModal}
             >

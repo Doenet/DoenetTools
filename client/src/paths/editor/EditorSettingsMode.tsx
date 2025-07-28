@@ -112,8 +112,8 @@ export function EditorSettingsMode() {
   const { allLicenses, allDoenetmlVersions, inLibrary, contentType } =
     useOutletContext<EditorContext>();
 
-  const [params, _] = useSearchParams();
-  const showRequired = params.get("showRequired") ? true : false;
+  const [searchParams, _] = useSearchParams();
+  const showRequired = searchParams.get("showRequired") === null ? false : true;
 
   return (
     <BlueBanner>
