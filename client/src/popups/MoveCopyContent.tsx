@@ -41,6 +41,7 @@ type ActiveView = {
   contents: {
     type: ContentType;
     canOpen: boolean;
+    isAssignment: boolean;
     name: string;
     contentId: string;
   }[];
@@ -205,7 +206,10 @@ export function MoveCopyContent({
         </Text>
       ) : (
         activeView.contents.map((content) => {
-          const { iconImage, iconColor } = getIconInfo(content.type);
+          const { iconImage, iconColor } = getIconInfo(
+            content.type,
+            content.isAssignment,
+          );
           const icon = (
             <Icon
               as={iconImage}

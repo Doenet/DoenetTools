@@ -203,7 +203,7 @@ export function AssignmentResponseStudent() {
   const navigate = useNavigate();
 
   const contentTypeName = contentTypeToName[assignment.type];
-  const { iconImage, iconColor } = getIconInfo(assignment.type);
+  const { iconImage, iconColor } = getIconInfo(assignment.type, true);
 
   const typeIcon = (
     <Tooltip label={contentTypeName}>

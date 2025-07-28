@@ -141,7 +141,7 @@ export function DocumentComparisonControls({
   }
 
   const contentTypeName = contentTypeToName["singleDoc"];
-  const { iconImage, iconColor } = getIconInfo("singleDoc");
+  const { iconImage, iconColor } = getIconInfo("singleDoc", false);
 
   let updatePrompt: ReactElement;
   let updateTitle: string;

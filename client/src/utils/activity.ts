@@ -172,10 +172,7 @@ export function getAllowedParentTypes(childTypes: ContentType[]) {
   return allowedParentTypes.reverse();
 }
 
-export function getIconInfo(
-  contentType: ContentType,
-  isAssignment: boolean = false,
-) {
+export function getIconInfo(contentType: ContentType, isAssignment: boolean) {
   let iconImage: IconType;
   let iconColor: string;
   if (isAssignment) {
@@ -203,7 +200,7 @@ export const menuIcons: Record<string, ReactElement> = {};
 
 for (const t of ["folder", "sequence", "select", "singleDoc"]) {
   const ct = t as ContentType;
-  const { iconImage, iconColor } = getIconInfo(ct);
+  const { iconImage, iconColor } = getIconInfo(ct, false);
   const icon = React.createElement(Icon, {
     as: iconImage,
     color: iconColor,

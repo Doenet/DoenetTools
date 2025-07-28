@@ -361,7 +361,7 @@ export function ActivityViewer() {
   const contentTypeName = contentTypeToName[data.type];
   const ownerName = createNameCheckCurateTag(activityData.owner!);
 
-  const { iconImage, iconColor } = getIconInfo(data.type);
+  const { iconImage, iconColor } = getIconInfo(data.type, false);
 
   const typeIcon = (
     <Tooltip label={contentTypeName}>

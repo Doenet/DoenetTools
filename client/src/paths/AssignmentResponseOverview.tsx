@@ -613,12 +613,12 @@ export function AssignmentData() {
         width="100%"
         borderBottom={"1px solid"}
         borderColor="doenet.mediumGray"
-        templateAreas={`"leftControls label rightControls"`}
+        templateAreas={`"leftControls label"`}
         templateColumns={{
-          base: "82px calc(100% - 197px) 115px",
-          sm: "87px calc(100% - 217px) 120px",
-          md: "1fr 350px 1fr",
-          lg: "1fr 450px 1fr",
+          base: "135px 1fr 135px",
+          sm: "135px 1fr 135px",
+          md: "150px 1fr 150px",
+          lg: "370px 1fr 370px",
         }}
         alignContent="center"
       >

@@ -55,7 +55,9 @@ export async function isInLibrary(contentId: Uint8Array) {
 const filterActivity = {
   type: { not: "folder" as const },
   nonRootAssignmentId: null,
-  rootAssignment: null,
+  rootAssignment: {
+    is: null,
+  },
 };
 
 const filterRootAssignment = {
@@ -222,8 +224,8 @@ export function filterEditableActivity(
   isEditor: boolean = false,
 ) {
   return {
-    ...filterEditableContent(loggedInUserId, isEditor),
     ...filterActivity,
+    ...filterEditableContent(loggedInUserId, isEditor),
   };
 }
 

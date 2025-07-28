@@ -267,7 +267,7 @@ export function EditorHeader() {
 
   const contentTypeName = contentTypeToName[contentType];
 
-  const { iconImage, iconColor } = getIconInfo(contentType);
+  const { iconImage, iconColor } = getIconInfo(contentType, false);
 
   const typeIcon = (
     <Show above="sm">

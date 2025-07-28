@@ -46,10 +46,7 @@ export async function getEditor({
     } = await prisma.content.findUniqueOrThrow({
       where: {
         id: contentId,
-        OR: [
-          filterEditableActivity(loggedInUserId, isEditor),
-          filterEditableRootAssignment(loggedInUserId),
-        ],
+        ...filterEditableActivity(loggedInUserId, isEditor),
       },
       select: {
         id: true,

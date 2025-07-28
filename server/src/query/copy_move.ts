@@ -762,13 +762,16 @@ export async function getMoveCopyContentData({
   const contents: {
     type: ContentType;
     canOpen: boolean;
+    isAssignment: boolean;
     name: string;
     contentId: Uint8Array;
   }[] = [];
 
   for (const child of results) {
     let canOpen = true;
-    if (child.rootAssignment || child.nonRootAssignment) {
+    const isAssignment =
+      child.rootAssignment || child.nonRootAssignment ? true : false;
+    if (isAssignment) {
       canOpen = false;
     } else if (!allowedParentTypes.includes(child.type)) {
       // We'll assume this cannot be opened unless we find a child (or grandchild) that is the allowed parent type
@@ -800,6 +803,7 @@ export async function getMoveCopyContentData({
     contents.push({
       type: child.type,
       canOpen,
+      isAssignment,
       name: child.name,
       contentId: child.id,
     });
