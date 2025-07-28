@@ -318,22 +318,22 @@ export function EditorHeader() {
           background="doenet.canvas"
           width="100%"
           zIndex="300"
-          // borderBottom={mode === "view" ? "1px solid" : undefined}
+          borderBottom={tab === "view" ? "1px solid" : undefined}
           borderColor="doenet.mediumGray"
         >
           <Grid
             templateAreas={`"leftControls label rightControls"`}
             templateColumns={{
-              base: "95px 1fr 165px",
-              sm: "100px 1fr 170px",
-              md: "170px 1fr 170px",
+              base: "135px 1fr 165px",
+              sm: "135px 1fr 170px",
+              md: "150px 1fr 170px",
               lg: "370px 1fr 370px",
             }}
             width="100%"
           >
             <GridItem area="leftControls">
               <HStack ml={{ base: "5px", sm: "10px" }} mt="4px">
-                <Show above="md">
+                <Show above="lg">
                   <ChakraLink
                     as={ReactRouterLink}
                     to={".."}
@@ -426,7 +426,10 @@ export function EditorHeader() {
               </HStack>
             </GridItem>
             <GridItem area="label">
-              <Flex justifyContent="center" alignItems="center">
+              <Flex
+                justifyContent={["left", "left", "left", "center"]}
+                alignItems="center"
+              >
                 {typeIcon}
                 <EditableName dataTest="Activity Name Editable" />
               </Flex>
@@ -435,14 +438,16 @@ export function EditorHeader() {
               area="rightControls"
               display="flex"
               justifyContent="flex-end"
+              alignItems="center"
             >
-              <ButtonGroup pr="2rem" spacing="0">
+              <ButtonGroup pr={{ base: "0rem", lg: "2rem" }} spacing="0">
                 {contentType === "singleDoc" && (
                   <Tooltip label="View edit history" openDelay={300}>
                     <IconButton
                       as={ReactRouterLink}
                       icon={<FaHistory size="1rem" />}
                       variant="ghost"
+                      size={{ base: "xs", lg: "md" }}
                       aria-label="View edit history"
                       to={editorUrl(
                         contentId,
@@ -464,6 +469,7 @@ export function EditorHeader() {
                       as={ReactRouterLink}
                       icon={<LuLibraryBig size="1.2rem" />}
                       variant="ghost"
+                      size={{ base: "xs", lg: "md" }}
                       aria-label="View library status"
                       isDisabled={inLibrary}
                       to={editorUrl(
@@ -482,6 +488,7 @@ export function EditorHeader() {
                       as={ReactRouterLink}
                       icon={<IoGitBranch size="1.2rem" />}
                       variant="ghost"
+                      size={{ base: "xs", lg: "md" }}
                       aria-label="View remixes"
                       to={editorUrl(
                         contentId,
@@ -512,16 +519,14 @@ export function EditorHeader() {
                     }
                   }}
                 >
-                  {assignmentStatus === "Open"
-                    ? "Close assignment"
-                    : `Assign ${contentTypeName.toLocaleLowerCase()}`}
+                  {assignmentStatus === "Open" ? "Close assignment" : `Assign`}
                 </Button>
                 <Button
                   colorScheme="blue"
                   isDisabled={inLibrary}
                   onClick={() => shareContentOnOpen()}
                 >
-                  Share {contentTypeName.toLocaleLowerCase()}
+                  Share
                 </Button>
               </ButtonGroup>
             </GridItem>
@@ -653,7 +658,7 @@ function EditableName({ dataTest }: { dataTest: string }) {
         );
       }}
     >
-      <Tooltip label={name}>
+      <Tooltip label={name} openDelay={500}>
         <EditablePreview data-test="Editable Title" noOfLines={1} />
       </Tooltip>
       <EditableInput
