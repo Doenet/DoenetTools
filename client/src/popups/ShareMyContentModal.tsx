@@ -16,6 +16,10 @@ import {
   HStack,
   Input,
   VStack,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { contentTypeToName } from "../utils/activity";
@@ -24,6 +28,7 @@ import { Link as ReactRouterLink, useFetcher } from "react-router";
 import { SpinnerWhileFetching } from "../utils/optimistic_ui";
 import { ShareTable } from "../widgets/editor/ShareTable";
 import axios from "axios";
+import { IoCheckmark } from "react-icons/io5";
 
 import { loader as settingsLoader } from "../paths/editor/EditorSettingsMode";
 import { editorUrl } from "../utils/url";
@@ -67,7 +72,7 @@ export function ShareMyContentModal({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          <Heading size="lg">
+          <Heading size="md">
             Share {contentTypeToName[contentType].toLocaleLowerCase()}
           </Heading>
         </ModalHeader>
@@ -75,19 +80,7 @@ export function ShareMyContentModal({
         <ModalBody m="1rem">
           <VStack spacing="3rem" align="flex-start">
             <Box>
-              <Heading size="md">With specific people</Heading>
-              {fetcher.data ? (
-                <ShareWithPeople
-                  sharedWith={fetcher.data.sharedWith}
-                  parentSharedWith={fetcher.data.parentSharedWith}
-                />
-              ) : (
-                <p>Loading...</p>
-              )}
-            </Box>
-
-            <Box>
-              <Heading size="md">With the public</Heading>
+              <Heading size="sm">With the public</Heading>
               {fetcher.data && settingsFetcher.data ? (
                 <SharePublicly
                   isPublic={fetcher.data.isPublic}
@@ -96,6 +89,18 @@ export function ShareMyContentModal({
                   contentType={contentType}
                   settings={settingsFetcher.data}
                   closeModal={onClose}
+                />
+              ) : (
+                <p>Loading...</p>
+              )}
+            </Box>
+
+            <Box>
+              <Heading size="sm">With specific people</Heading>
+              {fetcher.data ? (
+                <ShareWithPeople
+                  sharedWith={fetcher.data.sharedWith}
+                  parentSharedWith={fetcher.data.parentSharedWith}
                 />
               ) : (
                 <p>Loading...</p>
@@ -230,19 +235,28 @@ function SharePublicly({
     return (
       <Box>
         <Text mt="1rem">Allow others to find and use your content.</Text>
-        {disableSubmit && (
-          <Text mt="1rem">
-            Before sharing publicly, make sure the{" "}
-            <ChakraLink
-              as={ReactRouterLink}
-              to={`${editorUrl(contentId, contentType, "settings")}?showRequired`}
-              textDecoration="underline"
-              onClick={closeModal}
-            >
-              settings
-            </ChakraLink>{" "}
-            are filled out.
-          </Text>
+        {disableSubmit ? (
+          <Alert status="warning">
+            <AlertIcon />
+            <AlertTitle>Incomplete settings</AlertTitle>
+            <AlertDescription>
+              Cannot be shared publicly until{" "}
+              <ChakraLink
+                as={ReactRouterLink}
+                to={`${editorUrl(contentId, contentType, "settings")}?showRequired`}
+                textDecoration="underline"
+                onClick={closeModal}
+              >
+                settings
+              </ChakraLink>{" "}
+              are filled out.
+            </AlertDescription>
+          </Alert>
+        ) : (
+          <HStack mt="0.5">
+            <IoCheckmark color="green" />
+            <Text>Settings are filled out</Text>
+          </HStack>
         )}
 
         <Button

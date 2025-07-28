@@ -324,10 +324,10 @@ export function EditorHeader() {
           <Grid
             templateAreas={`"leftControls label rightControls"`}
             templateColumns={{
-              base: "135px 1fr 165px",
-              sm: "135px 1fr 170px",
-              md: "150px 1fr 170px",
-              lg: "370px 1fr 370px",
+              base: "135px 1fr 230px",
+              sm: "135px 1fr 230px",
+              md: "150px 1fr 230px",
+              lg: "370px 1fr 280px",
             }}
             width="100%"
           >
@@ -427,7 +427,7 @@ export function EditorHeader() {
             </GridItem>
             <GridItem area="label">
               <Flex
-                justifyContent={["left", "left", "left", "center"]}
+                justifyContent={{ base: "left", lg: "center" }}
                 alignItems="center"
               >
                 {typeIcon}
@@ -440,14 +440,21 @@ export function EditorHeader() {
               justifyContent="flex-end"
               alignItems="center"
             >
-              <ButtonGroup pr={{ base: "0rem", lg: "2rem" }} spacing="0">
+              <ButtonGroup
+                pr={{ base: "0rem", lg: "2rem" }}
+                spacing="0"
+                mt="2px"
+              >
                 {contentType === "singleDoc" && (
                   <Tooltip label="View edit history" openDelay={300}>
                     <IconButton
                       as={ReactRouterLink}
-                      icon={<FaHistory size="1rem" />}
+                      icon={<FaHistory />}
                       variant="ghost"
-                      size={{ base: "xs", lg: "md" }}
+                      fontSize="1.0rem"
+                      size="xs"
+                      width="30px"
+                      height="35px"
                       aria-label="View edit history"
                       to={editorUrl(
                         contentId,
@@ -467,9 +474,12 @@ export function EditorHeader() {
                   >
                     <IconButton
                       as={ReactRouterLink}
-                      icon={<LuLibraryBig size="1.2rem" />}
+                      icon={<LuLibraryBig />}
+                      fontSize="1.2rem"
                       variant="ghost"
-                      size={{ base: "xs", lg: "md" }}
+                      size="xs"
+                      width="30px"
+                      height="35px"
                       aria-label="View library status"
                       isDisabled={inLibrary}
                       to={editorUrl(
@@ -486,9 +496,12 @@ export function EditorHeader() {
                   <Tooltip label="View remixes" openDelay={300}>
                     <IconButton
                       as={ReactRouterLink}
-                      icon={<IoGitBranch size="1.2rem" />}
+                      icon={<IoGitBranch />}
+                      fontSize="1.2rem"
                       variant="ghost"
-                      size={{ base: "xs", lg: "md" }}
+                      size="xs"
+                      width="30px"
+                      height="35px"
                       aria-label="View remixes"
                       to={editorUrl(
                         contentId,
