@@ -34,7 +34,15 @@ export async function getEditor({
   const isEditor = await getIsEditor(loggedInUserId);
 
   try {
-    const result = await prisma.content.findUniqueOrThrow({
+    const {
+      id,
+      name,
+      type,
+      owner,
+      rootAssignment,
+      nonRootAssignment,
+      ...other
+    } = await prisma.content.findUniqueOrThrow({
       where: {
         id: contentId,
         ...filterEditableActivity(loggedInUserId, isEditor),
@@ -70,16 +78,6 @@ export async function getEditor({
         },
       },
     });
-
-    const {
-      id,
-      name,
-      type,
-      owner,
-      rootAssignment,
-      nonRootAssignment,
-      ...other
-    } = result;
 
     let assignment;
     if (rootAssignment) {
@@ -156,45 +154,43 @@ export async function getEditorSettings({
 }) {
   const isEditor = await getIsEditor(loggedInUserId);
 
-  const results = await prisma.content.findUniqueOrThrow({
-    where: {
-      id: contentId,
-      ...filterEditableActivity(loggedInUserId, isEditor),
-    },
-    select: {
-      isPublic: true,
-      doenetmlVersionId: true,
-      licenseCode: true,
-      _count: {
-        select: {
-          sharedWith: true,
-        },
+  const { _count, isPublic, rootAssignment, classifications, ...other } =
+    await prisma.content.findUniqueOrThrow({
+      where: {
+        id: contentId,
+        ...filterEditableActivity(loggedInUserId, isEditor),
       },
-      rootAssignment: {
-        select: {
-          assigned: true,
-          maxAttempts: true,
-          individualizeByStudent: true,
-          mode: true,
+      select: {
+        isPublic: true,
+        doenetmlVersionId: true,
+        licenseCode: true,
+        _count: {
+          select: {
+            sharedWith: true,
+          },
         },
-      },
-      contentFeatures: {
-        select: {
-          code: true,
+        rootAssignment: {
+          select: {
+            assigned: true,
+            maxAttempts: true,
+            individualizeByStudent: true,
+            mode: true,
+          },
         },
-      },
-      classifications: {
-        select: {
-          classification: {
-            select: returnClassificationListSelect(),
+        contentFeatures: {
+          select: {
+            code: true,
+          },
+        },
+        classifications: {
+          select: {
+            classification: {
+              select: returnClassificationListSelect(),
+            },
           },
         },
       },
-    },
-  });
-
-  const { _count, isPublic, rootAssignment, classifications, ...other } =
-    results;
+    });
 
   return {
     ...other,
@@ -441,6 +437,12 @@ export async function getDocEditorHistory({
   };
 }
 
+/**
+ * Check for any new changes in the remix sources. Returns `true` if any of them have changed.
+ *
+ * This function is useful for displaying a notification dot when something has changed.
+ * A change is considered new if the owner hasn't taken an action on those changes yet, such as pulling the changes or choosing to ignore them.
+ */
 async function checkRemixSourceChange({
   contentId,
   loggedInUserId,

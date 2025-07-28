@@ -1,6 +1,9 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../model";
 
+/**
+ * Record a user viewed this content. Only counts each user once per day.
+ */
 export async function recordContentView(
   contentId: Uint8Array,
   loggedInUserId: Uint8Array,

@@ -3,6 +3,10 @@ import { LicenseCode } from "../types";
 import { processLicense } from "../utils/contentStructure";
 import { filterEditableContent } from "../utils/permissions";
 
+/**
+ * Get the full data on every license we support.
+ * See `License` type for the structure.
+ */
 export async function getAllLicenses() {
   const preliminary_licenses = await prisma.licenses.findMany({
     include: {

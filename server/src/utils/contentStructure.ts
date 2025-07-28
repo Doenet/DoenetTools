@@ -401,6 +401,11 @@ export function processAssignmentStatus({
   return assignmentStatus;
 }
 
+/**
+ * Convert `PreliminaryContent` classifications into a list of `ContentClassification` sorted by their `sortIndex`.
+ *
+ * You can pass the full `PreliminaryContent` struct as the argument.
+ */
 export function processClassifications(
   queryResult: Pick<PreliminaryContent, "classifications">,
 ) {

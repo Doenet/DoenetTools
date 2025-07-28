@@ -136,6 +136,7 @@ export function EditorSettingsMode() {
             <Alert status="warning">
               <AlertIcon />
               <AlertTitle>Required for sharing publicly</AlertTitle>
+              <AlertDescription>Select at least 1 category</AlertDescription>
             </Alert>
           )}
           <Box ml="1rem">
