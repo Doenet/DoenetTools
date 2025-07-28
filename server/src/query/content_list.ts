@@ -400,6 +400,7 @@ export async function getMyTrash({
     select: {
       ...returnContentSelect({
         includeClassifications: true,
+        includeAssignInfo: true,
       }),
       isDeletedOn: true,
     },
