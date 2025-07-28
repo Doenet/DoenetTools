@@ -112,15 +112,15 @@ export async function loader({
   }
 
   const {
-    data: { availableFeatures },
-  }: { data: { availableFeatures: ContentFeature[] } } = await axios.get(
-    `/api/info/getAvailableContentFeatures`,
+    data: { allContentFeatures },
+  }: { data: { allContentFeatures: ContentFeature[] } } = await axios.get(
+    `/api/info/getAllContentFeatures`,
   );
 
   const url = new URL(request.url);
 
   const features: Set<string> = new Set();
-  for (const feature of availableFeatures) {
+  for (const feature of allContentFeatures) {
     if (url.searchParams.has(feature.code)) {
       features.add(feature.code);
     }
@@ -150,7 +150,7 @@ export async function loader({
       q,
       ...searchData,
       features,
-      availableFeatures,
+      allContentFeatures,
     };
   } else {
     const { data: browseData } = await axios.post(
@@ -170,7 +170,7 @@ export async function loader({
       ...browseData,
       content: browseData.recentContent,
       features,
-      availableFeatures,
+      allContentFeatures,
     };
   }
 }
@@ -195,7 +195,7 @@ export function Explore() {
     totalCount,
     countByFeature,
     features,
-    availableFeatures,
+    allContentFeatures,
   } = useLoaderData() as {
     q?: string;
     topAuthors: UserInfo[] | null;
@@ -218,7 +218,7 @@ export function Explore() {
       { numCurated?: number; numCommunity?: number }
     >;
     features: Set<string>;
-    availableFeatures: ContentFeature[];
+    allContentFeatures: ContentFeature[];
   };
 
   const {
@@ -292,7 +292,7 @@ export function Explore() {
       classificationInfo={classificationInfo}
       countByFeature={countByFeature}
       features={features}
-      availableFeatures={availableFeatures}
+      allContentFeatures={allContentFeatures}
       search={search}
       navigate={navigate}
     />
@@ -690,7 +690,7 @@ export function Explore() {
       />,
     );
   }
-  for (const feature of availableFeatures) {
+  for (const feature of allContentFeatures) {
     if (features.has(feature.code)) {
       extraFormInputs.push(
         <Input type="hidden" name={feature.code} key={feature.code} />,
@@ -979,7 +979,7 @@ export function Explore() {
               classificationInfo={classificationInfo}
               countByFeature={countByFeature}
               features={features}
-              availableFeatures={availableFeatures}
+              allContentFeatures={allContentFeatures}
               search={search}
               navigate={navigate}
             />

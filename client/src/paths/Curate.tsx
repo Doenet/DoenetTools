@@ -2,8 +2,6 @@ import {
   Button,
   Box,
   Flex,
-  useDisclosure,
-  MenuItem,
   Heading,
   Tooltip,
   Spacer,
@@ -15,49 +13,17 @@ import {
   TabPanels,
   TabPanel,
 } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
-import {
-  useLoaderData,
-  Link,
-  useFetcher,
-  ActionFunctionArgs,
-} from "react-router";
+import React, { useEffect } from "react";
+import { useLoaderData, Link } from "react-router";
 
 import { CardContent } from "../widgets/Card";
 import CardList from "../widgets/CardList";
 import axios from "axios";
-import {
-  Content,
-  ContentFeature,
-  DoenetmlVersion,
-  LibraryRelations,
-  License,
-} from "../types";
+import { Content, LibraryRelations } from "../types";
 import { createNameCheckIsMeTag, createNameNoTag } from "../utils/names";
 import { intWithCommas } from "../utils/formatting";
-import {
-  contentSettingsActions,
-  ContentSettingsDrawer,
-} from "../drawers/ContentSettingsDrawer";
-import { ShareDrawer, shareDrawerActions } from "../drawers/ShareDrawer";
 import { DateTime } from "luxon";
-
-export async function action({ request }: ActionFunctionArgs) {
-  const formData = await request.formData();
-  const formObj = Object.fromEntries(formData);
-
-  const resultCS = await contentSettingsActions({ formObj });
-  if (resultCS) {
-    return resultCS;
-  }
-
-  const resultSD = await shareDrawerActions({ formObj });
-  if (resultSD) {
-    return resultSD;
-  }
-
-  throw Error(`Action "${formObj?._action}" not defined or not handled.`);
-}
+import { editorUrl } from "../utils/url";
 
 export async function loader() {
   const { data: pendingRequests } = await axios.get(
@@ -76,9 +42,6 @@ export function Curate() {
     rejectedLibraryRelations,
     publishedContent,
     publishedLibraryRelations,
-    allDoenetmlVersions,
-    availableFeatures,
-    allLicenses,
   } = useLoaderData() as {
     pendingContent: Content[];
     pendingLibraryRelations: LibraryRelations[];
@@ -88,30 +51,11 @@ export function Curate() {
     rejectedLibraryRelations: LibraryRelations[];
     publishedContent: Content[];
     publishedLibraryRelations: LibraryRelations[];
-    allDoenetmlVersions: DoenetmlVersion[];
-    availableFeatures: ContentFeature[];
-    allLicenses: License[];
   };
 
   useEffect(() => {
     document.title = `Curate - Doenet`;
   }, []);
-
-  const fetcher = useFetcher();
-
-  const [tabIndex, setTabIndex] = useState(0);
-
-  const [activeContentId, setActiveContentId] = useState<string | null>(null);
-  const {
-    isOpen: settingsAreOpen,
-    onOpen: settingsOnOpen,
-    onClose: settingsOnClose,
-  } = useDisclosure();
-  const {
-    isOpen: curateIsOpen,
-    onOpen: curateOnOpen,
-    onClose: curateOnClose,
-  } = useDisclosure();
 
   function displayCardList(
     content: Content[],
@@ -120,7 +64,8 @@ export function Curate() {
     minHeight?: string | { base: string; lg: string },
   ) {
     const cardContent: CardContent[] = content.map((contentData, idx) => {
-      const cardLink = `/activityEditor/${contentData.contentId}`;
+      const cardLink =
+        editorUrl(contentData.contentId, contentData.type) + "?curate";
 
       const librarySource = libraryRelations[idx].source!;
 
@@ -138,30 +83,6 @@ export function Curate() {
           )
         : undefined;
 
-      const menuItems = (
-        <>
-          <MenuItem
-            data-test="Curate Menu Item"
-            onClick={() => {
-              setActiveContentId(contentData.contentId);
-              curateOnOpen();
-            }}
-          >
-            Curate
-          </MenuItem>
-
-          <MenuItem
-            data-test="Setings Menu Item"
-            onClick={() => {
-              setActiveContentId(contentData.contentId);
-              settingsOnOpen();
-            }}
-          >
-            Settings
-          </MenuItem>
-        </>
-      );
-
       return {
         content: contentData,
         ownerName: createNameNoTag(contentData.owner!),
@@ -169,7 +90,6 @@ export function Curate() {
         libraryEditorAvatarName,
         blurb: `Requested on ${requestDate}`,
         cardLink,
-        menuItems,
       };
     });
 
@@ -232,62 +152,8 @@ export function Curate() {
     </Box>
   );
 
-  let tabContent: Content[];
-  let tabLibrary: LibraryRelations[];
-  if (tabIndex === 0) {
-    tabContent = pendingContent;
-    tabLibrary = pendingLibraryRelations;
-  } else if (tabIndex === 1) {
-    tabContent = underReviewContent;
-    tabLibrary = underReviewLibraryRelations;
-  } else if (tabIndex === 2) {
-    tabContent = rejectedContent;
-    tabLibrary = rejectedLibraryRelations;
-  } else {
-    tabContent = publishedContent;
-    tabLibrary = publishedLibraryRelations;
-  }
-
-  let activeContent: Content | undefined;
-  let activeLibraryRelations: LibraryRelations = {};
-  if (activeContentId) {
-    const index = tabContent.findIndex(
-      (obj) => obj.contentId == activeContentId,
-    );
-    if (index != -1) {
-      activeContent = tabContent[index];
-      activeLibraryRelations = tabLibrary[index];
-    } else {
-      //Throw error not found
-    }
-  }
-
-  const settingsDrawer = activeContent && (
-    <ContentSettingsDrawer
-      isOpen={settingsAreOpen}
-      onClose={settingsOnClose}
-      contentData={activeContent}
-      allDoenetmlVersions={allDoenetmlVersions}
-      availableFeatures={availableFeatures}
-      fetcher={fetcher}
-      isInLibrary={true}
-    />
-  );
-
-  const curateDrawer = activeContent && (
-    <ShareDrawer
-      isOpen={curateIsOpen}
-      onClose={curateOnClose}
-      contentData={activeContent}
-      libraryRelations={activeLibraryRelations}
-      allLicenses={allLicenses}
-      // finalFocusRef={finalFocusRef}
-      fetcher={fetcher}
-    />
-  );
-
   const results = (
-    <Tabs variant="enclosed-colored" onChange={(index) => setTabIndex(index)}>
+    <Tabs variant="enclosed-colored">
       <TabList>
         <Tab data-test="Pending Tab">
           Pending ({intWithCommas(pendingContent.length || 0)})
@@ -326,10 +192,7 @@ export function Curate() {
 
   return (
     <>
-      {settingsDrawer}
-      {curateDrawer}
       {heading}
-      {settingsDrawer}
       {results}
     </>
   );

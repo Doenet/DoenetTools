@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { uuidSchema } from "./uuid";
 
 export const userNamesSchema = z.object({
   firstNames: z.string(),
@@ -7,4 +8,8 @@ export const userNamesSchema = z.object({
 
 export const setIsAuthorSchema = z.object({
   isAuthor: z.boolean(),
+});
+
+export const userIdSchema = z.object({
+  userId: uuidSchema,
 });

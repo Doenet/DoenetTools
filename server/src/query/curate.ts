@@ -1,7 +1,6 @@
 import { LibraryEventType, LibraryStatus } from "@prisma/client";
 import { prisma } from "../model";
 import { Content, LibraryComment, LibraryRelations, UserInfo } from "../types";
-import { InvalidRequestError } from "../utils/error";
 import { fromUUID, isEqualUUID } from "../utils/uuid";
 import { createContent, getAllDoenetmlVersions } from "./activity";
 import { copyContent } from "./copy_move";
@@ -9,33 +8,17 @@ import {
   filterEditableActivity,
   filterViewableActivity,
   filterViewableContent,
+  getIsEditor,
+  mustBeEditor,
 } from "../utils/permissions";
 import {
   getMyContentOrLibraryContent,
   searchMyContentOrLibraryContent,
 } from "./content_list";
 import { processContent, returnContentSelect } from "../utils/contentStructure";
-import { getAvailableContentFeatures } from "./classification";
-import { getAllLicenses } from "./share";
-
-export async function mustBeEditor(
-  userId: Uint8Array,
-  message = "You must be an community editor to take this action",
-) {
-  const isEditor = await getIsEditor(userId);
-  if (!isEditor) {
-    throw new InvalidRequestError(message);
-  }
-}
-
-export async function getIsEditor(userId: Uint8Array) {
-  const user = await prisma.users.findUnique({ where: { userId } });
-  let isEditor = false;
-  if (user) {
-    isEditor = user.isEditor;
-  }
-  return isEditor;
-}
+import { getAllContentFeatures } from "./classification";
+import { getAllLicenses } from "./license";
+import { InvalidRequestError } from "../utils/error";
 
 export async function getLibraryAccountId() {
   const library = await prisma.users.findFirstOrThrow({
@@ -616,6 +599,10 @@ export async function addComment({
   comment: string;
   asEditor?: boolean;
 }) {
+  if (comment.trim() === "") {
+    throw new InvalidRequestError("Comment cannot be blank");
+  }
+
   if (asEditor) {
     await mustBeEditor(loggedInUserId);
   }
@@ -657,13 +644,26 @@ export async function addComment({
 export async function getComments({
   contentId,
   loggedInUserId,
-  asEditor = false,
 }: {
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
-  asEditor?: boolean;
 }): Promise<LibraryComment[]> {
-  if (asEditor) {
+  const {
+    owner: { isLibrary },
+  } = await prisma.content.findUniqueOrThrow({
+    where: {
+      id: contentId,
+    },
+    select: {
+      owner: {
+        select: {
+          isLibrary: true,
+        },
+      },
+    },
+  });
+
+  if (isLibrary) {
     await mustBeEditor(loggedInUserId);
   } else {
     // Must be owner
@@ -677,8 +677,8 @@ export async function getComments({
     where: {
       eventType: LibraryEventType.ADD_COMMENT,
       info: {
-        contentId: asEditor ? contentId : undefined,
-        sourceId: asEditor ? undefined : contentId,
+        contentId: isLibrary ? contentId : undefined,
+        sourceId: isLibrary ? undefined : contentId,
       },
     },
     select: {
@@ -851,7 +851,7 @@ export async function getCurationQueue({
       cap: 100,
     });
 
-  const { availableFeatures } = await getAvailableContentFeatures();
+  const { allContentFeatures } = await getAllContentFeatures();
   const { allDoenetmlVersions } = await getAllDoenetmlVersions();
   const { allLicenses } = await getAllLicenses();
 
@@ -864,7 +864,7 @@ export async function getCurationQueue({
     rejectedLibraryRelations,
     publishedContent,
     publishedLibraryRelations,
-    availableFeatures,
+    allContentFeatures,
     allDoenetmlVersions,
     allLicenses,
   };

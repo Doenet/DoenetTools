@@ -34,41 +34,18 @@ import {
   MoveCopyContent,
   moveCopyContentActions,
 } from "../popups/MoveCopyContent";
-import {
-  contentSettingsActions,
-  ContentSettingsDrawer,
-} from "../drawers/ContentSettingsDrawer";
-import {
-  Content,
-  ContentFeature,
-  LicenseCode,
-  UserInfo,
-  ContentType,
-  DoenetmlVersion,
-  License,
-  LibraryRelations,
-} from "../types";
+import { Content, LicenseCode, UserInfo, ContentType } from "../types";
 import { MdClose, MdOutlineSearch } from "react-icons/md";
 import { getAllowedParentTypes } from "../utils/activity";
 import {
   CreateLocalContent,
   createLocalContentActions,
 } from "../popups/CreateLocalContent";
-import { ShareDrawer, shareDrawerActions } from "../drawers/ShareDrawer";
+import { editorUrl } from "../utils/url";
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
-
-  const resultsCurate = await shareDrawerActions({ formObj });
-  if (resultsCurate) {
-    return resultsCurate;
-  }
-
-  const resultCS = await contentSettingsActions({ formObj });
-  if (resultCS) {
-    return resultCS;
-  }
 
   const resultMC = await moveCopyContentActions({ formObj });
   if (resultMC) {
@@ -136,7 +113,7 @@ export async function loader({
     libraryRelations: data.libraryRelations,
     allDoenetmlVersions: data.allDoenetmlVersions,
     allLicenses: data.allLicenses,
-    availableFeatures: data.availableFeatures,
+    allContentFeatures: data.allContentFeatures,
     userId: params.userId,
     parent: data.parent,
     query: q,
@@ -144,43 +121,13 @@ export async function loader({
 }
 
 export function LibraryActivities() {
-  const {
-    folderId,
-    content,
-    libraryRelations,
-    allDoenetmlVersions,
-    allLicenses,
-    availableFeatures,
-    userId,
-    parent,
-    query,
-  } = useLoaderData() as {
+  const { folderId, content, userId, parent, query } = useLoaderData() as {
     folderId: string | null;
     content: Content[];
-    libraryRelations: LibraryRelations[];
-    allDoenetmlVersions: DoenetmlVersion[];
-    allLicenses: License[];
-    availableFeatures: ContentFeature[];
     userId: string;
     parent: Content | null;
     query: string | null;
   };
-
-  const [settingsContentId, setSettingsContentId] = useState<string | null>(
-    null,
-  );
-  const {
-    isOpen: settingsAreOpen,
-    onOpen: settingsOnOpen,
-    onClose: settingsOnClose,
-  } = useDisclosure();
-
-  const {
-    isOpen: curateIsOpen,
-    onOpen: curateOnOpen,
-    onClose: curateOnClose,
-  } = useDisclosure();
-
   const {
     isOpen: createFolderIsOpen,
     onOpen: createFolderOnOpen,
@@ -238,10 +185,6 @@ export function LibraryActivities() {
     onClose: moveCopyContentOnClose,
   } = useDisclosure();
 
-  const [displaySettingsTab, setSettingsDisplayTab] =
-    useState<"general">("general");
-  const [highlightRename, setHighlightRename] = useState(false);
-
   useEffect(() => {
     document.title = `${parent?.name ?? "Library Activities"} - Doenet`;
   }, [parent]);
@@ -254,7 +197,6 @@ export function LibraryActivities() {
     position,
     numCards,
     contentType,
-    isFolder,
     isPublic,
     isShared,
     sharedWith,
@@ -266,7 +208,6 @@ export function LibraryActivities() {
     position: number;
     numCards: number;
     contentType: ContentType;
-    isFolder: boolean;
     isPublic: boolean;
     isShared: boolean;
     sharedWith: UserInfo[];
@@ -275,18 +216,6 @@ export function LibraryActivities() {
   }) {
     return (
       <>
-        {" "}
-        <MenuItem
-          data-test="Rename Menu Item"
-          onClick={() => {
-            setSettingsContentId(contentId);
-            setSettingsDisplayTab("general");
-            setHighlightRename(true);
-            settingsOnOpen();
-          }}
-        >
-          Rename
-        </MenuItem>
         {position > 0 && !haveQuery ? (
           <MenuItem
             data-test="Move Up Menu Item"
@@ -353,28 +282,6 @@ export function LibraryActivities() {
           </MenuItem>
         ) : null}
         <MenuDivider />
-        {isFolder ? null : (
-          <MenuItem
-            data-test="Curate Menu Item"
-            onClick={() => {
-              setSettingsContentId(contentId);
-              curateOnOpen();
-            }}
-          >
-            Curate
-          </MenuItem>
-        )}
-        <MenuItem
-          data-test="Settings Menu Item"
-          onClick={() => {
-            setSettingsContentId(contentId);
-            setSettingsDisplayTab("general");
-            setHighlightRename(false);
-            settingsOnOpen();
-          }}
-        >
-          Settings
-        </MenuItem>
         {contentType !== "folder" && !isPublic ? (
           <>
             <MenuDivider />
@@ -414,51 +321,6 @@ export function LibraryActivities() {
   ) : (
     `Library Activities`
   );
-
-  let contentData: Content | undefined;
-  let activeLibraryRelations: LibraryRelations = {};
-
-  if (settingsContentId) {
-    const index = content.findIndex(
-      (obj) => obj.contentId == settingsContentId,
-    );
-    if (index != -1) {
-      contentData = content[index];
-      activeLibraryRelations = libraryRelations[index];
-      finalFocusRef.current = cardMenuRefs.current[index];
-    } else {
-      //Throw error not found
-    }
-  }
-
-  const settingsDrawer =
-    contentData && settingsContentId ? (
-      <ContentSettingsDrawer
-        isOpen={settingsAreOpen}
-        onClose={settingsOnClose}
-        contentData={contentData}
-        allDoenetmlVersions={allDoenetmlVersions}
-        availableFeatures={availableFeatures}
-        finalFocusRef={finalFocusRef}
-        fetcher={fetcher}
-        displayTab={displaySettingsTab}
-        highlightRename={highlightRename}
-        isInLibrary={activeLibraryRelations.source !== undefined}
-      />
-    ) : null;
-
-  const curateDrawer =
-    contentData && settingsContentId ? (
-      <ShareDrawer
-        isOpen={curateIsOpen}
-        onClose={curateOnClose}
-        contentData={contentData}
-        libraryRelations={activeLibraryRelations}
-        finalFocusRef={finalFocusRef}
-        fetcher={fetcher}
-        allLicenses={allLicenses}
-      />
-    ) : null;
 
   const moveCopyContentModal = (
     <MoveCopyContent
@@ -667,14 +529,13 @@ export function LibraryActivities() {
         isPublic: activity.isPublic,
         isShared: activity.isShared,
         sharedWith: activity.sharedWith,
-        licenseCode: activity.license?.code ?? null,
+        licenseCode: activity.licenseCode ?? null,
         parentId: activity.parent?.contentId ?? null,
-        isFolder: activity.type === "folder",
       }),
       cardLink:
         activity.type === "folder"
           ? `/libraryActivities/${activity.contentId}`
-          : `/activityEditor/${activity.contentId}`,
+          : editorUrl(activity.contentId, activity.type, "edit", true),
     };
   });
 
@@ -691,8 +552,6 @@ export function LibraryActivities() {
 
   return (
     <>
-      {settingsDrawer}
-      {curateDrawer}
       {moveCopyContentModal}
       {createLocalContentModal}
 

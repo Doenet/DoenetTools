@@ -6,8 +6,8 @@ import {
   Text,
   IconButton,
   Flex,
-  Link,
   Image,
+  Link as ChakraLink,
   Tooltip,
   useColorModeValue,
   Button,
@@ -20,6 +20,7 @@ import {
   Hide,
   useDisclosure,
 } from "@chakra-ui/react";
+import { Link as ReactRouterLink } from "react-router";
 import { HiOutlineMail } from "react-icons/hi";
 import { BsGithub, BsDiscord } from "react-icons/bs";
 import { Content } from "../types";
@@ -124,7 +125,7 @@ export function Home() {
             Enhance your classroom with great OER resources from Doenet and
             learn how we make it easy to create your own.
           </Text>
-          <Link href="/code">
+          <ChakraLink as={ReactRouterLink} to="/code">
             <Button
               mt="20px"
               p="10px"
@@ -136,8 +137,8 @@ export function Home() {
             >
               Join with Class Code
             </Button>
-          </Link>
-          <Link href="/library">
+          </ChakraLink>
+          <ChakraLink as={ReactRouterLink} to="/explore">
             <Button
               mt="20px"
               p="10px"
@@ -149,8 +150,8 @@ export function Home() {
             >
               Explore Activities
             </Button>
-          </Link>
-          <Link href="https://www.doenet.org/activityViewer/_7OlapeBhtcfQaa5f7sOCH">
+          </ChakraLink>
+          <ReactRouterLink to="https://www.doenet.org/activityViewer/_7OlapeBhtcfQaa5f7sOCH">
             <Button
               mt="20px"
               p="10px"
@@ -161,7 +162,7 @@ export function Home() {
             >
               Learn to Make Your Own
             </Button>
-          </Link>
+          </ReactRouterLink>
         </Flex>
       </Box>
     );
@@ -366,31 +367,31 @@ export function Home() {
             color={blackColor}
           >
             As a member of the{" "}
-            <Link
+            <ChakraLink
               href="https://prose.runestone.academy/"
               textDecoration="underline"
             >
               PROSE Consortium
-            </Link>
+            </ChakraLink>
             , Doenet invites you to join us each Thursday 1-3pm Central{" "}
-            <Link
+            <ChakraLink
               href="https://prose.runestone.academy/dropin/"
               textDecoration="underline"
             >
               on Zoom
-            </Link>
+            </ChakraLink>
             . Learn how to create great interactive activities for your classes
             in DoenetML and other powerful open source tools of the PROSE
             ecosystem.
             <br />
             <br />
             Join us at{" "}
-            <Link
+            <ChakraLink
               href="https://prose.runestone.academy/dropin/"
               textDecoration="underline"
             >
               this Zoom link
-            </Link>
+            </ChakraLink>
             .
           </Text>
         </VStack>
@@ -413,9 +414,13 @@ export function Home() {
             color={blackColor}
           >
             Interact with{" "}
-            <Link href="/explore" textDecoration="underline">
+            <ChakraLink
+              as={ReactRouterLink}
+              to="/explore"
+              textDecoration="underline"
+            >
               our existing content
-            </Link>
+            </ChakraLink>
           </Text>
         </HStack>
       </Center>
@@ -480,14 +485,14 @@ export function Home() {
               </Text>
               <Text fontSize="18px" marginLeft="10px">
                 Try our open-ended response example! (
-                <Link
+                <ChakraLink
                   rel="noreferrer"
                   target="_blank"
                   textDecoration={"underline"}
                   href="https://www.doenet.org/public?tool=editor&doenetId=_4hcncjV6Ffabz5lhD47aL"
                 >
                   See source code
-                </Link>
+                </ChakraLink>
                 )
               </Text>
             </Show>
@@ -543,7 +548,7 @@ export function Home() {
         pb="100px"
       >
         <Flex columnGap="10px" m="10px">
-          <Link href="mailto:info@doenet.org">
+          <ChakraLink href="mailto:info@doenet.org">
             <Tooltip label="mailto:info@doenet.org">
               <IconButton
                 colorScheme="blue"
@@ -553,9 +558,9 @@ export function Home() {
                 icon={<HiOutlineMail />}
               />
             </Tooltip>
-          </Link>
+          </ChakraLink>
 
-          <Link href="https://github.com/Doenet/">
+          <ChakraLink href="https://github.com/Doenet/">
             <Tooltip label="Doenet Github">
               <IconButton
                 colorScheme="blue"
@@ -565,8 +570,8 @@ export function Home() {
                 icon={<BsGithub />}
               />
             </Tooltip>
-          </Link>
-          <Link href="https://discord.gg/PUduwtKJ5h">
+          </ChakraLink>
+          <ChakraLink href="https://discord.gg/PUduwtKJ5h">
             <Tooltip label="Doenet Discord">
               <IconButton
                 colorScheme="blue"
@@ -576,11 +581,11 @@ export function Home() {
                 icon={<BsDiscord />}
               />
             </Tooltip>
-          </Link>
+          </ChakraLink>
 
-          <Link href="http://creativecommons.org/licenses/by/4.0/">
+          <ChakraLink href="http://creativecommons.org/licenses/by/4.0/">
             <Image src="https://i.creativecommons.org/l/by/4.0/88x31.png" />
-          </Link>
+          </ChakraLink>
         </Flex>
         <Text
           as="div"
@@ -591,12 +596,12 @@ export function Home() {
         >
           <Text color="white">
             This work is licensed under a{" "}
-            <Link
+            <ChakraLink
               color="doenet.mainBlue"
               href="http://creativecommons.org/licenses/by/4.0/"
             >
               Creative Commons Attribution 4.0 International License
-            </Link>
+            </ChakraLink>
             .
           </Text>
           Doenet is a collaborative project involving the University of

@@ -2,6 +2,55 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "../model";
 import { isEqualUUID } from "./uuid";
 import { DateTime } from "luxon";
+import { InvalidRequestError } from "./error";
+
+/**
+ * Assert user is editor
+ */
+export async function mustBeEditor(
+  userId: Uint8Array,
+  message = "You must be an community editor to take this action",
+) {
+  const isEditor = await getIsEditor(userId);
+  if (!isEditor) {
+    throw new InvalidRequestError(message);
+  }
+}
+
+/**
+ * Query whether user is editor or not.
+ */
+export async function getIsEditor(userId: Uint8Array) {
+  const user = await prisma.users.findUnique({ where: { userId } });
+  let isEditor = false;
+  if (user) {
+    isEditor = user.isEditor;
+  }
+  return isEditor;
+}
+
+/**
+ * Query whether content is owned by the library (is a curated activity) or not.
+ *
+ * The curated remix returns true, the original author-owned version returns false.
+ */
+export async function isInLibrary(contentId: Uint8Array) {
+  const {
+    owner: { isLibrary },
+  } = await prisma.content.findUniqueOrThrow({
+    where: {
+      id: contentId,
+    },
+    select: {
+      owner: {
+        select: {
+          isLibrary: true,
+        },
+      },
+    },
+  });
+  return isLibrary;
+}
 
 /**
  * Filter Prisma's `where` clause to exclude unviewable activities for `loggedInUserId`
@@ -141,6 +190,41 @@ export function filterEditableContent(
     OR: editabilityOptions,
   };
 }
+
+/**
+ * Filter Prisma's `where` clause to exclude content that is assigned.
+ * For content to be unassigned:
+ * 1. the `rootAssignment` must not exist or be unassigned
+ * 2. the `nonRootAssignment` must not exist or be unassigned
+ */
+export const filterUnassigned = {
+  AND: [
+    {
+      OR: [
+        {
+          rootAssignment: null,
+        },
+        {
+          rootAssignment: {
+            assigned: false,
+          },
+        },
+      ],
+    },
+    {
+      OR: [
+        {
+          nonRootAssignment: null,
+        },
+        {
+          nonRootAssignment: {
+            assigned: false,
+          },
+        },
+      ],
+    },
+  ],
+};
 
 /**
  * Return a MySQL cause to be added to a WHERE statement, filtering to content editable by `loggedInUserId`.

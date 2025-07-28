@@ -151,7 +151,7 @@ export type ContentBase = {
   sharedWith: UserInfoWithEmail[];
   // Content should ~almost always~ have a license.
   // The exception: content without license from old doenet website
-  license: License | null;
+  licenseCode: LicenseCode | null;
   contentFeatures: {
     id: number;
     code: string;
@@ -238,7 +238,7 @@ export async function createContentInfo({
     isPublic: false,
     isShared: false,
     sharedWith: [],
-    license: null,
+    licenseCode: null,
     parent: null,
     contentFeatures: [],
     classifications: [],
@@ -340,4 +340,14 @@ export type ClassificationCategoryTree = {
       subCategory: string;
     }[];
   }[];
+};
+
+export type ContentRevision = {
+  revisionNum: number;
+  revisionName: string;
+  note: string;
+  source: string;
+  doenetmlVersion: string | null;
+  cid: string;
+  createdAt: Date;
 };

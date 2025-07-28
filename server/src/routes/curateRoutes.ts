@@ -2,6 +2,7 @@ import express from "express";
 import {
   queryLoggedIn,
   queryLoggedInNoArguments,
+  queryOptionalLoggedIn,
 } from "../middleware/queryMiddleware";
 import {
   addComment,
@@ -10,6 +11,7 @@ import {
   getComments,
   getCurationFolderContent,
   getCurationQueue,
+  getSingleLibraryRelations,
   publishActivityToLibrary,
   rejectActivity,
   searchCurationFolderContent,
@@ -21,7 +23,6 @@ import {
   searchCurationFolderContentSchema,
   createCurationFolderSchema,
   curationParentIdSchema,
-  getCommentsSchema,
 } from "../schemas/curateSchema";
 import { contentIdSchema } from "../schemas/contentSchema";
 
@@ -33,22 +34,12 @@ curateRouter.get(
 );
 
 curateRouter.get(
-  "/getCurationFolderContent",
+  "/getCurationFolderContent/:parentId?",
   queryLoggedIn(getCurationFolderContent, curationParentIdSchema),
 );
 
 curateRouter.get(
-  "/getCurationFolderContent/:parentId",
-  queryLoggedIn(getCurationFolderContent, curationParentIdSchema),
-);
-
-curateRouter.get(
-  "/searchCurationFolderContent",
-  queryLoggedIn(searchCurationFolderContent, searchCurationFolderContentSchema),
-);
-
-curateRouter.get(
-  "/searchCurationFolderContent/:parentId",
+  "/searchCurationFolderContent/:parentId?",
   queryLoggedIn(searchCurationFolderContent, searchCurationFolderContentSchema),
 );
 
@@ -85,6 +76,11 @@ curateRouter.post(
 curateRouter.post("/addComment", queryLoggedIn(addComment, addCommentSchema));
 
 curateRouter.get(
+  "/getLibraryRelations/:contentId",
+  queryOptionalLoggedIn(getSingleLibraryRelations, contentIdSchema),
+);
+
+curateRouter.get(
   "/getComments/:contentId",
-  queryLoggedIn(getComments, getCommentsSchema),
+  queryLoggedIn(getComments, contentIdSchema),
 );

@@ -4,7 +4,7 @@ import { fromUUID } from "../utils/uuid";
 import {
   findOrCreateUser,
   getAuthorInfo,
-  getUserInfo,
+  getMyUserInfo,
   getUserInfoIfLoggedIn,
   setIsAuthor,
   updateUser,
@@ -24,7 +24,7 @@ test("New user has no content", async () => {
     throw Error("shouldn't happen");
   }
   const {
-    availableFeatures,
+    allContentFeatures,
     allDoenetmlVersions,
     allLicenses,
     notMe,
@@ -51,7 +51,9 @@ test("Update user name", async () => {
   expect(user.firstNames).eq("New");
   expect(user.lastNames).eq("Name");
 
-  const { user: userInfo } = await getUserInfo({ loggedInUserId: user.userId });
+  const { user: userInfo } = await getMyUserInfo({
+    loggedInUserId: user.userId,
+  });
   expect(userInfo.firstNames).eq("New");
   expect(userInfo.lastNames).eq("Name");
 });
@@ -93,21 +95,21 @@ test("upgrade anonymous user", async () => {
 test("turn author mode on and off", async () => {
   const { userId } = await createTestUser();
 
-  let userInfo = await getUserInfo({ loggedInUserId: userId });
+  let userInfo = await getMyUserInfo({ loggedInUserId: userId });
   expect(userInfo.user.isAuthor).eq(false);
 
   await setIsAuthor({ loggedInUserId: userId, isAuthor: true });
-  userInfo = await getUserInfo({ loggedInUserId: userId });
+  userInfo = await getMyUserInfo({ loggedInUserId: userId });
   expect(userInfo.user.isAuthor).eq(true);
 
   await setIsAuthor({ loggedInUserId: userId, isAuthor: false });
-  userInfo = await getUserInfo({ loggedInUserId: userId });
+  userInfo = await getMyUserInfo({ loggedInUserId: userId });
   expect(userInfo.user.isAuthor).eq(false);
 });
 
 test("user apis do not provide email", async () => {
   const { userId: loggedInUserId } = await createTestUser();
-  const results1 = await getUserInfo({ loggedInUserId });
+  const results1 = await getMyUserInfo({ loggedInUserId });
   expect(results1.user).not.toHaveProperty("email");
 
   const results2 = await getAuthorInfo(loggedInUserId);

@@ -1,6 +1,10 @@
 import React from "react";
 
-import { createBrowserRouter, RouterProvider } from "react-router";
+import {
+  ActionFunctionArgs,
+  createBrowserRouter,
+  RouterProvider,
+} from "react-router";
 import { createRoot } from "react-dom/client";
 
 import "@doenet/doenetml-iframe/style.css";
@@ -12,22 +16,14 @@ import {
   Explore,
 } from "./paths/Explore";
 
-import {
-  loader as curateLoader,
-  action as curateAction,
-  Curate,
-} from "./paths/Curate";
+import { loader as curateLoader, Curate } from "./paths/Curate";
 
 import {
   loader as siteLoader,
   action as siteAction,
   SiteHeader,
 } from "./paths/SiteHeader";
-import {
-  loader as carouselLoader,
-  // action as homeAction,
-  Home,
-} from "./paths/Home";
+import { loader as carouselLoader, Home } from "./paths/Home";
 
 import {
   loader as activitiesLoader,
@@ -86,10 +82,9 @@ import ErrorPage from "./paths/ErrorPage";
 
 import "@fontsource/jost";
 import {
-  ActivityEditor,
-  loader as activityEditorLoader,
-  action as activityEditorAction,
-} from "./paths/ActivityEditor";
+  loader as editorHeaderLoader,
+  EditorHeader,
+} from "./paths/editor/EditorHeader";
 import {
   DoenetMLComparison,
   loader as doenetMLComparisonLoader,
@@ -113,6 +108,41 @@ import {
   loader as libraryActivitiesLoader,
   action as libraryActivitiesAction,
 } from "./paths/LibraryActivities";
+import {
+  DocEditorViewMode,
+  loader as docEditorViewModeLoader,
+} from "./paths/editor/DocEditorViewMode";
+import {
+  loader as docEditorEditModeLoader,
+  DocEditorEditMode,
+} from "./paths/editor/DocEditorEditMode";
+import {
+  CompoundEditorViewMode,
+  loader as compoundEditorViewModeLoader,
+} from "./paths/editor/CompoundEditorViewMode";
+import {
+  CompoundEditorEditMode,
+  loader as compoundEditorEditModeLoader,
+  action as compoundEditorEditModeAction,
+} from "./paths/editor/CompoundEditorEditMode";
+import {
+  EditorSettingsMode,
+  loader as docEditorSettingsModeLoader,
+} from "./paths/editor/EditorSettingsMode";
+import axios, { AxiosError } from "axios";
+import { loadShareStatus } from "./popups/ShareMyContentModal";
+import {
+  DocEditorHistoryMode,
+  loader as docEditorHistoryModeLoader,
+} from "./paths/editor/DocEditorHistoryMode";
+import {
+  DocEditorRemixMode,
+  loader as docEditorRemixModeLoader,
+} from "./paths/editor/DocEditorRemixMode";
+import {
+  EditorLibraryMode,
+  loader as editorLibraryModeLoader,
+} from "./paths/editor/EditorLibraryMode";
 
 const theme = extendTheme({
   fonts: {
@@ -126,8 +156,6 @@ const theme = extendTheme({
   config: {
     initialColorMode: "light",
     useSystemColorMode: false,
-    // initialColorMode: "system",
-    // useSystemColorMode: true,
   },
   colors: {
     doenet_blue: {
@@ -204,7 +232,6 @@ const router = createBrowserRouter([
       {
         path: "curate",
         loader: curateLoader,
-        action: curateAction,
         element: <Curate />,
         errorElement: <ErrorPage />,
       },
@@ -244,11 +271,89 @@ const router = createBrowserRouter([
         element: <ActivityViewer />,
       },
       {
-        path: "activityEditor/:contentId",
-        loader: activityEditorLoader,
-        action: activityEditorAction,
-        element: <ActivityEditor />,
+        path: "documentEditor/:contentId",
+        loader: editorHeaderLoader,
+        action: genericContentIdAction,
+        element: <EditorHeader />,
         errorElement: <ErrorPage />,
+        children: [
+          {
+            path: "edit",
+            loader: docEditorEditModeLoader,
+            element: <DocEditorEditMode />,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "view",
+            loader: docEditorViewModeLoader,
+            element: <DocEditorViewMode />,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "settings",
+            loader: docEditorSettingsModeLoader,
+            action: genericContentIdAction,
+            element: <EditorSettingsMode />,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "history",
+            loader: docEditorHistoryModeLoader,
+            action: genericContentIdAction,
+            element: <DocEditorHistoryMode />,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "remixes",
+            loader: docEditorRemixModeLoader,
+            action: genericContentIdAction,
+            element: <DocEditorRemixMode />,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "library",
+            loader: editorLibraryModeLoader,
+            action: genericContentIdAction,
+            element: <EditorLibraryMode />,
+            errorElement: <ErrorPage />,
+          },
+        ],
+      },
+      {
+        path: "compoundEditor/:contentId",
+        loader: editorHeaderLoader,
+        action: genericContentIdAction,
+        element: <EditorHeader />,
+        errorElement: <ErrorPage />,
+        children: [
+          {
+            path: "edit",
+            loader: compoundEditorEditModeLoader,
+            action: compoundEditorEditModeAction,
+            element: <CompoundEditorEditMode />,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "view",
+            loader: compoundEditorViewModeLoader,
+            element: <CompoundEditorViewMode />,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "settings",
+            loader: docEditorSettingsModeLoader,
+            action: genericContentIdAction,
+            element: <EditorSettingsMode />,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "remixes",
+            loader: docEditorRemixModeLoader,
+            action: genericContentIdAction,
+            element: <DocEditorRemixMode />,
+            errorElement: <ErrorPage />,
+          },
+        ],
       },
       {
         path: "activityCompare/:contentId/:compareId",
@@ -339,9 +444,44 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
         element: <ChangeName />,
       },
+      {
+        path: "loadShareStatus/:contentId",
+        loader: loadShareStatus,
+      },
     ],
   },
 ]);
 
 const root = createRoot(document.getElementById("root")!);
 root.render(<RouterProvider router={router} />);
+
+async function genericContentIdAction({ request, params }: ActionFunctionArgs) {
+  const { path, ...body } = await request.json();
+
+  try {
+    await axios.post(`/api/${path}`, {
+      contentId: params.contentId,
+      ...body,
+    });
+
+    return null;
+  } catch (e) {
+    /**
+     * Special case: sharing content with specific people by email address
+     * Normally, when the server returns an error, we want to go the error page.
+     * However, in this case, it might mean that the owner entered an invalid email address.
+     * If that's the case, catch it and let the route deal with it (handled in component EditorHeader).
+     */
+    if (path === "share/shareContent" && e instanceof AxiosError) {
+      const error = e.response!.data!.error;
+      const details = e.response!.data!.details;
+      if (error === "Invalid data" && details[0]?.message === "Invalid email") {
+        return "Invalid email";
+      } else {
+        return details;
+      }
+    }
+
+    throw e;
+  }
+}

@@ -15,28 +15,8 @@ import {
   Textarea,
 } from "@chakra-ui/react";
 import React, { RefObject, useEffect, useState } from "react";
-import { FetcherWithComponents } from "react-router";
+import { useFetcher } from "react-router";
 import { ContentRevision } from "../types";
-import axios from "axios";
-
-export async function createDocumentSavePointActions({
-  formObj,
-}: {
-  [k: string]: any;
-}) {
-  if (formObj?._action === "create revision") {
-    const {
-      data: { createdNew },
-    } = await axios.post("/api/updateContent/createContentRevision", {
-      contentId: formObj.contentId,
-      revisionName: formObj.revisionName,
-      note: formObj.note,
-    });
-    return { contentRevision: true, createdNew };
-  }
-
-  return null;
-}
 
 export function CreateDocumentSavePoint({
   isOpen,
@@ -45,7 +25,6 @@ export function CreateDocumentSavePoint({
   contentId,
   atLastRevision,
   finalFocusRef,
-  fetcher,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -53,8 +32,9 @@ export function CreateDocumentSavePoint({
   contentId: string;
   atLastRevision: boolean;
   finalFocusRef?: RefObject<HTMLElement>;
-  fetcher: FetcherWithComponents<any>;
 }) {
+  const fetcher = useFetcher();
+
   const [revisionName, setRevisionName] = useState("");
   const [note, setNote] = useState("");
   const [updateRevision, setUpdateRevision] = useState(false);
@@ -62,7 +42,7 @@ export function CreateDocumentSavePoint({
   const [statusStyleIdx, setStatusStyleIdx] = useState(0);
 
   useEffect(() => {
-    if (typeof fetcher.data === "object" && fetcher.data !== null) {
+    if (fetcher.data) {
       if (fetcher.data.contentRevision) {
         setStatusStyleIdx((x) => x + 1);
         setUpdateRevision(true);
@@ -166,13 +146,14 @@ export function CreateDocumentSavePoint({
             onClick={() => {
               fetcher.submit(
                 {
-                  _action: "create revision",
+                  path: "updateContent/createContentRevision",
                   contentId,
                   revisionName,
                   note,
                 },
-                { method: "post" },
+                { method: "post", encType: "application/json" },
               );
+              onClose();
             }}
           >
             {updateRevision ? "Update" : "Save"} save point

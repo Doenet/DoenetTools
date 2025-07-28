@@ -162,7 +162,7 @@ Cypress.Commands.add(
 Cypress.Commands.add("getUserInfo", () => {
   cy.request({
     method: "GET",
-    url: "/api/user/getUser",
+    url: "/api/user/getMyUserInfo",
   }).then((resp) => {
     const user = resp.body.user;
     return user;

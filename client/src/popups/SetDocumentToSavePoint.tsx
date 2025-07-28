@@ -13,31 +13,10 @@ import {
   Text,
 } from "@chakra-ui/react";
 import React, { RefObject, useEffect, useState } from "react";
-import { FetcherWithComponents } from "react-router";
+import { useFetcher } from "react-router";
 import { ContentRevision } from "../types";
-import axios from "axios";
 import { DateTime } from "luxon";
 import { MdError } from "react-icons/md";
-
-export async function setDocumentToSavePointActions({
-  formObj,
-}: {
-  [k: string]: any;
-}) {
-  if (formObj?._action === "revert to revision") {
-    try {
-      const { data } = await axios.post("/api/updateContent/revertToRevision", {
-        contentId: formObj.contentId,
-        revisionNum: Number(formObj.revisionNum),
-      });
-      return { revertedRevision: true, revision: data };
-    } catch (_e) {
-      return { revertedRevision: false };
-    }
-  }
-
-  return null;
-}
 
 export function SetDocumentToSavePoint({
   isOpen,
@@ -45,9 +24,6 @@ export function SetDocumentToSavePoint({
   revision,
   contentId,
   finalFocusRef,
-  fetcher,
-  doenetmlChangeCallback,
-  immediateDoenetmlChangeCallback,
   setRevNum,
 }: {
   isOpen: boolean;
@@ -55,9 +31,6 @@ export function SetDocumentToSavePoint({
   revision: ContentRevision;
   contentId: string;
   finalFocusRef?: RefObject<HTMLElement>;
-  fetcher: FetcherWithComponents<any>;
-  doenetmlChangeCallback: () => Promise<void>;
-  immediateDoenetmlChangeCallback: (arg: string) => void;
   setRevNum: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const [updated, setUpdated] = useState(false);
@@ -66,23 +39,23 @@ export function SetDocumentToSavePoint({
 
   const [newRevNum, setNewRevNum] = useState<number | null>(null);
 
-  useEffect(() => {
-    if (typeof fetcher.data === "object" && fetcher.data !== null) {
-      if (fetcher.data.revertedRevision === true) {
-        setStatusStyleIdx((x) => x + 1);
-        setUpdated(true);
-        const revertedRevision: ContentRevision & { newRevisionNum: number } =
-          fetcher.data.revision;
-        immediateDoenetmlChangeCallback(revertedRevision.source);
-        setNewRevNum(revertedRevision.newRevisionNum);
-      } else if (fetcher.data.revertedRevision === false) {
-        setEncounteredError(true);
-      }
-    }
-  }, [fetcher.data, immediateDoenetmlChangeCallback]);
+  const fetcher = useFetcher();
 
   useEffect(() => {
-    setUpdated(false);
+    if (fetcher.data) {
+      setStatusStyleIdx((x) => x + 1);
+      setUpdated(true);
+      console.log(fetcher.data);
+      const revertedRevision: ContentRevision & { newRevisionNum: number } =
+        fetcher.data.revision;
+      setNewRevNum(revertedRevision.newRevisionNum);
+    }
+  }, [fetcher.data]);
+
+  useEffect(() => {
+    if (isOpen) {
+      setUpdated(false);
+    }
     setEncounteredError(false);
   }, [isOpen]);
 
@@ -160,16 +133,15 @@ export function SetDocumentToSavePoint({
             <Button
               marginRight="4px"
               onClick={async () => {
-                // make sure any changes are saved
-                await doenetmlChangeCallback();
                 fetcher.submit(
                   {
-                    _action: "revert to revision",
+                    path: "updateContent/revertToRevision",
                     contentId,
                     revisionNum: revision.revisionNum,
                   },
-                  { method: "post" },
+                  { method: "post", encType: "application/json" },
                 );
+                onClose();
               }}
             >
               Use save point

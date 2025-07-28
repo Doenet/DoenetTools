@@ -1,4 +1,5 @@
 import cssesc from "cssesc";
+import { ContentType } from "../types";
 
 // since component names include a "/", escape them before using them as css identifiers
 export function cesc(s: string) {
@@ -15,4 +16,25 @@ export function cesc(s: string) {
 // Use it as cy.get(cesc2('#/component_name))
 export function cesc2(s: string) {
   return cesc(cesc(s));
+}
+
+/**
+ * The url for this content's editor page
+ * Default tab is `edit`, but you can specify a different one.
+ * You can also specify that you want the special curator mode which
+ * gives library editors their special controls.
+ */
+export function editorUrl(
+  contentId: string,
+  contentType: ContentType,
+  tabPath:
+    | "edit"
+    | "view"
+    | "settings"
+    | "history"
+    | "remixes"
+    | "library" = "edit",
+  inCurateMode = false,
+) {
+  return `/${contentType === "singleDoc" ? "documentEditor" : "compoundEditor"}/${contentId}/${tabPath}${inCurateMode ? "?curate" : ""}`;
 }

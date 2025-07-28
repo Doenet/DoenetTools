@@ -21,7 +21,7 @@ import { fromUUID, toUUID } from "./utils/uuid";
 import { UserInfo, UserInfoWithEmail } from "./types";
 import {
   findOrCreateUser,
-  getUserInfo,
+  getMyUserInfo,
   updateUser,
   upgradeAnonymousUser,
 } from "./query/user";
@@ -41,6 +41,7 @@ import { copyMoveRouter } from "./routes/copyMoveRoutes";
 import { testRouter } from "./test/testRoutes";
 import { curateRouter } from "./routes/curateRoutes";
 import { compareRouter } from "./routes/compareRoutes";
+import { editorRouter } from "./routes/editorRoutes";
 
 const client = new SESClient({ region: "us-east-2" });
 
@@ -270,7 +271,7 @@ passport.serializeUser<any, any>(async (req, user: any, done) => {
 });
 
 passport.deserializeUser(async (userId: string, done) => {
-  const { user } = await getUserInfo({ loggedInUserId: toUUID(userId) });
+  const { user } = await getMyUserInfo({ loggedInUserId: toUUID(userId) });
   done(null, user);
 });
 
@@ -320,6 +321,7 @@ app.use("/api/info", infoRouter);
 app.use("/api/copyMove", copyMoveRouter);
 app.use("/api/curate", curateRouter);
 app.use("/api/compare", compareRouter);
+app.use("/api/editor", editorRouter);
 
 if (
   process.env.ADD_TEST_APIS &&

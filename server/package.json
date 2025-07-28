@@ -5,7 +5,7 @@
   "main": "dist/src/index.js",
   "scripts": {
     "test": "vitest",
-    "dev": "npx ts-node-dev --respawn --rs src/index.ts",
+    "dev": "npx ts-node-dev --respawn --rs --transpile-only src/index.ts",
     "build": "npx tsc && cp src/signin_email.html dist/src/",
     "start": "node dist/src/index.js",
     "format": "npx prettier . --write",

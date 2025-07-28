@@ -24,6 +24,7 @@ import {
 import { ContentType } from "../types";
 import { contentTypeToName } from "../utils/activity";
 import { SiteContext } from "../paths/SiteHeader";
+import { editorUrl } from "../utils/url";
 
 export async function createContentAndPromptNameActions({
   formObj,
@@ -147,7 +148,7 @@ export function CreateContentAndPromptName({
     destinationUrl = `/activities/${user?.userId}/${newActivityData?.newContentId}`;
   } else {
     destinationAction = `Open ${typeName}`;
-    destinationUrl = `/activityEditor/${newActivityData?.newContentId}`;
+    destinationUrl = editorUrl(newActivityData!.newContentId, desiredType);
   }
 
   function saveName(newName: string) {

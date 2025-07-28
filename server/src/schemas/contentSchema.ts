@@ -21,7 +21,7 @@ export const createContentSchema = z.object({
 export const updateContentSettingsSchema = z.object({
   contentId: uuidSchema,
   name: z.string().optional(),
-  doenetmlVersionId: z.number().int().optional(),
+  doenetmlVersionId: z.coerce.number().int().optional(),
   shuffle: z.boolean().optional(),
   numToSelect: z.number().int().optional(),
   selectByVariant: z.boolean().optional(),

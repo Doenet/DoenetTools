@@ -1,6 +1,11 @@
 import { z } from "zod";
 import { uuidSchema } from "./uuid";
 
+export const setContentIsPublicSchema = z.object({
+  contentId: uuidSchema,
+  isPublic: z.boolean(),
+});
+
 export const licenseCodeSchema = z.enum(["CCDUAL", "CCBYSA", "CCBYNCSA"], {
   required_error: "License code is required",
   invalid_type_error: "Invalid license code",

@@ -27,7 +27,7 @@ export function ExploreFilterDrawer({
   classificationInfo,
   countByFeature,
   features,
-  availableFeatures,
+  allContentFeatures,
   search,
   navigate,
 }: {
@@ -46,7 +46,7 @@ export function ExploreFilterDrawer({
     { numCurated?: number; numCommunity?: number }
   >;
   features: Set<string>;
-  availableFeatures: ContentFeature[];
+  allContentFeatures: ContentFeature[];
   search: string;
   navigate: NavigateFunction;
 }) {
@@ -73,7 +73,7 @@ export function ExploreFilterDrawer({
             classificationInfo={classificationInfo}
             countByFeature={countByFeature}
             features={features}
-            availableFeatures={availableFeatures}
+            allContentFeatures={allContentFeatures}
             search={search}
             navigate={navigate}
           />

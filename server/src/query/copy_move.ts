@@ -4,9 +4,10 @@ import { LicenseCode, UserInfo } from "../types";
 import {
   filterEditableContent,
   filterViewableContent,
+  getIsEditor,
+  mustBeEditor,
 } from "../utils/permissions";
 import { isEqualUUID } from "../utils/uuid";
-import { getIsEditor, getLibraryAccountId, mustBeEditor } from "./curate";
 import {
   calculateNewSortIndex,
   getNextSortIndexForParent,
@@ -15,8 +16,9 @@ import {
 import { modifyContentSharedWith, setContentIsPublic } from "./share";
 import { createContentRevision, createContent } from "./activity";
 import { InvalidRequestError } from "../utils/error";
-import { recordRecentContent } from "./stats";
 import { createFullName } from "../utils/names";
+import { recordRecentContent } from "./recent";
+import { getLibraryAccountId } from "./curate";
 
 /**
  * Move the content with `id` to position `desiredPosition` in the folder `parentId`

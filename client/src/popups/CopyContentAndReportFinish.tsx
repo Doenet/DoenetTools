@@ -21,6 +21,7 @@ import {
 import { ContentDescription } from "../types";
 import { contentTypeToName } from "../utils/activity";
 import { SiteContext } from "../paths/SiteHeader";
+import { editorUrl } from "../utils/url";
 
 export async function copyContentAndReportFinishActions({
   formObj,
@@ -146,10 +147,13 @@ export function CopyContentAndReportFinish({
       // if we have a Question Bank whose parent is a Problem Set,
       // then we don't display the Question Bank by itself, just embedded in the Problem Set
       destinationAction = `Open containing problem set`;
-      destinationUrl = `/activityEditor/${desiredParent.parent.contentId}`;
+      destinationUrl = editorUrl(
+        desiredParent.parent.contentId,
+        desiredParent.parent.type,
+      );
     } else {
       destinationAction = `Open ${typeName}`;
-      destinationUrl = `/activityEditor/${desiredParent.contentId}`;
+      destinationUrl = editorUrl(desiredParent.contentId, desiredParent.type);
     }
   } else {
     destinationDescription = <>My Activities</>;

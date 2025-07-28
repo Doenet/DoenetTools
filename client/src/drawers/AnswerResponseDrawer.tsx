@@ -22,15 +22,6 @@ import { createNameNoTag } from "../utils/names";
 import { DateTime } from "luxon";
 import { parseAndFormatResponse } from "../utils/responses";
 
-/**
- * A side menu drawer that controls sharing settings for a content item.
- * Includes up to three tabs: `Share`, `Remix Sources`, and `Remixes`.
- * The `Remix Sources` and `Remixes` tabs are only shown for non-folder content.
- *
- * Additionally, you can set the `inCurationLibrary` prop to `true` to show controls for library content. This will replace the `Share` tab with a `Curate` tab.
- *
- * Make sure to include {@link shareDrawerActions} in the page's actions.
- */
 export function AnswerResponseDrawer({
   isOpen,
   onClose,

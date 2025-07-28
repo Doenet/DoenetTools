@@ -1,81 +1,16 @@
 import { Prisma } from "@prisma/client";
 import { Content } from "../types";
-import { InvalidRequestError } from "../utils/error";
 import {
-  checkActivityPermissions,
   filterViewableActivity,
+  getIsEditor,
   viewableContentWhere,
 } from "../utils/permissions";
 import { prisma } from "../model";
-import { getAvailableContentFeatures } from "./classification";
 import { processContent, returnContentSelect } from "../utils/contentStructure";
-import {
-  getIsEditor,
-  getSingleLibraryRelations,
-  maskLibraryUserInfo,
-} from "./curate";
+import { getSingleLibraryRelations, maskLibraryUserInfo } from "./curate";
 import { isEqualUUID } from "../utils/uuid";
 import { getRemixSources } from "./remix";
-import { recordContentView, recordRecentContent } from "./stats";
-import { getContentRevisions } from "./activity";
-
-/**
- * Get the data needed to edit `contentId` of `ownerId`.
- *
- * Include assignment info if `contentId` is assigned.
- */
-export async function getActivityEditorData({
-  contentId,
-  loggedInUserId = new Uint8Array(16),
-}: {
-  contentId: Uint8Array;
-  loggedInUserId?: Uint8Array;
-}) {
-  // TODO: add pagination or a hard limit in the number of documents one can add to an activity
-
-  const isEditor = await getIsEditor(loggedInUserId);
-
-  const activityPermissions = await checkActivityPermissions(
-    contentId,
-    loggedInUserId,
-    isEditor,
-  );
-  if (!activityPermissions.viewable || !activityPermissions.ownerId) {
-    throw new InvalidRequestError(
-      "This activity does not exist or is not visible.",
-    );
-  }
-  if (activityPermissions.editable === false) {
-    return { editableByMe: false, contentId };
-  }
-
-  const { availableFeatures } = await getAvailableContentFeatures();
-
-  const activity = await getContent({
-    contentId,
-    loggedInUserId,
-    includeAssignInfo: true,
-    includeClassifications: true,
-    includeShareDetails: true,
-    isEditor,
-  });
-
-  const revisions = await getContentRevisions({ contentId, loggedInUserId });
-  const libraryRelations = await getSingleLibraryRelations({
-    contentId,
-    loggedInUserId,
-  });
-
-  await recordRecentContent(loggedInUserId, "edit", contentId);
-
-  return {
-    editableByMe: true,
-    activity,
-    availableFeatures,
-    revisions,
-    libraryRelations,
-  };
-}
+import { recordContentView } from "./popularity";
 
 /**
  * Get the data needed to view the source of public activity `contentId`

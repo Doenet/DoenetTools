@@ -7,7 +7,7 @@ import {
   getRecentContent,
   purgeOldRecentContent,
   recordRecentContent,
-} from "../query/stats";
+} from "../query/recent";
 
 test("add and check recent content", async () => {
   const user = await createTestUser();

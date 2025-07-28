@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ContentDescription,
   Content,
@@ -13,12 +7,9 @@ import {
   UserInfo,
 } from "../types";
 import {
-  Box,
   Button,
   CloseButton,
   Flex,
-  Grid,
-  GridItem,
   HStack,
   Menu,
   MenuButton,
@@ -44,9 +35,6 @@ import {
 import { SiteContext } from "../paths/SiteHeader";
 import CardList from "../widgets/CardList";
 import axios from "axios";
-import { ActivitySource } from "../viewerTypes";
-// @ts-expect-error assignment-viewer doesn't publish types, see https://github.com/Doenet/assignment-viewer/issues/20
-import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";
 import {
   contentTypeToName,
   getAllowedParentTypes,
@@ -70,6 +58,7 @@ import {
   ActivateAuthorMode,
   activateAuthorModeActions,
 } from "../popups/ActivateAuthorMode";
+import { editorUrl } from "../utils/url";
 
 export async function compoundActivityEditorActions({
   formObj,
@@ -145,38 +134,20 @@ export async function compoundActivityEditorActions({
 
 export function CompoundActivityEditor({
   activity,
-  activityJson,
   asViewer = false,
   inLibrary = false,
-  mode,
   fetcher,
-  setSettingsContentId,
-  settingsOnOpen,
-  sharingOnOpen,
   finalFocusRef,
-  setSettingsDisplayTab,
-  setHighlightRename,
   headerHeight,
 }: {
   activity: Content;
-  activityJson: ActivitySource;
   asViewer?: boolean;
   inLibrary?: boolean;
-  mode: "Edit" | "View";
   fetcher: FetcherWithComponents<any>;
-  setSettingsContentId?: (value: React.SetStateAction<string | null>) => void;
-  settingsOnOpen?: () => void;
-  sharingOnOpen?: () => void;
   finalFocusRef?: React.MutableRefObject<HTMLElement | null>;
-  setSettingsDisplayTab?: (arg: "general") => void;
-  setHighlightRename?: (arg: boolean) => void;
   headerHeight: string;
 }) {
   const contentTypeName = contentTypeToName[activity.type];
-
-  // refs to the menu button of each content card,
-  // which should be given focus when drawers are closed
-  const cardMenuRefs = useRef<HTMLButtonElement[]>([]);
 
   const isAssigned = activity.assignmentInfo
     ? activity.assignmentInfo.assignmentStatus !== "Unassigned"
@@ -227,7 +198,7 @@ export function CompoundActivityEditor({
           creating: false,
           n: was.n,
         }));
-        navigate(`/activityEditor/${fetcher.data.createdDoc}`);
+        navigate(editorUrl(fetcher.data.createdDoc, "singleDoc"));
       }
     }
   }, [fetcher.data, creatingDoc, navigate]);
@@ -378,10 +349,6 @@ export function CompoundActivityEditor({
       children: Content[];
     },
   ) {
-    const getCardMenuRef = (element: HTMLButtonElement) => {
-      cardMenuRefs.current[idx] = element;
-    };
-
     const cards: (
       | CardContent
       | {
@@ -453,7 +420,6 @@ export function CompoundActivityEditor({
       }
 
       cards.push({
-        menuRef: getCardMenuRef,
         content: content,
         menuItems: getCardMenuList({
           contentId: content.contentId,
@@ -465,7 +431,7 @@ export function CompoundActivityEditor({
           content.type === "singleDoc"
             ? asViewer
               ? `/activityViewer/${content.contentId}`
-              : `/activityEditor/${content.contentId}`
+              : editorUrl(content.contentId, content.type)
             : undefined,
         indentLevel,
       });
@@ -609,18 +575,6 @@ export function CompoundActivityEditor({
   }) {
     return (
       <>
-        <MenuItem
-          hidden={readOnly}
-          data-test="Rename Menu Item"
-          onClick={() => {
-            setSettingsContentId?.(contentId);
-            setSettingsDisplayTab?.("general");
-            setHighlightRename?.(true);
-            settingsOnOpen?.();
-          }}
-        >
-          Rename
-        </MenuItem>
         {nextPositionUp ? (
           <MenuItem
             hidden={readOnly}
@@ -670,7 +624,7 @@ export function CompoundActivityEditor({
               isPublic: content.isPublic,
               isShared: content.isShared,
               sharedWith: content.sharedWith,
-              licenseCode: content.license?.code ?? null,
+              licenseCode: content.licenseCode ?? null,
             });
             moveCopyContentOnOpen();
           }}
@@ -692,28 +646,6 @@ export function CompoundActivityEditor({
           }}
         >
           Make a copy
-        </MenuItem>
-        <MenuDivider />
-        <MenuItem
-          hidden={readOnly}
-          data-test="Share Menu Item"
-          onClick={() => {
-            setSettingsContentId?.(content.contentId);
-            sharingOnOpen?.();
-          }}
-        >
-          Share
-        </MenuItem>
-        <MenuItem
-          data-test="Settings Menu Item"
-          onClick={() => {
-            setSettingsDisplayTab?.("general");
-            setSettingsContentId?.(content.contentId);
-            setHighlightRename?.(false);
-            settingsOnOpen?.();
-          }}
-        >
-          Settings
         </MenuItem>
         <MenuDivider />
         <MenuItem
@@ -776,20 +708,6 @@ export function CompoundActivityEditor({
           authorModePromptOnOpen();
         }
       }}
-    />
-  );
-
-  const viewer = (
-    <DoenetActivityViewer
-      source={activityJson}
-      requestedVariantIndex={1}
-      userId={"hi"}
-      linkSettings={{ viewUrl: "", editURL: "" }}
-      paginate={activity.type === "sequence" ? activity.paginate : false}
-      activityLevelAttempts={activity.assignmentInfo?.mode === "summative"}
-      itemLevelAttempts={activity.assignmentInfo?.mode === "formative"}
-      maxAttemptsAllowed={activity.assignmentInfo?.maxAttempts}
-      showTitle={false}
     />
   );
 
@@ -932,62 +850,18 @@ export function CompoundActivityEditor({
       {deleteModal}
       {createQuestionBankModal}
       {authorModeModal}
-      {mode === "Edit" ? (
-        <>
-          {heading}
-          <Flex
-            data-test="Activities"
-            padding="0 10px"
-            margin="0px"
-            width="100%"
-            background={numCards > 0 ? "white" : "var(--lightBlue)"}
-            minHeight={`calc(100vh - ${headerHeight} - 40px)`}
-            direction="column"
-          >
-            {cardList}
-          </Flex>
-        </>
-      ) : null}
-      {mode === "View" ? (
-        <Grid
-          width="100%"
-          templateAreas={`"leftGutter viewer rightGutter"`}
-          templateColumns={`1fr minmax(300px,850px) 1fr`}
-        >
-          <GridItem
-            area="leftGutter"
-            background="doenet.lightBlue"
-            width="100%"
-            paddingTop="10px"
-            alignSelf="start"
-          ></GridItem>
-          <GridItem
-            area="rightGutter"
-            background="doenet.lightBlue"
-            width="100%"
-            paddingTop="10px"
-            alignSelf="start"
-          />
-          <GridItem
-            area="viewer"
-            width="100%"
-            placeSelf="center"
-            minHeight="100%"
-            maxWidth="850px"
-            overflow="hidden"
-          >
-            <Box
-              background="var(--canvas)"
-              padding="0px 0px 20px 0px"
-              flexGrow={1}
-              w="100%"
-              id="viewer-container"
-            >
-              {viewer}
-            </Box>
-          </GridItem>
-        </Grid>
-      ) : null}
+      {heading}
+      <Flex
+        data-test="Activities"
+        padding="0 10px"
+        margin="0px"
+        width="100%"
+        background={numCards > 0 ? "white" : "var(--lightBlue)"}
+        minHeight={`calc(100vh - ${headerHeight} - 40px)`}
+        direction="column"
+      >
+        {cardList}
+      </Flex>
     </>
   );
 }

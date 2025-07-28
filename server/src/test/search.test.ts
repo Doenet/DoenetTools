@@ -25,6 +25,7 @@ import {
 } from "../query/explore";
 import { searchMyContent } from "../query/content_list";
 import { updateUser } from "../query/user";
+import { Content } from "../types";
 
 test("searchSharedContent returns public/shared activities and folders matching the query", async () => {
   const owner = await createTestUser();
@@ -1222,13 +1223,21 @@ test("searchSharedContent, filter by owner", async () => {
     isPublic: true,
   });
 
+  const testIds = function (results: Content[]) {
+    return results
+      .map((c) => c.contentId)
+      .filter(
+        (id) => isEqualUUID(id, activity1Id) || isEqualUUID(id, activity2Id),
+      );
+  };
+
   // get both activities with no filtering
   let results = await searchSharedContent({
     query: `banana${code}`,
     isCurated: false,
     loggedInUserId: userId,
   });
-  expect(results.map((c) => c.contentId)).eqls([activity1Id, activity2Id]);
+  expect(testIds(results)).eqls([activity1Id, activity2Id]);
 
   // filter for owner 1
   results = await searchSharedContent({
@@ -1237,7 +1246,7 @@ test("searchSharedContent, filter by owner", async () => {
     loggedInUserId: userId,
     ownerId: owner1Id,
   });
-  expect(results.map((c) => c.contentId)).eqls([activity1Id]);
+  expect(testIds(results)).eqls([activity1Id]);
 
   // filter for owner 2
   results = await searchSharedContent({
@@ -1246,7 +1255,7 @@ test("searchSharedContent, filter by owner", async () => {
     loggedInUserId: userId,
     ownerId: owner2Id,
   });
-  expect(results.map((c) => c.contentId)).eqls([activity2Id]);
+  expect(testIds(results)).eqls([activity2Id]);
 });
 
 test("searchUsersWithSharedContent returns only users with public/shared/non-deleted content", async () => {

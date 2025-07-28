@@ -13,9 +13,14 @@ import { InfoIcon } from "@chakra-ui/icons";
 import { DisplayLicenseItem } from "../widgets/Licenses";
 import { createNameCheckCurateTag } from "../utils/names";
 import { activityFeatureIcons } from "../utils/activity";
+import { useOutletContext } from "react-router";
+import { SiteContext } from "../paths/SiteHeader";
 
 export function GeneralContentInfo({ contentData }: { contentData: Content }) {
-  const license = contentData.license;
+  const { allLicenses } = useOutletContext<SiteContext>();
+
+  const license =
+    allLicenses.find((l) => l.code === contentData.licenseCode) ?? null;
   const contentType = contentData.type === "folder" ? "Folder" : "Activity";
 
   const containsFeatures = contentData.contentFeatures.length > 0;

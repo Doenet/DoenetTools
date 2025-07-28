@@ -5,9 +5,9 @@ import {
   createContentRevisionScheme,
   revertToRevisionScheme,
   updateContentDoenetMLSchema,
-  updateContentFeaturesSchema,
   updateContentRevisionScheme,
   updateContentSettingsSchema,
+  updateContentFeaturesSchema,
 } from "../schemas/contentSchema";
 import {
   createContent,

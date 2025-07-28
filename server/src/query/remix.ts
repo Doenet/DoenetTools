@@ -1,13 +1,99 @@
 import { prisma } from "../model";
 import { ActivityRemixItem, LicenseCode, RemixContent } from "../types";
 import { cidFromText } from "../utils/cid";
+import { compileActivityFromContent } from "../utils/contentStructure";
 import { createFullName } from "../utils/names";
 import {
   filterEditableActivity,
   filterViewableActivity,
+  filterViewableContent,
+  getIsEditor,
 } from "../utils/permissions";
-import { createContentRevision, getContentSource } from "./activity";
-import { getIsEditor, maskLibraryUserInfo } from "./curate";
+import { createContentRevision } from "./activity";
+import { getContent } from "./activity_edit_view";
+import { maskLibraryUserInfo } from "./curate";
+
+/**
+ * Get the `source` and, if a Doc, `doenetMLVersion`, from the content with `contentId` viewable by `loggedInUserId`.
+ * The behavior depends on whether or not `fromRevisionNum` is specified.
+ *
+ * ### `fromRevision` is not specified
+ *
+ * For Docs, return the `source` database field from the `content` table.
+ * Otherwise compile the activity json and stringify that for the source
+ *
+ * For Docs, also return the full doenetml version, unless `useVersionId` is `true`,
+ * in which case, return the doenetmlVersionId.
+ *
+ * If not a Doc and `useVersionId` is `true`, then compile the activity json where use doenetmlVersionId
+ * rather than the full doenetml version. Useful for generating a cid from the source
+ * that won't change if we upgrade the minor version for all documents (though it does not
+ * produce a valid source for viewing the activity).
+ *
+ * ### `fromRevision` is specified
+ *
+ * Return the `source` and, if a Doc, full doenetml version from the `contentRevisions` table
+ * with `contentId` and revisionNum equal to `fromRevisionNum`.
+ *
+ * When `fromRevisionNum` is specified, `useVersionIds` is ignored, given that the source (for non Docs) stored in `contentRevisions`
+ * includes full doenetml versions.
+ *
+ * In addition to returning `source` and, if Doc, the full `doenetmlVersion`, also return additional fields
+ * from `contentRevision`: revisionNum, revisionName, and note,
+ */
+async function getContentSource({
+  contentId,
+  loggedInUserId = new Uint8Array(16),
+  useVersionIds = false,
+  fromRevisionNum,
+}: {
+  contentId: Uint8Array;
+  loggedInUserId?: Uint8Array;
+  useVersionIds?: boolean;
+  fromRevisionNum?: number;
+}) {
+  const isEditor = await getIsEditor(loggedInUserId);
+
+  if (fromRevisionNum === undefined) {
+    const content = await getContent({ contentId, loggedInUserId, isEditor });
+    let source: string;
+    let doenetMLVersion: string | null = null;
+
+    if (content.type === "singleDoc") {
+      source = content.doenetML;
+      doenetMLVersion = useVersionIds
+        ? content.doenetmlVersion.id.toString()
+        : content.doenetmlVersion.fullVersion;
+    } else {
+      source = JSON.stringify(
+        compileActivityFromContent(content, useVersionIds),
+      );
+    }
+
+    return { source, doenetMLVersion };
+  } else {
+    const revisionPrelim = await prisma.contentRevisions.findUniqueOrThrow({
+      where: {
+        contentId_revisionNum: { contentId, revisionNum: fromRevisionNum },
+        content: filterViewableContent(loggedInUserId, isEditor),
+      },
+      select: {
+        source: true,
+        doenetmlVersion: { select: { fullVersion: true } },
+        revisionNum: true,
+        revisionName: true,
+        note: true,
+      },
+    });
+
+    const { doenetmlVersion, ...revision } = revisionPrelim;
+
+    return {
+      ...revision,
+      doenetMLVersion: doenetmlVersion?.fullVersion ?? null,
+    };
+  }
+}
 
 export async function getRemixSources({
   contentId,

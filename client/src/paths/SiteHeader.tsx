@@ -32,7 +32,7 @@ import RouterLogo from "../RouterLogo";
 import { ExternalLinkIcon, HamburgerIcon } from "@chakra-ui/icons";
 import axios from "axios";
 import { createNameNoTag } from "../utils/names";
-import { ContentDescription } from "../types";
+import { ContentDescription, DoenetmlVersion, License } from "../types";
 
 export type User =
   | {
@@ -52,6 +52,8 @@ export type SiteContext = {
   setExploreTab: (arg: number | null) => void;
   addTo: ContentDescription | null;
   setAddTo: (arg: ContentDescription | null) => void;
+  allLicenses: License[];
+  allDoenetmlVersions: DoenetmlVersion[];
 };
 
 export async function action({ request }: { request: any }) {
@@ -70,9 +72,17 @@ export async function action({ request }: { request: any }) {
 export async function loader() {
   const {
     data: { user },
-  } = await axios.get("/api/user/getUser");
+  } = await axios.get("/api/user/getMyUserInfo");
 
-  return { user };
+  const {
+    data: { allLicenses },
+  } = await axios.get("/api/info/getAllLicenses");
+
+  const {
+    data: { allDoenetmlVersions },
+  } = await axios.get("/api/info/getAllDoenetmlVersions");
+
+  return { user, allLicenses, allDoenetmlVersions };
 }
 
 function NavLinkTab({
@@ -164,7 +174,11 @@ function NavLinkDropdownTab({
 }
 
 export function SiteHeader() {
-  const { user } = useLoaderData() as { user?: User };
+  const { user, allLicenses, allDoenetmlVersions } = useLoaderData() as {
+    user?: User;
+    allLicenses: License[];
+    allDoenetmlVersions: DoenetmlVersion[];
+  };
 
   const [exploreTab, setExploreTab] = useState<number | null>(null);
 
@@ -176,6 +190,8 @@ export function SiteHeader() {
     setExploreTab,
     addTo,
     setAddTo,
+    allLicenses,
+    allDoenetmlVersions,
   };
 
   const helpMenuShouldFocusFirst = useBreakpointValue(
@@ -265,7 +281,11 @@ export function SiteHeader() {
             <GridItem area="rightHeader">
               <Flex columnGap="10px">
                 <Menu autoSelect={helpMenuShouldFocusFirst}>
-                  <MenuButton as={Button} color="doenet.canvastext">
+                  <MenuButton
+                    as={Button}
+                    color="doenet.canvastext"
+                    variant="ghost"
+                  >
                     Help
                   </MenuButton>
                   <MenuList>

@@ -41,15 +41,6 @@ import {
   moveCopyContentActions,
 } from "../popups/MoveCopyContent";
 import {
-  contentSettingsActions,
-  ContentSettingsDrawer,
-} from "../drawers/ContentSettingsDrawer";
-import {
-  assignmentControlsActions,
-  AssignmentControlsDrawer,
-} from "../drawers/AssignmentControlsDrawer";
-import {
-  AssignmentStatus,
   ContentDescription,
   Content,
   ContentType,
@@ -61,7 +52,6 @@ import {
   ContentFeature,
 } from "../types";
 import { MdClose, MdOutlineSearch } from "react-icons/md";
-import { ShareDrawer, shareDrawerActions } from "../drawers/ShareDrawer";
 import { getAllowedParentTypes, menuIcons } from "../utils/activity";
 import {
   CreateLocalContent,
@@ -83,24 +73,11 @@ import {
   activateAuthorModeActions,
 } from "../popups/ActivateAuthorMode";
 import { formatAssignmentBlurb } from "../utils/assignment";
+import { editorUrl } from "../utils/url";
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const formData: FormData = await request.formData();
   const formObj = Object.fromEntries(formData.entries());
-
-  const resultCS = await contentSettingsActions({ formObj });
-  if (resultCS) {
-    return resultCS;
-  }
-
-  const resultSD = await shareDrawerActions({ formObj });
-  if (resultSD) {
-    return resultSD;
-  }
-  const resultAS = await assignmentControlsActions({ formObj });
-  if (resultAS) {
-    return resultAS;
-  }
 
   const resultMC = await moveCopyContentActions({ formObj });
   if (resultMC) {
@@ -141,7 +118,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     });
 
     const { contentId } = data;
-    return redirect(`/activityEditor/${contentId}`);
+    return redirect(editorUrl(contentId, formObj.type as ContentType));
   } else if (formObj?._action == "Duplicate Content") {
     await axios.post(`/api/copyMove/copyContent`, {
       contentIds: [formObj.contentId],
@@ -190,7 +167,7 @@ export async function loader({ params, request }: any) {
     libraryRelations: data.libraryRelations,
     allDoenetmlVersions: data.allDoenetmlVersions,
     allLicenses: data.allLicenses,
-    availableFeatures: data.availableFeatures,
+    allContentFeatures: data.allContentFeatures,
     userId: params.userId,
     parent: data.parent,
     query: q,
@@ -198,23 +175,13 @@ export async function loader({ params, request }: any) {
 }
 
 export function Activities() {
-  const {
-    parentId,
-    content,
-    libraryRelations,
-    allDoenetmlVersions,
-    allLicenses,
-    availableFeatures,
-    userId,
-    parent,
-    query,
-  } = useLoaderData() as {
+  const { parentId, content, userId, parent, query } = useLoaderData() as {
     parentId: string | null;
     content: Content[];
     libraryRelations: LibraryRelations[];
     allDoenetmlVersions: DoenetmlVersion[];
     allLicenses: License[];
-    availableFeatures: ContentFeature[];
+    allContentFeatures: ContentFeature[];
     userId: string;
     parent: Content | null;
     query: string | null;
@@ -222,23 +189,6 @@ export function Activities() {
   const [settingsContentId, setSettingsContentId] = useState<string | null>(
     null,
   );
-  const {
-    isOpen: settingsAreOpen,
-    onOpen: settingsOnOpen,
-    onClose: settingsOnClose,
-  } = useDisclosure();
-
-  const {
-    isOpen: sharingIsOpen,
-    onOpen: sharingOnOpen,
-    onClose: sharingOnClose,
-  } = useDisclosure();
-
-  const {
-    isOpen: assignmentSettingsAreOpen,
-    onOpen: assignmentSettingsOnOpen,
-    onClose: assignmentSettingsOnClose,
-  } = useDisclosure();
 
   const {
     isOpen: createFolderIsOpen,
@@ -258,7 +208,6 @@ export function Activities() {
   // which should be given focus when drawers are closed
   const cardMenuRefs = useRef<HTMLButtonElement[]>([]);
 
-  const folderSettingsRef = useRef(null);
   const finalFocusRef = useRef<HTMLElement | null>(null);
 
   const [haveContentSpinner, setHaveContentSpinner] = useState(false);
@@ -328,10 +277,6 @@ export function Activities() {
     onClose: moveCopyContentOnClose,
   } = useDisclosure();
 
-  const [displaySettingsTab, setSettingsDisplayTab] =
-    useState<"general">("general");
-  const [highlightRename, setHighlightRename] = useState(false);
-
   useEffect(() => {
     document.title = `${parent?.name ?? "My Activities"} - Doenet`;
   }, [parent]);
@@ -343,7 +288,6 @@ export function Activities() {
     name,
     position,
     numCards,
-    assignmentStatus,
     contentType,
     isPublic,
     isShared,
@@ -355,7 +299,6 @@ export function Activities() {
     name: string;
     position: number;
     numCards: number;
-    assignmentStatus: AssignmentStatus;
     contentType: ContentType;
     isPublic: boolean;
     isShared: boolean;
@@ -365,17 +308,6 @@ export function Activities() {
   }) {
     return (
       <>
-        <MenuItem
-          data-test="Rename Menu Item"
-          onClick={() => {
-            setSettingsContentId(contentId);
-            setSettingsDisplayTab("general");
-            setHighlightRename(true);
-            settingsOnOpen();
-          }}
-        >
-          Rename
-        </MenuItem>
         {position > 0 && !haveQuery ? (
           <MenuItem
             data-test="Move Up Menu Item"
@@ -459,40 +391,6 @@ export function Activities() {
           </MenuItem>
         ) : null}
         <MenuDivider />
-        {contentType !== "folder" ? (
-          <MenuItem
-            data-test="Assign Activity Menu Item"
-            onClick={() => {
-              setSettingsContentId(contentId);
-              assignmentSettingsOnOpen();
-            }}
-          >
-            {assignmentStatus === "Unassigned"
-              ? "Assign Activity"
-              : "Manage Assignment"}
-          </MenuItem>
-        ) : null}
-        <MenuItem
-          data-test="Share Menu Item"
-          onClick={() => {
-            setSettingsContentId(contentId);
-            sharingOnOpen();
-          }}
-        >
-          Share
-        </MenuItem>
-        <MenuItem
-          data-test="Settings Menu Item"
-          onClick={() => {
-            setSettingsContentId(contentId);
-            setSettingsDisplayTab("general");
-            setHighlightRename(false);
-            settingsOnOpen();
-          }}
-        >
-          Settings
-        </MenuItem>
-        <MenuDivider />
         <MenuItem
           data-test="Delete Menu Item"
           onClick={() => {
@@ -523,14 +421,12 @@ export function Activities() {
   );
 
   let contentData: Content | undefined;
-  let activeLibraryRelations: LibraryRelations = {};
   if (settingsContentId) {
     const index = content.findIndex(
       (obj) => obj.contentId == settingsContentId,
     );
     if (index != -1) {
       contentData = content[index];
-      activeLibraryRelations = libraryRelations[index];
       finalFocusRef.current = cardMenuRefs.current[index];
     } else {
       //Throw error not found
@@ -544,46 +440,6 @@ export function Activities() {
       { method: "post" },
     );
   }
-
-  const settingsDrawer =
-    contentData && settingsContentId ? (
-      <ContentSettingsDrawer
-        isOpen={settingsAreOpen}
-        onClose={settingsOnClose}
-        contentData={contentData}
-        allDoenetmlVersions={allDoenetmlVersions}
-        availableFeatures={availableFeatures}
-        finalFocusRef={finalFocusRef}
-        fetcher={fetcher}
-        displayTab={displaySettingsTab}
-        highlightRename={highlightRename}
-        isInLibrary={activeLibraryRelations.source !== undefined}
-      />
-    ) : null;
-
-  const shareDrawer =
-    contentData && settingsContentId ? (
-      <ShareDrawer
-        isOpen={sharingIsOpen}
-        onClose={sharingOnClose}
-        contentData={contentData}
-        libraryRelations={activeLibraryRelations}
-        allLicenses={allLicenses}
-        finalFocusRef={finalFocusRef}
-        fetcher={fetcher}
-      />
-    ) : null;
-  const assignmentDrawer =
-    contentData && settingsContentId ? (
-      <AssignmentControlsDrawer
-        isOpen={assignmentSettingsAreOpen}
-        onClose={assignmentSettingsOnClose}
-        contentId={settingsContentId}
-        contentData={contentData}
-        finalFocusRef={finalFocusRef}
-        fetcher={fetcher}
-      />
-    ) : null;
 
   const moveCopyContentModal = (
     <MoveCopyContent
@@ -842,6 +698,18 @@ export function Activities() {
               </MenuButton>
               <MenuList>
                 <MenuItem
+                  data-test="Add Document Button"
+                  onClick={() => {
+                    if (user?.isAuthor) {
+                      createNewDocument();
+                    } else {
+                      authorModePromptOnOpen();
+                    }
+                  }}
+                >
+                  Document {!user?.isAuthor && <>(with source code)</>}
+                </MenuItem>
+                <MenuItem
                   data-test="Add Problem Set Button"
                   onClick={() => {
                     setHaveContentSpinner(true);
@@ -873,35 +741,9 @@ export function Activities() {
                 >
                   Question Bank
                 </MenuItem>
-                <MenuItem
-                  data-test="Add Document Button"
-                  onClick={() => {
-                    if (user?.isAuthor) {
-                      createNewDocument();
-                    } else {
-                      authorModePromptOnOpen();
-                    }
-                  }}
-                >
-                  Document {!user?.isAuthor && <>(with source code)</>}
-                </MenuItem>
               </MenuList>
             </Menu>
 
-            {parentId !== null ? (
-              <Button
-                colorScheme="blue"
-                size="sm"
-                ref={folderSettingsRef}
-                onClick={() => {
-                  setSettingsContentId(parentId);
-                  sharingOnOpen();
-                }}
-                hidden={searchOpen}
-              >
-                Share
-              </Button>
-            ) : null}
             <Button
               colorScheme="blue"
               size="sm"
@@ -973,19 +815,17 @@ export function Activities() {
         name: activity.name,
         position,
         numCards: content.length,
-        assignmentStatus:
-          activity.assignmentInfo?.assignmentStatus ?? "Unassigned",
         contentType: activity.type,
         isPublic: activity.isPublic,
         isShared: activity.isShared,
         sharedWith: activity.sharedWith,
-        licenseCode: activity.license?.code ?? null,
+        licenseCode: activity.licenseCode ?? null,
         parentId: activity.parent?.contentId ?? null,
       }),
       cardLink:
         activity.type === "folder"
           ? `/activities/${activity.ownerId}/${activity.contentId}`
-          : `/activityEditor/${activity.contentId}`,
+          : editorUrl(activity.contentId, activity.type),
     };
   });
 
@@ -1005,9 +845,6 @@ export function Activities() {
 
   return (
     <>
-      {settingsDrawer}
-      {shareDrawer}
-      {assignmentDrawer}
       {moveCopyContentModal}
       {createFolderModal}
       {deleteModal}

@@ -43,20 +43,19 @@ import { MdOutlineAdd, MdOutlineEditOff, MdOutlineInfo } from "react-icons/md";
 import { useFetcher } from "react-router";
 
 import axios from "axios";
-import {} from "../drawers/ContentSettingsDrawer";
 import {
   Content,
   DoenetmlVersion,
   LibraryRelations,
   ActivityRemixItem,
 } from "../types";
-import { ActivityDoenetMLEditor } from "../views/ActivityDoenetMLEditor";
 import { CompoundActivityEditor } from "../views/CompoundActivityEditor";
 import {
   compileActivityFromContent,
   contentTypeToName,
   getAllowedParentTypes,
   getClassificationAugmentedDescription,
+  getDoenetMLDeprecationWarnings,
   getIconInfo,
   menuIcons,
 } from "../utils/activity";
@@ -78,6 +77,10 @@ import {
 import { CloseIcon } from "@chakra-ui/icons";
 import { BsBookmarkCheck } from "react-icons/bs";
 import { ImCheckmark } from "react-icons/im";
+import { DoenetEditor, DoenetViewer } from "@doenet/doenetml-iframe";
+import { BlueBanner } from "../widgets/BlueBanner";
+// @ts-expect-error assignment-viewer doesn't publish types, see https://github.com/Doenet/assignment-viewer/issues/20
+import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
@@ -158,10 +161,14 @@ export function ActivityViewer() {
       }
   );
 
-  const { contentId, activityData, contributorHistory, libraryRelations } =
-    data;
+  const { activityData, contributorHistory, libraryRelations } = data;
 
-  const { user, addTo, setAddTo } = useOutletContext<SiteContext>();
+  const { user, addTo, setAddTo, allLicenses } =
+    useOutletContext<SiteContext>();
+
+  const license =
+    allLicenses.find((l) => l.code === activityData.licenseCode) ?? null;
+
   const navigate = useNavigate();
 
   const infoBtnRef = useRef<HTMLButtonElement>(null);
@@ -268,33 +275,87 @@ export function ActivityViewer() {
 
   const haveClassifications = activityData.classifications.length > 0;
 
-  let editor: ReactElement;
+  let mainContent: ReactElement = <></>;
 
   if (data.type === "singleDoc") {
-    editor = (
-      <ActivityDoenetMLEditor
-        doenetML={data.doenetML}
-        doenetmlVersion={data.doenetmlVersion}
-        asViewer={true}
-        mode={mode}
-        contentId={contentId}
-        headerHeight="140px"
-      />
-    );
+    if (mode === "Edit") {
+      const initialWarnings = getDoenetMLDeprecationWarnings(
+        data.doenetmlVersion,
+      );
+      const headerHeight = "140px";
+      mainContent = (
+        <DoenetEditor
+          height={`calc(100vh - ${headerHeight})`}
+          width="100%"
+          doenetML={data.doenetML}
+          doenetmlVersion={data.doenetmlVersion.fullVersion}
+          initialWarnings={initialWarnings}
+          border="none"
+          readOnly={true}
+        />
+      );
+    } else {
+      mainContent = (
+        <BlueBanner>
+          <DoenetViewer
+            doenetML={data.doenetML}
+            doenetmlVersion={data.doenetmlVersion.fullVersion}
+            flags={{
+              showCorrectness: true,
+              solutionDisplayMode: "button",
+              showFeedback: true,
+              showHints: true,
+              autoSubmit: false,
+              allowLoadState: false,
+              allowSaveState: false,
+              allowLocalState: false,
+              allowSaveEvents: false,
+            }}
+            attemptNumber={1}
+            location={location}
+            navigate={navigate}
+            linkSettings={{
+              viewURL: "",
+              editURL: "",
+            }}
+            includeVariantSelector={true}
+          />
+        </BlueBanner>
+      );
+    }
   } else {
-    editor = (
-      <CompoundActivityEditor
-        activity={activityData}
-        activityJson={data.activityJson}
-        asViewer={true}
-        mode={mode}
-        fetcher={fetcher}
-        headerHeight="140px"
-        setSettingsContentId={setSettingsContentId}
-        settingsOnOpen={infoOnOpen}
-        setSettingsDisplayTab={setDisplayInfoTab}
-      />
-    );
+    if (mode === "Edit") {
+      mainContent = (
+        <CompoundActivityEditor
+          activity={activityData}
+          asViewer={true}
+          fetcher={fetcher}
+          headerHeight="140px"
+        />
+      );
+    } else {
+      mainContent = (
+        <BlueBanner>
+          <DoenetActivityViewer
+            source={data.activityJson}
+            requestedVariantIndex={1}
+            userId={"hi"}
+            linkSettings={{ viewUrl: "", editURL: "" }}
+            paginate={
+              activityData.type === "sequence" ? activityData.paginate : false
+            }
+            activityLevelAttempts={
+              activityData.assignmentInfo?.mode === "summative"
+            }
+            itemLevelAttempts={
+              activityData.assignmentInfo?.mode === "formative"
+            }
+            maxAttemptsAllowed={activityData.assignmentInfo?.maxAttempts}
+            showTitle={false}
+          />
+        </BlueBanner>
+      );
+    }
   }
 
   const contentTypeName = contentTypeToName[data.type];
@@ -496,7 +557,7 @@ export function ActivityViewer() {
                       </Tooltip>
                     </>
                   ) : null}
-                  {libraryRelations.activity?.status === "PUBLISHED" ? (
+                  {libraryRelations.activity?.status === "PUBLISHED" && (
                     <Popover>
                       <PopoverTrigger>
                         <IconButton
@@ -530,26 +591,6 @@ export function ActivityViewer() {
                         </PopoverBody>
                       </PopoverContent>
                     </Popover>
-                  ) : (
-                    <></>
-                  )}
-                  {user?.isEditor &&
-                  libraryRelations.activity?.activityContentId &&
-                  libraryRelations.activity?.status !== "PUBLISHED" ? (
-                    <Button
-                      marginLeft="10px"
-                      data-test="Go to curated draft"
-                      size="sm"
-                      colorScheme="blue"
-                      as={ReactRouterLink}
-                      to={`/activityEditor/${libraryRelations.activity.activityContentId}`}
-
-                      // style={{ color: "var(--mainBlue)" }}
-                    >
-                      Go to curated draft
-                    </Button>
-                  ) : (
-                    <></>
                   )}
                 </Flex>
               </GridItem>
@@ -615,7 +656,7 @@ export function ActivityViewer() {
               width={mode === "Edit" ? "100%" : undefined}
               height="100%"
             >
-              {editor}
+              {mainContent}
             </Box>
             <Box
               hidden={mode === "Edit"}
@@ -636,15 +677,15 @@ export function ActivityViewer() {
               minHeight="20vh"
             >
               <Box width={haveClassifications ? "70%" : "100%"}>
-                {activityData.license ? (
-                  activityData.license.isComposition ? (
+                {license ? (
+                  license.isComposition ? (
                     <>
                       <p>
                         <strong>{activityData.name}</strong> by {ownerName} is
                         shared with these licenses:
                       </p>
                       <List spacing="20px" marginTop="10px">
-                        {activityData.license.composedOf.map((comp) => (
+                        {license.composedOf.map((comp) => (
                           <DisplayLicenseItem
                             licenseItem={comp}
                             key={comp.code}
@@ -663,9 +704,7 @@ export function ActivityViewer() {
                         shared using the license:
                       </p>
                       <List marginTop="10px">
-                        <DisplayLicenseItem
-                          licenseItem={activityData.license}
-                        />
+                        <DisplayLicenseItem licenseItem={license} />
                       </List>
                     </>
                   )
