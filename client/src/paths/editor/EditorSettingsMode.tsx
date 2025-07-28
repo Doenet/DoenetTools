@@ -1,5 +1,10 @@
 import React from "react";
-import { useFetcher, useLoaderData, useOutletContext } from "react-router";
+import {
+  useFetcher,
+  useLoaderData,
+  useOutletContext,
+  useSearchParams,
+} from "react-router";
 import {
   AssignmentMode,
   ContentClassification,
@@ -10,12 +15,15 @@ import {
 import axios from "axios";
 import {
   Alert,
+  AlertDescription,
   AlertIcon,
+  AlertTitle,
   Box,
   Heading,
   HStack,
   Select,
   Text,
+  VStack,
 } from "@chakra-ui/react";
 import { BlueBanner } from "../../widgets/BlueBanner";
 import { optimistic } from "../../utils/optimistic_ui";
@@ -104,63 +112,72 @@ export function EditorSettingsMode() {
   const { allLicenses, allDoenetmlVersions, inLibrary, contentType } =
     useOutletContext<EditorContext>();
 
+  const [params, _] = useSearchParams();
+  const showRequired = params.get("showRequired") ? true : false;
+
   return (
     <BlueBanner>
-      <Box ml="10px">
-        <Heading size="md" pt="1rem">
-          Assignment
-        </Heading>
-        <EditAssignmentSettings
-          maxAttempts={maxAttempts}
-          individualizeByStudent={individualizeByStudent}
-          mode={mode}
-          includeMode={contentType !== "singleDoc"}
-        />
-
-        <Heading size="md" mt="2rem">
-          Categories
-        </Heading>
-        <Box ml="1rem">
-          <EditContentFeatures
-            contentFeatures={contentFeatures}
-            allContentFeatures={allContentFeatures}
+      <VStack ml="10px" spacing="2rem" align="flex-start">
+        <Box>
+          <Heading size="md" pt="1rem">
+            Assignment
+          </Heading>
+          <EditAssignmentSettings
+            maxAttempts={maxAttempts}
+            individualizeByStudent={individualizeByStudent}
+            mode={mode}
+            includeMode={contentType !== "singleDoc"}
           />
         </Box>
 
-        <Heading size="md" mt="2rem">
-          Classifications
-        </Heading>
-        <Box ml="1rem">
-          <EditClassifications classifications={classifications} />
+        <Box>
+          <Heading size="md">Categories</Heading>
+          {showRequired && (
+            <Alert status="warning">
+              <AlertIcon />
+              <AlertTitle>Required for sharing publicly</AlertTitle>
+            </Alert>
+          )}
+          <Box ml="1rem">
+            <EditContentFeatures
+              contentFeatures={contentFeatures}
+              allContentFeatures={allContentFeatures}
+            />
+          </Box>
         </Box>
 
-        <Heading size="md" mt="2rem">
-          Licensing
-        </Heading>
-        <Box ml="1rem">
-          {inLibrary ? (
-            <AuthorLicenseBox
-              license={allLicenses.find((l) => l.code === licenseCode)!}
-              contentTypeName={"document"}
-              isShared={isPublic || isShared}
-              skipExplanation={false}
-            />
-          ) : (
-            <EditLicense
-              code={licenseCode ?? null}
-              remixSourceLicenseCode={remixSourceLicenseCode}
-              isPublic={isPublic}
-              isShared={isShared}
-              allLicenses={allLicenses}
-            />
-          )}
+        <Box>
+          <Heading size="md">Classifications</Heading>
+          <Box ml="1rem">
+            <EditClassifications classifications={classifications} />
+          </Box>
+        </Box>
+
+        <Box>
+          <Heading size="md">Licensing</Heading>
+          <Box ml="1rem" mr="2rem">
+            {inLibrary ? (
+              <AuthorLicenseBox
+                license={allLicenses.find((l) => l.code === licenseCode)!}
+                contentTypeName={"document"}
+                isShared={isPublic || isShared}
+                skipExplanation={false}
+              />
+            ) : (
+              <EditLicense
+                code={licenseCode ?? null}
+                remixSourceLicenseCode={remixSourceLicenseCode}
+                isPublic={isPublic}
+                isShared={isShared}
+                allLicenses={allLicenses}
+              />
+            )}
+          </Box>
         </Box>
 
         {doenetmlVersionId && (
-          <>
-            <Heading size="md" mt="2rem">
-              Version
-            </Heading>
+          <Box>
+            <Heading size="md">Version</Heading>
             <Box ml="1rem">
               <DoenetMLSelectionBox
                 versionId={doenetmlVersionId}
@@ -168,11 +185,11 @@ export function EditorSettingsMode() {
                 isAssigned={assigned}
               />
             </Box>
-          </>
+          </Box>
         )}
 
         <Box mt="5rem" />
-      </Box>
+      </VStack>
     </BlueBanner>
   );
 }
@@ -202,9 +219,12 @@ function DoenetMLSelectionBox({
       {optimisticVersion.deprecated && (
         <Alert status="warning">
           <AlertIcon />
-          <strong>Warning</strong>: DoenetML version{" "}
-          {optimisticVersion.displayedVersion} is deprecated.{" "}
-          {optimisticVersion.deprecationMessage}
+          <AlertTitle>
+            DoenetML version {optimisticVersion.displayedVersion} is deprecated.
+          </AlertTitle>
+          <AlertDescription>
+            {optimisticVersion.deprecationMessage}
+          </AlertDescription>
         </Alert>
       )}
       <HStack>

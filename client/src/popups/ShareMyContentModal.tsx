@@ -1,16 +1,12 @@
 import {
   Heading,
+  Link as ChakraLink,
   Modal,
   ModalOverlay,
   ModalHeader,
   ModalCloseButton,
   ModalBody,
   ModalContent,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
   Text,
   Box,
   Button,
@@ -19,23 +15,17 @@ import {
   FormLabel,
   HStack,
   Input,
-  Flex,
-  Spacer,
+  VStack,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { contentTypeToName } from "../utils/activity";
 import { ContentType, UserInfoWithEmail } from "../types";
-import { useFetcher, useOutletContext } from "react-router";
+import { Link as ReactRouterLink, useFetcher } from "react-router";
 import { SpinnerWhileFetching } from "../utils/optimistic_ui";
 import { ShareTable } from "../widgets/editor/ShareTable";
 import axios from "axios";
-import { EditContentFeatures } from "../widgets/editor/EditContentFeatures";
-import { EditClassifications } from "../widgets/editor/EditClassifications";
-import { EditAssignmentSettings } from "../widgets/editor/EditAssignmentSettings";
 
 import { loader as settingsLoader } from "../paths/editor/EditorSettingsMode";
-import { EditLicense } from "../widgets/editor/EditLicense";
-import { EditorContext } from "../paths/editor/EditorHeader";
 import { editorUrl } from "../utils/url";
 
 export async function loadShareStatus({ params }: { params: any }) {
@@ -77,44 +67,41 @@ export function ShareMyContentModal({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          <Heading size="md">
+          <Heading size="lg">
             Share {contentTypeToName[contentType].toLocaleLowerCase()}
           </Heading>
         </ModalHeader>
         <ModalCloseButton />
-        <ModalBody>
-          <Tabs>
-            <TabList>
-              <Tab>Share with specific people</Tab>
-              <Tab>Share publicly</Tab>
-            </TabList>
+        <ModalBody m="1rem">
+          <VStack spacing="3rem" align="flex-start">
+            <Box>
+              <Heading size="md">With specific people</Heading>
+              {fetcher.data ? (
+                <ShareWithPeople
+                  sharedWith={fetcher.data.sharedWith}
+                  parentSharedWith={fetcher.data.parentSharedWith}
+                />
+              ) : (
+                <p>Loading...</p>
+              )}
+            </Box>
 
-            <TabPanels>
-              <TabPanel>
-                {fetcher.data ? (
-                  <ShareWithPeople
-                    sharedWith={fetcher.data.sharedWith}
-                    parentSharedWith={fetcher.data.parentSharedWith}
-                  />
-                ) : (
-                  <p>Loading...</p>
-                )}
-              </TabPanel>
-              <TabPanel>
-                {fetcher.data && settingsFetcher.data ? (
-                  <SharePublicly
-                    isPublic={fetcher.data.isPublic}
-                    parentIsPublic={fetcher.data.parentIsPublic}
-                    contentType={contentType}
-                    settings={settingsFetcher.data}
-                    closeModal={onClose}
-                  />
-                ) : (
-                  <p>Loading...</p>
-                )}
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
+            <Box>
+              <Heading size="md">With the public</Heading>
+              {fetcher.data && settingsFetcher.data ? (
+                <SharePublicly
+                  isPublic={fetcher.data.isPublic}
+                  parentIsPublic={fetcher.data.parentIsPublic}
+                  contentId={contentId}
+                  contentType={contentType}
+                  settings={settingsFetcher.data}
+                  closeModal={onClose}
+                />
+              ) : (
+                <p>Loading...</p>
+              )}
+            </Box>
+          </VStack>
         </ModalBody>
       </ModalContent>
     </Modal>
@@ -198,26 +185,27 @@ function ShareWithPeople({
 function SharePublicly({
   isPublic,
   parentIsPublic,
+  contentId,
   contentType,
   settings,
   closeModal,
 }: {
   isPublic: boolean;
   parentIsPublic: boolean;
+  contentId: string;
   contentType: ContentType;
   settings: Awaited<ReturnType<typeof settingsLoader>>;
   closeModal: () => void;
 }) {
   const fetcher = useFetcher();
 
-  const { allLicenses } = useOutletContext<EditorContext>();
-
   if (parentIsPublic) {
     return <p>Parent is public.</p>;
   } else if (isPublic) {
     return (
       <>
-        <p>Content is public.</p>
+        <Text mt="1rem">Content is public.</Text>
+
         <Button
           mt="1rem"
           size="sm"
@@ -230,10 +218,9 @@ function SharePublicly({
               },
               { method: "post", encType: "application/json" },
             );
-            closeModal();
           }}
         >
-          Unshare
+          Unshare with the public
         </Button>
       </>
     );
@@ -242,75 +229,39 @@ function SharePublicly({
 
     return (
       <Box>
-        <Heading size="md">Review/update this activity&apos;s settings</Heading>
-
-        <FormControl isRequired mt="2rem">
-          <FormLabel fontSize="xl">Categories</FormLabel>
-          <Box ml="1rem">
-            <EditContentFeatures
-              contentFeatures={settings.contentFeatures}
-              allContentFeatures={settings.allContentFeatures}
-            />
-          </Box>
-        </FormControl>
-
-        <FormControl mt="2rem">
-          <FormLabel fontSize="xl">Classifications</FormLabel>
-          <Box ml="1rem">
-            <EditClassifications classifications={settings.classifications} />
-          </Box>
-        </FormControl>
-
-        <FormControl isRequired mt="2rem">
-          <FormLabel fontSize="xl">Default assignment settings</FormLabel>
-          <EditAssignmentSettings
-            maxAttempts={settings.maxAttempts}
-            individualizeByStudent={settings.individualizeByStudent}
-            mode={settings.mode}
-            includeMode={contentType !== "singleDoc"}
-          />
-        </FormControl>
-
-        <FormControl isRequired mt="2rem">
-          <FormLabel fontSize="xl">License</FormLabel>
-          <Box ml="1rem">
-            <EditLicense
-              code={settings.licenseCode ?? null}
-              remixSourceLicenseCode={settings.remixSourceLicenseCode}
-              isPublic={settings.isPublic}
-              isShared={settings.isShared}
-              allLicenses={allLicenses}
-            />
-          </Box>
-        </FormControl>
-
-        <Flex mt="5rem">
-          <Spacer />
-          <HStack>
-            {disableSubmit && (
-              <Text color="red" size="sm">
-                1 or more fields missing
-              </Text>
-            )}
-
-            <Button
-              colorScheme="blue"
-              isDisabled={disableSubmit}
-              onClick={() => {
-                fetcher.submit(
-                  {
-                    path: "share/setContentIsPublic",
-                    isPublic: true,
-                  },
-                  { method: "post", encType: "application/json" },
-                );
-                closeModal();
-              }}
+        <Text mt="1rem">Allow others to find and use your content.</Text>
+        {disableSubmit && (
+          <Text mt="1rem">
+            Before sharing publicly, make sure the{" "}
+            <ChakraLink
+              as={ReactRouterLink}
+              to={`${editorUrl(contentId, contentType, "settings")}?showRequired=true`}
+              textDecoration="underline"
+              onClick={closeModal}
             >
-              Share publicly
-            </Button>
-          </HStack>
-        </Flex>
+              settings
+            </ChakraLink>{" "}
+            are filled out.
+          </Text>
+        )}
+
+        <Button
+          mt="1rem"
+          size="sm"
+          colorScheme="blue"
+          isDisabled={disableSubmit}
+          onClick={() => {
+            fetcher.submit(
+              {
+                path: "share/setContentIsPublic",
+                isPublic: true,
+              },
+              { method: "post", encType: "application/json" },
+            );
+          }}
+        >
+          Share publicly
+        </Button>
       </Box>
     );
   }
