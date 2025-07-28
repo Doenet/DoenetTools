@@ -126,7 +126,6 @@ export function DocEditorHistoryMode() {
       revisions={revisions}
       contentId={contentId}
       atLastRevision={atLastRevision}
-      fetcher={fetcher}
     />
   );
 
@@ -158,9 +157,6 @@ export function DocEditorHistoryMode() {
       onClose={setToRevisionOnClose}
       contentId={contentId}
       revision={selectedRevision}
-      fetcher={fetcher}
-      doenetmlChangeCallback={async () => {}}
-      immediateDoenetmlChangeCallback={async () => {}}
       setRevNum={setRevNum}
     />
   );

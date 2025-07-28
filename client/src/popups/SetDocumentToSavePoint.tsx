@@ -24,8 +24,6 @@ export function SetDocumentToSavePoint({
   revision,
   contentId,
   finalFocusRef,
-  doenetmlChangeCallback,
-  immediateDoenetmlChangeCallback,
   setRevNum,
 }: {
   isOpen: boolean;
@@ -33,8 +31,6 @@ export function SetDocumentToSavePoint({
   revision: ContentRevision;
   contentId: string;
   finalFocusRef?: RefObject<HTMLElement>;
-  doenetmlChangeCallback: () => Promise<void>;
-  immediateDoenetmlChangeCallback: (arg: string) => void;
   setRevNum: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const [updated, setUpdated] = useState(false);
@@ -46,19 +42,15 @@ export function SetDocumentToSavePoint({
   const fetcher = useFetcher();
 
   useEffect(() => {
-    if (fetcher.data !== null) {
-      if (fetcher.data.revertedRevision === true) {
-        setStatusStyleIdx((x) => x + 1);
-        setUpdated(true);
-        const revertedRevision: ContentRevision & { newRevisionNum: number } =
-          fetcher.data.revision;
-        immediateDoenetmlChangeCallback(revertedRevision.source);
-        setNewRevNum(revertedRevision.newRevisionNum);
-      } else if (fetcher.data.revertedRevision === false) {
-        setEncounteredError(true);
-      }
+    if (fetcher.data) {
+      setStatusStyleIdx((x) => x + 1);
+      setUpdated(true);
+      console.log(fetcher.data);
+      const revertedRevision: ContentRevision & { newRevisionNum: number } =
+        fetcher.data.revision;
+      setNewRevNum(revertedRevision.newRevisionNum);
     }
-  }, [fetcher.data, immediateDoenetmlChangeCallback]);
+  }, [fetcher.data]);
 
   useEffect(() => {
     if (isOpen) {
@@ -141,8 +133,6 @@ export function SetDocumentToSavePoint({
             <Button
               marginRight="4px"
               onClick={async () => {
-                // make sure any changes are saved
-                await doenetmlChangeCallback();
                 fetcher.submit(
                   {
                     path: "updateContent/revertToRevision",
@@ -151,6 +141,7 @@ export function SetDocumentToSavePoint({
                   },
                   { method: "post", encType: "application/json" },
                 );
+                onClose();
               }}
             >
               Use save point
