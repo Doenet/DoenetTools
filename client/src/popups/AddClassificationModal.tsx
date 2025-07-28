@@ -191,60 +191,88 @@ export function AddClassificationModal({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          <Heading size="md">Add a classification</Heading>
-        </ModalHeader>
-        <HStack>
-          <Select
-            value={categoryFilter.systemTreeIndex ?? ""}
-            placeholder="Filter by system"
-            data-test="Filter By System"
-            onChange={(event) => {
-              if (event.target.value) {
-                const treeIndex = Number(event.target.value);
-                setCategoryFilter({
-                  systemId: classificationCategories[treeIndex].id,
-                  systemTreeIndex: treeIndex,
-                });
-              } else {
+          <Heading size="md" pb="1rem">
+            Add a classification
+          </Heading>
+          <ModalCloseButton />
+          <HStack>
+            <Select
+              maxWidth="30rem"
+              value={categoryFilter.systemTreeIndex ?? ""}
+              placeholder="Filter by system"
+              data-test="Filter By System"
+              onChange={(event) => {
+                if (event.target.value) {
+                  const treeIndex = Number(event.target.value);
+                  setCategoryFilter({
+                    systemId: classificationCategories[treeIndex].id,
+                    systemTreeIndex: treeIndex,
+                  });
+                } else {
+                  setCategoryFilter({});
+                }
+              }}
+            >
+              {classificationSystemOptionGroups}
+            </Select>
+            <CloseButton
+              aria-label={`Stop filtering by system`}
+              data-test="Stop Filter By System"
+              disabled={selectedClassification === null}
+              onClick={() => {
                 setCategoryFilter({});
-              }
-            }}
-          >
-            {classificationSystemOptionGroups}
-          </Select>
-          <CloseButton
-            aria-label={`Stop filtering by system`}
-            data-test="Stop Filter By System"
-            disabled={selectedClassification === null}
-            onClick={() => {
-              setCategoryFilter({});
-            }}
-          />
-        </HStack>
+              }}
+            />
+          </HStack>
 
-        <HStack>
-          <Select
-            value={categoryFilter.categoryTreeIndex ?? ""}
-            placeholder={
-              selectedClassification === null
-                ? "-"
-                : `Filter by ${selectedClassification.categoryLabel}`
-            }
-            data-test="Filter By Category"
-            isDisabled={categoryFilter.systemId === undefined}
-            onChange={(event) => {
-              if (event.target.value) {
-                const treeIndex = Number(event.target.value);
-                setCategoryFilter((was) => {
-                  const obj = { ...was };
-                  obj.categoryId =
-                    selectedClassification!.categories[treeIndex].id;
-                  obj.categoryTreeIndex = treeIndex;
-                  delete obj.subCategoryId;
-                  delete obj.subCategoryTreeIndex;
-                  return obj;
-                });
-              } else {
+          <HStack>
+            <Select
+              maxWidth="30rem"
+              value={categoryFilter.categoryTreeIndex ?? ""}
+              placeholder={
+                selectedClassification === null
+                  ? "-"
+                  : `Filter by ${selectedClassification.categoryLabel}`
+              }
+              data-test="Filter By Category"
+              isDisabled={categoryFilter.systemId === undefined}
+              onChange={(event) => {
+                if (event.target.value) {
+                  const treeIndex = Number(event.target.value);
+                  setCategoryFilter((was) => {
+                    const obj = { ...was };
+                    obj.categoryId =
+                      selectedClassification!.categories[treeIndex].id;
+                    obj.categoryTreeIndex = treeIndex;
+                    delete obj.subCategoryId;
+                    delete obj.subCategoryTreeIndex;
+                    return obj;
+                  });
+                } else {
+                  setCategoryFilter((was) => {
+                    const obj = { ...was };
+                    delete obj.categoryId;
+                    delete obj.categoryTreeIndex;
+                    delete obj.subCategoryId;
+                    delete obj.subCategoryTreeIndex;
+                    return obj;
+                  });
+                }
+              }}
+            >
+              {selectedClassification !== null
+                ? selectedClassification.categories.map((category, i) => (
+                    <option value={i} key={i}>
+                      {category.category}
+                    </option>
+                  ))
+                : null}
+            </Select>
+            <CloseButton
+              aria-label={`Stop filtering by ${selectedClassification?.categoryLabel}`}
+              data-test="Stop Filter By Category"
+              disabled={categoryFilter.categoryId === undefined}
+              onClick={() => {
                 setCategoryFilter((was) => {
                   const obj = { ...was };
                   delete obj.categoryId;
@@ -253,106 +281,83 @@ export function AddClassificationModal({
                   delete obj.subCategoryTreeIndex;
                   return obj;
                 });
-              }
-            }}
-          >
-            {selectedClassification !== null
-              ? selectedClassification.categories.map((category, i) => (
-                  <option value={i} key={i}>
-                    {category.category}
-                  </option>
-                ))
-              : null}
-          </Select>
-          <CloseButton
-            aria-label={`Stop filtering by ${selectedClassification?.categoryLabel}`}
-            data-test="Stop Filter By Category"
-            disabled={categoryFilter.categoryId === undefined}
-            onClick={() => {
-              setCategoryFilter((was) => {
-                const obj = { ...was };
-                delete obj.categoryId;
-                delete obj.categoryTreeIndex;
-                delete obj.subCategoryId;
-                delete obj.subCategoryTreeIndex;
-                return obj;
-              });
-            }}
-          />
-        </HStack>
+              }}
+            />
+          </HStack>
 
-        <HStack>
-          <Select
-            value={categoryFilter.subCategoryTreeIndex ?? ""}
-            placeholder={
-              categoryFilter.categoryId === undefined
-                ? "-"
-                : `Filter by ${selectedClassification!.subCategoryLabel}`
-            }
-            data-test="Filter By Subcategory"
-            isDisabled={categoryFilter.categoryId === undefined}
-            onChange={(event) => {
-              if (event.target.value) {
-                const treeIndex = Number(event.target.value);
-                setCategoryFilter((was) => {
-                  const obj = { ...was };
-                  obj.subCategoryId =
-                    selectedClassification!.categories[
-                      categoryFilter.categoryTreeIndex!
-                    ].subCategories[treeIndex].id;
-                  obj.subCategoryTreeIndex = treeIndex;
-                  return obj;
-                });
-              } else {
+          <HStack>
+            <Select
+              maxWidth="30rem"
+              value={categoryFilter.subCategoryTreeIndex ?? ""}
+              placeholder={
+                categoryFilter.categoryId === undefined
+                  ? "-"
+                  : `Filter by ${selectedClassification!.subCategoryLabel}`
+              }
+              data-test="Filter By Subcategory"
+              isDisabled={categoryFilter.categoryId === undefined}
+              onChange={(event) => {
+                if (event.target.value) {
+                  const treeIndex = Number(event.target.value);
+                  setCategoryFilter((was) => {
+                    const obj = { ...was };
+                    obj.subCategoryId =
+                      selectedClassification!.categories[
+                        categoryFilter.categoryTreeIndex!
+                      ].subCategories[treeIndex].id;
+                    obj.subCategoryTreeIndex = treeIndex;
+                    return obj;
+                  });
+                } else {
+                  setCategoryFilter((was) => {
+                    const obj = { ...was };
+                    delete obj.subCategoryId;
+                    delete obj.subCategoryTreeIndex;
+                    return obj;
+                  });
+                }
+              }}
+            >
+              {categoryFilter.categoryTreeIndex !== undefined
+                ? selectedClassification!.categories[
+                    categoryFilter.categoryTreeIndex
+                  ].subCategories.map((subCategory, i) => (
+                    <option value={i} key={i}>
+                      {subCategory.subCategory}
+                    </option>
+                  ))
+                : null}
+            </Select>
+            <CloseButton
+              aria-label={`Stop filtering by ${selectedClassification?.subCategoryLabel}`}
+              data-test="Stop Filter By Subcategory"
+              disabled={categoryFilter.categoryId === undefined}
+              onClick={() => {
                 setCategoryFilter((was) => {
                   const obj = { ...was };
                   delete obj.subCategoryId;
                   delete obj.subCategoryTreeIndex;
                   return obj;
                 });
+              }}
+            />
+          </HStack>
+
+          <Input
+            type="search"
+            data-test="Search Terms"
+            placeholder="Filter by search terms"
+            maxWidth="30rem"
+            onInput={updateSearchTerms}
+            onKeyDown={(e) => {
+              if (e.key == "Enter") {
+                updateSearchTerms(e, true);
               }
             }}
-          >
-            {categoryFilter.categoryTreeIndex !== undefined
-              ? selectedClassification!.categories[
-                  categoryFilter.categoryTreeIndex
-                ].subCategories.map((subCategory, i) => (
-                  <option value={i} key={i}>
-                    {subCategory.subCategory}
-                  </option>
-                ))
-              : null}
-          </Select>
-          <CloseButton
-            aria-label={`Stop filtering by ${selectedClassification?.subCategoryLabel}`}
-            data-test="Stop Filter By Subcategory"
-            disabled={categoryFilter.categoryId === undefined}
-            onClick={() => {
-              setCategoryFilter((was) => {
-                const obj = { ...was };
-                delete obj.subCategoryId;
-                delete obj.subCategoryTreeIndex;
-                return obj;
-              });
-            }}
+            marginBottom={10}
+            marginTop={4}
           />
-        </HStack>
-
-        <Input
-          type="search"
-          data-test="Search Terms"
-          placeholder="Filter by search terms"
-          onInput={updateSearchTerms}
-          onKeyDown={(e) => {
-            if (e.key == "Enter") {
-              updateSearchTerms(e, true);
-            }
-          }}
-          marginBottom={10}
-          marginTop={4}
-        />
-
-        <ModalCloseButton />
+        </ModalHeader>
         <ModalBody>
           <Box data-test="Matching Classifications">
             {classificationOptions.length === 0 ? (

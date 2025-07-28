@@ -10,6 +10,7 @@ export function BlueBanner({ children }: { children: React.ReactNode }) {
       width="100%"
       templateAreas={`"leftGutter viewer rightGutter"`}
       templateColumns={`1fr minmax(300px,850px) 1fr`}
+      mb="30vh"
     >
       <GridItem
         area="leftGutter"

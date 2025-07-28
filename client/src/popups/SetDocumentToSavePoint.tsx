@@ -13,7 +13,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import React, { RefObject, useEffect, useState } from "react";
-import { FetcherWithComponents } from "react-router";
+import { useFetcher } from "react-router";
 import { ContentRevision } from "../types";
 import { DateTime } from "luxon";
 import { MdError } from "react-icons/md";
@@ -24,7 +24,6 @@ export function SetDocumentToSavePoint({
   revision,
   contentId,
   finalFocusRef,
-  fetcher,
   doenetmlChangeCallback,
   immediateDoenetmlChangeCallback,
   setRevNum,
@@ -34,7 +33,6 @@ export function SetDocumentToSavePoint({
   revision: ContentRevision;
   contentId: string;
   finalFocusRef?: RefObject<HTMLElement>;
-  fetcher: FetcherWithComponents<any>;
   doenetmlChangeCallback: () => Promise<void>;
   immediateDoenetmlChangeCallback: (arg: string) => void;
   setRevNum: React.Dispatch<React.SetStateAction<number>>;
@@ -45,8 +43,10 @@ export function SetDocumentToSavePoint({
 
   const [newRevNum, setNewRevNum] = useState<number | null>(null);
 
+  const fetcher = useFetcher();
+
   useEffect(() => {
-    if (typeof fetcher.data === "object" && fetcher.data !== null) {
+    if (fetcher.data !== null) {
       if (fetcher.data.revertedRevision === true) {
         setStatusStyleIdx((x) => x + 1);
         setUpdated(true);
@@ -61,7 +61,9 @@ export function SetDocumentToSavePoint({
   }, [fetcher.data, immediateDoenetmlChangeCallback]);
 
   useEffect(() => {
-    setUpdated(false);
+    if (isOpen) {
+      setUpdated(false);
+    }
     setEncounteredError(false);
   }, [isOpen]);
 
