@@ -263,7 +263,7 @@ export function FilterPanel({
     );
   }
 
-  const groupType = allCategories.find((v) => v.name === "Type")!;
+  const groupScope = allCategories.find((v) => v.name === "Scope")!;
   const groupMode = allCategories.find((v) => v.name === "Mode")!;
   const groupSetting = allCategories.find((v) => v.name === "Setting")!;
   const groupDuration = allCategories.find((v) => v.name === "Duration")!;
@@ -715,12 +715,12 @@ export function FilterPanel({
         {clearFilters}
       </Box>
       <Accordion allowToggle allowMultiple reduceMotion defaultIndex={[0, 1]}>
-        {categoryGroupFilterSection(groupType)}
+        {categoryGroupFilterSection(groupScope)}
         {categoryGroupFilterSection(groupMode)}
         {categoryGroupFilterSection(groupSetting)}
         {categoryGroupFilterSection(groupDuration)}
         <AccordionItem>
-          {formatAccordionButton("Standard")}
+          {formatAccordionButton("Classifications")}
           <AccordionPanel>
             <Box>{classificationStatusSection}</Box>
             <Box>{classificationsBrowseSection}</Box>
