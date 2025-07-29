@@ -9,8 +9,11 @@ import {
   Heading,
   HStack,
   Icon,
+  Radio,
+  RadioGroup,
   Text,
   Tooltip,
+  VStack,
 } from "@chakra-ui/react";
 import { useFetcher } from "react-router";
 import { optimistic } from "../../utils/optimistic_ui";
@@ -40,26 +43,40 @@ export function EditCategories({
     }
 
     groupBox.push(
-      <Heading size="md" mb="0.5rem">
+      <Heading key={`Group Heading ${group.name}`} size="md" mb="0.5rem">
         {group.name}
       </Heading>,
     );
 
-    for (const category of group.categories) {
-      const isChecked = categories.find((v) => v.code === category.code)
-        ? true
-        : false;
-
+    if (group.isExclusive) {
+      const groupCodes = group.categories.map((g) => g.code);
+      const selected =
+        categories.find((c) => groupCodes.includes(c.code)) ?? null;
       groupBox.push(
-        <CategoryCheckbox
-          key={category.code}
-          category={category}
-          isChecked={isChecked}
+        <CategoryRadios
+          key={`Radio ${group.name}`}
+          selected={selected}
+          categoryGroup={group}
         />,
       );
+    } else {
+      for (const category of group.categories) {
+        const isChecked = categories.find((v) => v.code === category.code)
+          ? true
+          : false;
+
+        groupBox.push(
+          <CategoryCheckbox
+            key={category.code}
+            category={category}
+            isChecked={isChecked}
+          />,
+        );
+      }
     }
     output.push(
       <Card
+        key={`Card for group ${group.name}`}
         align="flex-start"
         width="15rem"
         minHeight="12rem"
@@ -139,5 +156,80 @@ function CategoryCheckbox({
         </Tooltip>
       </Checkbox>
     </>
+  );
+}
+
+function CategoryRadios({
+  selected,
+  categoryGroup,
+}: {
+  selected: Category | null;
+  categoryGroup: CategoryGroup;
+}) {
+  ("");
+  const fetcher = useFetcher();
+  const fallback: Record<string, boolean> = {};
+  if (selected) {
+    fallback[selected.code] = true;
+  }
+  const optimisticCheckedRecord = optimistic<Record<string, boolean>>(
+    fetcher,
+    "categories",
+    fallback,
+  );
+  const optimisticCode = Array.from(
+    Object.entries(optimisticCheckedRecord)
+      .filter(([_, val]) => val)
+      .map(([key, _]) => key),
+  )[0];
+
+  const radios = [];
+  for (const category of categoryGroup.categories) {
+    const categoryCode = category.code as
+      | "isQuestion"
+      | "isInteractive"
+      | "containsVideo";
+
+    radios.push(
+      <Radio key={category.code} value={category.code}>
+        <Tooltip label={category.description} openDelay={100}>
+          <HStack>
+            <Text>{category.term}</Text>
+            {activityCategoryIcons[categoryCode] && (
+              <Icon
+                paddingLeft="5px"
+                as={activityCategoryIcons[categoryCode]}
+                color="#666699"
+                boxSize={5}
+                verticalAlign="middle"
+              />
+            )}
+          </HStack>
+        </Tooltip>
+      </Radio>,
+    );
+  }
+
+  return (
+    <RadioGroup
+      onChange={(newCode) => {
+        const categories: Record<string, boolean> = {};
+        for (const cat of categoryGroup.categories) {
+          categories[cat.code] = false;
+        }
+        categories[newCode] = true;
+
+        fetcher.submit(
+          {
+            path: "updateContent/updateCategories",
+            categories,
+          },
+          { method: "post", encType: "application/json" },
+        );
+      }}
+      value={optimisticCode}
+    >
+      <VStack align="flex-start">{radios}</VStack>
+    </RadioGroup>
   );
 }

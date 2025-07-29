@@ -49,7 +49,6 @@ export function EditAssignmentSettings({
  * If `attempts` is 0, that means unlimited
  */
 function MaxAttemptsSelectionBox({ attempts }: { attempts: number }) {
-  console.log(attempts);
   const fetcher = useFetcher();
 
   const optimisticAttempts = optimistic<number>(

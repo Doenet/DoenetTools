@@ -100,7 +100,6 @@ export async function loader({
   params: any;
   request: Request;
 }) {
-  // console.log(params);
   const { data } = await axios.get(`/api/editor/getEditor/${params.contentId}`);
 
   if (data.isNotEditable) {
