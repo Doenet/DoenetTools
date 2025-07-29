@@ -150,6 +150,8 @@ model categories {
 model categoryGroups {
   id          Int          @id @default(autoincrement())
   name        String       @unique
+  // Whether this group must be filled out to be shared publicly
+  isRequired  Boolean      @default(false)
   isExclusive Boolean      @default(false)
   categories  categories[]
 }

@@ -394,7 +394,7 @@ export async function updateContent({
  * - the content must be owned by `loggedInUserId`, or
  * - the content must be in the library and `loggedInUserId` must be an editor.
  */
-export async function addCategory({
+async function addCategory({
   contentId,
   loggedInUserId,
   categoryCode,
@@ -440,7 +440,7 @@ export async function addCategory({
  * - the content must be owned by `loggedInUserId`, or
  * - the content must be in the library and `loggedInUserId` must be an editor.
  */
-export async function removeCategory({
+async function removeCategory({
   contentId,
   loggedInUserId,
   categoryCode,

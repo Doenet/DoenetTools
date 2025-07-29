@@ -23,7 +23,12 @@ import {
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { contentTypeToName } from "../utils/activity";
-import { ContentType, UserInfoWithEmail } from "../types";
+import {
+  Category,
+  CategoryGroup,
+  ContentType,
+  UserInfoWithEmail,
+} from "../types";
 import { Link as ReactRouterLink, useFetcher } from "react-router";
 import { SpinnerWhileFetching } from "../utils/optimistic_ui";
 import { ShareTable } from "../widgets/editor/ShareTable";
@@ -230,7 +235,27 @@ function SharePublicly({
       </>
     );
   } else {
-    const disableSubmit = settings.categories.length === 0;
+    // Detect whether or not this activity has the required categories filled
+    // out to share publicly
+    // For each group that is required, make sure this activity has at least 1 category in that group.
+    // If it doesn't, disable sharing publicly.
+    let disableSubmit = false;
+    const allCategories = settings.allCategories as CategoryGroup[];
+    const categories = settings.categories as Category[];
+    const existingCodes = categories.map((c) => c.code);
+
+    for (const group of allCategories.filter((g) => g.isRequired)) {
+      const groupCategoryCodes = group.categories.map((c) => c.code);
+
+      // The list of codes that are both in this group and applied to this activity
+      const intersection = existingCodes.filter((code) =>
+        groupCategoryCodes.includes(code),
+      );
+      if (intersection.length === 0) {
+        disableSubmit = true;
+        break;
+      }
+    }
 
     return (
       <Box>

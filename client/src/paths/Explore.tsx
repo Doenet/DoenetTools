@@ -40,7 +40,6 @@ import { CardContent } from "../widgets/Card";
 import { createNameNoTag, createNameCheckCurateTag } from "../utils/names";
 import {
   ContentDescription,
-  Category,
   Content,
   UserInfo,
   PartialContentClassification,
@@ -114,7 +113,7 @@ export async function loader({
 
   const {
     data: { allCategories },
-  }: { data: { allCategories: Category[] } } = await axios.get(
+  }: { data: { allCategories: CategoryGroup[] } } = await axios.get(
     `/api/info/getAllCategories`,
   );
 
@@ -221,7 +220,7 @@ export function Explore() {
       { numCurated?: number; numCommunity?: number }
     >;
     categories: Set<string>;
-    allCategories: ContentCategoryGroup[];
+    allCategories: CategoryGroup[];
   };
 
   const {

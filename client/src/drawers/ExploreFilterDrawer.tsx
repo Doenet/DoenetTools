@@ -6,7 +6,11 @@ import {
   DrawerContent,
   DrawerOverlay,
 } from "@chakra-ui/react";
-import { Category, PartialContentClassification, UserInfo } from "../types";
+import {
+  CategoryGroup,
+  PartialContentClassification,
+  UserInfo,
+} from "../types";
 import { NavigateFunction } from "react-router";
 import { FilterPanel } from "../widgets/FilterPanel";
 
@@ -42,7 +46,7 @@ export function ExploreFilterDrawer({
     { numCurated?: number; numCommunity?: number }
   >;
   categories: Set<string>;
-  allCategories: Category[];
+  allCategories: CategoryGroup[];
   search: string;
   navigate: NavigateFunction;
 }) {

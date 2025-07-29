@@ -5,18 +5,17 @@ import {
   createContentRevisionScheme,
   revertToRevisionScheme,
   updateContentDoenetMLSchema,
-  updateCategorySchema,
+  updateCategoriesSchema,
   updateContentRevisionScheme,
   updateContentSettingsSchema,
 } from "../schemas/contentSchema";
 import {
-  addCategory,
   createContent,
   createContentRevision,
   deleteContent,
-  removeCategory,
   restoreDeletedContent,
   revertToRevision,
+  updateCategories,
   updateContent,
   updateContentRevision,
 } from "../query/activity";
@@ -45,12 +44,8 @@ updateContentRouter.post(
 );
 
 updateContentRouter.post(
-  "/addCategory",
-  queryLoggedIn(addCategory, updateCategorySchema),
-);
-updateContentRouter.post(
-  "/removeCategory",
-  queryLoggedIn(removeCategory, updateCategorySchema),
+  "/updateCategories",
+  queryLoggedIn(updateCategories, updateCategoriesSchema),
 );
 
 updateContentRouter.post(

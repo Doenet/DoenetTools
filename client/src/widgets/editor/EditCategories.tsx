@@ -1,32 +1,80 @@
 import React from "react";
-import { Checkbox, HStack, Icon, Stack, Text, Tooltip } from "@chakra-ui/react";
+import {
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  Card,
+  Checkbox,
+  Flex,
+  Heading,
+  HStack,
+  Icon,
+  Text,
+  Tooltip,
+} from "@chakra-ui/react";
 import { useFetcher } from "react-router";
 import { optimistic } from "../../utils/optimistic_ui";
-import { Category } from "../../types";
+import { Category, CategoryGroup } from "../../types";
 import { activityCategoryIcons } from "../../utils/activity";
 
 export function EditCategories({
   categories,
   allCategories,
+  showRequired = false,
 }: {
   categories: Category[];
-  allCategories: Category[];
+  allCategories: CategoryGroup[];
+  showRequired?: boolean;
 }) {
-  const categoryDisplays = [];
-  for (const category of allCategories) {
-    const isChecked = categories.find((v) => v.code === category.code)
-      ? true
-      : false;
+  const output = [];
 
-    categoryDisplays.push(
-      <CategoryCheckbox
-        key={category.code}
-        category={category}
-        isChecked={isChecked}
-      />,
+  for (const group of allCategories) {
+    const groupBox = [];
+    if (showRequired && group.isRequired) {
+      groupBox.push(
+        <Alert status="warning">
+          <AlertIcon />
+          <AlertTitle>Required</AlertTitle>
+        </Alert>,
+      );
+    }
+
+    groupBox.push(
+      <Heading size="md" mb="0.5rem">
+        {group.name}
+      </Heading>,
+    );
+
+    for (const category of group.categories) {
+      const isChecked = categories.find((v) => v.code === category.code)
+        ? true
+        : false;
+
+      groupBox.push(
+        <CategoryCheckbox
+          key={category.code}
+          category={category}
+          isChecked={isChecked}
+        />,
+      );
+    }
+    output.push(
+      <Card
+        align="flex-start"
+        width="15rem"
+        minHeight="12rem"
+        p="1rem"
+        m="0.5rem"
+      >
+        {groupBox}
+      </Card>,
     );
   }
-  return <Stack>{categoryDisplays}</Stack>;
+  return (
+    <Flex justify="center" direction="row" wrap="wrap">
+      {output}
+    </Flex>
+  );
 }
 
 /**
@@ -56,6 +104,7 @@ function CategoryCheckbox({
   return (
     <>
       <Checkbox
+        ml="1rem"
         key={category.code}
         data-test={`${category.code} Checkbox`}
         isChecked={optimisticChecked}
@@ -72,18 +121,20 @@ function CategoryCheckbox({
           );
         }}
       >
-        <Tooltip label={category.description}>
+        <Tooltip label={category.description} openDelay={100}>
           <HStack>
             <Text color={fetcher.state === "idle" ? "black" : "gray"}>
               {category.term}
             </Text>
-            <Icon
-              paddingLeft="5px"
-              as={activityCategoryIcons[categoryCode]}
-              color="#666699"
-              boxSize={5}
-              verticalAlign="middle"
-            />
+            {activityCategoryIcons[categoryCode] && (
+              <Icon
+                paddingLeft="5px"
+                as={activityCategoryIcons[categoryCode]}
+                color="#666699"
+                boxSize={5}
+                verticalAlign="middle"
+              />
+            )}
           </HStack>
         </Tooltip>
       </Checkbox>

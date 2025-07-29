@@ -310,13 +310,15 @@ export function FilterPanel({
                   <HStack>
                     <Tooltip label={category.description} openDelay={500}>
                       {category.term}
-                      <Icon
-                        paddingLeft="5px"
-                        as={activityCategoryIcons[categoryCode]}
-                        color="#666699"
-                        boxSize={5}
-                        verticalAlign="middle"
-                      />
+                      {activityCategoryIcons[categoryCode] && (
+                        <Icon
+                          paddingLeft="5px"
+                          as={activityCategoryIcons[categoryCode]}
+                          color="#666699"
+                          boxSize={5}
+                          verticalAlign="middle"
+                        />
+                      )}
                     </Tooltip>
                     {numItemsBadge(c)}
                   </HStack>

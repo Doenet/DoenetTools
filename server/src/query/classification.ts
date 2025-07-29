@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../model";
 import {
+  CategoryGroup,
   ClassificationCategoryTree,
   ContentClassification,
   PartialContentClassification,
@@ -429,17 +430,19 @@ export async function getClassificationInfo({
   }
 }
 
-export async function getAllCategories() {
-  const allCategories = await prisma.categoryGroups.findMany({
+export async function getAllCategories(): Promise<{
+  allCategories: CategoryGroup[];
+}> {
+  const allCategories: CategoryGroup[] = await prisma.categoryGroups.findMany({
     select: {
       name: true,
+      isRequired: true,
       isExclusive: true,
       categories: {
         select: {
           code: true,
           term: true,
           description: true,
-          sortIndex: true,
         },
         orderBy: { sortIndex: "asc" },
       },

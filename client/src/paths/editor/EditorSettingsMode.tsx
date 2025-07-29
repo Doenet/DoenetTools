@@ -11,6 +11,7 @@ import {
   Category,
   DoenetmlVersion,
   LicenseCode,
+  CategoryGroup,
 } from "../../types";
 import axios from "axios";
 import {
@@ -105,7 +106,7 @@ export function EditorSettingsMode() {
     categories: Category[];
     classifications: ContentClassification[];
     remixSourceLicenseCode: LicenseCode | null;
-    allCategories: Category[];
+    allCategories: CategoryGroup[];
     doenetmlVersionId?: number;
   };
 
@@ -131,20 +132,11 @@ export function EditorSettingsMode() {
         </Box>
 
         <Box>
-          <Heading size="md">Categories</Heading>
-          {showRequired && (
-            <Alert status="warning">
-              <AlertIcon />
-              <AlertTitle>Required for sharing publicly</AlertTitle>
-              <AlertDescription>Select at least 1 category</AlertDescription>
-            </Alert>
-          )}
-          <Box ml="1rem">
-            <EditCategories
-              categories={categories}
-              allCategories={allCategories}
-            />
-          </Box>
+          <EditCategories
+            categories={categories}
+            allCategories={allCategories}
+            showRequired={showRequired}
+          />
         </Box>
 
         <Box>
