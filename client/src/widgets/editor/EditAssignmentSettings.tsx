@@ -39,7 +39,9 @@ export function EditAssignmentSettings({
 }) {
   return (
     <VStack align="left" ml="1rem">
-      {includeMode && <AssignmentModeSelection mode={mode!} />}
+      {includeMode && (
+        <AssignmentModeSelection mode={mode!} editable={!isAssigned} />
+      )}
       <MaxAttemptsSelectionBox attempts={maxAttempts ?? 0} />
       <VariantSelectionBox
         editable={!isAssigned}
@@ -170,7 +172,13 @@ function VariantSelectionBox({
   );
 }
 
-function AssignmentModeSelection({ mode }: { mode: AssignmentMode }) {
+function AssignmentModeSelection({
+  mode,
+  editable,
+}: {
+  mode: AssignmentMode;
+  editable: boolean;
+}) {
   const fetcher = useFetcher();
   const optimisticMode = optimistic<AssignmentMode>(fetcher, "mode", mode);
 
@@ -180,7 +188,7 @@ function AssignmentModeSelection({ mode }: { mode: AssignmentMode }) {
         <Text> Assignment mode</Text>
 
         <RadioGroup
-          // marginTop="10px"
+          isDisabled={!editable}
           onChange={(v) => {
             const mode = v === "summative" ? "summative" : "formative";
             fetcher.submit(

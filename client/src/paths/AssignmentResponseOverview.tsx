@@ -696,7 +696,7 @@ export function AssignmentData() {
           Invite students
         </Button>
       </Stack>
-      <Tabs>
+      <Tabs mb="10vh">
         <TabList>
           <Tab>Scores</Tab>
           <Tab>Statistics</Tab>
