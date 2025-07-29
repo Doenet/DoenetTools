@@ -211,11 +211,6 @@ export type AssignmentInfo = {
   assignmentStatus: AssignmentStatus;
   classCode: string;
   codeValidUntil: Date;
-  otherRoot?: {
-    rootContentId: Uint8Array;
-    rootName: string;
-    rootType: ContentType;
-  };
   hasScoreData: boolean;
   mode: AssignmentMode;
   individualizeByStudent: boolean;

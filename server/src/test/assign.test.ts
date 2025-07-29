@@ -426,7 +426,6 @@ test("open compound assignment with code", async () => {
   expect(content.assignmentInfo?.classCode).eq(classCode);
   expect(content.assignmentInfo?.maxAttempts).eq(1);
   expect(content.assignmentInfo?.mode).eq("formative");
-  expect(content.assignmentInfo?.otherRoot).eq(undefined);
 
   const nonRootIds = await getAssignmentNonRootIds(sequenceAssignmentId);
   expect(nonRootIds.length).eqls(4);
@@ -441,11 +440,6 @@ test("open compound assignment with code", async () => {
   expect(content.assignmentInfo?.classCode).eq(classCode);
   expect(content.assignmentInfo?.maxAttempts).eq(1);
   expect(content.assignmentInfo?.mode).eq("formative");
-  // expect(content.assignmentInfo?.otherRoot).eqls({
-  //   rootName: "A problem set",
-  //   rootType: "sequence",
-  //   rootContentId: sequenceId,
-  // });
 });
 
 test("only owner can open, close, modify, or unassign assignment", async () => {
@@ -793,7 +787,6 @@ test.skip("assignment settings of descendants synchronize when ancestor assigned
   expect(content.assignmentInfo?.assignmentStatus).eq("Unassigned");
   expect(content.assignmentInfo?.maxAttempts).eq(2);
   expect(content.assignmentInfo?.mode).eq("summative");
-  expect(content.assignmentInfo?.otherRoot).eq(undefined);
 
   content = await getContent({
     contentId: selectId,
@@ -803,7 +796,6 @@ test.skip("assignment settings of descendants synchronize when ancestor assigned
   expect(content.assignmentInfo?.assignmentStatus).eq("Unassigned");
   expect(content.assignmentInfo?.maxAttempts).eq(3);
   expect(content.assignmentInfo?.mode).eq("summative");
-  expect(content.assignmentInfo?.otherRoot).eq(undefined);
 
   content = await getContent({
     contentId: docId,
@@ -813,7 +805,6 @@ test.skip("assignment settings of descendants synchronize when ancestor assigned
   expect(content.assignmentInfo?.assignmentStatus).eq("Unassigned");
   expect(content.assignmentInfo?.maxAttempts).eq(4);
   expect(content.assignmentInfo?.mode).eq("formative");
-  expect(content.assignmentInfo?.otherRoot).eq(undefined);
 
   // when assign sequence, all settings synchronize
   await createAssignment({
@@ -831,7 +822,6 @@ test.skip("assignment settings of descendants synchronize when ancestor assigned
   expect(content.assignmentInfo?.assignmentStatus).eq("Closed");
   expect(content.assignmentInfo?.maxAttempts).eq(2);
   expect(content.assignmentInfo?.mode).eq("summative");
-  expect(content.assignmentInfo?.otherRoot).eq(undefined);
 
   content = await getContent({
     contentId: selectId,
@@ -841,7 +831,6 @@ test.skip("assignment settings of descendants synchronize when ancestor assigned
   expect(content.assignmentInfo?.assignmentStatus).eq("Closed");
   expect(content.assignmentInfo?.maxAttempts).eq(2);
   expect(content.assignmentInfo?.mode).eq("summative");
-  expect(content.assignmentInfo?.otherRoot?.rootContentId).eqls(sequenceId);
 
   content = await getContent({
     contentId: docId,
@@ -851,7 +840,6 @@ test.skip("assignment settings of descendants synchronize when ancestor assigned
   expect(content.assignmentInfo?.assignmentStatus).eq("Closed");
   expect(content.assignmentInfo?.maxAttempts).eq(2);
   expect(content.assignmentInfo?.mode).eq("summative");
-  expect(content.assignmentInfo?.otherRoot?.rootContentId).eqls(sequenceId);
 });
 
 function scoreFromStudentAttempts(

@@ -456,11 +456,6 @@ export function processContent(
       ...other,
       assignmentStatus: processAssignmentStatus({ codeValidUntil }),
       codeValidUntil,
-      otherRoot: {
-        rootContentId: rootContent.id,
-        rootName: rootContent.name,
-        rootType: rootContent.type,
-      },
       hasScoreData: false,
       individualizeByStudent,
       maxAttempts,

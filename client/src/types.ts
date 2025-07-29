@@ -226,11 +226,6 @@ export type AssignmentInfo = {
   assignmentStatus: AssignmentStatus;
   classCode: string;
   codeValidUntil: string;
-  otherRoot?: {
-    rootContentId: string;
-    rootName: string;
-    rootType: ContentType;
-  };
   hasScoreData: boolean;
   mode: AssignmentMode;
   individualizeByStudent: boolean;
