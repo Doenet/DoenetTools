@@ -11,7 +11,6 @@ import {
 } from "../utils/contentStructure";
 import {
   filterEditableActivity,
-  filterEditableRootAssignment,
   filterViewableActivity,
   getIsEditor,
 } from "../utils/permissions";
@@ -157,10 +156,7 @@ export async function getEditorSettings({
     await prisma.content.findUniqueOrThrow({
       where: {
         id: contentId,
-        OR: [
-          filterEditableActivity(loggedInUserId, isEditor),
-          filterEditableRootAssignment(loggedInUserId),
-        ],
+        ...filterEditableActivity(loggedInUserId, isEditor),
       },
       select: {
         isPublic: true,

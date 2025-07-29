@@ -52,6 +52,10 @@ export async function isInLibrary(contentId: Uint8Array) {
   return isLibrary;
 }
 
+/**
+ * Use this in Prisma's `where` clause to filter for only activities (exclude folders and assignments).
+ * Use on table `contents`.
+ */
 const filterActivity = {
   type: { not: "folder" as const },
   nonRootAssignmentId: null,
@@ -60,6 +64,10 @@ const filterActivity = {
   },
 };
 
+/**
+ * Use this in Prisma's `where` clause to filter for only root assignments.
+ * Use on table `contents`.
+ */
 const filterRootAssignment = {
   rootAssignment: {
     isNot: null,
@@ -103,11 +111,9 @@ export function filterViewableActivity(
  *
  * For an assignment to be viewable, one of these conditions must be true:
  * 1. The assignment is open
- * 2. You have score data for this assignment
+ * 2. `loggedInUserId` has score data for this assignment
  *
  * For content to be a root assignment, it must be attached to an entry in the assignments table.
- *
- * NOTE: This function does not verify editor privileges. You must pass in the correct `isEditor` flag.
  */
 export function filterViewableRootAssignment(loggedInUserId: Uint8Array) {
   return {
@@ -234,11 +240,8 @@ export function filterEditableActivity(
  *
  * For content to be editable, one of these conditions must be true:
  * 1. `loggedInUserId` is the owner
- * 4. `loggedInUserId` is an editor and the content is in the library.
  *
  * For content to be a root assignment, it must be attached to an entry in the assignments table.
- *
- * NOTE: This function does not verify editor privileges. You must pass in the correct `isEditor` flag.
  */
 export function filterEditableRootAssignment(loggedInUserId: Uint8Array) {
   return {
@@ -273,41 +276,6 @@ export function filterEditableContent(
     OR: editabilityOptions,
   };
 }
-
-/**
- * Filter Prisma's `where` clause to exclude content that is assigned.
- * For content to be unassigned:
- * 1. the `rootAssignment` must not exist or be unassigned
- * 2. the `nonRootAssignment` must not exist or be unassigned
- */
-// export const filterUnassigned = {
-//   AND: [
-//     {
-//       OR: [
-//         {
-//           rootAssignment: null,
-//         },
-//         {
-//           rootAssignment: {
-//             assigned: false,
-//           },
-//         },
-//       ],
-//     },
-//     {
-//       OR: [
-//         {
-//           nonRootAssignment: null,
-//         },
-//         {
-//           nonRootAssignment: {
-//             assigned: false,
-//           },
-//         },
-//       ],
-//     },
-//   ],
-// };
 
 /**
  * Return a MySQL cause to be added to a WHERE statement, filtering to content editable by `loggedInUserId`.

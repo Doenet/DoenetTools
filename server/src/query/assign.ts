@@ -37,9 +37,9 @@ function generateClassCode() {
 
 /**
  * Create an assignment from an activity
- * Remixes activity to destination parent and automatically opens the assignmemt.
+ * Remixes activity to destination parent and automatically opens the assignment.
  *
- * For this function to suceed,
+ * For this function to succeed,
  * 1. `contentId` and `destinationParentId` must be owned by user
  * 2. `contentId` must not be an assignment or have any assignments as children
  * 3. `contentId` must not be a hidden sub-assignment id
@@ -189,9 +189,7 @@ export async function updateAssignmentMaxAttempts({
  * Updates the `mode` and/or `individualizeByStudent` field of the assignment `contentId` that is owned by `loggedInUserId`.
  *
  * Verifies that `contentId` is not assigned as a part of another root assignment,
- * throwing an `InvalidRequestError` in that case.
- *
- * Creates a root assignment record for `contentId` if it doesn't exist.
+ * throwing an error in that case.
  *
  * The mode can be updated only if the content is not assigned.
  */

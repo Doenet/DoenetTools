@@ -769,8 +769,9 @@ export async function getMoveCopyContentData({
 
   for (const child of results) {
     let canOpen = true;
-    const isAssignment =
-      child.rootAssignment || child.nonRootAssignment ? true : false;
+    const isAssignment = Boolean(
+      child.rootAssignment || child.nonRootAssignment,
+    );
     if (isAssignment) {
       canOpen = false;
     } else if (!allowedParentTypes.includes(child.type)) {
@@ -827,18 +828,15 @@ export async function getMoveCopyContentData({
 
 /**
  * Check if `contentId` has any descendants of type `contentType`.
- * Unless `countAssigned` is `true`, ignore any assigned descendants.
  */
 export async function checkIfContentContains({
   contentId,
   contentType,
   loggedInUserId,
-  countAssigned = false,
 }: {
   contentId: Uint8Array | null;
   contentType: ContentType;
   loggedInUserId: Uint8Array;
-  countAssigned?: boolean;
 }) {
   // Note: not sure how to perform this calculation efficiently. Do we need to cache these values instead?
   // Would it be better to do a single recursive query rather than recurse will individual queries
@@ -869,7 +867,6 @@ export async function checkIfContentContains({
             contentId: child.id,
             contentType,
             loggedInUserId,
-            countAssigned,
           })
         ).containsType
       ) {
