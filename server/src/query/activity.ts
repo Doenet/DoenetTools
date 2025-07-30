@@ -382,7 +382,7 @@ export async function updateContent({
 }
 
 /**
- * TODO: BUG: deal with isExclusive!
+ * TODO: deal with isExclusive! Right now we rely on the client to send correct settings.
  *
  * Add or remove the content features specified in `features` to the content with `contentId`.
  *
