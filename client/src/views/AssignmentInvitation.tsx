@@ -1,4 +1,4 @@
-import React, { RefObject, useEffect, useState } from "react";
+import React, { RefObject } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { QRCode } from "react-qrcode-logo";
 // import { CopyToClipboard } from "react-copy-to-clipboard";
-import { MdOutlineContentCopy } from "react-icons/md";
+// import { MdOutlineContentCopy } from "react-icons/md";
 import { AssignmentStatus } from "../types";
 
 export function AssignmentInvitation({
@@ -32,11 +32,11 @@ export function AssignmentInvitation({
   assignmentName: string;
   assignmentStatus: AssignmentStatus;
 }) {
-  const [urlCopied, setUrlCopied] = useState(false);
+  // const [urlCopied, setUrlCopied] = useState(false);
 
-  useEffect(() => {
-    setUrlCopied(false);
-  }, [isOpen]);
+  // useEffect(() => {
+  //   setUrlCopied(false);
+  // }, [isOpen]);
 
   const baseUrl = window.location.host;
 

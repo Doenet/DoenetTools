@@ -109,57 +109,59 @@ export default function CardList({
       }
     : undefined;
 
-  let cards: ReactElement<any> | ReactElement<any>[] = content.map((cardContent, idx) => {
-    if ("cardType" in cardContent) {
-      const indentLevel = cardContent.indentLevel;
-      return (
-        <Box
-          key={`afterParent${cardContent.parentId}`}
-          width={`calc(100% - ${30 * indentLevel}px)`}
-          marginLeft={`${30 * indentLevel}px`}
-          height={cardContent.empty ? "30px" : "10px"}
-          borderBottom="2px solid gray"
-          alignContent="center"
-          paddingLeft="20px"
-          fontStyle="italic"
-          color="GrayText"
-        >
-          {cardContent.empty
-            ? "(Add documents to above empty question bank. Or, move documents up or down to this slot.)"
-            : null}
-        </Box>
-      );
-    } else {
-      return (
-        <Card
-          key={`Card${cardContent.content.contentId}`}
-          cardContent={cardContent}
-          showOwnerName={showOwnerName}
-          showBlurb={showBlurb}
-          showPublicStatus={showPublicStatus}
-          showActivityCategories={showActivityCategories}
-          showAddButton={showAddButton}
-          showLibraryEditor={showLibraryEditor}
-          indentLevel={cardContent.indentLevel}
-          selectedCards={
-            selectedCardsFiltered
-              ? selectedCardsFiltered.map((sc) => sc.contentId)
-              : undefined
-          }
-          selectCallback={selectCallback}
-          isAuthor={isAuthor}
-          addDocumentCallback={addDocumentCallback}
-          disableSelect={disableSelectFor?.includes(
-            cardContent.content.contentId,
-          )}
-          disableAsSelected={disableAsSelectedFor?.includes(
-            cardContent.content.contentId,
-          )}
-          idx={idx}
-        />
-      );
-    }
-  });
+  let cards: ReactElement<any> | ReactElement<any>[] = content.map(
+    (cardContent, idx) => {
+      if ("cardType" in cardContent) {
+        const indentLevel = cardContent.indentLevel;
+        return (
+          <Box
+            key={`afterParent${cardContent.parentId}`}
+            width={`calc(100% - ${30 * indentLevel}px)`}
+            marginLeft={`${30 * indentLevel}px`}
+            height={cardContent.empty ? "30px" : "10px"}
+            borderBottom="2px solid gray"
+            alignContent="center"
+            paddingLeft="20px"
+            fontStyle="italic"
+            color="GrayText"
+          >
+            {cardContent.empty
+              ? "(Add documents to above empty question bank. Or, move documents up or down to this slot.)"
+              : null}
+          </Box>
+        );
+      } else {
+        return (
+          <Card
+            key={`Card${cardContent.content.contentId}`}
+            cardContent={cardContent}
+            showOwnerName={showOwnerName}
+            showBlurb={showBlurb}
+            showPublicStatus={showPublicStatus}
+            showActivityCategories={showActivityCategories}
+            showAddButton={showAddButton}
+            showLibraryEditor={showLibraryEditor}
+            indentLevel={cardContent.indentLevel}
+            selectedCards={
+              selectedCardsFiltered
+                ? selectedCardsFiltered.map((sc) => sc.contentId)
+                : undefined
+            }
+            selectCallback={selectCallback}
+            isAuthor={isAuthor}
+            addDocumentCallback={addDocumentCallback}
+            disableSelect={disableSelectFor?.includes(
+              cardContent.content.contentId,
+            )}
+            disableAsSelected={disableAsSelectedFor?.includes(
+              cardContent.content.contentId,
+            )}
+            idx={idx}
+          />
+        );
+      }
+    },
+  );
 
   cards = (
     <Box width="100%" borderTop={"2px solid gray"}>

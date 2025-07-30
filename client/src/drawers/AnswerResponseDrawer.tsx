@@ -48,7 +48,11 @@ export function AnswerResponseDrawer({
   itemAttemptNumber: number | null;
 }) {
   const [responses, setResponses] = useState<
-    { response: ReactElement<any>; creditAchieved: number; submittedAt: string }[]
+    {
+      response: ReactElement<any>;
+      creditAchieved: number;
+      submittedAt: string;
+    }[]
   >([]);
 
   useEffect(() => {

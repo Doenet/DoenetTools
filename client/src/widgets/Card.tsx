@@ -307,7 +307,7 @@ export default function Card({
         <SmallLicenseBadges license={license!} suppressLink={true} />
       ) : (
         // Same width as `SmallLicenseBadges`
-        (<Flex width="80px" />)
+        <Flex width="80px" />
       )}
     </Flex>
   );
