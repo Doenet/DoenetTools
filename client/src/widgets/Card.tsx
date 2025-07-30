@@ -39,7 +39,7 @@ export type CardContent = {
   ownerName?: string;
   // This will replace `ownerName` in the avatar
   ownerAvatarName?: string;
-  menuItems?: ReactElement;
+  menuItems?: ReactElement<any>;
   blurb?: string;
   indentLevel?: number;
   libraryEditorName?: string;
@@ -173,7 +173,7 @@ export default function Card({
   );
 
   // Category icons
-  const categoryIcons: ReactElement[] = [];
+  const categoryIcons: ReactElement<any>[] = [];
   if (showActivityCategories) {
     for (const [categoryCode, categoryIcon] of Object.entries(
       activityCategoryIcons,

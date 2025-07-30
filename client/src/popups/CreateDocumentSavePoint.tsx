@@ -31,7 +31,7 @@ export function CreateDocumentSavePoint({
   revisions: ContentRevision[];
   contentId: string;
   atLastRevision: boolean;
-  finalFocusRef?: RefObject<HTMLElement>;
+  finalFocusRef?: RefObject<HTMLElement | null>;
 }) {
   const fetcher = useFetcher();
 

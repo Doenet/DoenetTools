@@ -275,7 +275,7 @@ export function ActivityViewer() {
 
   const haveClassifications = activityData.classifications.length > 0;
 
-  let mainContent: ReactElement = <></>;
+  let mainContent: ReactElement<any> = <></>;
 
   if (data.type === "singleDoc") {
     if (mode === "Edit") {
@@ -394,7 +394,7 @@ export function ActivityViewer() {
       " or " + allowedParentWords[allowedParentWords.length - 1];
   }
 
-  let addToMenu: ReactElement;
+  let addToMenu: ReactElement<any>;
 
   if (addTo) {
     addToMenu = (

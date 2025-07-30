@@ -146,9 +146,9 @@ export function AddClassificationModal({
       ? null
       : classificationCategories[categoryFilter.systemTreeIndex];
 
-  const classificationSystemOptionGroups: ReactElement[] = [];
+  const classificationSystemOptionGroups: ReactElement<any>[] = [];
 
-  let classificationTypeOptions: ReactElement[] = [];
+  let classificationTypeOptions: ReactElement<any>[] = [];
   let lastType = "";
 
   for (const [i, system] of classificationCategories.entries()) {
@@ -406,7 +406,7 @@ export function AddClassificationModal({
                 descriptionLabel,
               } = reformatClassificationData(classification, descriptionIndex);
 
-              let aliasNote: ReactElement | null = null;
+              let aliasNote: ReactElement<any> | null = null;
 
               if (descriptionIndex !== 0) {
                 const aliasedAugmentedDescription =

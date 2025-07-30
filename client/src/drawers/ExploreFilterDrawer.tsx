@@ -33,7 +33,7 @@ export function ExploreFilterDrawer({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  finalFocusRef?: RefObject<HTMLElement>;
+  finalFocusRef?: RefObject<HTMLElement | null>;
   topAuthors: UserInfo[] | null;
   authorInfo: UserInfo | null;
   classificationBrowse: PartialContentClassification[] | null;

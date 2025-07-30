@@ -196,7 +196,7 @@ export function getIconInfo(contentType: ContentType, isAssignment: boolean) {
   return { iconImage, iconColor };
 }
 
-export const menuIcons: Record<string, ReactElement> = {};
+export const menuIcons: Record<string, ReactElement<any>> = {};
 
 for (const t of ["folder", "sequence", "select", "singleDoc"]) {
   const ct = t as ContentType;

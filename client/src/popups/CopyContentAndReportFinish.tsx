@@ -73,7 +73,7 @@ export function CopyContentAndReportFinish({
   fetcher: FetcherWithComponents<any>;
   isOpen: boolean;
   onClose: () => void;
-  finalFocusRef?: RefObject<HTMLElement>;
+  finalFocusRef?: RefObject<HTMLElement | null>;
   contentIds: string[];
   desiredParent: ContentDescription | null;
   action: "Copy" | "Add";
@@ -126,7 +126,7 @@ export function CopyContentAndReportFinish({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
-  let destinationDescription: ReactElement;
+  let destinationDescription: ReactElement<any>;
   let destinationAction: string;
   let destinationUrl: string;
 

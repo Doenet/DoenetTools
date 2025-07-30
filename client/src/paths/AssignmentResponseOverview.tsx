@@ -275,7 +275,7 @@ export function AssignmentData() {
   const sortLink = (text: string) =>
     `.?sort=${text}${sort === `${text}` && sortDir === "asc" ? "-" : ""}`;
 
-  let scoresChart: ReactElement;
+  let scoresChart: ReactElement<any>;
   const nameWidth = 150;
   const totalWidth = 70;
 

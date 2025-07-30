@@ -37,7 +37,7 @@ export function AnswerResponseDrawer({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  finalFocusRef?: RefObject<HTMLElement>;
+  finalFocusRef?: RefObject<HTMLElement | null>;
   itemName: string | null;
   assignment: { name: string; type: ContentType; contentId: string };
   student: UserInfo;
@@ -48,7 +48,11 @@ export function AnswerResponseDrawer({
   itemAttemptNumber: number | null;
 }) {
   const [responses, setResponses] = useState<
-    { response: ReactElement; creditAchieved: number; submittedAt: string }[]
+    {
+      response: ReactElement<any>;
+      creditAchieved: number;
+      submittedAt: string;
+    }[]
   >([]);
 
   useEffect(() => {

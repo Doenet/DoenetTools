@@ -120,7 +120,7 @@ export function MoveCopyContent({
   }[];
   userId: string;
   currentParentId: string | null;
-  finalFocusRef?: RefObject<HTMLElement>;
+  finalFocusRef?: RefObject<HTMLElement | null>;
   allowedParentTypes: ContentType[];
   action: "Move" | "Add" | "Copy";
   inCurationLibrary?: boolean;
@@ -337,7 +337,7 @@ export function MoveCopyContent({
     </>
   );
 
-  let destinationDescription: ReactElement;
+  let destinationDescription: ReactElement<any>;
   let destinationAction: string;
   let destinationUrl: string;
 

@@ -86,7 +86,7 @@ export function AssignmentStudentResponseSummary({
   const { search } = useLocation();
   const searchBase = search === "" ? "?" : search + "&";
 
-  let scoreTable: ReactElement;
+  let scoreTable: ReactElement<any>;
 
   if (allAttemptScores.byItem) {
     const itemAttemptScores = allAttemptScores.itemAttemptScores;

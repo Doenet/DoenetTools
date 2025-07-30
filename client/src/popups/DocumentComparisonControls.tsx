@@ -93,7 +93,7 @@ export function DocumentComparisonControls({
   activityCompareChanged: boolean;
   activityAtCompare: boolean;
   compareRelation: "source" | "remix";
-  finalFocusRef?: RefObject<HTMLElement>;
+  finalFocusRef?: RefObject<HTMLElement | null>;
   fetcher: FetcherWithComponents<any>;
 }) {
   const [updated, setUpdated] = useState(false);
@@ -143,7 +143,7 @@ export function DocumentComparisonControls({
   const contentTypeName = contentTypeToName["singleDoc"];
   const { iconImage, iconColor } = getIconInfo("singleDoc", false);
 
-  let updatePrompt: ReactElement;
+  let updatePrompt: ReactElement<any>;
   let updateTitle: string;
 
   if (activityAtCompare) {

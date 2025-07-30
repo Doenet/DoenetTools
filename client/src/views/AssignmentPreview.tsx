@@ -38,7 +38,7 @@ export default function AssignmentPreview({
   const navigate = useNavigate();
   const location = useLocation();
 
-  let viewer: ReactElement | null = null;
+  let viewer: ReactElement<any> | null = null;
 
   if (active) {
     if (data.type === "singleDoc") {

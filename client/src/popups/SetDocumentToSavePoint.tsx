@@ -30,7 +30,7 @@ export function SetDocumentToSavePoint({
   onClose: () => void;
   revision: ContentRevision;
   contentId: string;
-  finalFocusRef?: RefObject<HTMLElement>;
+  finalFocusRef?: RefObject<HTMLElement | null>;
   setRevNum: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const [updated, setUpdated] = useState(false);
