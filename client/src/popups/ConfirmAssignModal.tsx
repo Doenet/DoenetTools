@@ -87,7 +87,8 @@ export function ConfirmAssignModal({
         <ModalContent>
           <ModalHeader>
             <Heading size="md">
-              Assign {contentTypeToName[contentType].toLocaleLowerCase()}
+              Create assignment from{" "}
+              {contentTypeToName[contentType].toLocaleLowerCase()}
             </Heading>
           </ModalHeader>
           <ModalCloseButton />
@@ -158,7 +159,7 @@ export function ConfirmAssignModal({
                 moveCopyContentOnOpen();
               }}
             >
-              Create
+              Create assignment
             </Button>
           </ModalFooter>
         </ModalContent>
