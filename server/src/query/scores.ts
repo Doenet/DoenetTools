@@ -2,7 +2,10 @@ import { prisma } from "../model";
 import { isEqualUUID } from "../utils/uuid";
 import { Prisma } from "@prisma/client";
 import { InvalidRequestError } from "../utils/error";
-import { filterEditableActivity } from "../utils/permissions";
+import {
+  filterEditableRootAssignment,
+  filterViewableRootAssignment,
+} from "../utils/permissions";
 import { UserInfoWithEmail } from "../types";
 
 // TODO: do we still save score and state if assignment isn't open?
@@ -81,11 +84,9 @@ export async function saveScoreAndState({
   const assignment = await prisma.assignments.findUniqueOrThrow({
     where: {
       rootContentId: contentId,
-      assigned: true,
       classCode: code,
     },
     select: {
-      mode: true,
       contentState: {
         distinct: ["contentId", "userId"],
         where: { userId: loggedInUserId },
@@ -260,31 +261,35 @@ export async function createNewAttempt({
     variant: number;
   }[];
 }) {
-  const assignment = await prisma.assignments.findUniqueOrThrow({
+  const assignment = await prisma.content.findUniqueOrThrow({
     where: {
-      rootContentId: contentId,
-      assigned: true,
-      classCode: code,
+      id: contentId,
+      ...filterViewableRootAssignment(loggedInUserId),
+      rootAssignment: {
+        classCode: code,
+      },
     },
     select: {
       mode: true,
       maxAttempts: true,
-      rootContent: { select: { type: true } },
-      contentState: {
-        distinct: ["contentId", "userId"],
-        where: { userId: loggedInUserId },
-        orderBy: { attemptNumber: "desc" },
-        select: { attemptNumber: true },
+      type: true,
+      rootAssignment: {
+        select: {
+          contentState: {
+            distinct: ["contentId", "userId"],
+            where: { userId: loggedInUserId },
+            orderBy: { attemptNumber: "desc" },
+            select: { attemptNumber: true },
+          },
+        },
       },
     },
   });
 
-  const maxAttemptNumber = assignment.contentState[0]?.attemptNumber ?? 0;
+  const maxAttemptNumber =
+    assignment.rootAssignment!.contentState[0]?.attemptNumber ?? 0;
 
-  if (
-    assignment.mode === "formative" &&
-    assignment.rootContent.type !== "singleDoc"
-  ) {
+  if (assignment.mode === "formative" && assignment.type !== "singleDoc") {
     if (shuffledItemOrder === undefined) {
       throw new InvalidRequestError(
         "Cannot create attempts of formative assessments without specifying shuffledItemOrder",
@@ -784,19 +789,23 @@ export async function calculateScoreAndCacheResults({
 }) {
   const scoreUserId = requestedUserId ?? loggedInUserId;
 
+  // if getting data for other person, you must be the owner
+  const forMyself = isEqualUUID(scoreUserId, loggedInUserId);
+
   const assignment = await prisma.assignments.findUniqueOrThrow({
     where: {
       rootContentId: contentId,
       rootContent: {
-        // if getting data for other person, you must be the owner
-        ownerId: isEqualUUID(scoreUserId, loggedInUserId)
-          ? undefined
-          : loggedInUserId,
+        ownerId: forMyself ? undefined : loggedInUserId,
         isDeletedOn: null,
       },
     },
     select: {
-      mode: true,
+      rootContent: {
+        select: {
+          mode: true,
+        },
+      },
       contentState: {
         where: { userId: scoreUserId },
         distinct: ["contentId", "userId"],
@@ -808,7 +817,7 @@ export async function calculateScoreAndCacheResults({
     },
   });
 
-  const mode = assignment.mode;
+  const mode = assignment.rootContent.mode;
   if (assignment.contentState.length !== 1) {
     return { calculatedScore: false as const };
   }
@@ -1083,11 +1092,10 @@ export async function getScoresOfAllStudents({
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
 }) {
-  const { mode } = await prisma.assignments.findUniqueOrThrow({
+  const { mode } = await prisma.content.findUniqueOrThrow({
     where: {
-      rootContentId: contentId,
-      assigned: true,
-      rootContent: filterEditableActivity(loggedInUserId),
+      id: contentId,
+      ...filterEditableRootAssignment(loggedInUserId),
     },
     select: { mode: true },
   });

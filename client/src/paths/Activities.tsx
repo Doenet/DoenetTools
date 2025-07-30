@@ -794,6 +794,15 @@ export function Activities() {
       cardMenuRefs.current[position] = element;
     };
 
+    let cardLink: string;
+    if (activity.type === "folder") {
+      cardLink = `/activities/${activity.ownerId}/${activity.contentId}`;
+    } else if (activity.assignmentInfo) {
+      cardLink = `/assignmentData/${activity.contentId}`;
+    } else {
+      cardLink = editorUrl(activity.contentId, activity.type);
+    }
+
     return {
       menuRef: getCardMenuRef,
       content: activity,
@@ -810,10 +819,7 @@ export function Activities() {
         licenseCode: activity.licenseCode ?? null,
         parentId: activity.parent?.contentId ?? null,
       }),
-      cardLink:
-        activity.type === "folder"
-          ? `/activities/${activity.ownerId}/${activity.contentId}`
-          : editorUrl(activity.contentId, activity.type),
+      cardLink,
     };
   });
 

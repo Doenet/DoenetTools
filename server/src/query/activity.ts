@@ -67,12 +67,12 @@ export async function createContent({
         isPublic: true,
         licenseCode: true,
         sharedWith: { select: { userId: true } },
-        rootAssignment: { select: { assigned: true } },
-        nonRootAssignment: { select: { assigned: true } },
+        rootAssignment: { select: { rootContentId: true } },
+        nonRootAssignment: { select: { rootContentId: true } },
       },
     });
 
-    if (parent.rootAssignment?.assigned || parent.nonRootAssignment?.assigned) {
+    if (parent.rootAssignment || parent.nonRootAssignment) {
       throw new InvalidRequestError(
         "Cannot add content to an assigned activity",
       );
@@ -159,17 +159,14 @@ export async function deleteContent({
       id: true,
       parent: {
         select: {
-          rootAssignment: { select: { assigned: true } },
-          nonRootAssignment: { select: { assigned: true } },
+          rootAssignment: { select: { rootContentId: true } },
+          nonRootAssignment: { select: { rootContentId: true } },
         },
       },
     },
   });
 
-  if (
-    content.parent?.rootAssignment?.assigned ||
-    content.parent?.nonRootAssignment?.assigned
-  ) {
+  if (content.parent?.rootAssignment || content.parent?.nonRootAssignment) {
     throw new InvalidRequestError(
       "Cannot delete content from an assigned activity",
     );
@@ -337,13 +334,13 @@ export async function updateContent({
       ...filterEditableContent(loggedInUserId, isEditor),
     },
     select: {
-      rootAssignment: { select: { assigned: true } },
-      nonRootAssignment: { select: { assigned: true } },
+      rootAssignment: { select: { rootContentId: true } },
+      nonRootAssignment: { select: { rootContentId: true } },
     },
   });
 
   const isAssigned = Boolean(
-    content.rootAssignment?.assigned || content.nonRootAssignment?.assigned,
+    content.rootAssignment || content.nonRootAssignment,
   );
 
   if (isAssigned) {

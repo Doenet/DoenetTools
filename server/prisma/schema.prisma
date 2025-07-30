@@ -17,50 +17,53 @@ model Session {
 
 model content {
   // General metadata
-  id                  Bytes                    @id @default(dbgenerated("(uuid_to_bin(uuid(),1))")) @db.Binary(16)
-  type                ContentType              @default(singleDoc)
-  ownerId             Bytes                    @db.Binary(16)
-  name                String
-  parentId            Bytes?                   @db.Binary(16)
-  isPublic            Boolean                  @default(false)
-  isDeletedOn         DateTime?
+  id                     Bytes                    @id @default(dbgenerated("(uuid_to_bin(uuid(),1))")) @db.Binary(16)
+  type                   ContentType              @default(singleDoc)
+  ownerId                Bytes                    @db.Binary(16)
+  name                   String
+  parentId               Bytes?                   @db.Binary(16)
+  isPublic               Boolean                  @default(false)
+  isDeletedOn            DateTime?
   // The parent id that the user deleted. Not defined if this is root
-  deletionRootId      Bytes?                   @db.Binary(16)
-  createdAt           DateTime                 @default(now())
-  sortIndex           BigInt
-  licenseCode         String?                  @default("CCDUAL") @db.VarChar(10)
-  lastEdited          DateTime                 @default(now())
+  deletionRootId         Bytes?                   @db.Binary(16)
+  createdAt              DateTime                 @default(now())
+  sortIndex              BigInt
+  licenseCode            String?                  @default("CCDUAL") @db.VarChar(10)
+  lastEdited             DateTime                 @default(now())
   // Specific to document type
-  source              String?                  @db.MediumText
-  doenetmlVersionId   Int?
-  numVariants         Int                      @default(1)
+  source                 String?                  @db.MediumText
+  doenetmlVersionId      Int?
+  numVariants            Int                      @default(1)
   // Specific to sequence type
-  shuffle             Boolean                  @default(false)
-  paginate            Boolean                  @default(false)
+  shuffle                Boolean                  @default(false)
+  paginate               Boolean                  @default(false)
   // Specific to select type
-  numToSelect         Int                      @default(1) @db.UnsignedSmallInt
-  selectByVariant     Boolean                  @default(false)
+  numToSelect            Int                      @default(1) @db.UnsignedSmallInt
+  selectByVariant        Boolean                  @default(false)
   // Assignments
-  nonRootAssignmentId Bytes?                   @db.Binary(16)
+  nonRootAssignmentId    Bytes?                   @db.Binary(16)
+  mode                   AssignmentMode           @default(formative)
+  maxAttempts            Int                      @default(1) @db.UnsignedSmallInt
+  individualizeByStudent Boolean                  @default(false)
   // Relations
-  nonRootAssignment   assignments?             @relation("nonRootAssignment", fields: [nonRootAssignmentId], references: [rootContentId], onDelete: SetNull, onUpdate: NoAction)
-  rootAssignment      assignments?             @relation("rootAssignment")
-  owner               users                    @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
-  parent              content?                 @relation("childParent", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  children            content[]                @relation("childParent")
-  license             licenses?                @relation(fields: [licenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
-  doenetmlVersion     doenetmlVersions?        @relation(fields: [doenetmlVersionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  categories          categories[]
-  sharedWith          contentShares[]
-  classifications     contentClassifications[]
-  contentViews        contentViews[]
-  recentContent       recentContent[]
-  librarySourceInfo   libraryActivityInfos?    @relation("source")
-  libraryActivityInfo libraryActivityInfos?    @relation("activity")
-  contentRevisions    contentRevisions[]
-  submittedResponses  submittedResponses[]
-  deletionRoot        content?                 @relation("deletionRoot", fields: [deletionRootId], references: [id])
-  isDeletionRootFor   content[]                @relation("deletionRoot")
+  nonRootAssignment      assignments?             @relation("nonRootAssignment", fields: [nonRootAssignmentId], references: [rootContentId], onDelete: SetNull, onUpdate: NoAction)
+  rootAssignment         assignments?             @relation("rootAssignment")
+  owner                  users                    @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  parent                 content?                 @relation("childParent", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children               content[]                @relation("childParent")
+  license                licenses?                @relation(fields: [licenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
+  doenetmlVersion        doenetmlVersions?        @relation(fields: [doenetmlVersionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  categories             categories[]
+  sharedWith             contentShares[]
+  classifications        contentClassifications[]
+  contentViews           contentViews[]
+  recentContent          recentContent[]
+  librarySourceInfo      libraryActivityInfos?    @relation("source")
+  libraryActivityInfo    libraryActivityInfos?    @relation("activity")
+  contentRevisions       contentRevisions[]
+  submittedResponses     submittedResponses[]
+  deletionRoot           content?                 @relation("deletionRoot", fields: [deletionRootId], references: [id])
+  isDeletionRootFor      content[]                @relation("deletionRoot")
 
   @@index([ownerId, parentId, sortIndex])
   @@index([parentId, type])
@@ -198,17 +201,14 @@ model doenetmlVersions {
 }
 
 model assignments {
-  rootContentId          Bytes              @id @db.Binary(16)
-  assigned               Boolean            @default(false)
-  mode                   AssignmentMode     @default(formative)
-  classCode              String             @db.VarChar(45)
-  codeValidUntil         DateTime?
-  maxAttempts            Int                @default(1) @db.UnsignedSmallInt
-  individualizeByStudent Boolean            @default(false)
-  rootContent            content            @relation("rootAssignment", fields: [rootContentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  nonRootContent         content[]          @relation("nonRootAssignment")
-  contentState           contentState[]
-  assignmentScores       assignmentScores[]
+  rootContentId     Bytes              @id @db.Binary(16)
+  classCode         String             @db.VarChar(45)
+  codeValidStarting DateTime
+  codeValidUntil    DateTime
+  rootContent       content            @relation("rootAssignment", fields: [rootContentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  nonRootContent    content[]          @relation("nonRootAssignment")
+  contentState      contentState[]
+  assignmentScores  assignmentScores[]
 
   @@index([classCode])
 }

@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useRef, useState } from "react";
+import React, { ReactElement, useEffect } from "react";
 import {
   useFetcher,
   Link as ReactRouterLink,
@@ -16,9 +16,6 @@ import {
   Button,
   ButtonGroup,
   Center,
-  Editable,
-  EditableInput,
-  EditablePreview,
   Flex,
   Grid,
   GridItem,
@@ -59,6 +56,7 @@ import { ShareMyContentModal } from "../../popups/ShareMyContentModal";
 import { NotificationDot } from "../../widgets/NotificationDot";
 import { LibraryEditorControls } from "../../widgets/editor/LibraryEditorControls";
 import { editorUrl } from "../../utils/url";
+import { EditableName } from "../../widgets/EditableName";
 
 export async function action({ params, request }: ActionFunctionArgs) {
   const formData = await request.formData();
@@ -115,7 +113,11 @@ export async function loader({
     return redirect(`/documentEditor/${params.contentId}`);
   }
 
-  return data;
+  const { data: contentDescription } = await axios.get(
+    `/api/info/getContentDescription/${params.contentId}`,
+  );
+
+  return { contentDescription, ...data };
 }
 
 export type EditorContext = SiteContext & {
@@ -142,6 +144,7 @@ export function EditorHeader() {
     parent,
     remixSourceHasChanged,
     inLibrary,
+    contentDescription,
   } = useLoaderData() as {
     contentId: string;
     contentName: string;
@@ -153,6 +156,7 @@ export function EditorHeader() {
     parent: ContentDescription;
     remixSourceHasChanged: boolean;
     inLibrary: boolean;
+    contentDescription: ContentDescription;
   };
 
   const context = useOutletContext<SiteContext>();
@@ -263,7 +267,7 @@ export function EditorHeader() {
 
   const contentTypeName = contentTypeToName[contentType];
 
-  const { iconImage, iconColor } = getIconInfo(contentType);
+  const { iconImage, iconColor } = getIconInfo(contentType, false);
 
   const typeIcon = (
     <Show above="sm">
@@ -289,8 +293,8 @@ export function EditorHeader() {
       {copyContentModal}
       {authorModeModal}
       <ConfirmAssignModal
-        contentId={contentId}
-        contentType={contentType}
+        contentDescription={contentDescription}
+        userId={context.user!.userId}
         isOpen={confirmAssignIsOpen}
         onClose={confirmAssignOnClose}
       />
@@ -517,21 +521,11 @@ export function EditorHeader() {
                 <Button
                   colorScheme="blue"
                   isDisabled={inLibrary}
-                  onClick={() => {
-                    if (assignmentStatus === "Open") {
-                      fetcher.submit(
-                        {
-                          path: "assign/closeAssignmentWithCode",
-                          contentId,
-                        },
-                        { method: "post", encType: "application/json" },
-                      );
-                    } else {
-                      confirmAssignOnOpen();
-                    }
-                  }}
+                  onClick={confirmAssignOnOpen}
                 >
-                  {assignmentStatus === "Open" ? "Close assignment" : `Assign`}
+                  {assignmentStatus === "Open"
+                    ? "Close assignment"
+                    : `Create assignment`}
                 </Button>
                 <Button
                   colorScheme="blue"
@@ -627,57 +621,5 @@ export function EditorHeader() {
         </GridItem>
       </Grid>
     </>
-  );
-}
-
-/**
- * This is separate as <Editable> wasn't updating when defaultValue was changed
- */
-function EditableName({ dataTest }: { dataTest: string }) {
-  const { contentName } = useLoaderData();
-
-  const [name, setName] = useState(contentName);
-  const fetcher = useFetcher();
-
-  const lastBaseDataName = useRef(contentName);
-
-  //Update when something else updates the name
-  if (contentName != lastBaseDataName.current) {
-    if (name != contentName) {
-      setName(contentName);
-    }
-  }
-  lastBaseDataName.current = contentName;
-
-  return (
-    <Editable
-      data-test={dataTest}
-      mt="4px"
-      value={name}
-      textAlign="center"
-      onChange={(value) => {
-        setName(value);
-      }}
-      onSubmit={(value) => {
-        let submitValue = value;
-        if (submitValue.trim() === "") {
-          submitValue = "Untitled";
-        }
-
-        fetcher.submit(
-          { path: "updateContent/updateContentSettings", name: submitValue },
-          { method: "post", encType: "application/json" },
-        );
-      }}
-    >
-      <Tooltip label={name} openDelay={500}>
-        <EditablePreview data-test="Editable Title" noOfLines={1} />
-      </Tooltip>
-      <EditableInput
-        maxLength={191}
-        width={{ base: "100%", lg: "450px" }}
-        data-test="Editable Input"
-      />
-    </Editable>
   );
 }

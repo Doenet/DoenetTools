@@ -1,5 +1,5 @@
-import React, { ReactElement, useEffect, useState } from "react";
-import { ActionFunctionArgs, useLoaderData } from "react-router";
+import React, { ReactElement, useEffect } from "react";
+import { ActionFunctionArgs, useFetcher, useLoaderData } from "react-router";
 // @ts-expect-error math-expression doesn't have types
 import me from "math-expressions";
 
@@ -27,6 +27,11 @@ import {
   TabPanels,
   Tab,
   TabPanel,
+  Heading as ChakraHeading,
+  Stack,
+  Input,
+  useDisclosure,
+  Button,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { DoenetHeading as Heading } from "../widgets/Heading";
@@ -50,6 +55,10 @@ import {
 } from "../utils/activity";
 import { BiDownArrowAlt, BiUpArrowAlt } from "react-icons/bi";
 import { ActivitySource } from "../viewerTypes";
+import { EditAssignmentSettings } from "../widgets/editor/EditAssignmentSettings";
+import { DateTime } from "luxon";
+import { EditableName } from "../widgets/EditableName";
+import { AssignmentInvitation } from "../views/AssignmentInvitation";
 
 type ScoreItem = {
   score: number;
@@ -138,6 +147,7 @@ export async function loader({ params, request }: ActionFunctionArgs) {
   const stdScores = numStudents > 0 ? me.math.std(...scoreNumbers) : 0;
 
   const baseData = {
+    contentName: assignment.name,
     assignment,
     scores,
     numItems,
@@ -223,30 +233,32 @@ export function AssignmentData() {
     sortDir,
   } = data;
 
+  const info = assignment.assignmentInfo!;
+
+  const minScore = 0;
+  const numBins = 11;
+  const size = 1 / (numBins - 1);
+
+  const hist = new Array(numBins).fill(0);
+  for (const item of scores) {
+    hist[Math.round((item.score - minScore) / size)]++;
+  }
+  const scoreData = hist.map((v, i) => ({
+    count: v,
+    score: Math.round(i * size * 10) / 10,
+  }));
+
+  const navigate = useNavigate();
+  const fetcher = useFetcher();
+  const {
+    isOpen: inviteIsOpen,
+    onOpen: inviteOnOpen,
+    onClose: inviteOnClose,
+  } = useDisclosure();
+
   useEffect(() => {
     document.title = `${assignment.name} - Doenet`;
   }, [assignment.name]);
-
-  const navigate = useNavigate();
-
-  const [scoreData, setScoreData] = useState<
-    { count: number; score: number }[]
-  >([]);
-
-  useEffect(() => {
-    const minScore = 0;
-    const numBins = 11;
-    const size = 1 / (numBins - 1);
-
-    const hist = new Array(numBins).fill(0);
-    for (const item of scores) {
-      hist[Math.round((item.score - minScore) / size)]++;
-    }
-
-    setScoreData(
-      hist.map((v, i) => ({ count: v, score: Math.round(i * size * 10) / 10 })),
-    );
-  }, [scores]);
 
   const sortArrow = (
     <Tooltip
@@ -560,7 +572,10 @@ export function AssignmentData() {
   }
 
   const contentTypeName = contentTypeToName[data.type];
-  const { iconImage, iconColor } = getIconInfo(data.type);
+  const { iconImage, iconColor } = getIconInfo(
+    data.type,
+    data.assignment.assignmentInfo ? true : false,
+  );
 
   const typeIcon = (
     <Tooltip label={contentTypeName}>
@@ -579,20 +594,31 @@ export function AssignmentData() {
     </Tooltip>
   );
 
+  const localValidUntil = DateTime.fromISO(info.codeValidUntil!).toISO({
+    includeOffset: false,
+  })!;
+
   return (
     <>
+      <AssignmentInvitation
+        isOpen={inviteIsOpen}
+        onClose={inviteOnClose}
+        classCode={info.classCode}
+        assignmentStatus={info.assignmentStatus}
+        assignmentName={assignment.name}
+      />
       <Grid
         height="40px"
         background="doenet.canvas"
         width="100%"
         borderBottom={"1px solid"}
         borderColor="doenet.mediumGray"
-        templateAreas={`"leftControls label rightControls"`}
+        templateAreas={`"leftControls label"`}
         templateColumns={{
-          base: "82px calc(100% - 197px) 115px",
-          sm: "87px calc(100% - 217px) 120px",
-          md: "1fr 350px 1fr",
-          lg: "1fr 450px 1fr",
+          base: "135px 1fr 135px",
+          sm: "135px 1fr 135px",
+          md: "150px 1fr 150px",
+          lg: "370px 1fr 370px",
         }}
         alignContent="center"
       >
@@ -615,12 +641,62 @@ export function AssignmentData() {
         <GridItem area="label">
           <Flex justifyContent="center" alignItems="center">
             {typeIcon}
-            <Text noOfLines={1}>{assignment.name}</Text> &mdash; Data (
-            {assignment.assignmentInfo?.classCode})
+            <EditableName dataTest="Assignment Name Editable" />
           </Flex>
         </GridItem>
       </Grid>
-      <Tabs>
+      <Stack spacing="1rem" mb="2rem" ml="1rem" alignItems="flex-start">
+        <ChakraHeading size="md">
+          Assignment is {info.assignmentStatus}
+        </ChakraHeading>
+        <ChakraHeading size="sm">Settings</ChakraHeading>
+        <EditAssignmentSettings
+          maxAttempts={assignment.assignmentInfo!.maxAttempts}
+          individualizeByStudent={
+            assignment.assignmentInfo!.individualizeByStudent
+          }
+          mode={assignment.assignmentInfo!.mode}
+          includeMode={assignment.type !== "singleDoc"}
+          isAssigned={true}
+        />
+
+        <ChakraHeading size="sm">Availability</ChakraHeading>
+        <Text>
+          {info.assignmentStatus === "Open" ? `Closes` : `Closed`} at{" "}
+          <Input
+            zIndex="overlay"
+            type="datetime-local"
+            size="sm"
+            step="60"
+            width="220px"
+            value={localValidUntil}
+            onChange={(e) => {
+              const closeAt = DateTime.fromISO(e.target.value)
+                .set({ second: 0, millisecond: 0 })
+                .toISO({
+                  suppressSeconds: true,
+                  suppressMilliseconds: true,
+                });
+              fetcher.submit(
+                {
+                  path: "assign/updateAssignmentCloseAt",
+                  closeAt,
+                },
+                { method: "post", encType: "application/json" },
+              );
+            }}
+          />
+        </Text>
+        <Text>Class code: {info.classCode}</Text>
+        <Button
+          onClick={inviteOnOpen}
+          colorScheme="blue"
+          isDisabled={info.assignmentStatus !== "Open"}
+        >
+          Invite students
+        </Button>
+      </Stack>
+      <Tabs mb="10vh">
         <TabList>
           <Tab>Scores</Tab>
           <Tab>Statistics</Tab>

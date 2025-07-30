@@ -53,13 +53,46 @@ export async function isInLibrary(contentId: Uint8Array) {
 }
 
 /**
- * Filter Prisma's `where` clause to exclude unviewable activities for `loggedInUserId`
+ * Use this in Prisma's `where` clause to filter for only activities (exclude folders and assignments).
+ * Use on table `contents`.
+ */
+const filterActivity = {
+  type: { not: "folder" as const },
+  nonRootAssignmentId: null,
+  rootAssignment: {
+    is: null,
+  },
+};
+
+/**
+ * Use this in Prisma's `where` clause to filter for only root assignments.
+ * Use on table `contents`.
+ */
+const filterRootAssignment = {
+  rootAssignment: {
+    isNot: null,
+  },
+  nonRootAssignmentId: null,
+};
+
+/**
+ * Filter Prisma's `where` clause to exclude both root and non-root assignments.
+ */
+export const filterExcludeAssignments = {
+  rootAssignment: null,
+  nonRootAssignmentId: null,
+};
+
+/**
+ * Filter Prisma's `where` clause to viewable activities for `loggedInUserId`
  *
- * For an activity to be viewable, one of these conditions must be true:
+ * For content to be viewable, one of these conditions must be true:
  * 1. `loggedInUserId` is the owner
  * 2. The content is public
  * 3. The content is shared with `loggedInUserId`
  * 4. `loggedInUserId` is an editor and the content is in the library.
+ *
+ * For content to be an activity, it must not be a folder and must not be attached to an assignment.
  *
  * NOTE: This function does not verify editor privileges. You must pass in the correct `isEditor` flag.
  */
@@ -69,12 +102,48 @@ export function filterViewableActivity(
 ) {
   return {
     ...filterViewableContent(loggedInUserId, isEditor),
-    type: { not: "folder" as const },
+    ...filterActivity,
   };
 }
 
 /**
- * Filter Prisma's `where` clause to exclude unviewable content for `loggedInUserId`
+ * Filter Prisma's `where` clause to viewable root assignments for `loggedInUserId`
+ *
+ * For an assignment to be viewable, one of these conditions must be true:
+ * 1. The assignment is open
+ * 2. `loggedInUserId` has score data for this assignment
+ *
+ * For content to be a root assignment, it must be attached to an entry in the assignments table.
+ */
+export function filterViewableRootAssignment(loggedInUserId: Uint8Array) {
+  return {
+    ...filterRootAssignment,
+    rootAssignment: {
+      OR: [
+        {
+          codeValidStarting: {
+            lte: DateTime.now().toISO(), // TODO - confirm this works with timezone stuff
+          },
+          codeValidUntil: {
+            gte: DateTime.now().toISO(), // TODO - confirm this works with timezone stuff
+          },
+        },
+        {
+          assignmentScores: {
+            some: {
+              userId: loggedInUserId,
+            },
+          },
+        },
+      ],
+    },
+    isDeletedOn: null,
+  };
+}
+
+/**
+ * Filter Prisma's `where` clause to viewable content for `loggedInUserId`.
+ * Includes activities, folders, and assignments.
  *
  * For content to be viewable, one of these conditions must be true:
  * 1. `loggedInUserId` is the owner
@@ -146,11 +215,13 @@ export function viewableContentWhere(
 }
 
 /**
- * Filter Prisma's `where` clause to exclude uneditable activities by `loggedInUserId`
+ * Filter Prisma's `where` clause to editable activities by `loggedInUserId`
  *
- * For an activity to be editable, one of these conditions must be true:
+ * For content to be editable, one of these conditions must be true:
  * 1. `loggedInUserId` is the owner
  * 4. `loggedInUserId` is an editor and the content is in the library.
+ *
+ * For content to be an activity, it must not be a folder and must not be attached to an assignment.
  *
  * NOTE: This function does not verify editor privileges. You must pass in the correct `isEditor` flag.
  */
@@ -159,8 +230,23 @@ export function filterEditableActivity(
   isEditor: boolean = false,
 ) {
   return {
+    ...filterActivity,
     ...filterEditableContent(loggedInUserId, isEditor),
-    type: { not: "folder" as const },
+  };
+}
+
+/**
+ * Filter Prisma's `where` clause to editable root assignments by `loggedInUserId`
+ *
+ * For content to be editable, one of these conditions must be true:
+ * 1. `loggedInUserId` is the owner
+ *
+ * For content to be a root assignment, it must be attached to an entry in the assignments table.
+ */
+export function filterEditableRootAssignment(loggedInUserId: Uint8Array) {
+  return {
+    ...filterEditableContent(loggedInUserId),
+    ...filterRootAssignment,
   };
 }
 
@@ -190,41 +276,6 @@ export function filterEditableContent(
     OR: editabilityOptions,
   };
 }
-
-/**
- * Filter Prisma's `where` clause to exclude content that is assigned.
- * For content to be unassigned:
- * 1. the `rootAssignment` must not exist or be unassigned
- * 2. the `nonRootAssignment` must not exist or be unassigned
- */
-export const filterUnassigned = {
-  AND: [
-    {
-      OR: [
-        {
-          rootAssignment: null,
-        },
-        {
-          rootAssignment: {
-            assigned: false,
-          },
-        },
-      ],
-    },
-    {
-      OR: [
-        {
-          nonRootAssignment: null,
-        },
-        {
-          nonRootAssignment: {
-            assigned: false,
-          },
-        },
-      ],
-    },
-  ],
-};
 
 /**
  * Return a MySQL cause to be added to a WHERE statement, filtering to content editable by `loggedInUserId`.

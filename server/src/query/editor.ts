@@ -59,7 +59,6 @@ export async function getEditor({
         },
         rootAssignment: {
           select: {
-            assigned: true,
             codeValidUntil: true,
             classCode: true,
             _count: {
@@ -71,7 +70,6 @@ export async function getEditor({
         },
         nonRootAssignment: {
           select: {
-            assigned: true,
             codeValidUntil: true,
             classCode: true,
           },
@@ -154,7 +152,7 @@ export async function getEditorSettings({
 }) {
   const isEditor = await getIsEditor(loggedInUserId);
 
-  const { _count, isPublic, rootAssignment, classifications, ...other } =
+  const { isPublic, _count, classifications, ...other } =
     await prisma.content.findUniqueOrThrow({
       where: {
         id: contentId,
@@ -164,18 +162,16 @@ export async function getEditorSettings({
         isPublic: true,
         doenetmlVersionId: true,
         licenseCode: true,
+        maxAttempts: true,
+        individualizeByStudent: true,
+        mode: true,
         _count: {
           select: {
             sharedWith: true,
           },
         },
         rootAssignment: {
-          select: {
-            assigned: true,
-            maxAttempts: true,
-            individualizeByStudent: true,
-            mode: true,
-          },
+          select: {},
         },
         categories: {
           select: {
@@ -194,7 +190,6 @@ export async function getEditorSettings({
 
   return {
     ...other,
-    ...rootAssignment,
     licenseIsEditable: !isPublic && _count.sharedWith === 0,
     classifications: processClassifications({ classifications }),
   };

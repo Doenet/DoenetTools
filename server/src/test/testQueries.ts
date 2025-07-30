@@ -60,3 +60,15 @@ export async function getActivityIdFromSourceId(sourceId: Uint8Array) {
 
   return result.contentId;
 }
+
+export async function getAssignmentNonRootIds(rootAssignmentId: Uint8Array) {
+  const ids = await prisma.content.findMany({
+    where: {
+      nonRootAssignmentId: rootAssignmentId,
+    },
+    select: {
+      id: true,
+    },
+  });
+  return ids.map((v) => v.id);
+}
