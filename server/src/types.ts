@@ -210,12 +210,7 @@ export type Content = Doc | QuestionBank | ProblemSet | Folder;
 export type AssignmentInfo = {
   assignmentStatus: AssignmentStatus;
   classCode: string;
-  codeValidUntil: Date | null;
-  otherRoot?: {
-    rootContentId: Uint8Array;
-    rootName: string;
-    rootType: ContentType;
-  };
+  codeValidUntil: Date;
   hasScoreData: boolean;
   mode: AssignmentMode;
   individualizeByStudent: boolean;

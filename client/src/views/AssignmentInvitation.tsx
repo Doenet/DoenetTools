@@ -15,24 +15,30 @@ import {
 import { QRCode } from "react-qrcode-logo";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { MdOutlineContentCopy } from "react-icons/md";
-import { Content } from "../types";
+import { AssignmentStatus } from "../types";
 
 export function AssignmentInvitation({
   isOpen,
   onClose,
   finalFocusRef,
-  activityData,
+  classCode,
+  assignmentName,
+  assignmentStatus,
 }: {
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
-  activityData: Content;
+  classCode: string;
+  assignmentName: string;
+  assignmentStatus: AssignmentStatus;
 }) {
   const [urlCopied, setUrlCopied] = useState(false);
 
   useEffect(() => {
     setUrlCopied(false);
   }, [isOpen]);
+
+  const baseUrl = window.location.host;
 
   return (
     <Modal
@@ -44,25 +50,25 @@ export function AssignmentInvitation({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader fontSize={50} textAlign="center">
-          {activityData.name}
+          {assignmentName}
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody fontSize={30}>
-          {activityData.assignmentInfo?.assignmentStatus === "Open" ? (
+          {assignmentStatus === "Open" ? (
             <Flex justifyContent="center">
               <Box width="500px">
-                <p>To view this activity, go to </p>
+                <p>To view this assignment, go to </p>
                 <Center marginTop="10px" fontSize={40}>
-                  <code>doenet.org/code</code>
+                  <code>{baseUrl}/code</code>
                 </Center>
                 <p>and enter the code</p>
                 <Center marginTop="10px" fontSize={40}>
-                  <code>{activityData.assignmentInfo?.classCode}</code>
+                  <code>{classCode}</code>
                 </Center>
                 <p>or scan the QR code.</p>
                 <Center>
                   <QRCode
-                    value={`https://doenet.org/code/${activityData.assignmentInfo?.classCode}`}
+                    value={`https://${baseUrl}/code/${classCode}`}
                     logoImage={"/Doenet_Logo_Frontpage.png"}
                     removeQrCodeBehindLogo
                     logoPaddingStyle="circle"
@@ -84,7 +90,7 @@ export function AssignmentInvitation({
             onCopy={() => {
               setUrlCopied(true);
             }}
-            text={`https://doenet.org/code/${activityData.assignmentInfo?.classCode}`}
+            text={`https://${baseUrl}/code/${classCode}`}
           >
             <Button leftIcon={<MdOutlineContentCopy />} marginRight="10px">
               {urlCopied ? "URL copied" : "Copy URL"}

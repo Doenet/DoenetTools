@@ -7,7 +7,6 @@ import { copyContent } from "./copy_move";
 import {
   filterEditableActivity,
   filterViewableActivity,
-  filterViewableContent,
   getIsEditor,
   mustBeEditor,
 } from "../utils/permissions";
@@ -777,7 +776,7 @@ export async function getCurationQueue({
         info: {
           status,
           activity: {
-            ...filterViewableContent(loggedInUserId, true),
+            ...filterViewableActivity(loggedInUserId, true),
           },
         },
       },

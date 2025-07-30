@@ -390,6 +390,7 @@ const router = createBrowserRouter([
       {
         path: "assignmentData/:contentId",
         loader: assignmentResponseOverviewLoader,
+        action: genericContentIdAction,
         element: <AssignmentResponseOverview />,
         errorElement: <ErrorPage />,
       },

@@ -1,12 +1,14 @@
 import { onTestFinished } from "vitest";
 import { prisma } from "../model";
 import { findOrCreateUser } from "../query/user";
-import { filterEditableActivity } from "../utils/permissions";
+import { filterEditableRootAssignment } from "../utils/permissions";
+import { ContentType } from "@prisma/client";
+import { createContent, updateContent } from "../query/activity";
 
 // create an isolated user for each test, will allow tests to be run in parallel
 export async function createTestUser(isEditor = false, isAnonymous = false) {
   const id =
-    Date.now().toString() + Math.round(Math.random() * 1000).toString();
+    Date.now().toString() + Math.round(Math.random() * 100000).toString();
   const email = `vitest${id}@vitest.test`;
   const firstNames = `vitest`;
   const lastNames = `user${id}`;
@@ -49,8 +51,7 @@ export async function getTestAssignment(
   const assignment = await prisma.content.findUniqueOrThrow({
     where: {
       id: contentId,
-      rootAssignment: { isNot: null },
-      ...filterEditableActivity(loggedInUserId),
+      ...filterEditableRootAssignment(loggedInUserId),
     },
     include: { rootAssignment: true },
   });
@@ -495,4 +496,59 @@ export async function createTestFeature({
 
 export async function deleteTestFeature(featureId: number) {
   await prisma.contentFeatures.delete({ where: { id: featureId } });
+}
+
+/**
+ * Creates a tree of content and returns the content ids.
+ * Use the helper functions `doc()`, `pset()`, `qbank()`, and `fold()`.
+ * Content ids are ordered in depth-first-search order of the tree.
+ */
+export async function setupTestContent(
+  ownerId: Uint8Array,
+  contents: Record<string, TestSetup>,
+  parentId: Uint8Array | null = null,
+) {
+  const ids: Uint8Array[] = [];
+  for (const name in contents) {
+    const content = contents[name];
+    const { contentId } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: content.type,
+      parentId,
+    });
+    await updateContent({
+      contentId,
+      name,
+      source: content.source,
+      loggedInUserId: ownerId,
+    });
+
+    const childrenIds = await setupTestContent(
+      ownerId,
+      content.children,
+      contentId,
+    );
+    ids.push(contentId, ...childrenIds);
+  }
+
+  return ids;
+}
+
+type TestSetup = {
+  type: ContentType;
+  children: Record<string, TestSetup>;
+  source?: string;
+};
+
+export function doc(source: string): TestSetup {
+  return { type: "singleDoc", children: {}, source };
+}
+export function pset(children: Record<string, TestSetup>): TestSetup {
+  return { type: "sequence", children };
+}
+export function qbank(children: Record<string, TestSetup>): TestSetup {
+  return { type: "select", children };
+}
+export function fold(children: Record<string, TestSetup>): TestSetup {
+  return { type: "folder", children };
 }

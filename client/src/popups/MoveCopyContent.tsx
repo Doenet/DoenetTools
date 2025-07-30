@@ -15,6 +15,7 @@ import {
   HStack,
   useDisclosure,
   Icon,
+  Tooltip,
 } from "@chakra-ui/react";
 import axios, { AxiosError } from "axios";
 import { ArrowBackIcon } from "@chakra-ui/icons";
@@ -41,6 +42,7 @@ type ActiveView = {
   contents: {
     type: ContentType;
     canOpen: boolean;
+    isAssignment: boolean;
     name: string;
     contentId: string;
   }[];
@@ -103,6 +105,8 @@ export function MoveCopyContent({
   allowedParentTypes,
   action,
   inCurationLibrary = false,
+  createAssignment = false,
+  createAssignmentCallback = () => {},
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -120,6 +124,8 @@ export function MoveCopyContent({
   allowedParentTypes: ContentType[];
   action: "Move" | "Add" | "Copy";
   inCurationLibrary?: boolean;
+  createAssignment?: boolean;
+  createAssignmentCallback?: (parentId: string | null) => void;
 }) {
   // Set when the modal opens
   const [parentId, setParentId] = useState<string | null>(null);
@@ -201,7 +207,10 @@ export function MoveCopyContent({
         </Text>
       ) : (
         activeView.contents.map((content) => {
-          const { iconImage, iconColor } = getIconInfo(content.type);
+          const { iconImage, iconColor } = getIconInfo(
+            content.type,
+            content.isAssignment,
+          );
           const icon = (
             <Icon
               as={iconImage}
@@ -271,6 +280,24 @@ export function MoveCopyContent({
     }
   }
 
+  let actionIsDisabled =
+    (activeView.parent === null && parentId === null) ||
+    (activeView.parent !== null &&
+      parentId !== null &&
+      activeView.parent.id === parentId) ||
+    !allowedParentTypes.includes(activeView.parent?.type ?? "folder");
+
+  if (createAssignment) {
+    actionIsDisabled = !allowedParentTypes.includes(
+      activeView.parent?.type ?? "folder",
+    );
+  }
+
+  const actionTextPart1 = createAssignment ? "Create in " : `${action} to `;
+  const actionTextPart2 =
+    activeView.parent?.name ??
+    (inCurationLibrary ? "Library Activities" : "My Activities");
+
   const executeButtons = (
     <>
       <Button
@@ -285,30 +312,27 @@ export function MoveCopyContent({
         data-test="Execute MoveCopy Button"
         width="10em"
         // Is disabled if the content is already in this parent
-        isDisabled={
-          (activeView.parent === null && parentId === null) ||
-          (activeView.parent !== null &&
-            parentId !== null &&
-            activeView.parent.id === parentId) ||
-          !allowedParentTypes.includes(activeView.parent?.type ?? "folder")
-        }
+        isDisabled={actionIsDisabled}
         onClick={() => {
           if (shareAlert) {
             // moving non-public content into a public parent
             // or moving moving content into a parent that is shared with additional users
             sharedAlertOnOpen();
           } else {
-            performAction();
+            if (createAssignment) {
+              createAssignmentCallback(activeView.parent?.id ?? null);
+            } else {
+              performAction();
+            }
           }
         }}
       >
-        <Text noOfLines={1}>
-          {action} to{" "}
-          <em>
-            {activeView.parent?.name ??
-              (inCurationLibrary ? "Library Activities" : "My Activities")}
-          </em>
-        </Text>
+        <Tooltip label={`${actionTextPart1}${actionTextPart2}`}>
+          <Text noOfLines={1}>
+            {actionTextPart1}
+            <em>{actionTextPart2}</em>
+          </Text>
+        </Tooltip>
       </Button>
     </>
   );
@@ -357,6 +381,18 @@ export function MoveCopyContent({
     destinationUrl = `/activities/${userId}`;
   }
 
+  let heading1 = "";
+  if (createAssignment) {
+    heading1 = `Create assignment in folder`;
+  } else {
+    heading1 = `${action}${" "}
+              ${
+                allowedParentTypes.length === 1
+                  ? `to ${contentTypeToName[allowedParentTypes[0]].toLowerCase()}`
+                  : null
+              }`;
+  }
+
   return (
     <>
       <MoveToSharedAlert
@@ -376,10 +412,7 @@ export function MoveCopyContent({
         <ModalContent>
           <ModalHeader>
             <Heading textAlign="center" data-test="MoveCopy Heading 1">
-              {action}{" "}
-              {allowedParentTypes.length === 1
-                ? `to ${contentTypeToName[allowedParentTypes[0]].toLowerCase()}`
-                : null}
+              {heading1}
             </Heading>
             <Heading
               size="me"

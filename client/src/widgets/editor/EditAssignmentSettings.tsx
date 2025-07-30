@@ -29,17 +29,24 @@ export function EditAssignmentSettings({
   individualizeByStudent,
   mode,
   includeMode,
+  isAssigned = false,
 }: {
   maxAttempts: number;
   individualizeByStudent: boolean;
   mode: AssignmentMode | null;
   includeMode: boolean;
+  isAssigned?: boolean;
 }) {
   return (
     <VStack align="left" ml="1rem">
-      {includeMode && <AssignmentModeSelection mode={mode!} />}
+      {includeMode && (
+        <AssignmentModeSelection mode={mode!} editable={!isAssigned} />
+      )}
       <MaxAttemptsSelectionBox attempts={maxAttempts ?? 0} />
-      <VariantSelectionBox isIndividualized={individualizeByStudent} />
+      <VariantSelectionBox
+        editable={!isAssigned}
+        isIndividualized={individualizeByStudent}
+      />
     </VStack>
   );
 }
@@ -49,7 +56,6 @@ export function EditAssignmentSettings({
  * If `attempts` is 0, that means unlimited
  */
 function MaxAttemptsSelectionBox({ attempts }: { attempts: number }) {
-  console.log(attempts);
   const fetcher = useFetcher();
 
   const optimisticAttempts = optimistic<number>(
@@ -130,8 +136,10 @@ function MaxAttemptsSelectionBox({ attempts }: { attempts: number }) {
 
 function VariantSelectionBox({
   isIndividualized,
+  editable = true,
 }: {
   isIndividualized: boolean;
+  editable?: boolean;
 }) {
   const fetcher = useFetcher();
   const optimisticIsIndividualized = optimistic<boolean>(
@@ -148,6 +156,7 @@ function VariantSelectionBox({
         </Text>
         <Switch
           isChecked={!optimisticIsIndividualized}
+          isDisabled={!editable}
           onChange={(e) => {
             fetcher.submit(
               {
@@ -163,7 +172,13 @@ function VariantSelectionBox({
   );
 }
 
-function AssignmentModeSelection({ mode }: { mode: AssignmentMode }) {
+function AssignmentModeSelection({
+  mode,
+  editable,
+}: {
+  mode: AssignmentMode;
+  editable: boolean;
+}) {
   const fetcher = useFetcher();
   const optimisticMode = optimistic<AssignmentMode>(fetcher, "mode", mode);
 
@@ -173,7 +188,7 @@ function AssignmentModeSelection({ mode }: { mode: AssignmentMode }) {
         <Text> Assignment mode</Text>
 
         <RadioGroup
-          // marginTop="10px"
+          isDisabled={!editable}
           onChange={(v) => {
             const mode = v === "summative" ? "summative" : "formative";
             fetcher.submit(

@@ -32,6 +32,7 @@ import {
 import { compileActivityFromContent } from "../utils/activity";
 // @ts-expect-error assignment-viewer doesn't publish types, see https://github.com/Doenet/assignment-viewer/issues/20
 import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";
+import { BlueBanner } from "../widgets/BlueBanner";
 
 type ItemScore = {
   id: string;
@@ -695,51 +696,7 @@ export function AssignmentViewer() {
       </GridItem>
 
       <GridItem area="centerContent">
-        <Grid
-          width="100%"
-          height="calc(100vh - 80px)"
-          templateAreas={`"leftGutter viewer rightGutter"`}
-          templateColumns={`1fr minmax(340px,850px) 1fr`}
-          overflow="hidden"
-        >
-          <GridItem
-            area="leftGutter"
-            background="doenet.lightBlue"
-            width="100%"
-            paddingTop="10px"
-            alignSelf="start"
-          />
-          <GridItem
-            area="rightGutter"
-            background="doenet.lightBlue"
-            width="100%"
-            paddingTop="10px"
-            alignSelf="start"
-          />
-          <GridItem
-            area="viewer"
-            width="100%"
-            placeSelf="center"
-            minHeight="100%"
-            maxWidth="850px"
-            overflow="hidden"
-          >
-            <Box
-              h="calc(100vh - 80px)"
-              background="var(--canvas)"
-              borderWidth="1px"
-              borderStyle="solid"
-              borderColor="doenet.mediumGray"
-              padding="20px 5px 20px 5px"
-              flexGrow={1}
-              overflow="scroll"
-              w="100%"
-              id="viewer-container"
-            >
-              {viewer}
-            </Box>
-          </GridItem>
-        </Grid>
+        <BlueBanner>{viewer}</BlueBanner>
       </GridItem>
     </Grid>
   );
@@ -858,23 +815,28 @@ async function recordSubmittedEvent({
     const itemIdx = itemScores?.findIndex((v) => v.docId === docId);
     const itemNumber = (itemIdx ?? 0) + 1;
     const shuffledItemNumber = itemScores?.[itemNumber - 1].shuffledOrder ?? 1;
-    const itemAttemptNumber = itemAttemptNumbers
-      ? itemAttemptNumbers[shuffledItemNumber - 1]
-      : null;
+    const itemAttemptNumber =
+      itemAttemptNumbers && itemAttemptNumbers.length > 0
+        ? itemAttemptNumbers[shuffledItemNumber - 1]
+        : null;
 
-    await axios.post(`/api/assign/recordSubmittedEvent`, {
-      contentId: assignment.contentId,
-      contentAttemptNumber,
-      itemAttemptNumber,
-      answerId,
-      answerNumber: object.answerNumber,
-      response,
-      itemNumber,
-      shuffledItemNumber,
-      componentNumber,
-      answerCreditAchieved,
-      componentCreditAchieved,
-      itemCreditAchieved,
-    });
+    try {
+      await axios.post(`/api/assign/recordSubmittedEvent`, {
+        contentId: assignment.contentId,
+        contentAttemptNumber,
+        itemAttemptNumber,
+        answerId,
+        answerNumber: object.answerNumber,
+        response,
+        itemNumber,
+        shuffledItemNumber,
+        componentNumber,
+        answerCreditAchieved,
+        componentCreditAchieved,
+        itemCreditAchieved,
+      });
+    } catch (_) {
+      alert("Failed to record submit event");
+    }
   }
 }

@@ -1,6 +1,9 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../model";
-import { filterEditableContent } from "../utils/permissions";
+import {
+  filterEditableContent,
+  filterExcludeAssignments,
+} from "../utils/permissions";
 import { isEqualUUID } from "../utils/uuid";
 import { InvalidRequestError } from "../utils/error";
 import { getDescendantIds } from "./activity";
@@ -8,6 +11,7 @@ import { getDescendantIds } from "./activity";
 /**
  * Set the `isPublic` flag on a content `id` along with all of its children.
  * Recurses to grandchildren/subfolders.
+ * Skips assignments since they cannot be made public.
  *
  * If parent is public, however, it does not all the content to be set to private.
  */
@@ -36,7 +40,10 @@ export async function setContentIsPublic({
 
   const descendantIds = await getDescendantIds(contentId);
   await prisma.content.updateMany({
-    where: { id: { in: [contentId, ...descendantIds] } },
+    where: {
+      id: { in: [contentId, ...descendantIds] },
+      ...filterExcludeAssignments,
+    },
     data: { isPublic },
   });
 }

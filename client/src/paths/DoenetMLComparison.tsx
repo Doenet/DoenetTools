@@ -84,7 +84,7 @@ export function DoenetMLComparison() {
 
   const contentTypeName = contentTypeToName["singleDoc"];
 
-  const { iconImage, iconColor } = getIconInfo("singleDoc");
+  const { iconImage, iconColor } = getIconInfo("singleDoc", false);
 
   const typeIcon = (
     <Tooltip label={contentTypeName}>

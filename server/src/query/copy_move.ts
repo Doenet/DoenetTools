@@ -65,17 +65,14 @@ export async function moveContent({
       isPublic: true,
       parent: {
         select: {
-          rootAssignment: { select: { assigned: true } },
-          nonRootAssignment: { select: { assigned: true } },
+          rootAssignment: { select: { rootContentId: true } },
+          nonRootAssignment: { select: { rootContentId: true } },
         },
       },
     },
   });
 
-  if (
-    content.parent?.rootAssignment?.assigned ||
-    content.parent?.nonRootAssignment?.assigned
-  ) {
+  if (content.parent?.rootAssignment || content.parent?.nonRootAssignment) {
     throw new InvalidRequestError(
       "Cannot move content in an assigned activity",
     );
@@ -101,12 +98,12 @@ export async function moveContent({
         isPublic: true,
         licenseCode: true,
         sharedWith: { select: { userId: true } },
-        rootAssignment: { select: { assigned: true } },
-        nonRootAssignment: { select: { assigned: true } },
+        rootAssignment: { select: { rootContentId: true } },
+        nonRootAssignment: { select: { rootContentId: true } },
       },
     });
 
-    if (parent.rootAssignment?.assigned || parent.nonRootAssignment?.assigned) {
+    if (parent.rootAssignment || parent.nonRootAssignment) {
       throw new InvalidRequestError(
         "Cannot move content into an assigned activity",
       );
@@ -318,12 +315,12 @@ export async function copyContent({
         type: true,
         licenseCode: true,
         sharedWith: { select: { userId: true } },
-        rootAssignment: { select: { assigned: true } },
-        nonRootAssignment: { select: { assigned: true } },
+        rootAssignment: { select: { rootContentId: true } },
+        nonRootAssignment: { select: { rootContentId: true } },
       },
     });
 
-    if (parent.rootAssignment?.assigned || parent.nonRootAssignment?.assigned) {
+    if (parent.rootAssignment || parent.nonRootAssignment) {
       throw new InvalidRequestError(
         "Cannot copy content into an assigned activity",
       );
@@ -729,12 +726,12 @@ export async function getMoveCopyContentData({
       type: true,
       rootAssignment: {
         select: {
-          assigned: true,
+          rootContentId: true,
         },
       },
       nonRootAssignment: {
         select: {
-          assigned: true,
+          rootContentId: true,
         },
       },
     },
@@ -765,13 +762,17 @@ export async function getMoveCopyContentData({
   const contents: {
     type: ContentType;
     canOpen: boolean;
+    isAssignment: boolean;
     name: string;
     contentId: Uint8Array;
   }[] = [];
 
   for (const child of results) {
     let canOpen = true;
-    if (child.nonRootAssignment?.assigned || child.rootAssignment?.assigned) {
+    const isAssignment = Boolean(
+      child.rootAssignment || child.nonRootAssignment,
+    );
+    if (isAssignment) {
       canOpen = false;
     } else if (!allowedParentTypes.includes(child.type)) {
       // We'll assume this cannot be opened unless we find a child (or grandchild) that is the allowed parent type
@@ -803,6 +804,7 @@ export async function getMoveCopyContentData({
     contents.push({
       type: child.type,
       canOpen,
+      isAssignment,
       name: child.name,
       contentId: child.id,
     });
@@ -826,45 +828,26 @@ export async function getMoveCopyContentData({
 
 /**
  * Check if `contentId` has any descendants of type `contentType`.
- * Unless `countAssigned` is `true`, ignore any assigned descendants.
  */
 export async function checkIfContentContains({
   contentId,
   contentType,
   loggedInUserId,
-  countAssigned = false,
 }: {
   contentId: Uint8Array | null;
   contentType: ContentType;
   loggedInUserId: Uint8Array;
-  countAssigned?: boolean;
 }) {
   // Note: not sure how to perform this calculation efficiently. Do we need to cache these values instead?
   // Would it be better to do a single recursive query rather than recurse will individual queries
   // even though we may be able to short circuit with an early return?
 
-  const filterOutAssigned = countAssigned
-    ? []
-    : [
-        {
-          OR: [
-            { rootAssignment: { is: null } },
-            { rootAssignment: { assigned: false } },
-          ],
-        },
-        {
-          OR: [
-            { nonRootAssignment: { is: null } },
-            { nonRootAssignment: { assigned: false } },
-          ],
-        },
-      ];
-
   const children = await prisma.content.findMany({
     where: {
       parentId: contentId,
+      rootAssignment: { is: null },
+      nonRootAssignmentId: null,
       ...filterEditableContent(loggedInUserId),
-      AND: filterOutAssigned,
     },
     select: {
       id: true,
@@ -884,7 +867,6 @@ export async function checkIfContentContains({
             contentId: child.id,
             contentType,
             loggedInUserId,
-            countAssigned,
           })
         ).containsType
       ) {

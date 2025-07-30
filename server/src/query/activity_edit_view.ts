@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { Content } from "../types";
 import {
-  filterViewableActivity,
+  filterViewableContent,
   getIsEditor,
   viewableContentWhere,
 } from "../utils/permissions";
@@ -114,13 +114,21 @@ export async function getContent({
   isEditor?: boolean;
   skipPermissionCheck?: boolean;
 }) {
+  let permissionCheck;
+  if (skipPermissionCheck) {
+    permissionCheck = { isDeletedOn: null };
+  } else {
+    permissionCheck = {
+      ...filterViewableContent(loggedInUserId, isEditor),
+      type: { not: "folder" as const },
+    };
+  }
+
   // 1. verify that `loggedInUserId` can view content
   await prisma.content.findUniqueOrThrow({
     where: {
       id: contentId,
-      ...(skipPermissionCheck
-        ? { isDeletedOn: null }
-        : filterViewableActivity(loggedInUserId, isEditor)),
+      ...permissionCheck,
     },
     select: { id: true },
   });
