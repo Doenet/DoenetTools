@@ -170,9 +170,6 @@ export async function getEditorSettings({
             sharedWith: true,
           },
         },
-        rootAssignment: {
-          select: {},
-        },
         categories: {
           select: {
             code: true,
