@@ -146,10 +146,14 @@ export default function Card({
   // Content type icon
   const { iconImage, iconColor } = getIconInfo(
     contentType,
-    cardContent.content.assignmentInfo ? true : false,
+    Boolean(cardContent.content.assignmentInfo),
   );
   const contentTypeIcon = (
-    <Tooltip label={contentTypeName}>
+    <Tooltip
+      label={
+        cardContent.content.assignmentInfo ? "Assignment" : contentTypeName
+      }
+    >
       <Flex
         alignItems="center"
         marginLeft={["0.5rem", "0.5rem"]}
@@ -160,13 +164,15 @@ export default function Card({
           color={iconColor}
           width={contentTypeIconSize}
           height={contentTypeIconSize}
-          aria-label={contentTypeName}
+          aria-label={
+            cardContent.content.assignmentInfo ? "Assignment" : contentTypeName
+          }
         />
       </Flex>
     </Tooltip>
   );
 
-  // Feature icons
+  // Feature iconsF
   const featureIcons: ReactElement[] = [];
   if (showActivityFeatures) {
     for (const [featureCode, featureIcon] of Object.entries(
