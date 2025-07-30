@@ -15,6 +15,7 @@ import {
   HStack,
   useDisclosure,
   Icon,
+  Tooltip,
 } from "@chakra-ui/react";
 import axios, { AxiosError } from "axios";
 import { ArrowBackIcon } from "@chakra-ui/icons";
@@ -292,6 +293,11 @@ export function MoveCopyContent({
     );
   }
 
+  const actionTextPart1 = createAssignment ? "Create in " : `${action} to `;
+  const actionTextPart2 =
+    activeView.parent?.name ??
+    (inCurationLibrary ? "Library Activities" : "My Activities");
+
   const executeButtons = (
     <>
       <Button
@@ -321,13 +327,12 @@ export function MoveCopyContent({
           }
         }}
       >
-        <Text noOfLines={1}>
-          {action} to{" "}
-          <em>
-            {activeView.parent?.name ??
-              (inCurationLibrary ? "Library Activities" : "My Activities")}
-          </em>
-        </Text>
+        <Tooltip label={`${actionTextPart1}${actionTextPart2}`}>
+          <Text noOfLines={1}>
+            {actionTextPart1}
+            <em>{actionTextPart2}</em>
+          </Text>
+        </Tooltip>
       </Button>
     </>
   );
@@ -376,6 +381,18 @@ export function MoveCopyContent({
     destinationUrl = `/activities/${userId}`;
   }
 
+  let heading1 = "";
+  if (createAssignment) {
+    heading1 = `Create assignment in folder`;
+  } else {
+    heading1 = `${action}${" "}
+              ${
+                allowedParentTypes.length === 1
+                  ? `to ${contentTypeToName[allowedParentTypes[0]].toLowerCase()}`
+                  : null
+              }`;
+  }
+
   return (
     <>
       <MoveToSharedAlert
@@ -395,10 +412,7 @@ export function MoveCopyContent({
         <ModalContent>
           <ModalHeader>
             <Heading textAlign="center" data-test="MoveCopy Heading 1">
-              {action}{" "}
-              {allowedParentTypes.length === 1
-                ? `to ${contentTypeToName[allowedParentTypes[0]].toLowerCase()}`
-                : null}
+              {heading1}
             </Heading>
             <Heading
               size="me"
