@@ -73,7 +73,7 @@ export function CreateLocalContent({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  finalFocusRef?: RefObject<HTMLElement>;
+  finalFocusRef?: RefObject<HTMLElement | null>;
   contentType: ContentType;
   parentId: string | null;
   fetcher: FetcherWithComponents<any>;

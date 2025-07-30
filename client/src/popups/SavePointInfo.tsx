@@ -29,7 +29,7 @@ export function SavePointInfo({
   isOpen: boolean;
   onClose: () => void;
   revision: ContentRevision;
-  finalFocusRef?: RefObject<HTMLElement>;
+  finalFocusRef?: RefObject<HTMLElement | null>;
   fetcher: FetcherWithComponents<any>;
   contentId: string;
 }) {

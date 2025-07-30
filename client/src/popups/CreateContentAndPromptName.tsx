@@ -80,7 +80,7 @@ export function CreateContentAndPromptName({
   fetcher: FetcherWithComponents<any>;
   isOpen: boolean;
   onClose: () => void;
-  finalFocusRef?: RefObject<HTMLElement>;
+  finalFocusRef?: RefObject<HTMLElement | null>;
   contentIds: string[];
   desiredType: ContentType;
 }) {

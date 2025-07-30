@@ -212,7 +212,7 @@ export function EditorHeader() {
 
   let editLabel: string;
   let editTooltip: string;
-  let editIcon: ReactElement;
+  let editIcon: ReactElement<any>;
 
   if (assignmentStatus === "Unassigned") {
     editIcon = <MdModeEditOutline size={20} />;

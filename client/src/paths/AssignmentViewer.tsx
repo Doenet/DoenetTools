@@ -562,7 +562,7 @@ export function AssignmentViewer() {
     return <ChangeName hideHomeButton />;
   }
 
-  let viewer: ReactElement;
+  let viewer: ReactElement<any>;
   if (loaderData.type === "singleDoc") {
     const maxAttempts = assignment.assignmentInfo?.maxAttempts ?? 0;
     const attemptsLeft =

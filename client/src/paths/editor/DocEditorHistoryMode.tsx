@@ -161,7 +161,7 @@ export function DocEditorHistoryMode() {
     />
   );
 
-  let updateButton: ReactElement | null = null;
+  let updateButton: ReactElement<any> | null = null;
   if (selectedRevision) {
     const message =
       (atSelectedRevision ? `Already at` : `Use`) + ` this save point`;

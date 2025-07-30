@@ -222,7 +222,7 @@ export function AssignmentResponseStudent() {
     </Tooltip>
   );
 
-  let mainPanel: ReactElement;
+  let mainPanel: ReactElement<any>;
 
   if (data.singleItemAttempt) {
     mainPanel = (

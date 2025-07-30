@@ -32,7 +32,7 @@ export function ContentInfoDrawer({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  finalFocusRef?: RefObject<HTMLElement>;
+  finalFocusRef?: RefObject<HTMLElement | null>;
   contentData: Content;
   libraryRelations?: LibraryRelations;
   displayTab?: "general" | "classifications";

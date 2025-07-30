@@ -7,8 +7,6 @@ import {
 } from "react-router";
 import { createRoot } from "react-dom/client";
 
-import "@doenet/doenetml-iframe/style.css";
-
 import { MathJaxContext } from "better-react-mathjax";
 import {
   loader as exploreLoader,

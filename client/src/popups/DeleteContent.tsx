@@ -49,7 +49,7 @@ export function DeleteContent({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  finalFocusRef?: RefObject<HTMLElement>;
+  finalFocusRef?: RefObject<HTMLElement | null>;
   content: ContentDescription;
   fetcher: FetcherWithComponents<any>;
 }) {

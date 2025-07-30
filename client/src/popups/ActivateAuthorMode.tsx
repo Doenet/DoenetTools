@@ -45,7 +45,7 @@ export function ActivateAuthorMode({
   user: UserInfo;
   proceedCallback: () => void;
   allowNo?: boolean;
-  finalFocusRef?: RefObject<HTMLElement>;
+  finalFocusRef?: RefObject<HTMLElement | null>;
   fetcher: FetcherWithComponents<any>;
 }) {
   let promptText: string;

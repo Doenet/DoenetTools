@@ -63,9 +63,9 @@ export function FilterPanel({
   search: string;
   navigate: NavigateFunction;
 }) {
-  let clearFilters: ReactElement | null = null;
+  let clearFilters: ReactElement<any> | null = null;
   if (authorInfo || classificationInfo || categories.size > 0) {
-    const clearFilterButtons: ReactElement[] = [];
+    const clearFilterButtons: ReactElement<any>[] = [];
 
     for (const categoryGroup of allCategories) {
       for (const category of categoryGroup.categories) {
@@ -331,12 +331,12 @@ export function FilterPanel({
     );
   }
 
-  let classificationStatusSection: ReactElement | null = null;
+  let classificationStatusSection: ReactElement<any> | null = null;
 
   if (classificationInfo === null) {
     classificationStatusSection = null;
   } else if (classificationInfo.system) {
-    const filteredBy: ReactElement[] = [];
+    const filteredBy: ReactElement<any>[] = [];
     filteredBy.push(
       <ListItem key="system">
         <HStack gap={0}>
@@ -479,7 +479,7 @@ export function FilterPanel({
     );
   }
 
-  let classificationsBrowseSection: ReactElement | null = null;
+  let classificationsBrowseSection: ReactElement<any> | null = null;
 
   if (systemBrowse && systemBrowse.length > 0) {
     const unclassified = systemBrowse.filter((s) => s.system === undefined);
@@ -654,7 +654,7 @@ export function FilterPanel({
     );
   }
 
-  let authorBrowseSection: ReactElement | null = null;
+  let authorBrowseSection: ReactElement<any> | null = null;
 
   if (topAuthors && topAuthors.length > 0) {
     authorBrowseSection = (

@@ -74,7 +74,7 @@ export function AddContentToMenu({
 }: {
   sourceContent: ContentDescription[];
   size?: ResponsiveValue<(string & {}) | "xs" | "sm" | "md" | "lg">;
-  label: ReactElement | string;
+  label: ReactElement<any> | string;
   colorScheme?:
     | (string & {})
     | "blue"

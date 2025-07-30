@@ -13,7 +13,7 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import { QRCode } from "react-qrcode-logo";
-import { CopyToClipboard } from "react-copy-to-clipboard";
+// import { CopyToClipboard } from "react-copy-to-clipboard";
 import { MdOutlineContentCopy } from "react-icons/md";
 import { AssignmentStatus } from "../types";
 
@@ -27,7 +27,7 @@ export function AssignmentInvitation({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  finalFocusRef?: RefObject<HTMLElement>;
+  finalFocusRef?: RefObject<HTMLElement | null>;
   classCode: string;
   assignmentName: string;
   assignmentStatus: AssignmentStatus;
@@ -86,7 +86,7 @@ export function AssignmentInvitation({
         </ModalBody>
 
         <ModalFooter>
-          <CopyToClipboard
+          {/* <CopyToClipboard
             onCopy={() => {
               setUrlCopied(true);
             }}
@@ -95,7 +95,7 @@ export function AssignmentInvitation({
             <Button leftIcon={<MdOutlineContentCopy />} marginRight="10px">
               {urlCopied ? "URL copied" : "Copy URL"}
             </Button>
-          </CopyToClipboard>
+          </CopyToClipboard> */}
 
           <Button onClick={onClose}>Close</Button>
         </ModalFooter>

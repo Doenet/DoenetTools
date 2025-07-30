@@ -27,7 +27,7 @@ export function returnClassificationsAccordionPanel(
     descriptionLabel,
   } = reformatClassificationData(classification);
 
-  let aliasNote: ReactElement | null = null;
+  let aliasNote: ReactElement<any> | null = null;
   if (classification.descriptions.length > 1) {
     aliasNote = (
       <Accordion allowToggle>

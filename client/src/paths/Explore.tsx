@@ -422,7 +422,7 @@ export function Explore() {
     );
   }
 
-  let authorMatches: ReactElement | null = null;
+  let authorMatches: ReactElement<any> | null = null;
 
   if (authorInfo) {
     const authorName = createNameNoTag(authorInfo);
@@ -503,8 +503,8 @@ export function Explore() {
     );
   }
 
-  const classificationMatchPieces = useMemo<ReactElement[]>(() => {
-    const cMatchPieces: ReactElement[] = [];
+  const classificationMatchPieces = useMemo<ReactElement<any>[]>(() => {
+    const cMatchPieces: ReactElement<any>[] = [];
     if (matchedClassifications && matchedClassifications.length > 0) {
       for (const partialClass of matchedClassifications) {
         const classification = partialClass.classification!;
@@ -668,7 +668,7 @@ export function Explore() {
     setCurrentTab,
   ]);
 
-  let classificationMatches: ReactElement | null = null;
+  let classificationMatches: ReactElement<any> | null = null;
 
   if (classificationMatchPieces.length > 0) {
     classificationMatches = (
@@ -681,7 +681,7 @@ export function Explore() {
     );
   }
 
-  const extraFormInputs: ReactElement[] = [];
+  const extraFormInputs: ReactElement<any>[] = [];
   if (authorInfo) {
     extraFormInputs.push(
       <Input

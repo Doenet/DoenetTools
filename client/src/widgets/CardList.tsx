@@ -109,7 +109,7 @@ export default function CardList({
       }
     : undefined;
 
-  let cards: ReactElement | ReactElement[] = content.map((cardContent, idx) => {
+  let cards: ReactElement<any> | ReactElement<any>[] = content.map((cardContent, idx) => {
     if ("cardType" in cardContent) {
       const indentLevel = cardContent.indentLevel;
       return (
