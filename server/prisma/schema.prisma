@@ -53,8 +53,7 @@ model content {
   children               content[]                @relation("childParent")
   license                licenses?                @relation(fields: [licenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
   doenetmlVersion        doenetmlVersions?        @relation(fields: [doenetmlVersionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  contentFeatures        contentFeatures[]
-  promotedContent        promotedContent[]
+  categories             categories[]
   sharedWith             contentShares[]
   classifications        contentClassifications[]
   contentViews           contentViews[]
@@ -139,13 +138,25 @@ model licenseCompositions {
   @@id([composedOfCode, includedInCode])
 }
 
-model contentFeatures {
-  id          Int       @id @default(autoincrement())
-  code        String    @unique
-  term        String    @unique
+model categories {
+  id          Int             @id @default(autoincrement())
+  // For now, we'll make groupId optional. Later, when we've migrated our existing categories, we'll make it required.
+  groupId     Int?
+  code        String          @unique
+  term        String          @unique
   description String
   sortIndex   Int
   content     content[]
+  group       categoryGroups? @relation(fields: [groupId], references: [id])
+}
+
+model categoryGroups {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+  // Whether this group must be filled out to be shared publicly
+  isRequired  Boolean      @default(false)
+  isExclusive Boolean      @default(false)
+  categories  categories[]
 }
 
 model contributorHistory {
@@ -304,25 +315,6 @@ model users {
   libraryEditorInfos libraryActivityInfos[]
 
   @@fulltext([firstNames, lastNames])
-}
-
-model promotedContentGroups {
-  id                Int               @id @default(autoincrement())
-  groupName         String            @unique
-  currentlyFeatured Boolean           @default(false)
-  homepage          Boolean           @default(false)
-  sortIndex         BigInt
-  promotedContent   promotedContent[]
-}
-
-model promotedContent {
-  contentId       Bytes                 @db.Binary(16)
-  promotedGroupId Int
-  sortIndex       BigInt
-  activity        content               @relation(fields: [contentId], references: [id])
-  promotedGroup   promotedContentGroups @relation(fields: [promotedGroupId], references: [id])
-
-  @@id([contentId, promotedGroupId])
 }
 
 model contentClassifications {

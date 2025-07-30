@@ -113,7 +113,7 @@ export async function loader({
     libraryRelations: data.libraryRelations,
     allDoenetmlVersions: data.allDoenetmlVersions,
     allLicenses: data.allLicenses,
-    allContentFeatures: data.allContentFeatures,
+    allCategories: data.allCategories,
     userId: params.userId,
     parent: data.parent,
     query: q,
@@ -544,7 +544,7 @@ export function LibraryActivities() {
       showOwnerName={false}
       showBlurb={false}
       showPublicStatus={true}
-      showActivityFeatures={true}
+      showActivityCategories={true}
       emptyMessage={emptyMessage}
       content={cardContent}
     />

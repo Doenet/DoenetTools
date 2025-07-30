@@ -11,7 +11,7 @@ import {
   DoenetmlVersion,
   UserInfoWithEmail,
 } from "../types";
-import { sortClassifications } from "./classificationsFeatures";
+import { sortClassifications } from "./classificationsCategories";
 import { fromUUID, isEqualUUID } from "./uuid";
 import { DateTime } from "luxon";
 import { ActivitySource } from "./viewerTypes";
@@ -193,7 +193,7 @@ export function returnContentSelect({
     ownerId: true,
     owner,
     isPublic: true,
-    contentFeatures: true,
+    categories: true,
     mode: true,
     individualizeByStudent: true,
     maxAttempts: true,
@@ -309,7 +309,7 @@ type PreliminaryContent = {
   mode: AssignmentMode;
   individualizeByStudent: boolean;
   maxAttempts: number;
-  contentFeatures: {
+  categories: {
     id: number;
     code: string;
     term: string;

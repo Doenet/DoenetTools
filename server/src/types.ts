@@ -77,6 +77,19 @@ export type UserInfoWithEmail = UserInfo & {
   email: string;
 };
 
+export type CategoryGroup = {
+  name: string;
+  isRequired: boolean;
+  isExclusive: boolean;
+  categories: Category[];
+};
+
+export type Category = {
+  code: string;
+  description: string;
+  term: string;
+};
+
 export type ContentClassification = {
   id: number;
   code: string;
@@ -152,7 +165,7 @@ export type ContentBase = {
   // Content should ~almost always~ have a license.
   // The exception: content without license from old doenet website
   licenseCode: LicenseCode | null;
-  contentFeatures: {
+  categories: {
     id: number;
     code: string;
     term: string;
@@ -235,7 +248,7 @@ export async function createContentInfo({
     sharedWith: [],
     licenseCode: null,
     parent: null,
-    contentFeatures: [],
+    categories: [],
     classifications: [],
   };
 

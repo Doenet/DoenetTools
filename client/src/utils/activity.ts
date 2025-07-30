@@ -20,9 +20,9 @@ import { Icon } from "@chakra-ui/react";
 import { IoStatsChart } from "react-icons/io5";
 
 /**
- * Content feature icons. Displayed in this order.
+ * Content category icons. Displayed in this order.
  */
-export const activityFeatureIcons = {
+export const activityCategoryIcons = {
   isQuestion: TbPuzzle,
   isInteractive: MdOutlineSwipeLeft,
   containsVideo: MdOutlineOndemandVideo,

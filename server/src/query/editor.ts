@@ -170,7 +170,7 @@ export async function getEditorSettings({
             sharedWith: true,
           },
         },
-        contentFeatures: {
+        categories: {
           select: {
             code: true,
           },

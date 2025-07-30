@@ -46,10 +46,6 @@ import {
   ContentType,
   LicenseCode,
   UserInfo,
-  LibraryRelations,
-  DoenetmlVersion,
-  License,
-  ContentFeature,
 } from "../types";
 import { MdClose, MdOutlineSearch } from "react-icons/md";
 import { getAllowedParentTypes, menuIcons } from "../utils/activity";
@@ -164,10 +160,6 @@ export async function loader({ params, request }: any) {
   return {
     parentId: params.parentId ? params.parentId : null,
     content: data.content,
-    libraryRelations: data.libraryRelations,
-    allDoenetmlVersions: data.allDoenetmlVersions,
-    allLicenses: data.allLicenses,
-    allContentFeatures: data.allContentFeatures,
     userId: params.userId,
     parent: data.parent,
     query: q,
@@ -178,10 +170,6 @@ export function Activities() {
   const { parentId, content, userId, parent, query } = useLoaderData() as {
     parentId: string | null;
     content: Content[];
-    libraryRelations: LibraryRelations[];
-    allDoenetmlVersions: DoenetmlVersion[];
-    allLicenses: License[];
-    allContentFeatures: ContentFeature[];
     userId: string;
     parent: Content | null;
     query: string | null;
@@ -840,7 +828,7 @@ export function Activities() {
       showOwnerName={false}
       showBlurb={true}
       showPublicStatus={true}
-      showActivityFeatures={true}
+      showActivityCategories={true}
       emptyMessage={emptyMessage}
       content={cardContent}
       selectedCards={selectedCards}

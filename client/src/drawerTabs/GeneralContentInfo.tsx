@@ -12,7 +12,7 @@ import { Content } from "../types";
 import { InfoIcon } from "@chakra-ui/icons";
 import { DisplayLicenseItem } from "../widgets/Licenses";
 import { createNameCheckCurateTag } from "../utils/names";
-import { activityFeatureIcons } from "../utils/activity";
+import { activityCategoryIcons } from "../utils/activity";
 import { useOutletContext } from "react-router";
 import { SiteContext } from "../paths/SiteHeader";
 
@@ -23,28 +23,28 @@ export function GeneralContentInfo({ contentData }: { contentData: Content }) {
     allLicenses.find((l) => l.code === contentData.licenseCode) ?? null;
   const contentType = contentData.type === "folder" ? "Folder" : "Activity";
 
-  const containsFeatures = contentData.contentFeatures.length > 0;
+  const containsCategories = contentData.categories.length > 0;
 
   const ownerName = createNameCheckCurateTag(contentData.owner!);
 
   return (
     <Box>
-      {contentData.type !== "folder" && containsFeatures ? (
+      {contentData.type !== "folder" && containsCategories ? (
         <Box borderBottom="2px" marginBottom={4} paddingBottom={4}>
-          <Heading size="sm">Activity features</Heading>
+          <Heading size="sm">Activity categories</Heading>
           <UnorderedList>
-            {contentData.contentFeatures.map((feature) => {
-              const featureCode = feature.code as
+            {contentData.categories.map((category) => {
+              const categoryCode = category.code as
                 | "isQuestion"
                 | "isInteractive"
                 | "containsVideo";
               return (
-                <ListItem key={feature.code}>
-                  <Tooltip label={feature.description}>
-                    {feature.term}
+                <ListItem key={category.code}>
+                  <Tooltip label={category.description}>
+                    {category.term}
                     <Icon
                       paddingLeft="5px"
-                      as={activityFeatureIcons[featureCode]}
+                      as={activityCategoryIcons[categoryCode]}
                       color="#666699"
                       boxSize={5}
                       verticalAlign="middle"

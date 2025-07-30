@@ -1,168 +1,109 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { seedClassifications } from "./seed/seed-classifications";
 
 export const prisma = new PrismaClient();
 async function main() {
-  await prisma.doenetmlVersions.upsert({
-    where: { displayedVersion: "0.6" },
-    update: { fullVersion: "0.6.7" },
-    create: {
-      displayedVersion: "0.6",
-      fullVersion: "0.6.7",
-      deprecated: true,
-      deprecationMessage: "It will be removed after June 2026.",
-    },
+  await seedDoenetMLVersions();
+  await seedUsers();
+  await seedLicenses();
+  await seedCategories();
+  await seedClassifications();
+}
+
+async function seedDoenetMLVersions() {
+  async function updateOrCreateDoenetMLVersion(
+    version: Prisma.doenetmlVersionsCreateInput,
+  ) {
+    await prisma.doenetmlVersions.upsert({
+      where: { displayedVersion: version.displayedVersion },
+      update: version,
+      create: version,
+    });
+  }
+
+  await updateOrCreateDoenetMLVersion({
+    displayedVersion: "0.6",
+    fullVersion: "0.6.7",
+    deprecated: true,
+    deprecationMessage: "It will be removed after June 2026.",
   });
-  await prisma.doenetmlVersions.upsert({
-    where: { displayedVersion: "0.7" },
-    update: { fullVersion: "0.7.0-alpha39" },
-    create: {
-      displayedVersion: "0.7",
-      fullVersion: "0.7.0-alpha39",
-      default: true,
-    },
+  await updateOrCreateDoenetMLVersion({
+    displayedVersion: "0.7",
+    fullVersion: "0.7.0-alpha39",
+    default: true,
+  });
+}
+
+async function seedUsers() {
+  async function updateOrCreateUser(user: Prisma.usersCreateInput) {
+    await prisma.users.upsert({
+      where: { email: user.email },
+      update: user,
+      create: user,
+    });
+  }
+
+  await updateOrCreateUser({
+    email: "library@doenet.org",
+    lastNames: "Library",
+    isLibrary: true,
+  });
+  await updateOrCreateUser({
+    email: "devuser@doenet.org",
+    firstNames: "Dev",
+    lastNames: "User",
+  });
+  await updateOrCreateUser({
+    email: "editor@doenet.org",
+    firstNames: "Editor",
+    lastNames: "User",
+    isEditor: true,
+  });
+  await updateOrCreateUser({
+    email: "editor2@doenet.org",
+    firstNames: "Second",
+    lastNames: "Editor",
+    isEditor: true,
+  });
+}
+
+async function seedLicenses() {
+  async function updateOrCreateLicense(license: Prisma.licensesCreateInput) {
+    await prisma.licenses.upsert({
+      where: { code: license.code },
+      update: license,
+      create: license,
+    });
+  }
+
+  await updateOrCreateLicense({
+    code: "CCBYSA",
+    name: "Creative Commons Attribution-ShareAlike 4.0",
+    description:
+      "This license requires that reusers give credit to the creator. It allows reusers to distribute, remix, adapt, and build upon the material in any medium or format, even for commercial purposes. If others remix, adapt, or build upon the material, they must license the modified material under identical terms.",
+    imageURL: "/creative_commons_by_sa.png",
+    smallImageURL: "/by-sa-sm.png",
+    licenseURL: "https://creativecommons.org/licenses/by-sa/4.0/",
+    sortIndex: 2,
   });
 
-  await prisma.users.upsert({
-    where: { email: "library@doenet.org" },
-    update: {},
-    create: {
-      email: "library@doenet.org",
-      lastNames: "Library",
-      isLibrary: true,
-    },
+  await updateOrCreateLicense({
+    code: "CCBYNCSA",
+    name: "Creative Commons Attribution-NonCommercial-ShareAlike 4.0",
+    description:
+      "This license requires that reusers give credit to the creator. It allows reusers to distribute, remix, adapt, and build upon the material in any medium or format, for noncommercial purposes only. If others modify or adapt the material, they must license the modified material under identical terms.",
+    imageURL: "/creative_commons_by_nc_sa.png",
+    smallImageURL: "/by-nc-sa-sm.png",
+    licenseURL: "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+    sortIndex: 3,
   });
 
-  await prisma.users.upsert({
-    where: { email: "devuser@doenet.org" },
-    update: {},
-    create: {
-      email: "devuser@doenet.org",
-      firstNames: "Dev",
-      lastNames: "User",
-    },
-  });
-
-  await prisma.users.upsert({
-    where: { email: "editor@doenet.org" },
-    update: {},
-    create: {
-      email: "editor@doenet.org",
-      firstNames: "Editor",
-      lastNames: "User",
-      isEditor: true,
-    },
-  });
-  await prisma.users.upsert({
-    where: { email: "editor2@doenet.org" },
-    update: {},
-    create: {
-      email: "editor2@doenet.org",
-      firstNames: "Second",
-      lastNames: "Editor",
-      isEditor: true,
-    },
-  });
-
-  await prisma.promotedContentGroups.upsert({
-    where: { groupName: "Homepage" },
-    update: { currentlyFeatured: true, sortIndex: 0, homepage: true },
-    create: {
-      groupName: "Homepage",
-      currentlyFeatured: true,
-      sortIndex: 0,
-      homepage: true,
-    },
-  });
-  await prisma.promotedContentGroups.upsert({
-    where: { groupName: "Sample" },
-    update: { currentlyFeatured: true, sortIndex: 2 ** 32 },
-    create: {
-      groupName: "Sample",
-      currentlyFeatured: true,
-      sortIndex: 2 ** 32,
-    },
-  });
-  await prisma.promotedContentGroups.upsert({
-    where: { groupName: "K-12" },
-    update: { currentlyFeatured: true, sortIndex: 2 ** 32 * 3 },
-    create: {
-      groupName: "K-12",
-      currentlyFeatured: true,
-      sortIndex: 2 ** 32 * 3,
-    },
-  });
-  await prisma.promotedContentGroups.upsert({
-    where: { groupName: "Unfeatured" },
-    update: { currentlyFeatured: false, sortIndex: 2 ** 32 * 2 },
-    create: {
-      groupName: "Unfeatured",
-      currentlyFeatured: false,
-      sortIndex: 2 ** 32 * 2,
-    },
-  });
-
-  await prisma.licenses.upsert({
-    where: { code: "CCBYSA" },
-    update: {
-      name: "Creative Commons Attribution-ShareAlike 4.0",
-      description:
-        "This license requires that reusers give credit to the creator. It allows reusers to distribute, remix, adapt, and build upon the material in any medium or format, even for commercial purposes. If others remix, adapt, or build upon the material, they must license the modified material under identical terms.",
-      imageURL: "/creative_commons_by_sa.png",
-      smallImageURL: "/by-sa-sm.png",
-      licenseURL: "https://creativecommons.org/licenses/by-sa/4.0/",
-      sortIndex: 2,
-    },
-    create: {
-      code: "CCBYSA",
-      name: "Creative Commons Attribution-ShareAlike 4.0",
-      description:
-        "This license requires that reusers give credit to the creator. It allows reusers to distribute, remix, adapt, and build upon the material in any medium or format, even for commercial purposes. If others remix, adapt, or build upon the material, they must license the modified material under identical terms.",
-      imageURL: "/creative_commons_by_sa.png",
-      smallImageURL: "/by-sa-sm.png",
-      licenseURL: "https://creativecommons.org/licenses/by-sa/4.0/",
-      sortIndex: 2,
-    },
-  });
-
-  await prisma.licenses.upsert({
-    where: { code: "CCBYNCSA" },
-    update: {
-      name: "Creative Commons Attribution-NonCommercial-ShareAlike 4.0",
-      description:
-        "This license requires that reusers give credit to the creator. It allows reusers to distribute, remix, adapt, and build upon the material in any medium or format, for noncommercial purposes only. If others modify or adapt the material, they must license the modified material under identical terms.",
-      imageURL: "/creative_commons_by_nc_sa.png",
-      smallImageURL: "/by-nc-sa-sm.png",
-      licenseURL: "https://creativecommons.org/licenses/by-nc-sa/4.0/",
-      sortIndex: 3,
-    },
-    create: {
-      code: "CCBYNCSA",
-      name: "Creative Commons Attribution-NonCommercial-ShareAlike 4.0",
-      description:
-        "This license requires that reusers give credit to the creator. It allows reusers to distribute, remix, adapt, and build upon the material in any medium or format, for noncommercial purposes only. If others modify or adapt the material, they must license the modified material under identical terms.",
-      imageURL: "/creative_commons_by_nc_sa.png",
-      smallImageURL: "/by-nc-sa-sm.png",
-      licenseURL: "https://creativecommons.org/licenses/by-nc-sa/4.0/",
-      sortIndex: 3,
-    },
-  });
-
-  await prisma.licenses.upsert({
-    where: { code: "CCDUAL" },
-    update: {
-      name: "Dual license Creative Commons Attribution-ShareAlike 4.0 OR Attribution-NonCommercial-ShareAlike 4.0",
-      description:
-        "Allow reusers to use either the Creative Commons Attribution-ShareAlike 4.0 license or the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 license.",
-      sortIndex: 1,
-    },
-    create: {
-      code: "CCDUAL",
-      name: "Dual license Creative Commons Attribution-ShareAlike 4.0 OR Attribution-NonCommercial-ShareAlike 4.0",
-      description:
-        "Allow reusers to use either the Creative Commons Attribution-ShareAlike 4.0 license or the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 license.",
-      sortIndex: 1,
-    },
+  await updateOrCreateLicense({
+    code: "CCDUAL",
+    name: "Dual license Creative Commons Attribution-ShareAlike 4.0 OR Attribution-NonCommercial-ShareAlike 4.0",
+    description:
+      "Allow reusers to use either the Creative Commons Attribution-ShareAlike 4.0 license or the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 license.",
+    sortIndex: 1,
   });
 
   await prisma.licenseCompositions.upsert({
@@ -186,57 +127,183 @@ async function main() {
     update: {},
     create: { composedOfCode: "CCBYNCSA", includedInCode: "CCDUAL" },
   });
+}
 
-  await prisma.contentFeatures.upsert({
-    where: { code: "isQuestion" },
-    update: {
-      term: "Single question",
-      description:
-        "Activity is a single question suitable to add to an assessment.",
-      sortIndex: 1,
-    },
-    create: {
-      code: "isQuestion",
-      term: "Single question",
-      description:
-        "Activity is a single question suitable to add to an assessment.",
-      sortIndex: 1,
-    },
+async function seedCategories() {
+  async function updateOrCreateCategory(
+    category: Prisma.categoriesCreateInput,
+  ) {
+    await prisma.categories.upsert({
+      where: { code: category.code },
+      update: category,
+      create: category,
+    });
+  }
+
+  const categoryScope = await prisma.categoryGroups.upsert({
+    where: { name: "Scope" },
+    update: { name: "Scope", isExclusive: true, isRequired: true },
+    create: { name: "Scope", isExclusive: true, isRequired: true },
+  });
+  await updateOrCreateCategory({
+    group: { connect: { id: categoryScope.id } },
+    code: "isWidget",
+    term: "Widget",
+    description: "Activity is a widget that can be reused in other documents.",
+    sortIndex: 10,
+  });
+  await updateOrCreateCategory({
+    group: { connect: { id: categoryScope.id } },
+    code: "isProblemSet",
+    term: "Problem set",
+    description: "Activity is a problem set.",
+    sortIndex: 20,
+  });
+  await updateOrCreateCategory({
+    group: { connect: { id: categoryScope.id } },
+    code: "isQuestion",
+    term: "Single question",
+    description:
+      "Activity is a single question suitable to add to an assessment.",
+    sortIndex: 30,
+  });
+  // We will possibly add these later:
+  // - Chapter (sortIndex 40)
+  // - Course (sortIndex 50)
+
+  const categoryMode = await prisma.categoryGroups.upsert({
+    where: { name: "Mode" },
+    update: { name: "Mode", isRequired: true },
+    create: { name: "Mode", isRequired: true },
+  });
+  await updateOrCreateCategory({
+    group: { connect: { id: categoryMode.id } },
+    code: "isPreview",
+    term: "Preview",
+    description: "Activity is meant to be used as an introduction to a topic.",
+    sortIndex: 10,
+  });
+  await updateOrCreateCategory({
+    group: { connect: { id: categoryMode.id } },
+    code: "isPractice",
+    term: "Practice",
+    description: "Activity is suitable to be used as practice.",
+    sortIndex: 20,
+  });
+  await updateOrCreateCategory({
+    group: { connect: { id: categoryMode.id } },
+    code: "isAssessment",
+    term: "Assessment",
+    description: "Activity is an assessment suitable to assign to students.",
+    sortIndex: 30,
+  });
+  await updateOrCreateCategory({
+    group: { connect: { id: categoryMode.id } },
+    code: "isGameOrPuzzle",
+    term: "Game/Puzzle",
+    // TODO: better description
+    description: "Activity is a game or puzzle.",
+    sortIndex: 40,
   });
 
-  await prisma.contentFeatures.upsert({
-    where: { code: "isInteractive" },
-    update: {
-      term: "Interactive",
-      description:
-        "Activity contains interactives, such as draggable graphics.",
-      sortIndex: 2,
-    },
-    create: {
-      code: "isInteractive",
-      term: "Interactive",
-      description:
-        "Activity contains interactives, such as draggable graphics.",
-      sortIndex: 2,
-    },
+  await updateOrCreateCategory({
+    group: { connect: { id: categoryMode.id } },
+    code: "isExploration",
+    term: "Exploration",
+    // TODO: better description
+    description: "Activity is an exploration.",
+    sortIndex: 50,
+  });
+  await updateOrCreateCategory({
+    group: { connect: { id: categoryMode.id } },
+    code: "isDemonstration",
+    term: "Demonstration",
+    description:
+      "Activity is a demonstration that can be used to show students a concept.",
+    sortIndex: 60,
   });
 
-  await prisma.contentFeatures.upsert({
-    where: { code: "containsVideo" },
-    update: {
-      term: "Video",
-      description: "Activity contains videos.",
-      sortIndex: 3,
-    },
-    create: {
-      code: "containsVideo",
-      term: "Video",
-      description: "Activity contains videos.",
-      sortIndex: 3,
-    },
+  const categorySetting = await prisma.categoryGroups.upsert({
+    where: { name: "Setting" },
+    update: { name: "Setting", isRequired: true },
+    create: { name: "Setting", isRequired: true },
+  });
+  await updateOrCreateCategory({
+    group: { connect: { id: categorySetting.id } },
+    code: "isIndependent",
+    term: "Independent",
+    description: "Activity can be completed independently.",
+    sortIndex: 10,
+  });
+  await updateOrCreateCategory({
+    group: { connect: { id: categorySetting.id } },
+    code: "isCollaborative",
+    term: "Collaborative",
+    description: "Activity is meant to be completed collaboratively.",
+    sortIndex: 20,
+  });
+  await updateOrCreateCategory({
+    group: { connect: { id: categorySetting.id } },
+    code: "isFacilitated",
+    term: "Facilitated/with instructor",
+    description:
+      "Activity is meant to be done with a facilitator or instructor present.",
+    sortIndex: 30,
   });
 
-  await seedClassifications();
+  const categoryDuration = await prisma.categoryGroups.upsert({
+    where: { name: "Duration" },
+    update: { name: "Duration", isExclusive: true, isRequired: true },
+    create: { name: "Duration", isExclusive: true, isRequired: true },
+  });
+  await updateOrCreateCategory({
+    group: { connect: { id: categoryDuration.id } },
+    code: "takesLessThanFiveMinutes",
+    term: "Less than 5 minutes",
+    description: "Activity can be completed within 5 minutes.",
+    sortIndex: 10,
+  });
+  await updateOrCreateCategory({
+    group: { connect: { id: categoryDuration.id } },
+    code: "takesFiveToTwentyMinutes",
+    term: "Between 5-20 minutes",
+    description: "Activity can be completed in 5 to 20 minutes.",
+    sortIndex: 20,
+  });
+  await updateOrCreateCategory({
+    group: { connect: { id: categoryDuration.id } },
+    code: "takesMoreThanTwentyMinutes",
+    term: "More than 20 minutes",
+    description: "Activity will take at least 20 minutes to be completed.",
+    sortIndex: 30,
+  });
+
+  const categoryCategory = await prisma.categoryGroups.upsert({
+    where: { name: "Feature" },
+    update: { name: "Feature" },
+    create: { name: "Feature" },
+  });
+  await updateOrCreateCategory({
+    group: { connect: { id: categoryCategory.id } },
+    code: "isInteractive",
+    term: "Interactive",
+    description: "Activity contains interactives, such as draggable graphics.",
+    sortIndex: 10,
+  });
+  await updateOrCreateCategory({
+    group: { connect: { id: categoryCategory.id } },
+    code: "containsVideo",
+    term: "Video",
+    description: "Activity contains videos.",
+    sortIndex: 20,
+  });
+  await updateOrCreateCategory({
+    group: { connect: { id: categoryCategory.id } },
+    code: "isAnimation",
+    term: "Animation",
+    description: "Activity contains animations.",
+    sortIndex: 30,
+  });
 }
 
 main()

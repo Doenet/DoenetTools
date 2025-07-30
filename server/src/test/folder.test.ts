@@ -6,7 +6,7 @@ import {
   createContent,
   deleteContent,
   updateContent,
-  updateContentFeatures,
+  updateCategories,
 } from "../query/activity";
 import {
   modifyContentSharedWith,
@@ -1834,7 +1834,7 @@ test("copyContent copies content classifications", async () => {
   expect(classifications[0].id).eq(classifyId);
 });
 
-test("copyContent copies content features", async () => {
+test("copyContent copies content categories", async () => {
   const originalOwnerId = (await createTestUser()).userId;
   const newOwnerId = (await createTestUser()).userId;
   const { contentId: contentId1 } = await createContent({
@@ -1848,15 +1848,15 @@ test("copyContent copies content features", async () => {
     parentId: null,
   });
 
-  await updateContentFeatures({
+  await updateCategories({
     contentId: contentId1,
     loggedInUserId: originalOwnerId,
-    features: { isQuestion: true },
+    categories: { isQuestion: true },
   });
-  await updateContentFeatures({
+  await updateCategories({
     contentId: contentId2,
     loggedInUserId: originalOwnerId,
-    features: { containsVideo: true, isInteractive: true },
+    categories: { containsVideo: true, isInteractive: true },
   });
 
   await setContentIsPublic({
@@ -1885,20 +1885,20 @@ test("copyContent copies content features", async () => {
     parentId: null,
   });
 
-  const { contentFeatures: contentFeatures1 } = await getEditorSettings({
+  const { categories: categories1 } = await getEditorSettings({
     contentId: newContentId1,
     loggedInUserId: newOwnerId,
   });
-  expect(contentFeatures1).toHaveLength(1);
-  expect(contentFeatures1[0].code).eq("isQuestion");
+  expect(categories1).toHaveLength(1);
+  expect(categories1[0].code).eq("isQuestion");
 
-  const { contentFeatures: contentFeatures2 } = await getEditorSettings({
+  const { categories: categories2 } = await getEditorSettings({
     contentId: newContentId2,
     loggedInUserId: newOwnerId,
   });
-  expect(contentFeatures2).toHaveLength(2);
-  expect(contentFeatures2[0].code).eq("isInteractive");
-  expect(contentFeatures2[1].code).eq("containsVideo");
+  expect(categories2).toHaveLength(2);
+  expect(categories2[0].code).eq("isInteractive");
+  expect(categories2[1].code).eq("containsVideo");
 });
 
 test("check if content contains content type", async () => {

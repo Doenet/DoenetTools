@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../model";
 import {
+  CategoryGroup,
   ClassificationCategoryTree,
   ContentClassification,
   PartialContentClassification,
@@ -11,7 +12,7 @@ import {
   returnClassificationJoins,
   returnClassificationMatchClauses,
   sortClassifications,
-} from "../utils/classificationsFeatures";
+} from "../utils/classificationsCategories";
 import { returnClassificationListSelect } from "../utils/contentStructure";
 import {
   filterEditableActivity,
@@ -429,9 +430,24 @@ export async function getClassificationInfo({
   }
 }
 
-export async function getAllContentFeatures() {
-  const allContentFeatures = await prisma.contentFeatures.findMany({
-    orderBy: { sortIndex: "asc" },
+export async function getAllCategories(): Promise<{
+  allCategories: CategoryGroup[];
+}> {
+  const allCategories: CategoryGroup[] = await prisma.categoryGroups.findMany({
+    select: {
+      name: true,
+      isRequired: true,
+      isExclusive: true,
+      categories: {
+        select: {
+          code: true,
+          term: true,
+          description: true,
+        },
+        orderBy: { sortIndex: "asc" },
+      },
+    },
+    orderBy: { id: "asc" },
   });
-  return { allContentFeatures };
+  return { allCategories };
 }

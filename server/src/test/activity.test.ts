@@ -94,7 +94,7 @@ test("New activity starts out private, then delete it", async () => {
   expect(settings).eqls({
     licenseCode: "CCDUAL",
     licenseIsEditable: true,
-    contentFeatures: [],
+    categories: [],
     classifications: [],
     doenetmlVersionId: currentDoenetmlVersion.id,
     individualizeByStudent: false,
@@ -817,7 +817,7 @@ test.skip("activity editor data and my folder contents before and after assigned
     loggedInUserId: ownerId,
   });
   expect(settings).eqls({
-    contentFeatures: [],
+    categories: [],
     licenseIsEditable: true,
     licenseCode: "CCDUAL",
     classifications: [],
@@ -842,7 +842,7 @@ test.skip("activity editor data and my folder contents before and after assigned
     name: "Untitled Document",
     ownerId,
     isPublic: false,
-    contentFeatures: [],
+    categories: [],
     isShared: false,
     sharedWith: [],
     numVariants: 1,
@@ -872,7 +872,7 @@ test.skip("activity editor data and my folder contents before and after assigned
     loggedInUserId: ownerId,
   });
   expect(settings2).eqls({
-    contentFeatures: [],
+    categories: [],
     licenseIsEditable: true,
     doenetmlVersionId: currentDoenetmlVersion.id,
     licenseCode: "CCDUAL",
@@ -909,7 +909,7 @@ test.skip("activity editor data and my folder contents before and after assigned
     doenetmlVersion: currentDoenetmlVersion,
     parent: null,
     classifications: [],
-    contentFeatures: [],
+    categories: [],
     assignmentInfo: {
       assignmentStatus: "Open",
       classCode,
@@ -958,7 +958,7 @@ test.skip("activity editor data and my folder contents before and after assigned
     doenetmlVersion: currentDoenetmlVersion,
     parent: null,
     classifications: [],
-    contentFeatures: [],
+    categories: [],
     assignmentInfo: {
       assignmentStatus: "Closed",
       classCode,
@@ -1010,7 +1010,7 @@ test.skip("activity editor data and my folder contents before and after assigned
     doenetmlVersion: currentDoenetmlVersion,
     parent: null,
     classifications: [],
-    contentFeatures: [],
+    categories: [],
     assignmentInfo: {
       assignmentStatus: "Open",
       classCode,
@@ -1073,7 +1073,7 @@ test.skip("activity editor data and my folder contents before and after assigned
     doenetmlVersion: currentDoenetmlVersion,
     parent: null,
     classifications: [],
-    contentFeatures: [],
+    categories: [],
     assignmentInfo: {
       assignmentStatus: "Open",
       classCode,
@@ -1122,7 +1122,7 @@ test.skip("activity editor data and my folder contents before and after assigned
     doenetmlVersion: currentDoenetmlVersion,
     parent: null,
     classifications: [],
-    contentFeatures: [],
+    categories: [],
     assignmentInfo: {
       assignmentStatus: "Closed",
       classCode,

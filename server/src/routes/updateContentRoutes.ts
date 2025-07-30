@@ -5,9 +5,9 @@ import {
   createContentRevisionScheme,
   revertToRevisionScheme,
   updateContentDoenetMLSchema,
+  updateCategoriesSchema,
   updateContentRevisionScheme,
   updateContentSettingsSchema,
-  updateContentFeaturesSchema,
 } from "../schemas/contentSchema";
 import {
   createContent,
@@ -15,8 +15,8 @@ import {
   deleteContent,
   restoreDeletedContent,
   revertToRevision,
+  updateCategories,
   updateContent,
-  updateContentFeatures,
   updateContentRevision,
 } from "../query/activity";
 import { queryLoggedIn } from "../middleware/queryMiddleware";
@@ -44,8 +44,8 @@ updateContentRouter.post(
 );
 
 updateContentRouter.post(
-  "/updateContentFeatures",
-  queryLoggedIn(updateContentFeatures, updateContentFeaturesSchema),
+  "/updateCategories",
+  queryLoggedIn(updateCategories, updateCategoriesSchema),
 );
 
 updateContentRouter.post(

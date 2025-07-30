@@ -45,7 +45,6 @@ export function SetDocumentToSavePoint({
     if (fetcher.data) {
       setStatusStyleIdx((x) => x + 1);
       setUpdated(true);
-      console.log(fetcher.data);
       const revertedRevision: ContentRevision & { newRevisionNum: number } =
         fetcher.data.revision;
       setNewRevNum(revertedRevision.newRevisionNum);

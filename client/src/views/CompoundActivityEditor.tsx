@@ -691,7 +691,7 @@ export function CompoundActivityEditor({
       showOwnerName={false}
       showBlurb={false}
       showPublicStatus={true}
-      showActivityFeatures={true}
+      showActivityCategories={true}
       showAddButton={!readOnlyStructure}
       emptyMessage={`${contentTypeName} is empty. Add documents ${activity.type === "sequence" ? "or question banks " : ""}here to begin.`}
       content={cardContent}

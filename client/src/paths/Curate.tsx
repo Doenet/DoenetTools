@@ -103,7 +103,7 @@ export function Curate() {
         <CardList
           showPublicStatus={false}
           showBlurb={true}
-          showActivityFeatures={true}
+          showActivityCategories={true}
           showOwnerName={true}
           showLibraryEditor={showLibraryEditor}
           content={cardContent}
