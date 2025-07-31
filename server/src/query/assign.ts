@@ -324,6 +324,7 @@ export async function getAllAssignmentScores({
               lastNames: true,
               userId: true,
               email: true,
+              isAnonymous: true,
             },
           },
         },
@@ -337,7 +338,7 @@ export async function getAllAssignmentScores({
       score: number;
       user: {
         userId: Uint8Array<ArrayBufferLike>;
-        email: string;
+        email: string | null;
         firstNames: string | null;
         lastNames: string;
       };
@@ -349,7 +350,7 @@ export async function getAllAssignmentScores({
       score: number;
       user: {
         userId: Uint8Array<ArrayBufferLike>;
-        email: string;
+        email: string | null;
         firstNames: string | null;
         lastNames: string;
       };
@@ -369,9 +370,14 @@ export async function getAllAssignmentScores({
           throw Error("Invalid data. Could not calculate score for student");
         }
       }
+      const { isAnonymous, email, ...userOther } = scoreObj.user;
+      const user = {
+        ...userOther,
+        email: isAnonymous ? null : email,
+      };
       userScores.push({
         score,
-        user: scoreObj.user,
+        user,
       });
     }
     assignmentScores.push({

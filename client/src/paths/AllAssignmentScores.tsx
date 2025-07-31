@@ -19,7 +19,7 @@ import { Link as ReactRouterLink, useNavigate } from "react-router";
 import axios from "axios";
 import { DoenetHeading as Heading } from "../widgets/Heading";
 import { lastNameFirst } from "../utils/names";
-import { mkConfig, generateCsv, download } from "export-to-csv";
+import { downloadScoresToCsv } from "../utils/scores";
 
 type AssignmentScore = {
   contentId: string;
@@ -29,7 +29,7 @@ type AssignmentScore = {
       userId: string;
       firstNames: string | null;
       lastNames: string;
-      email: string;
+      email: string | null;
     };
   }[];
 };
@@ -44,7 +44,7 @@ type StudentStructure = {
   userId: string;
   firstNames: string | null;
   lastNames: string;
-  email: string;
+  email: string | null;
   scores: Record<string, number>;
 };
 
@@ -134,20 +134,17 @@ export function AllAssignmentScores() {
   const downloadScores = () => {
     const studentScores = Object.values(students).flatMap((studentData) =>
       Object.entries(studentData.scores).map(([assignmentId, score]) => ({
-        "First name": studentData.firstNames,
-        "Last name": studentData.lastNames,
-        Email: studentData.email,
-        Assignment: assignments.find((a) => a.contentId === assignmentId)!.name,
-        Score: score,
+        ...studentData,
+        assignmentName: assignments.find((a) => a.contentId === assignmentId)!
+          .name,
+        score: score,
       })),
     );
 
-    const csvConfig = mkConfig({
-      useKeysAsHeaders: true,
-      filename: `Scores for ${folder?.name ?? "My Activities"}`,
-    });
-    const csv = generateCsv(csvConfig)(studentScores);
-    download(csvConfig)(csv);
+    downloadScoresToCsv(
+      `Scores for ${folder?.name ?? "My Activities"}`,
+      studentScores,
+    );
   };
 
   return (

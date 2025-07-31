@@ -59,7 +59,7 @@ import { EditAssignmentSettings } from "../widgets/editor/EditAssignmentSettings
 import { DateTime } from "luxon";
 import { EditableName } from "../widgets/EditableName";
 import { AssignmentInvitation } from "../views/AssignmentInvitation";
-import { download, generateCsv, mkConfig } from "export-to-csv";
+import { downloadScoresToCsv } from "../utils/scores";
 
 type ScoreItem = {
   score: number;
@@ -600,20 +600,14 @@ export function AssignmentData() {
   })!;
 
   const downloadScores = () => {
-    const csvConfig = mkConfig({
-      useKeysAsHeaders: true,
-      filename: `Scores for ${assignment.name}`,
-    });
-    const data = scores.map((score) => {
-      return {
-        "First name": score.user.firstNames,
-        "Last name": score.user.lastNames,
-        Email: score.user.email,
-        Score: score.score,
-      };
-    });
-    const csv = generateCsv(csvConfig)(data);
-    download(csvConfig)(csv);
+    downloadScoresToCsv(
+      `Scores for ${assignment.name}`,
+      scores.map((score) => ({
+        ...score.user,
+        score: score.score,
+        assignmentName: assignment.name,
+      })),
+    );
   };
 
   return (
