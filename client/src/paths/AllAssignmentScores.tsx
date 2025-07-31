@@ -29,7 +29,7 @@ type AssignmentScore = {
       userId: string;
       firstNames: string | null;
       lastNames: string;
-      email: string | null;
+      email: string;
     };
   }[];
 };
@@ -44,7 +44,7 @@ type StudentStructure = {
   userId: string;
   firstNames: string | null;
   lastNames: string;
-  email: string | null;
+  email: string;
   scores: Record<string, number>;
 };
 

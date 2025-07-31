@@ -3,7 +3,7 @@ import { download, generateCsv, mkConfig } from "export-to-csv";
 type CsvScore = {
   firstNames: string | null;
   lastNames: string;
-  email: string | null;
+  email: string;
   assignmentName: string;
   score: number;
 };

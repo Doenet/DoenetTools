@@ -338,7 +338,7 @@ export async function getAllAssignmentScores({
       score: number;
       user: {
         userId: Uint8Array<ArrayBufferLike>;
-        email: string | null;
+        email: string;
         firstNames: string | null;
         lastNames: string;
       };
@@ -350,7 +350,7 @@ export async function getAllAssignmentScores({
       score: number;
       user: {
         userId: Uint8Array<ArrayBufferLike>;
-        email: string | null;
+        email: string;
         firstNames: string | null;
         lastNames: string;
       };
@@ -373,7 +373,7 @@ export async function getAllAssignmentScores({
       const { isAnonymous, email, ...userOther } = scoreObj.user;
       const user = {
         ...userOther,
-        email: isAnonymous ? null : email,
+        email: isAnonymous ? "" : email,
       };
       userScores.push({
         score,
