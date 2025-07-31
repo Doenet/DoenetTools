@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useLoaderData } from "react-router";
-
 import {
+  Button,
   TableContainer,
   Table,
   Thead,
@@ -13,11 +13,13 @@ import {
   Link as ChakraLink,
   Tooltip,
   Box,
+  Center,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink, useNavigate } from "react-router";
 import axios from "axios";
 import { DoenetHeading as Heading } from "../widgets/Heading";
 import { lastNameFirst } from "../utils/names";
+import { mkConfig, generateCsv, download } from "export-to-csv";
 
 type AssignmentScore = {
   contentId: string;
@@ -121,13 +123,32 @@ export function AllAssignmentScores() {
     };
 
   useEffect(() => {
-    document.title = "Assignment Scores";
+    document.title = `${folder?.name ?? "My Activities"} - Assignment Scores`;
   });
 
   const navigate = useNavigate();
 
   const nameWidth = 150;
   const itemWidth = 50;
+
+  const downloadScores = () => {
+    const studentScores = Object.values(students).flatMap((studentData) =>
+      Object.entries(studentData.scores).map(([assignmentId, score]) => ({
+        "First name": studentData.firstNames,
+        "Last name": studentData.lastNames,
+        Email: studentData.email,
+        Assignment: assignments.find((a) => a.contentId === assignmentId)!.name,
+        Score: score,
+      })),
+    );
+
+    const csvConfig = mkConfig({
+      useKeysAsHeaders: true,
+      filename: `Scores for ${folder?.name ?? "My Activities"}`,
+    });
+    const csv = generateCsv(csvConfig)(studentScores);
+    download(csvConfig)(csv);
+  };
 
   return (
     <>
@@ -148,18 +169,15 @@ export function AllAssignmentScores() {
             &lt; Back
           </ChakraLink>
         </Box>
-        {folder ? (
-          <>
-            <Heading heading={"Assignment Scores"} />
-            <Heading subheading={`${folder.name}`} />
-          </>
-        ) : (
-          <>
-            <Heading heading={"Assignment Scores"} />
-            <Heading subheading="My Activities" />
-          </>
-        )}
+        <Heading heading={"Assignment Scores"} />
+        <Heading subheading={folder?.name ?? "My Activities"} />
       </Box>
+      <Center>
+        <Button colorScheme="blue" size="sm" mt="1rem" onClick={downloadScores}>
+          Download scores
+        </Button>
+      </Center>
+
       <Box
         overflowX="scroll"
         height="calc(100vh - 155px)"

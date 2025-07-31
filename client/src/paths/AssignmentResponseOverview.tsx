@@ -59,6 +59,7 @@ import { EditAssignmentSettings } from "../widgets/editor/EditAssignmentSettings
 import { DateTime } from "luxon";
 import { EditableName } from "../widgets/EditableName";
 import { AssignmentInvitation } from "../views/AssignmentInvitation";
+import { download, generateCsv, mkConfig } from "export-to-csv";
 
 type ScoreItem = {
   score: number;
@@ -598,6 +599,23 @@ export function AssignmentData() {
     includeOffset: false,
   })!;
 
+  const downloadScores = () => {
+    const csvConfig = mkConfig({
+      useKeysAsHeaders: true,
+      filename: `Scores for ${assignment.name}`,
+    });
+    const data = scores.map((score) => {
+      return {
+        "First name": score.user.firstNames,
+        "Last name": score.user.lastNames,
+        Email: score.user.email,
+        Score: score.score,
+      };
+    });
+    const csv = generateCsv(csvConfig)(data);
+    download(csvConfig)(csv);
+  };
+
   return (
     <>
       <AssignmentInvitation
@@ -645,109 +663,120 @@ export function AssignmentData() {
           </Flex>
         </GridItem>
       </Grid>
-      <Stack spacing="1rem" mb="2rem" ml="1rem" alignItems="flex-start">
-        <ChakraHeading size="md">
-          Assignment is {info.assignmentStatus}
-        </ChakraHeading>
-        <ChakraHeading size="sm">Settings</ChakraHeading>
-        <EditAssignmentSettings
-          maxAttempts={assignment.assignmentInfo!.maxAttempts}
-          individualizeByStudent={
-            assignment.assignmentInfo!.individualizeByStudent
-          }
-          mode={assignment.assignmentInfo!.mode}
-          includeMode={assignment.type !== "singleDoc"}
-          isAssigned={true}
-        />
-
-        <ChakraHeading size="sm">Availability</ChakraHeading>
-        <Text>
-          {info.assignmentStatus === "Open" ? `Closes` : `Closed`} at{" "}
-          <Input
-            zIndex="overlay"
-            type="datetime-local"
-            size="sm"
-            step="60"
-            width="220px"
-            value={localValidUntil}
-            onChange={(e) => {
-              const closeAt = DateTime.fromISO(e.target.value)
-                .set({ second: 0, millisecond: 0 })
-                .toISO({
-                  suppressSeconds: true,
-                  suppressMilliseconds: true,
-                });
-              fetcher.submit(
-                {
-                  path: "assign/updateAssignmentCloseAt",
-                  closeAt,
-                },
-                { method: "post", encType: "application/json" },
-              );
-            }}
+      <Box m="1rem">
+        <Stack spacing="1rem" mb="2rem" ml="1rem" alignItems="flex-start">
+          <ChakraHeading size="md">
+            Assignment is {info.assignmentStatus}
+          </ChakraHeading>
+          <ChakraHeading size="sm">Settings</ChakraHeading>
+          <EditAssignmentSettings
+            maxAttempts={assignment.assignmentInfo!.maxAttempts}
+            individualizeByStudent={
+              assignment.assignmentInfo!.individualizeByStudent
+            }
+            mode={assignment.assignmentInfo!.mode}
+            includeMode={assignment.type !== "singleDoc"}
+            isAssigned={true}
           />
-        </Text>
-        <Text>Class code: {info.classCode}</Text>
-        <Button
-          onClick={inviteOnOpen}
-          colorScheme="blue"
-          isDisabled={info.assignmentStatus !== "Open"}
-        >
-          Invite students
-        </Button>
-      </Stack>
-      <Tabs mb="10vh">
-        <TabList>
-          <Tab>Scores</Tab>
-          <Tab>Statistics</Tab>
-        </TabList>
-        <TabPanels>
-          <TabPanel>{scoresChart}</TabPanel>
-          <TabPanel>
-            <Heading subheading="Score summary" />
-            <BarChart
-              width={600}
-              height={300}
-              data={scoreData}
-              margin={{
-                top: 5,
-                right: 30,
-                left: 20,
-                bottom: 5,
+
+          <ChakraHeading size="sm">Availability</ChakraHeading>
+          <Text>
+            {info.assignmentStatus === "Open" ? `Closes` : `Closed`} at{" "}
+            <Input
+              zIndex="overlay"
+              type="datetime-local"
+              size="sm"
+              step="60"
+              width="220px"
+              value={localValidUntil}
+              onChange={(e) => {
+                const closeAt = DateTime.fromISO(e.target.value)
+                  .set({ second: 0, millisecond: 0 })
+                  .toISO({
+                    suppressSeconds: true,
+                    suppressMilliseconds: true,
+                  });
+                fetcher.submit(
+                  {
+                    path: "assign/updateAssignmentCloseAt",
+                    closeAt,
+                  },
+                  { method: "post", encType: "application/json" },
+                );
               }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="score">
-                <Label value="Score" offset={0} position="insideBottom" />
-              </XAxis>
-              <YAxis>
-                <Label
-                  value="Number of students"
-                  angle={-90}
-                  position="insideLeft"
-                />
-              </YAxis>
-              <Bar dataKey="count" fill="#8884d8" />
-            </BarChart>
-            <Box>
-              <List>
-                <ListItem>Number of students: {numStudents}</ListItem>
-                <ListItem>
-                  Average score:{" "}
-                  {Math.round(scoreStats.averageScore * 100) / 100}
-                </ListItem>
-                <ListItem>
-                  Median score: {Math.round(scoreStats.medianScore * 100) / 100}
-                </ListItem>
-                <ListItem>
-                  Score standard deviation:{" "}
-                  {Math.round(scoreStats.stdScores * 100) / 100}
-                </ListItem>
-              </List>
-            </Box>
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
+            />
+          </Text>
+          <Text>Class code: {info.classCode}</Text>
+          <Button
+            onClick={inviteOnOpen}
+            colorScheme="blue"
+            isDisabled={info.assignmentStatus !== "Open"}
+          >
+            Invite students
+          </Button>
+          <Tooltip
+            label="Download scores for this assignment as a CSV file"
+            openDelay={50}
+          >
+            <Button colorScheme="blue" onClick={downloadScores}>
+              Download assignment scores
+            </Button>
+          </Tooltip>
+        </Stack>
+        <Tabs mb="10vh">
+          <TabList>
+            <Tab>Scores</Tab>
+            <Tab>Statistics</Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel>{scoresChart}</TabPanel>
+            <TabPanel>
+              <Heading subheading="Score summary" />
+              <BarChart
+                width={600}
+                height={300}
+                data={scoreData}
+                margin={{
+                  top: 5,
+                  right: 30,
+                  left: 20,
+                  bottom: 5,
+                }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="score">
+                  <Label value="Score" offset={0} position="insideBottom" />
+                </XAxis>
+                <YAxis>
+                  <Label
+                    value="Number of students"
+                    angle={-90}
+                    position="insideLeft"
+                  />
+                </YAxis>
+                <Bar dataKey="count" fill="#8884d8" />
+              </BarChart>
+              <Box>
+                <List>
+                  <ListItem>Number of students: {numStudents}</ListItem>
+                  <ListItem>
+                    Average score:{" "}
+                    {Math.round(scoreStats.averageScore * 100) / 100}
+                  </ListItem>
+                  <ListItem>
+                    Median score:{" "}
+                    {Math.round(scoreStats.medianScore * 100) / 100}
+                  </ListItem>
+                  <ListItem>
+                    Score standard deviation:{" "}
+                    {Math.round(scoreStats.stdScores * 100) / 100}
+                  </ListItem>
+                </List>
+              </Box>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Box>
     </>
   );
 }
