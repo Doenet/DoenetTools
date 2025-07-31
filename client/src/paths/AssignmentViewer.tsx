@@ -327,8 +327,6 @@ export function AssignmentViewer() {
 
     const messageListener = async function (event: any) {
       if (event.data.subject == "SPLICE.reportScoreAndState") {
-        console.log("record score and state", event.data);
-
         const data = event.data;
 
         if (isReportStateMessage(data)) {
@@ -441,10 +439,10 @@ export function AssignmentViewer() {
               "/api/score/saveScoreAndState",
               {
                 contentId: assignment.contentId,
-                attemptNumber: data.state.attemptNumber,
-                score: data.score,
+                attemptNumber: data.data.state.attemptNumber,
+                score: data.data.score,
                 code,
-                state: JSON.stringify(data.state),
+                state: JSON.stringify(data.data.state),
               },
             );
 
@@ -452,11 +450,11 @@ export function AssignmentViewer() {
           }
         }
       } else if (event.data.subject == "SPLICE.sendEvent") {
-        const data = event.data.data;
+        const data = event.data;
         if (data.verb === "submitted") {
           recordSubmittedEvent({
             assignment: assignment,
-            docId: event.data.docId ?? null,
+            docId: data.docId ?? null,
             contentAttemptNumber: attemptNumberRef.current,
             itemAttemptNumbers: itemAttemptNumbersRef.current,
             itemScores: currentItemScores.current,
@@ -464,7 +462,6 @@ export function AssignmentViewer() {
           });
         }
       } else if (event.data.subject == "SPLICE.reportScoreByItem") {
-        console.log("report score by item", event.data);
         const itemScores = createItemScores(event.data.itemScores);
 
         currentItemScores.current = itemScores;
@@ -798,7 +795,7 @@ async function recordSubmittedEvent({
   };
 }) {
   const object = JSON.parse(data.object);
-  const answerId = object.componentName;
+  const answerId = object.rootName;
 
   if (answerId) {
     const result = JSON.parse(data.result);
