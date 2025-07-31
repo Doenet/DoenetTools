@@ -106,14 +106,14 @@ export function ChangeName({
           setSubmitted(true);
         }}
       >
-        <Flex width="400px" maxWidth="100%">
-          <FormControl>
+        <Flex wrap="wrap">
+          <FormControl width="13rem">
             <FormLabel mt="16px">First name(s):</FormLabel>
             <Input
               placeholder="First Name(s)"
               name="firstNames"
               size="sm"
-              width={40}
+              width="11rem"
               marginRight="5px"
               value={firstNames ?? ""}
               onChange={(e) => {
@@ -121,13 +121,13 @@ export function ChangeName({
               }}
             />
           </FormControl>
-          <FormControl isRequired>
+          <FormControl isRequired width="13rem">
             <FormLabel mt="16px">Last name(s):</FormLabel>
             <Input
               placeholder="Last Names"
               name="lastNames"
               size="sm"
-              width={40}
+              width="11rem"
               value={lastNames}
               onChange={(e) => {
                 setLastNames(e.target.value);
