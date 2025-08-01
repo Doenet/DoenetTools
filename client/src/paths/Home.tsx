@@ -32,7 +32,7 @@ export async function loader() {
 
 const HomeIntroVideo = lazy(() => import("../widgets/HomeIntroVideo"));
 
-const doenetmlVersion = "0.7.0-alpha39";
+const doenetmlVersion = "0.7.0-alpha53";
 const doenetML = `
 <example>
 <setup>
@@ -47,36 +47,33 @@ const doenetML = `
 
 
 
-<map name="map">
-<template newNamespace>
+<repeatForSequence from="1" to="$num_lines" name="repeat" valueName="v" indexName="i">
 <setup>
-  <conditionalContent assignNames="(left_prefill right_prefill text_prefill)">
-    <case condition="$i=1">$(../left0) $(../right0) <text>original expression</text></case>
-    <case condition="$i=2">$(../left1) $(../right1) <text>subtracted 4x from both sides</text></case>
-    <else>$(../map[$i-1]/left) $(../map[$i-1]/right) <text></text></else>
+  <conditionalContent name="cc">
+    <case condition="$i=1"><math name="left_prefill" extend="$left0" /><math name="right_prefill" extend="$right0" /><text name="text_prefill">original expression</text></case>
+    <case condition="$i=2"><math name="left_prefill" extend="$left1" /><math name="right_prefill" extend="$right1" /><text name="text_prefill">subtracted 4x from both sides</text></case>
+    <else><math name="left_prefill" extend="$repeat[$i-1].left" /><math name="right_prefill" extend="$repeat[$i-1].right" /><text name="text_prefill"></text></else>
   </conditionalContent>
 </setup>
 
 <sideBySide widths="50% 40% 10%">
   <div>
-    <mathInput name="left" prefill="$left_prefill"/>
-    <m>=</m> <mathInput name="right" prefill="$right_prefill"/>
+    <mathInput name="left" prefill="$cc.left_prefill"/>
+    <m>=</m> <mathInput name="right" prefill="$cc.right_prefill"/>
   </div>
-  <div><textinput width="250px" height="35px" expanded prefill="$text_prefill" /></div>
+  <div><textInput width="250px" height="35px" expanded prefill="$cc.text_prefill" /></div>
   <div>
-    <updateValue target="../num_lines" newValue="$(../num_lines)+1" 
-         type="number" hide="$(../num_lines) > $i">
+    <updateValue target="$num_lines" newValue="$num_lines+1" 
+         type="number" hide="$num_lines > $i">
       <label>+</label>
     </updateValue><nbsp/>
-    <updateValue target="../num_lines" newValue="$(../num_lines)-1" 
-         type="number" hide="$(../num_lines) > $i" disabled="$i=1">
+    <updateValue target="$num_lines" newValue="$num_lines-1" 
+         type="number" hide="$num_lines > $i" disabled="$i=1">
       <label>-</label>
     </updateValue>
   </div>
 </sideBySide>
-</template>
-<sources alias="v" indexAlias="i"><sequence from="1" to="$num_lines" /></sources>
-</map>
+</repeatForSequence>
 
 
 
