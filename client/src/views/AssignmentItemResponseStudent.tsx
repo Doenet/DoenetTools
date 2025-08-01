@@ -172,7 +172,7 @@ export function AssignmentItemResponseStudent({
         viewURL: "/activityViewer",
         editURL: "/codeViewer",
       }}
-      showAnswerResponseMenu={true}
+      showAnswerResponseButton={true}
       answerResponseCounts={responseCounts}
     />
   );
