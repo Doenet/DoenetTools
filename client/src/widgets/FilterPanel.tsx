@@ -714,7 +714,7 @@ export function FilterPanel({
       <Box marginTop="5px" minHeight="25px">
         {clearFilters}
       </Box>
-      <Accordion allowToggle allowMultiple reduceMotion defaultIndex={[0, 1]}>
+      <Accordion allowMultiple reduceMotion defaultIndex={[0, 1]}>
         {categoryGroupFilterSection(groupScope)}
         {categoryGroupFilterSection(groupMode)}
         {categoryGroupFilterSection(groupSetting)}

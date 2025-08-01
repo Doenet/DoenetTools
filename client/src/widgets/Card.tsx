@@ -180,10 +180,18 @@ export default function Card({
     )) {
       const id = categories.findIndex((f) => f.code === categoryCode);
       if (id === -1) {
-        categoryIcons.push(<Flex width={categoryIconSize} />);
+        categoryIcons.push(
+          <Flex
+            key={`emptyCategorySpace_${categoryCode}`}
+            width={categoryIconSize}
+          />,
+        );
       } else {
         categoryIcons.push(
-          <Tooltip label={categories[id].description}>
+          <Tooltip
+            key={`categoryIcon_${categoryCode}`}
+            label={categories[id].description}
+          >
             <Flex alignItems="center">
               <Icon
                 as={categoryIcon}
