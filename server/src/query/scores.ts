@@ -1113,6 +1113,7 @@ export async function getScoresOfAllStudents({
           // NOTE: we're including the email here because instructors want to know
           // the emails of the people who have taken their assignment
           email: true,
+          isAnonymous: true,
         },
       },
       cachedScore: true,
@@ -1167,12 +1168,15 @@ export async function getScoresOfAllStudents({
         }
       }
 
+      const { email, isAnonymous, ...userOther } = scoreObj.user;
+      const user = { ...userOther, email: isAnonymous ? "" : email };
+
       scores.push({
         score: scoreObj.cachedScore,
         bestAttemptNumber: scoreObj.cachedBestAttemptNumber,
         itemScores,
         latestAttempt,
-        user: scoreObj.user,
+        user,
       });
     }
   }

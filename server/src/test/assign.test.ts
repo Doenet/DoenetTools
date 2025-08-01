@@ -881,7 +881,7 @@ test("get assignment data from anonymous users", async () => {
   });
   const userData1 = {
     userId: newUser1.userId,
-    email: newUser1.email,
+    email: "",
     firstNames: newUser1.firstNames,
     lastNames: newUser1.lastNames,
   };
@@ -1013,7 +1013,7 @@ test("get assignment data from anonymous users", async () => {
   });
   const userData2 = {
     userId: newUser2.userId,
-    email: newUser2.email,
+    email: "",
     firstNames: newUser2.firstNames,
     lastNames: newUser2.lastNames,
   };
@@ -1568,7 +1568,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   const newUserId = newUser.userId;
   const userInfo = convertUUID({
     userId: newUserId,
-    email: newUser.email,
+    email: "",
     firstNames: newUser.firstNames,
     lastNames: newUser.lastNames,
   });
@@ -2035,7 +2035,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   });
   const newUser1Info = {
     userId: newUser1.userId,
-    email: newUser1.email,
+    email: "",
     firstNames: newUser1.firstNames,
     lastNames: newUser1.lastNames,
   };
@@ -2120,7 +2120,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   });
   const newUser2Info = {
     userId: newUser2.userId,
-    email: newUser2.email,
+    email: "",
     firstNames: newUser2.firstNames,
     lastNames: newUser2.lastNames,
   };
@@ -2207,7 +2207,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   });
   const newUser3Info = {
     userId: newUser3.userId,
-    email: newUser3.email,
+    email: "",
     firstNames: newUser3.firstNames,
     lastNames: newUser3.lastNames,
   };

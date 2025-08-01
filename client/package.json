@@ -22,6 +22,7 @@
     "better-react-mathjax": "^2.1.0",
     "browser-image-resizer": "^2.4.1",
     "cssesc": "^3.0.0",
+    "export-to-csv": "^1.4.0",
     "hi-base32": "^0.5.1",
     "js-cookie": "^3.0.5",
     "luxon": "^3.6.1",

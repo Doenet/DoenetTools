@@ -324,6 +324,7 @@ export async function getAllAssignmentScores({
               lastNames: true,
               userId: true,
               email: true,
+              isAnonymous: true,
             },
           },
         },
@@ -369,9 +370,14 @@ export async function getAllAssignmentScores({
           throw Error("Invalid data. Could not calculate score for student");
         }
       }
+      const { isAnonymous, email, ...userOther } = scoreObj.user;
+      const user = {
+        ...userOther,
+        email: isAnonymous ? "" : email,
+      };
       userScores.push({
         score,
-        user: scoreObj.user,
+        user,
       });
     }
     assignmentScores.push({
