@@ -7,7 +7,7 @@ import { stringAsContentTypes } from "./array";
 export const moveContentSchema = z.object({
   contentId: uuidSchema,
   parentId: uuidOrNullSchema,
-  desiredPosition: z.number().int(),
+  desiredPosition: z.int(),
 });
 
 export const copyContentSchema = z.object({

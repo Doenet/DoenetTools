@@ -13,7 +13,7 @@ export const contentTypeSchema = z.enum([
 ]);
 
 export const createContentSchema = z.object({
-  contentType: contentTypeSchema.default("singleDoc"),
+  contentType: contentTypeSchema.prefault("singleDoc"),
   name: z.string().optional(),
   parentId: uuidOrNullSchema,
 });
@@ -21,9 +21,9 @@ export const createContentSchema = z.object({
 export const updateContentSettingsSchema = z.object({
   contentId: uuidSchema,
   name: z.string().optional(),
-  doenetmlVersionId: z.coerce.number().int().optional(),
+  doenetmlVersionId: z.int().optional(),
   shuffle: z.boolean().optional(),
-  numToSelect: z.number().int().optional(),
+  numToSelect: z.int().optional(),
   selectByVariant: z.boolean().optional(),
   paginate: z.boolean().optional(),
   activityLevelAttempts: z.boolean().optional(),
@@ -39,7 +39,7 @@ export const updateContentDoenetMLSchema = z
   .object({
     contentId: uuidSchema,
     doenetML: z.string(),
-    numVariants: z.number().int(),
+    numVariants: z.int(),
   })
   .transform(({ contentId, doenetML, numVariants }) => ({
     contentId,
@@ -55,12 +55,12 @@ export const createContentRevisionScheme = z.object({
 
 export const updateContentRevisionScheme = z.object({
   contentId: uuidSchema,
-  revisionNum: z.number().int(),
+  revisionNum: z.int(),
   revisionName: z.string(),
   note: z.string(),
 });
 
 export const revertToRevisionScheme = z.object({
   contentId: uuidSchema,
-  revisionNum: z.number().int(),
+  revisionNum: z.int(),
 });

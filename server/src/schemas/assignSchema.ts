@@ -10,10 +10,7 @@ import {
 
 export const assignmentCloseAtSchema = z.object({
   contentId: uuidSchema,
-  closeAt: z
-    .string()
-    .datetime({ offset: true })
-    .transform((val) => DateTime.fromISO(val)),
+  closeAt: z.iso.datetime().transform((val) => DateTime.fromISO(val)),
 });
 
 export const createAssignmentSchema = assignmentCloseAtSchema.extend({
