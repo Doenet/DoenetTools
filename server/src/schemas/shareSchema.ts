@@ -7,8 +7,10 @@ export const setContentIsPublicSchema = z.object({
 });
 
 export const licenseCodeSchema = z.enum(["CCDUAL", "CCBYSA", "CCBYNCSA"], {
-  required_error: "License code is required",
-  invalid_type_error: "Invalid license code",
+  error: (issue) =>
+    issue.input === undefined
+      ? "License code is required"
+      : "Invalid license code",
 });
 
 export const setLicenseCodeSchema = z.object({
@@ -18,7 +20,7 @@ export const setLicenseCodeSchema = z.object({
 
 export const contentIdEmailSchema = z.object({
   contentId: uuidSchema,
-  email: z.string().email(),
+  email: z.email(),
 });
 
 export const contentIdUserIdSchema = z.object({

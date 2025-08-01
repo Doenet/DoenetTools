@@ -27,6 +27,8 @@ export function queryLoggedIn<T extends z.ZodTypeAny>(
           ...req.query,
           ...req.params,
         });
+        // TODO: determine how to type this correctly with zod 4
+        //@ts-expect-error type z.core.output<T> is not considered object so spread not allowed
         const results = convertUUID(await query({ loggedInUserId, ...params }));
         res.send(results);
       } catch (e) {
@@ -48,6 +50,8 @@ export function queryOptionalLoggedIn<T extends z.ZodTypeAny>(
         ...req.query,
         ...req.params,
       });
+      // TODO: determine how to type this correctly with zod 4
+      //@ts-expect-error type z.core.output<T> is not considered object so spread not allowed
       const results = convertUUID(await query({ loggedInUserId, ...params }));
       res.send(results);
     } catch (e) {

@@ -25,7 +25,7 @@ export const scoreAndStateSchema = z.object({
     .optional(),
 });
 
-const variantSchema = z.number().int().gte(0).lte(16777215);
+const variantSchema = z.int().gte(0).lte(16777215);
 
 export const createNewAttemptSchema = z.object({
   contentId: uuidSchema,

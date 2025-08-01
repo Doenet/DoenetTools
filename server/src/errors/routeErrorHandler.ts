@@ -1,6 +1,6 @@
 import { Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { ZodError, ZodIssue } from "zod";
+import { ZodError, z } from "zod";
 import {
   InvalidRequestError,
   PermissionDeniedRedirectError,
@@ -9,10 +9,7 @@ import { Prisma } from "@prisma/client";
 
 export function handleErrors(res: Response, e: unknown) {
   if (e instanceof ZodError) {
-    const errorMessages = e.errors.map((issue: ZodIssue) => ({
-      path: issue.path.join("."),
-      message: issue.message,
-    }));
+    const errorMessages = z.prettifyError(e);
     res
       .status(StatusCodes.BAD_REQUEST)
       .json({ error: "Invalid data", details: errorMessages });

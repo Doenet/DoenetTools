@@ -9,14 +9,14 @@ export const remixSchema = z.object({
 
 export const updateRemixedContentToOriginSchema = z.object({
   originContentId: uuidSchema,
-  originRevisionNum: z.number().int().optional(),
+  originRevisionNum: z.int().optional(),
   remixContentId: uuidSchema,
   onlyMarkUnchanged: z.boolean().optional(),
 });
 
 export const updateOriginContentToRemixSchema = z.object({
   remixContentId: uuidSchema,
-  remixRevisionNum: z.number().int().optional(),
+  remixRevisionNum: z.int().optional(),
   originContentId: uuidSchema,
   onlyMarkUnchanged: z.boolean().optional(),
 });
