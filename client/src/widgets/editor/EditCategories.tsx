@@ -166,7 +166,6 @@ function CategoryRadios({
   selected: Category | null;
   categoryGroup: CategoryGroup;
 }) {
-  ("");
   const fetcher = useFetcher();
   const fallback: Record<string, boolean> = {};
   if (selected) {

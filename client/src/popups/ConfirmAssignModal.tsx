@@ -128,7 +128,7 @@ export function ConfirmAssignModal({
                         value={
                           customCloseAt
                             ? customCloseAt
-                            : DateTime.fromSeconds(
+                            : (DateTime.fromSeconds(
                                 Math.round(DateTime.now().toSeconds() / 60) *
                                   60,
                               )
@@ -137,7 +137,7 @@ export function ConfirmAssignModal({
                                   includeOffset: false,
                                   suppressSeconds: true,
                                   suppressMilliseconds: true,
-                                })
+                                }) ?? DateTime.now().toISO())
                         }
                         onChange={(e) => {
                           setCustomCloseAt(e.target.value);
@@ -177,10 +177,12 @@ export function ConfirmAssignModal({
         createAssignmentCallback={(parentId) => {
           const closeAtDateTime =
             duration === "custom"
-              ? DateTime.fromISO(customCloseAt).set({
-                  second: 0,
-                  millisecond: 0,
-                })
+              ? customCloseAt
+                ? DateTime.fromISO(customCloseAt).set({
+                    second: 0,
+                    millisecond: 0,
+                  })
+                : DateTime.now()
               : DateTime.now()
                   .set({ second: 0, millisecond: 0 })
                   .plus(JSON.parse(duration));
