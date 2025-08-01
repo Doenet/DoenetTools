@@ -46,7 +46,7 @@ import { isEqualUUID } from "../utils/uuid";
 const currentDoenetmlVersion = {
   id: 2,
   displayedVersion: "0.7",
-  fullVersion: "0.7.0-alpha54",
+  fullVersion: "0.7.0-alpha55",
   default: true,
   deprecated: false,
   removed: false,

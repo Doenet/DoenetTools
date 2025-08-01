@@ -16,7 +16,7 @@
     "@chakra-ui/icons": "^2.2.4",
     "@chakra-ui/react": "^2.10.7",
     "@doenet/assignment-viewer": "^0.1.0-alpha8",
-    "@doenet/doenetml-iframe": "^0.7.0-alpha54",
+    "@doenet/doenetml-iframe": "^0.7.0-alpha55",
     "@fontsource/jost": "^5.2.5",
     "axios": "^1.8.4",
     "better-react-mathjax": "^2.1.0",
