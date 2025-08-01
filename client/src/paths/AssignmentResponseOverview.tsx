@@ -602,11 +602,18 @@ export function AssignmentData() {
   const downloadScores = () => {
     downloadScoresToCsv(
       `Scores for ${assignment.name}`,
-      scores.map((score) => ({
-        ...score.user,
-        score: score.score,
-        assignmentName: assignment.name,
-      })),
+      scores.map((score) => {
+        const assignmentScores: Record<string, number> = {};
+        assignmentScores[assignment.name] = score.score;
+
+        return {
+          firstNames: score.user.firstNames,
+          lastNames: score.user.lastNames,
+          email: score.user.email,
+          studentId: score.user.userId,
+          assignmentScores,
+        };
+      }),
     );
   };
 

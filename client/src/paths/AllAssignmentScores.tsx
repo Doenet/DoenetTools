@@ -132,14 +132,25 @@ export function AllAssignmentScores() {
   const itemWidth = 50;
 
   const downloadScores = () => {
-    const studentScores = Object.values(students).flatMap((studentData) =>
-      Object.entries(studentData.scores).map(([assignmentId, score]) => ({
-        ...studentData,
-        assignmentName: assignments.find((a) => a.contentId === assignmentId)!
-          .name,
-        score: score,
-      })),
-    );
+    const studentScores = Object.values(students).map((studentData) => {
+      const assignmentScores: Record<string, number | null> = {};
+      for (const assignment of assignments) {
+        if (assignment.contentId in studentData.scores) {
+          const score = studentData.scores[assignment.contentId];
+          assignmentScores[assignment.name] = score;
+        } else {
+          assignmentScores[assignment.name] = null;
+        }
+      }
+
+      return {
+        firstNames: studentData.firstNames,
+        lastNames: studentData.lastNames,
+        email: studentData.email,
+        studentId: studentData.userId,
+        assignmentScores,
+      };
+    });
 
     downloadScoresToCsv(
       `Scores for ${folder?.name ?? "My Activities"}`,
