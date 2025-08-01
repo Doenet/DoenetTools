@@ -11,6 +11,7 @@ import {
   Center,
   Box,
   Flex,
+  Text,
 } from "@chakra-ui/react";
 import { QRCode } from "react-qrcode-logo";
 // import { CopyToClipboard } from "react-copy-to-clipboard";
@@ -57,15 +58,15 @@ export function AssignmentInvitation({
           {assignmentStatus === "Open" ? (
             <Flex justifyContent="center">
               <Box width="500px">
-                <p>To view this assignment, go to </p>
-                <Center marginTop="10px" fontSize={40}>
-                  <code>{baseUrl}/code</code>
+                <Text mt="0">To view this assignment, go to </Text>
+                <Center fontSize={40} mt="15px">
+                  <code>
+                    {baseUrl}/code/{classCode}
+                  </code>
                 </Center>
-                <p>and enter the code</p>
-                <Center marginTop="10px" fontSize={40}>
-                  <code>{classCode}</code>
-                </Center>
-                <p>or scan the QR code.</p>
+                <Text mt="15px" mb="5px">
+                  or scan the QR code.
+                </Text>
                 <Center>
                   <QRCode
                     value={`https://${baseUrl}/code/${classCode}`}
@@ -74,7 +75,7 @@ export function AssignmentInvitation({
                     logoPaddingStyle="circle"
                     logoWidth={100}
                     size={300}
-                    style={{ maxWidth: "100%", marginTop: "30px" }}
+                    style={{ maxWidth: "100%" }}
                     ecLevel="Q"
                   />
                 </Center>
