@@ -1,4 +1,16 @@
+/**
+ * ====================================================================================
+ * MAINTAIN EQUIVALENT TYPES in client and server
+ * ---------------------------------------------------------------------------------
+ * This file should be exactly the same in both the client module and the server module!
+ * Use the file `types_module_specific.ts` for any types that are defined differently.
+ *
+ * If you make edits to this file, please copy and paste the full file to the other module.
+ * =====================================================================================
+ */
+
 import { DateTime } from "luxon";
+import { isUuid, Uuid } from "./types_module_specific";
 
 export type DoenetmlVersion = {
   id: number;
@@ -8,26 +20,6 @@ export type DoenetmlVersion = {
   deprecated: boolean;
   removed: boolean;
   deprecationMessage: string;
-};
-
-export type LicenseCode = "CCDUAL" | "CCBYSA" | "CCBYNCSA";
-
-export type License = {
-  code: LicenseCode;
-  name: string;
-  description: string;
-  imageURL: string | null;
-  smallImageURL: string | null;
-  licenseURL: string | null;
-  isComposition: boolean;
-  composedOf: {
-    code: LicenseCode;
-    name: string;
-    description: string;
-    imageURL: string | null;
-    smallImageURL: string | null;
-    licenseURL: string | null;
-  }[];
 };
 
 export type AssignmentStatus = "Unassigned" | "Closed" | "Open";
@@ -53,15 +45,13 @@ export type LibraryStatus =
 export type LibraryRelations = {
   activity?: {
     status: LibraryStatus;
-    activityContentId: string | null;
-    // This field is a Date in the server code but a string in the client code.
-    reviewRequestDate?: string;
+    activityContentId: Uuid | null;
+    reviewRequestDate?: Date;
   };
   source?: {
     status: LibraryStatus;
-    sourceContentId: string | null;
-    // This field is a Date in the server code but a string in the client code.
-    reviewRequestDate?: string;
+    sourceContentId: Uuid | null;
+    reviewRequestDate?: DateTime;
     ownerRequested?: boolean;
     primaryEditor?: UserInfo;
     iAmPrimaryEditor?: boolean;
@@ -70,14 +60,13 @@ export type LibraryRelations = {
 
 export type LibraryComment = {
   user: UserInfo;
-  // This field is a Date in the server code but a string in the client code.
-  dateTime: string;
+  dateTime: DateTime;
   comment: string;
   isMe: boolean;
 };
 
 export type UserInfo = {
-  userId: string;
+  userId: Uuid;
   firstNames: string | null;
   lastNames: string;
   isAuthor?: boolean;
@@ -85,6 +74,21 @@ export type UserInfo = {
   numCommunity?: number;
   isMaskForLibrary?: boolean;
 };
+
+export function isUserInfo(obj: unknown): obj is UserInfo {
+  const typedObj = obj as UserInfo;
+  return (
+    typedObj !== null &&
+    typeof typedObj === "object" &&
+    isUuid(typedObj.userId) &&
+    (typedObj.firstNames === null || typeof typedObj.firstNames === "string") &&
+    typeof typedObj.lastNames === "string" &&
+    (typedObj.numLibrary === undefined ||
+      typeof typedObj.numLibrary === "number") &&
+    (typedObj.numCommunity === undefined ||
+      typeof typedObj.numCommunity === "number")
+  );
+}
 
 export type UserInfoWithEmail = UserInfo & {
   email: string;
@@ -108,6 +112,7 @@ export type ContentClassification = {
   code: string;
   descriptions: {
     description: string;
+    sortIndex: number;
     subCategory: {
       id: number;
       subCategory: string;
@@ -160,11 +165,18 @@ export type PartialContentClassification = {
 };
 
 export type ContentType = "singleDoc" | "select" | "sequence" | "folder";
+export function isContentType(type: unknown): type is ContentType {
+  return (
+    typeof type === "string" &&
+    ["singleDoc", "select", "sequence", "folder"].includes(type)
+  );
+}
+
 export type AssignmentMode = "formative" | "summative";
 
 export type ContentBase = {
-  contentId: string;
-  ownerId: string;
+  contentId: Uuid;
+  ownerId: Uuid;
   owner?: UserInfo;
   name: string;
   isPublic: boolean;
@@ -182,7 +194,7 @@ export type ContentBase = {
   }[];
   classifications: ContentClassification[];
   parent: {
-    contentId: string;
+    contentId: Uuid;
     name: string;
     type: ContentType;
     isPublic: boolean;
@@ -231,11 +243,31 @@ export type Content = Doc | QuestionBank | ProblemSet | Folder;
 export type AssignmentInfo = {
   assignmentStatus: AssignmentStatus;
   classCode: string;
-  codeValidUntil: string;
+  codeValidUntil: DateTime;
   hasScoreData: boolean;
   mode: AssignmentMode;
   individualizeByStudent: boolean;
   maxAttempts: number;
+};
+
+export type LicenseCode = "CCDUAL" | "CCBYSA" | "CCBYNCSA";
+
+export type License = {
+  code: LicenseCode;
+  name: string;
+  description: string;
+  imageURL: string | null;
+  smallImageURL: string | null;
+  licenseURL: string | null;
+  isComposition: boolean;
+  composedOf: {
+    code: LicenseCode;
+    name: string;
+    description: string;
+    imageURL: string | null;
+    smallImageURL: string | null;
+    licenseURL: string | null;
+  }[];
 };
 
 export type ActivityRemixItem = {
@@ -246,7 +278,7 @@ export type ActivityRemixItem = {
 };
 
 export type RemixContent = {
-  contentId: string;
+  contentId: Uuid;
   revisionNum: number;
   timestamp: DateTime;
   name: string;
@@ -270,17 +302,12 @@ export type ClassificationCategoryTree = {
     subCategories: {
       id: number;
       subCategory: string;
-      classifications: {
-        id: number;
-        code: string;
-        description: string;
-      }[];
     }[];
   }[];
 };
 
 export type ContentDescription = {
-  contentId: string;
+  contentId: Uuid;
   name: string;
   type: ContentType;
   parent: { contentId: string; type: ContentType } | null;
@@ -291,7 +318,7 @@ export function isContentDescription(obj: unknown): obj is ContentDescription {
   return (
     typedObj !== null &&
     typeof typedObj === "object" &&
-    typeof typedObj.contentId === "string" &&
+    isUuid(typedObj.contentId) &&
     typeof typedObj.name === "string" &&
     ["singleDoc", "folder", "sequence", "select"].includes(typedObj.type) &&
     (typedObj.parent === null ||
@@ -310,5 +337,5 @@ export type ContentRevision = {
   source: string;
   doenetmlVersion: string | null;
   cid: string;
-  createdAt: string;
+  createdAt: DateTime;
 };
