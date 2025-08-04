@@ -144,7 +144,7 @@ export function CompoundActivityEditor({
   asViewer?: boolean;
   inLibrary?: boolean;
   fetcher: FetcherWithComponents<any>;
-  finalFocusRef?: React.MutableRefObject<HTMLElement | null>;
+  finalFocusRef?: React.RefObject<HTMLElement | null>;
   headerHeight: string;
 }) {
   const contentTypeName = contentTypeToName[activity.type];
@@ -434,8 +434,11 @@ export function CompoundActivityEditor({
               : editorUrl(content.contentId, content.type)
             : undefined,
         indentLevel,
+        problemSetCopies: 1,
+        updateProblemSetCopies: (copyNum: number) => {
+          console.log(copyNum);
+        },
       });
-
       idx++;
     }
 

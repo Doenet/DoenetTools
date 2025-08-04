@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useState } from "react";
 import {
   Avatar,
   Text,
@@ -18,6 +18,11 @@ import {
   MenuItem,
   Spacer,
   Hide,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink, useOutletContext } from "react-router";
 import { Content, ContentDescription } from "../types";
@@ -45,6 +50,8 @@ export type CardContent = {
   libraryEditorName?: string;
   // This will replace `libraryEditorName` in the avatar
   libraryEditorAvatarName?: string;
+  problemSetCopies?: number;
+  updateProblemSetCopies?: (newNum: number) => void;
 };
 
 export default function Card({
@@ -370,6 +377,40 @@ export default function Card({
     </>
   );
 
+  const [copyNum, setCopyNum] = useState(cardContent.problemSetCopies);
+
+  const problemSetCopies = cardContent.problemSetCopies && (
+    <HStack>
+      <Text>Repeat:</Text>
+      <NumberInput
+        size="sm"
+        maxWidth="16"
+        min={1}
+        value={copyNum}
+        onChange={(valueString) => setCopyNum(parseInt(valueString))}
+        onKeyDown={(e) => {
+          if (e.key == "Enter") {
+            const target = e.target as HTMLInputElement;
+            if (parseInt(target.value) >= 1) {
+              cardContent.updateProblemSetCopies!(parseInt(target.value));
+            }
+          }
+        }}
+        onBlur={(e) => {
+          if (parseInt(e.target.value) >= 1) {
+            cardContent.updateProblemSetCopies!(parseInt(e.target.value));
+          }
+        }}
+      >
+        <NumberInputField />
+        <NumberInputStepper>
+          <NumberIncrementStepper />
+          <NumberDecrementStepper />
+        </NumberInputStepper>
+      </NumberInput>
+    </HStack>
+  );
+
   const menuMarginLeft = ["0em", "3em"];
   const menuDisplay = menuItems && (
     <Flex ml={menuMarginLeft}>
@@ -431,6 +472,7 @@ export default function Card({
             </Flex>
           </ChakraLink>
           {/* Right-aligned, not main link */}
+          {problemSetCopies}
           {menuDisplay}
         </Flex>
       </CardBody>
