@@ -39,6 +39,7 @@ import {
 } from "../query/editor";
 import { setContentLicense } from "../query/license";
 import { isEqualUUID } from "../utils/uuid";
+import { Doc } from "../types";
 
 // const EMPTY_DOC_CID =
 //   "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku";
@@ -211,6 +212,53 @@ test("Test updating various activity properties", async () => {
   }
   expect(activityViewerContent.activity.name).toBe(activityName);
   expect(activityViewerContent.activity.doenetML).toBe(source);
+});
+
+test("Test updating repeatInProblemSet", async () => {
+  const { userId } = await createTestUser();
+  const [_ps, psDoc, nonPsDoc] = await setupTestContent(userId, {
+    ps: pset({
+      ps_doc: doc("inside problem set"),
+    }),
+    non_ps_doc: doc("not inside problem set"),
+  });
+
+  // Cannot update outside of problem set
+  await expect(
+    updateContent({
+      contentId: nonPsDoc,
+      loggedInUserId: userId,
+      repeatInProblemSet: 2,
+    }),
+  ).rejects.toThrowError();
+
+  async function repeatVal() {
+    const result = (await getContent({
+      contentId: psDoc,
+      loggedInUserId: userId,
+      includeRepeatInProblemSet: true,
+    })) as Doc;
+    return result.repeatInProblemSet;
+  }
+
+  // Defaults to 1
+  expect(await repeatVal()).eqls(1);
+
+  // Updates
+  await updateContent({
+    contentId: psDoc,
+    loggedInUserId: userId,
+    repeatInProblemSet: 13,
+  });
+  expect(await repeatVal()).eqls(13);
+
+  // Cannot go below 1
+  await updateContent({
+    contentId: psDoc,
+    loggedInUserId: userId,
+    repeatInProblemSet: 0.5,
+  });
+  expect(await repeatVal()).eqls(1);
 });
 
 test("deleteContent marks a activity and document as deleted and prevents its retrieval", async () => {

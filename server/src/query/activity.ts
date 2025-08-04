@@ -369,6 +369,8 @@ export async function updateContent({
   }
 
   if (repeatInProblemSet) {
+    repeatInProblemSet = Math.max(repeatInProblemSet, 1);
+
     // Make sure this content is a document and the parent is a problem set
     const { type, parent } = await prisma.content.findUniqueOrThrow({
       where: {
