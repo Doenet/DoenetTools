@@ -1,5 +1,15 @@
-import { ContentType, LibraryStatus, AssignmentMode } from "@prisma/client";
-import { prisma } from "./model";
+/**
+ * ====================================================================================
+ * MAINTAIN EQUIVALENT TYPES in client and server
+ * ---------------------------------------------------------------------------------
+ * This file should be exactly the same in both the client module and the server module!
+ * Use the file `types_module_specific.ts` for any types that are defined differently.
+ *
+ * If you make edits to this file, please copy and paste the full file to the other module.
+ * =====================================================================================
+ */
+
+import { DoenetDateTime, isUuid, Uuid } from "./types_module_specific";
 
 export type DoenetmlVersion = {
   id: number;
@@ -12,6 +22,13 @@ export type DoenetmlVersion = {
 };
 
 export type AssignmentStatus = "Unassigned" | "Closed" | "Open";
+
+/** This type must match the Prisma-defined enum `LibraryStatus` */
+export type LibraryStatus =
+  | "PENDING"
+  | "UNDER_REVIEW"
+  | "PUBLISHED"
+  | "REJECTED";
 
 /**
  * This type represents the library status of a provided content id in both directions.
@@ -27,13 +44,13 @@ export type AssignmentStatus = "Unassigned" | "Closed" | "Open";
 export type LibraryRelations = {
   activity?: {
     status: LibraryStatus;
-    activityContentId: Uint8Array | null;
-    reviewRequestDate?: Date;
+    activityContentId: Uuid | null;
+    reviewRequestDate?: DoenetDateTime;
   };
   source?: {
     status: LibraryStatus;
-    sourceContentId: Uint8Array | null;
-    reviewRequestDate?: Date;
+    sourceContentId: Uuid | null;
+    reviewRequestDate?: DoenetDateTime;
     ownerRequested?: boolean;
     primaryEditor?: UserInfo;
     iAmPrimaryEditor?: boolean;
@@ -42,17 +59,17 @@ export type LibraryRelations = {
 
 export type LibraryComment = {
   user: UserInfo;
-  dateTime: Date;
+  dateTime: DoenetDateTime;
   comment: string;
   isMe: boolean;
 };
 
 export type UserInfo = {
-  userId: Uint8Array;
+  userId: Uuid;
   firstNames: string | null;
   lastNames: string;
-  isAnonymous?: boolean;
   isAuthor?: boolean;
+  isAnonymous?: boolean;
   numLibrary?: number;
   numCommunity?: number;
   isMaskForLibrary?: boolean;
@@ -63,7 +80,7 @@ export function isUserInfo(obj: unknown): obj is UserInfo {
   return (
     typedObj !== null &&
     typeof typedObj === "object" &&
-    typedObj.userId instanceof Uint8Array &&
+    isUuid(typedObj.userId) &&
     (typedObj.firstNames === null || typeof typedObj.firstNames === "string") &&
     typeof typedObj.lastNames === "string" &&
     (typedObj.numLibrary === undefined ||
@@ -147,6 +164,7 @@ export type PartialContentClassification = {
   numCommunity?: number;
 };
 
+export type ContentType = "singleDoc" | "select" | "sequence" | "folder";
 export function isContentType(type: unknown): type is ContentType {
   return (
     typeof type === "string" &&
@@ -154,9 +172,11 @@ export function isContentType(type: unknown): type is ContentType {
   );
 }
 
+export type AssignmentMode = "formative" | "summative";
+
 export type ContentBase = {
-  contentId: Uint8Array;
-  ownerId: Uint8Array;
+  contentId: Uuid;
+  ownerId: Uuid;
   owner?: UserInfo;
   name: string;
   isPublic: boolean;
@@ -174,7 +194,7 @@ export type ContentBase = {
   }[];
   classifications: ContentClassification[];
   parent: {
-    contentId: Uint8Array;
+    contentId: Uuid;
     name: string;
     type: ContentType;
     isPublic: boolean;
@@ -223,76 +243,12 @@ export type Content = Doc | QuestionBank | ProblemSet | Folder;
 export type AssignmentInfo = {
   assignmentStatus: AssignmentStatus;
   classCode: string;
-  codeValidUntil: Date;
+  codeValidUntil: DoenetDateTime;
   hasScoreData: boolean;
   mode: AssignmentMode;
   individualizeByStudent: boolean;
   maxAttempts: number;
 };
-
-export async function createContentInfo({
-  contentId,
-  ownerId,
-  contentType,
-}: {
-  contentId: Uint8Array;
-  ownerId: Uint8Array;
-  contentType: ContentType;
-}): Promise<Content> {
-  const contentBase: ContentBase = {
-    contentId: contentId,
-    name: "",
-    ownerId: ownerId,
-    isPublic: false,
-    isShared: false,
-    sharedWith: [],
-    licenseCode: null,
-    parent: null,
-    categories: [],
-    classifications: [],
-  };
-
-  switch (contentType) {
-    case "singleDoc": {
-      const defaultDoenetmlVersion =
-        await prisma.doenetmlVersions.findFirstOrThrow({
-          where: { default: true },
-        });
-      return {
-        type: "singleDoc",
-        numVariants: 1,
-        doenetML: "",
-        doenetmlVersion: defaultDoenetmlVersion,
-        ...contentBase,
-      };
-    }
-    case "select": {
-      return {
-        type: "select",
-        numToSelect: 1,
-        selectByVariant: false,
-        children: [],
-        ...contentBase,
-      };
-    }
-    case "sequence": {
-      return {
-        type: "sequence",
-        shuffle: false,
-        paginate: false,
-        children: [],
-        ...contentBase,
-      };
-    }
-    case "folder": {
-      return {
-        type: "folder",
-        children: [],
-        ...contentBase,
-      };
-    }
-  }
-}
 
 export type LicenseCode = "CCDUAL" | "CCBYSA" | "CCBYNCSA";
 
@@ -322,9 +278,9 @@ export type ActivityRemixItem = {
 };
 
 export type RemixContent = {
-  contentId: Uint8Array;
+  contentId: Uuid;
   revisionNum: number;
-  timestamp: Date;
+  timestamp: DoenetDateTime;
   name: string;
   owner: UserInfo;
   cidAtLastUpdate: string;
@@ -350,6 +306,30 @@ export type ClassificationCategoryTree = {
   }[];
 };
 
+export type ContentDescription = {
+  contentId: Uuid;
+  name: string;
+  type: ContentType;
+  parent: { contentId: string; type: ContentType } | null;
+};
+
+export function isContentDescription(obj: unknown): obj is ContentDescription {
+  const typedObj = obj as ContentDescription;
+  return (
+    typedObj !== null &&
+    typeof typedObj === "object" &&
+    isUuid(typedObj.contentId) &&
+    typeof typedObj.name === "string" &&
+    ["singleDoc", "folder", "sequence", "select"].includes(typedObj.type) &&
+    (typedObj.parent === null ||
+      (typeof typedObj.parent === "object" &&
+        typeof typedObj.parent.contentId === "string" &&
+        ["singleDoc", "folder", "sequence", "select"].includes(
+          typedObj.parent.type,
+        )))
+  );
+}
+
 export type ContentRevision = {
   revisionNum: number;
   revisionName: string;
@@ -357,5 +337,5 @@ export type ContentRevision = {
   source: string;
   doenetmlVersion: string | null;
   cid: string;
-  createdAt: Date;
+  createdAt: DoenetDateTime;
 };

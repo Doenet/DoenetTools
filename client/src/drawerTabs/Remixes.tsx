@@ -111,7 +111,9 @@ export function Remixes({
               <Show above="sm">
                 {/* Note: use timestampOriginContent as what the timestamp from when the previous was mixed, not when this doc was created */}
                 <Td>
-                  {ch.originContent.timestamp.toLocaleString(DateTime.DATE_MED)}
+                  {DateTime.fromISO(ch.originContent.timestamp).toLocaleString(
+                    DateTime.DATE_MED,
+                  )}
                 </Td>
               </Show>
               <Td>
