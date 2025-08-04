@@ -603,7 +603,7 @@ export function compileActivityFromContent(
 ): ActivitySource {
   switch (activity.type) {
     case "singleDoc": {
-      return {
+      const documentJson = {
         id: fromUUID(activity.contentId),
         type: activity.type,
         isDescription: false,
@@ -613,6 +613,20 @@ export function compileActivityFromContent(
           : activity.doenetmlVersion.fullVersion,
         numVariants: activity.numVariants,
       };
+      if (activity.repeatInProblemSet && activity.repeatInProblemSet > 1) {
+        // If the document repeats, wrap this document in
+        // a `select` which can select that many variants.
+        return {
+          id: `select_for_${fromUUID(activity.contentId)}`,
+          type: "select",
+          title: `Repeat ${activity.repeatInProblemSet} times`,
+          numToSelect: activity.repeatInProblemSet,
+          selectByVariant: true,
+          items: [documentJson],
+        };
+      } else {
+        return documentJson;
+      }
     }
     case "select": {
       return {

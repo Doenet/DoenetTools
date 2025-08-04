@@ -379,37 +379,39 @@ export default function Card({
 
   const [copyNum, setCopyNum] = useState(cardContent.repeatInProblemSet);
 
-  const repeatInProblemSet = cardContent.repeatInProblemSet && (
-    <HStack>
-      <Text>Repeat:</Text>
-      <NumberInput
-        size="sm"
-        maxWidth="16"
-        min={1}
-        value={copyNum}
-        onChange={(valueString) => setCopyNum(parseInt(valueString))}
-        onKeyDown={(e) => {
-          if (e.key == "Enter") {
-            const target = e.target as HTMLInputElement;
-            if (parseInt(target.value) >= 1) {
-              cardContent.updateRepeatInProblemSet!(parseInt(target.value));
+  const repeatInProblemSet = cardContent.repeatInProblemSet &&
+    numVariants > 1 && (
+      <HStack>
+        <Text>Repeat:</Text>
+        <NumberInput
+          size="sm"
+          maxWidth="20"
+          min={1}
+          max={numVariants}
+          value={copyNum}
+          onChange={(valueString) => setCopyNum(parseInt(valueString))}
+          onKeyDown={(e) => {
+            if (e.key == "Enter") {
+              const target = e.target as HTMLInputElement;
+              if (parseInt(target.value) >= 1) {
+                cardContent.updateRepeatInProblemSet!(parseInt(target.value));
+              }
             }
-          }
-        }}
-        onBlur={(e) => {
-          if (parseInt(e.target.value) >= 1) {
-            cardContent.updateRepeatInProblemSet!(parseInt(e.target.value));
-          }
-        }}
-      >
-        <NumberInputField />
-        <NumberInputStepper>
-          <NumberIncrementStepper />
-          <NumberDecrementStepper />
-        </NumberInputStepper>
-      </NumberInput>
-    </HStack>
-  );
+          }}
+          onBlur={(e) => {
+            if (parseInt(e.target.value) >= 1) {
+              cardContent.updateRepeatInProblemSet!(parseInt(e.target.value));
+            }
+          }}
+        >
+          <NumberInputField />
+          <NumberInputStepper>
+            <NumberIncrementStepper />
+            <NumberDecrementStepper />
+          </NumberInputStepper>
+        </NumberInput>
+      </HStack>
+    );
 
   const menuMarginLeft = ["0em", "3em"];
   const menuDisplay = menuItems && (

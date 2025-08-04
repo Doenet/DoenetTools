@@ -362,6 +362,7 @@ export async function updateContent({
         numToSelect,
         selectByVariant,
         // paginate,
+        repeatInProblemSet,
       ].some((x) => x !== undefined)
     ) {
       throw new InvalidRequestError("Cannot change assigned content");
@@ -369,15 +370,14 @@ export async function updateContent({
   }
 
   if (repeatInProblemSet) {
-    repeatInProblemSet = Math.max(repeatInProblemSet, 1);
-
     // Make sure this content is a document and the parent is a problem set
-    const { type, parent } = await prisma.content.findUniqueOrThrow({
+    const check = await prisma.content.findUniqueOrThrow({
       where: {
         id: contentId,
       },
       select: {
         type: true,
+        numVariants: true,
         parent: {
           select: {
             type: true,
@@ -385,11 +385,19 @@ export async function updateContent({
         },
       },
     });
-    if (type !== "singleDoc" || parent?.type !== "sequence") {
+    if (check.type !== "singleDoc" || check.parent?.type !== "sequence") {
       throw new InvalidRequestError(
         "Cannot modify `repeatInProblemSet` when content is not a document or parent is not a problem set.",
       );
     }
+
+    // Clamp the repeats between 1 and the number of variants this doc has
+    // (doesn't make sense to repeat exact problem twice)
+    repeatInProblemSet = Math.max(repeatInProblemSet, 1);
+    repeatInProblemSet = Math.min(
+      repeatInProblemSet,
+      numVariants ?? check.numVariants,
+    );
   }
 
   await prisma.content.update({
