@@ -307,6 +307,7 @@ export async function getCompoundEditorEdit({
     loggedInUserId,
     isEditor,
     skipPermissionCheck: true,
+    includeRepeatInProblemSet: true,
   });
 
   return { content };

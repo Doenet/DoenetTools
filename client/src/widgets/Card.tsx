@@ -50,8 +50,8 @@ export type CardContent = {
   libraryEditorName?: string;
   // This will replace `libraryEditorName` in the avatar
   libraryEditorAvatarName?: string;
-  problemSetCopies?: number;
-  updateProblemSetCopies?: (newNum: number) => void;
+  repeatInProblemSet?: number;
+  updateRepeatInProblemSet?: (copies: number) => void;
 };
 
 export default function Card({
@@ -377,9 +377,9 @@ export default function Card({
     </>
   );
 
-  const [copyNum, setCopyNum] = useState(cardContent.problemSetCopies);
+  const [copyNum, setCopyNum] = useState(cardContent.repeatInProblemSet);
 
-  const problemSetCopies = cardContent.problemSetCopies && (
+  const repeatInProblemSet = cardContent.repeatInProblemSet && (
     <HStack>
       <Text>Repeat:</Text>
       <NumberInput
@@ -392,13 +392,13 @@ export default function Card({
           if (e.key == "Enter") {
             const target = e.target as HTMLInputElement;
             if (parseInt(target.value) >= 1) {
-              cardContent.updateProblemSetCopies!(parseInt(target.value));
+              cardContent.updateRepeatInProblemSet!(parseInt(target.value));
             }
           }
         }}
         onBlur={(e) => {
           if (parseInt(e.target.value) >= 1) {
-            cardContent.updateProblemSetCopies!(parseInt(e.target.value));
+            cardContent.updateRepeatInProblemSet!(parseInt(e.target.value));
           }
         }}
       >
@@ -472,7 +472,7 @@ export default function Card({
             </Flex>
           </ChakraLink>
           {/* Right-aligned, not main link */}
-          {problemSetCopies}
+          {repeatInProblemSet}
           {menuDisplay}
         </Flex>
       </CardBody>

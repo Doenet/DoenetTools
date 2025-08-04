@@ -210,6 +210,7 @@ export type Doc = ContentBase & {
   revisionNum?: number;
   doenetML: string;
   doenetmlVersion: DoenetmlVersion;
+  repeatInProblemSet?: number;
 };
 
 export type QuestionBank = ContentBase & {

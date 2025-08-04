@@ -127,6 +127,12 @@ export async function compoundActivityEditorActions({
       desiredPosition: Number(formObj.desiredPosition),
     });
     return true;
+  } else if (formObj?._action == "Update problem set copies") {
+    await axios.post(`/api/updateContent/updateContentSettings`, {
+      contentId: formObj.contentId,
+      repeatInProblemSet: Number(formObj.repeatInProblemSet),
+    });
+    return true;
   }
 
   return null;
@@ -434,9 +440,17 @@ export function CompoundActivityEditor({
               : editorUrl(content.contentId, content.type)
             : undefined,
         indentLevel,
-        problemSetCopies: 1,
-        updateProblemSetCopies: (copyNum: number) => {
-          console.log(copyNum);
+        repeatInProblemSet:
+          content.type === "singleDoc" ? content.repeatInProblemSet : undefined,
+        updateRepeatInProblemSet: (copies) => {
+          fetcher.submit(
+            {
+              _action: "Update problem set copies",
+              contentId: content.contentId,
+              repeatInProblemSet: copies,
+            },
+            { method: "post" },
+          );
         },
       });
       idx++;
