@@ -2230,9 +2230,9 @@ export async function browseExplore({
     categoryId === undefined &&
     systemId === undefined;
 
-  const topAuthors = ownerId
-    ? null
-    : await browseUsersWithSharedContent({
+  const topAuthorsPromise = ownerId
+    ? new Promise((resolve, _) => resolve(null))
+    : browseUsersWithSharedContent({
         loggedInUserId,
         systemId,
         categoryId,
@@ -2243,9 +2243,11 @@ export async function browseExplore({
         take: 10,
       });
 
-  const authorInfo = ownerId ? await getAuthorInfo(ownerId) : null;
+  const authorInfoPromise = ownerId
+    ? getAuthorInfo(ownerId)
+    : new Promise((resolve, _) => resolve(null));
 
-  const recentContent = await browseSharedContent({
+  const recentContentPromise = browseSharedContent({
     loggedInUserId,
     isCurated: false,
     systemId,
@@ -2257,7 +2259,7 @@ export async function browseExplore({
     ownerId,
   });
 
-  const curatedContent = await browseSharedContent({
+  const curatedContentPromise = browseSharedContent({
     isCurated: true,
     loggedInUserId,
     systemId,
@@ -2269,18 +2271,7 @@ export async function browseExplore({
     ownerId,
   });
 
-  // Replace library owner info with source owner info
-  const curatedSourceUsers = await Promise.all(
-    curatedContent.map(
-      async (c) =>
-        await maskLibraryUserInfo({ contentId: c.contentId, owner: c.owner! }),
-    ),
-  );
-  for (let i = 0; i < curatedContent.length; i++) {
-    curatedContent[i].owner = curatedSourceUsers[i];
-  }
-
-  const trendingContent = await browseTrendingContent({
+  const trendingContentPromise = browseTrendingContent({
     loggedInUserId,
     systemId,
     categoryId,
@@ -2292,14 +2283,19 @@ export async function browseExplore({
     pageSize: 10,
   });
 
-  let classificationBrowse: PartialContentClassification[] | null = null;
-  let subCategoryBrowse: PartialContentClassification[] | null = null;
-  let categoryBrowse: PartialContentClassification[] | null = null;
-  let systemBrowse: PartialContentClassification[] | null = null;
+  let classificationBrowsePromise: Promise<
+    PartialContentClassification[] | null
+  > = new Promise((resolve, _) => resolve(null));
+  let subCategoryBrowsePromise: Promise<PartialContentClassification[] | null> =
+    new Promise((resolve, _) => resolve(null));
+  let categoryBrowsePromise: Promise<PartialContentClassification[] | null> =
+    new Promise((resolve, _) => resolve(null));
+  let systemBrowsePromise: Promise<PartialContentClassification[] | null> =
+    new Promise((resolve, _) => resolve(null));
 
   if (!isUnclassified && classificationId === undefined) {
     if (subCategoryId !== undefined) {
-      classificationBrowse = await browseClassificationsWithSharedContent({
+      classificationBrowsePromise = browseClassificationsWithSharedContent({
         loggedInUserId,
         subCategoryId,
         categories,
@@ -2307,8 +2303,8 @@ export async function browseExplore({
       });
     } else {
       if (categoryId !== undefined) {
-        subCategoryBrowse =
-          await browseClassificationSubCategoriesWithSharedContent({
+        subCategoryBrowsePromise =
+          browseClassificationSubCategoriesWithSharedContent({
             loggedInUserId,
             categoryId,
             categories,
@@ -2316,15 +2312,15 @@ export async function browseExplore({
           });
       } else {
         if (systemId !== undefined) {
-          categoryBrowse =
-            await browseClassificationCategoriesWithSharedContent({
+          categoryBrowsePromise =
+            browseClassificationCategoriesWithSharedContent({
               loggedInUserId,
               systemId,
               categories,
               ownerId,
             });
         } else {
-          systemBrowse = await browseClassificationSystemsWithSharedContent({
+          systemBrowsePromise = browseClassificationSystemsWithSharedContent({
             loggedInUserId,
             categories,
             ownerId,
@@ -2334,16 +2330,17 @@ export async function browseExplore({
     }
   }
 
-  const classificationInfo: PartialContentClassification | null = isUnclassified
-    ? {}
-    : await getClassificationInfo({
-        systemId,
-        categoryId,
-        subCategoryId,
-        classificationId,
-      });
+  const classificationInfoPromise: Promise<PartialContentClassification | null> =
+    isUnclassified
+      ? new Promise((resolve, _) => resolve({}))
+      : getClassificationInfo({
+          systemId,
+          categoryId,
+          subCategoryId,
+          classificationId,
+        });
 
-  const totalCount = await getSharedContentMatchCount({
+  const totalCountPromise = getSharedContentMatchCount({
     loggedInUserId,
     systemId,
     categoryId,
@@ -2354,16 +2351,57 @@ export async function browseExplore({
     ownerId,
   });
 
-  const countByCategory = await getSharedContentMatchCountPerAvailableCategory({
-    loggedInUserId,
-    systemId,
-    categoryId,
-    subCategoryId,
-    classificationId,
-    isUnclassified,
-    categories,
-    ownerId,
-  });
+  const countByCategoryPromise = getSharedContentMatchCountPerAvailableCategory(
+    {
+      loggedInUserId,
+      systemId,
+      categoryId,
+      subCategoryId,
+      classificationId,
+      isUnclassified,
+      categories,
+      ownerId,
+    },
+  );
+
+  const [
+    topAuthors,
+    authorInfo,
+    recentContent,
+    curatedContent,
+    trendingContent,
+    classificationBrowse,
+    subCategoryBrowse,
+    categoryBrowse,
+    systemBrowse,
+    classificationInfo,
+    totalCount,
+    countByCategory,
+  ] = await Promise.all([
+    topAuthorsPromise,
+    authorInfoPromise,
+    recentContentPromise,
+    curatedContentPromise,
+    trendingContentPromise,
+    classificationBrowsePromise,
+    subCategoryBrowsePromise,
+    categoryBrowsePromise,
+    systemBrowsePromise,
+    classificationInfoPromise,
+    totalCountPromise,
+    countByCategoryPromise,
+  ]);
+
+  // Replace library owner info with source owner info
+  const curatedSourceUsers = await Promise.all(
+    curatedContent.map(
+      async (c) =>
+        await maskLibraryUserInfo({ contentId: c.contentId, owner: c.owner! }),
+    ),
+  );
+  for (let i = 0; i < curatedContent.length; i++) {
+    curatedContent[i].owner = curatedSourceUsers[i];
+  }
 
   return {
     topAuthors,
