@@ -9,8 +9,7 @@
  * =====================================================================================
  */
 
-import { DateTime } from "luxon";
-import { isUuid, Uuid } from "./types_module_specific";
+import { DoenetDateTime, isUuid, Uuid } from "./types_module_specific";
 
 export type DoenetmlVersion = {
   id: number;
@@ -46,12 +45,12 @@ export type LibraryRelations = {
   activity?: {
     status: LibraryStatus;
     activityContentId: Uuid | null;
-    reviewRequestDate?: Date;
+    reviewRequestDate?: DoenetDateTime;
   };
   source?: {
     status: LibraryStatus;
     sourceContentId: Uuid | null;
-    reviewRequestDate?: DateTime;
+    reviewRequestDate?: DoenetDateTime;
     ownerRequested?: boolean;
     primaryEditor?: UserInfo;
     iAmPrimaryEditor?: boolean;
@@ -60,7 +59,7 @@ export type LibraryRelations = {
 
 export type LibraryComment = {
   user: UserInfo;
-  dateTime: DateTime;
+  dateTime: DoenetDateTime;
   comment: string;
   isMe: boolean;
 };
@@ -70,6 +69,7 @@ export type UserInfo = {
   firstNames: string | null;
   lastNames: string;
   isAuthor?: boolean;
+  isAnonymous?: boolean;
   numLibrary?: number;
   numCommunity?: number;
   isMaskForLibrary?: boolean;
@@ -243,7 +243,7 @@ export type Content = Doc | QuestionBank | ProblemSet | Folder;
 export type AssignmentInfo = {
   assignmentStatus: AssignmentStatus;
   classCode: string;
-  codeValidUntil: DateTime;
+  codeValidUntil: DoenetDateTime;
   hasScoreData: boolean;
   mode: AssignmentMode;
   individualizeByStudent: boolean;
@@ -280,7 +280,7 @@ export type ActivityRemixItem = {
 export type RemixContent = {
   contentId: Uuid;
   revisionNum: number;
-  timestamp: DateTime;
+  timestamp: DoenetDateTime;
   name: string;
   owner: UserInfo;
   cidAtLastUpdate: string;
@@ -337,5 +337,5 @@ export type ContentRevision = {
   source: string;
   doenetmlVersion: string | null;
   cid: string;
-  createdAt: DateTime;
+  createdAt: DoenetDateTime;
 };
