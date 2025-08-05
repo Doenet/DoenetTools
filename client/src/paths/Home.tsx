@@ -19,6 +19,11 @@ import {
   SimpleGrid,
   Hide,
   useDisclosure,
+  Heading,
+  Wrap,
+  Card,
+  CardBody,
+  CardHeader,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router";
 import { HiOutlineMail } from "react-icons/hi";
@@ -114,14 +119,15 @@ export function Home() {
   const heroTextAndActions = () => {
     return (
       <Box pr="20px" pl="20px">
-        <Text color="white" fontSize={["40px", "5vw"]} fontWeight="700">
+        <Text color="white" fontSize={["50px", "3vw"]} fontWeight="700">
           Interactive activities to engage your students
         </Text>
-        <Flex textAlign="left" flexDirection="column" gap={4} mt="70px">
-          <Text color="white" fontSize={["24px", "2vw"]} fontWeight="700">
-            Enhance your classroom with great OER resources from Doenet and
-            learn how we make it easy to create your own.
+        <Flex textAlign="left" flexDirection="column" gap={4} mt="0.5rem">
+          <Text color="white" fontSize={["24px", "1.7vw"]} fontWeight="700">
+            Enhance your classroom with great OER resources. <br></br>
+            Create and share your own.
           </Text>
+
           <ChakraLink as={ReactRouterLink} to="/code">
             <Button
               mt="20px"
@@ -196,7 +202,7 @@ export function Home() {
             // gridTemplateRows={"120px auto"}
             gridTemplateColumns={"60vw auto"}
           >
-            <GridItem area="Description" margin="10vh 0 0 10vh">
+            <GridItem area="Description" margin="2vh 0 0 10vh">
               {heroTextAndActions()}
             </GridItem>
             <GridItem area="Video" p="40px">
@@ -346,94 +352,81 @@ export function Home() {
           marginTop="40px"
           marginBottom="40px"
         >
-          <HStack>
-            <Text
-              fontSize={["30px", "30px", "30px", "40px", "60px"]}
-              // fontSize="60px"
-              fontWeight="700"
-              color={blackColor}
-            >
-              Drop-In Office Hours
-            </Text>
-          </HStack>
-          <Text
-            pt="24px"
-            fontSize={"18px"}
-            // fontSize="20px"
-            fontWeight="500"
+          <Heading
+            // fontSize={["30px", "30px", "30px", "40px", "60px"]}
+            // fontSize="60px"
+            // fontWeight="700"
+            size="lg"
             color={blackColor}
           >
-            As a member of the{" "}
-            <ChakraLink
-              href="https://prose.runestone.academy/"
-              textDecoration="underline"
-            >
-              PROSE Consortium
-            </ChakraLink>
-            , Doenet invites you to join us each Thursday 1-3pm Central{" "}
-            <ChakraLink
-              href="https://prose.runestone.academy/dropin/"
-              textDecoration="underline"
-            >
-              on Zoom
-            </ChakraLink>
-            . Learn how to create great interactive activities for your classes
-            in DoenetML and other powerful open source tools of the PROSE
-            ecosystem.
-            <br />
-            <br />
-            Join us at{" "}
-            <ChakraLink
-              href="https://prose.runestone.academy/dropin/"
-              textDecoration="underline"
-            >
-              this Zoom link
-            </ChakraLink>
-            .
-          </Text>
+            Questions? We&apos;re available.
+          </Heading>
+          <Heading size="md">Here&apos;s how to get in touch</Heading>
+          <Wrap direction="row">
+            <Card width="25rem">
+              <CardHeader>
+                <Heading size="sm">Discord</Heading>
+              </CardHeader>
+              <CardBody>
+                <Text>
+                  Our Discord server is a great place to get a quick response to
+                  your question.
+                </Text>
+                <Text>Join our Discord server here.</Text>
+              </CardBody>
+            </Card>
+            <Card width="25rem">
+              <CardHeader>
+                <Heading size="sm">Weekly drop-in hours</Heading>
+              </CardHeader>
+              <CardBody>
+                <Text
+                  fontSize={"18px"}
+                  // fontSize="20px"
+                  fontWeight="500"
+                  color={blackColor}
+                >
+                  As a member of the{" "}
+                  <ChakraLink
+                    href="https://prose.runestone.academy/"
+                    textDecoration="underline"
+                  >
+                    PROSE Consortium
+                  </ChakraLink>
+                  , Doenet invites you to join us each Thursday 1-3pm Central{" "}
+                  <ChakraLink
+                    href="https://prose.runestone.academy/dropin/"
+                    textDecoration="underline"
+                  >
+                    on Zoom
+                  </ChakraLink>
+                  . Learn how to create great interactive activities for your
+                  classes in DoenetML and other powerful open source tools of
+                  the PROSE ecosystem.
+                  <br />
+                  <br />
+                  Join us at{" "}
+                  <ChakraLink
+                    href="https://prose.runestone.academy/dropin/"
+                    textDecoration="underline"
+                  >
+                    this Zoom link
+                  </ChakraLink>
+                  .
+                </Text>
+              </CardBody>
+            </Card>
+            <Card width="25rem">
+              <CardHeader>
+                <Heading size="sm">Email</Heading>
+              </CardHeader>
+              <CardBody>
+                <Text>Email us at info@doenet.org</Text>
+              </CardBody>
+            </Card>
+          </Wrap>
         </VStack>
       </Center>
-
-      <Center w="100%" bg={"white"} paddingTop="40px" pl="10px" pr="10px">
-        <HStack maxWidth="750px" w="100%" spacing={4}>
-          <Text
-            fontSize={["30px", "30px", "30px", "40px", "60px"]}
-            // fontSize="60px"
-            fontWeight="700"
-            color={blackColor}
-          >
-            Explore
-          </Text>
-          <Text
-            pt="24px"
-            fontSize={["20px", null, null, "24px", "24px"]}
-            fontWeight="700"
-            color={blackColor}
-          >
-            Interact with{" "}
-            <ChakraLink
-              as={ReactRouterLink}
-              to="/explore"
-              textDecoration="underline"
-            >
-              our existing content
-            </ChakraLink>
-          </Text>
-        </HStack>
-      </Center>
-      <Flex
-        justifyContent="center"
-        alignItems="center"
-        bg={"white"}
-        p="60px 10px"
-      >
-        {/* <Carousel
-          title="Doenet Team Favorites"
-          activities={favorites.promotedContent}
-          setInfoContentData={setInfoContentData}
-          infoOnOpen={infoOnOpen}
-        /> */}
-      </Flex>
 
       <Center w="100%" bg={blueColor} pl="10px" pr="10px">
         <VStack
