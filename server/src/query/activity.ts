@@ -278,13 +278,16 @@ export async function restoreDeletedContent({
  * Update the content with `contentId`, changing any of the parameters that are given:
  * `name`, `source`, `doenetmlVersionId`, `numVariants`,
  * `shuffle`, `numToSelect`, `selectByVariant`,
- * `paginate`, `activityLevelAttempts`, and/or `itemLevelAttempts`.
+ * `paginate`, `activityLevelAttempts`, `itemLevelAttempts`, and/or `repeatInProblemSet`.
  *
  * For the change to succeed, either
  * - the content must be owned by `loggedInUserId`, or
  * - the content must be in the library and `loggedInUserId` must be an editor.
  * In addition, if the content is assigned, then the change will succeed
  * only if just modifying `name`, and/or `paginate`.
+ *
+ * If you are trying to modify `repeatInProblemSet`, the content must be a document and
+ * the content's parent must be a problem set.
  */
 export async function updateContent({
   contentId,
@@ -296,6 +299,7 @@ export async function updateContent({
   numToSelect,
   selectByVariant,
   paginate,
+  repeatInProblemSet,
   loggedInUserId,
 }: {
   contentId: Uint8Array;
@@ -307,6 +311,7 @@ export async function updateContent({
   numToSelect?: number;
   selectByVariant?: boolean;
   paginate?: boolean;
+  repeatInProblemSet?: number;
   loggedInUserId: Uint8Array;
 }) {
   if (
@@ -319,6 +324,7 @@ export async function updateContent({
       numToSelect,
       selectByVariant,
       paginate,
+      repeatInProblemSet,
     ].every((x) => x === undefined)
   ) {
     // if no information passed in, don't update anything, including `lastEdited`.
@@ -356,10 +362,42 @@ export async function updateContent({
         numToSelect,
         selectByVariant,
         // paginate,
+        repeatInProblemSet,
       ].some((x) => x !== undefined)
     ) {
       throw new InvalidRequestError("Cannot change assigned content");
     }
+  }
+
+  if (repeatInProblemSet) {
+    // Make sure this content is a document and the parent is a problem set
+    const check = await prisma.content.findUniqueOrThrow({
+      where: {
+        id: contentId,
+      },
+      select: {
+        type: true,
+        numVariants: true,
+        parent: {
+          select: {
+            type: true,
+          },
+        },
+      },
+    });
+    if (check.type !== "singleDoc" || check.parent?.type !== "sequence") {
+      throw new InvalidRequestError(
+        "Cannot modify `repeatInProblemSet` when content is not a document or parent is not a problem set.",
+      );
+    }
+
+    // Clamp the repeats between 1 and the number of variants this doc has
+    // (doesn't make sense to repeat exact problem twice)
+    repeatInProblemSet = Math.max(repeatInProblemSet, 1);
+    repeatInProblemSet = Math.min(
+      repeatInProblemSet,
+      numVariants ?? check.numVariants,
+    );
   }
 
   await prisma.content.update({
@@ -376,6 +414,7 @@ export async function updateContent({
       numToSelect,
       selectByVariant,
       paginate,
+      repeatInProblemSet,
       lastEdited: DateTime.now().toJSDate(),
     },
   });

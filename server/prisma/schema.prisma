@@ -40,6 +40,8 @@ model content {
   // Specific to select type
   numToSelect            Int                      @default(1) @db.UnsignedSmallInt
   selectByVariant        Boolean                  @default(false)
+  // Specific to documents inside problem sets
+  repeatInProblemSet     Int                      @default(1)
   // Assignments
   nonRootAssignmentId    Bytes?                   @db.Binary(16)
   mode                   AssignmentMode           @default(formative)

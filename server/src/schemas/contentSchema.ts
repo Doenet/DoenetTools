@@ -28,6 +28,7 @@ export const updateContentSettingsSchema = z.object({
   paginate: z.boolean().optional(),
   activityLevelAttempts: z.boolean().optional(),
   itemLevelAttempts: z.boolean().optional(),
+  repeatInProblemSet: z.number().optional(),
 });
 
 export const updateCategoriesSchema = z.object({
