@@ -1,7 +1,6 @@
 import React from "react";
-import { useLoaderData, useNavigate } from "react-router";
+import { useLoaderData } from "react-router";
 import { DoenetmlVersion } from "../../types";
-import { useLocation } from "react-router";
 import { DoenetViewer } from "@doenet/doenetml-iframe";
 import { BlueBanner } from "../../widgets/BlueBanner";
 import axios from "axios";
@@ -27,8 +26,8 @@ export function DocEditorViewMode() {
     doenetmlVersion: DoenetmlVersion | null;
   };
 
-  const location = useLocation();
-  const navigate = useNavigate();
+  const baseUrl = window.location.protocol + "//" + window.location.host;
+  const doenetViewerUrl = `${baseUrl}/activityViewer`;
 
   return (
     <BlueBanner>
@@ -47,12 +46,7 @@ export function DocEditorViewMode() {
           allowSaveEvents: false,
         }}
         attemptNumber={1}
-        location={location}
-        navigate={navigate}
-        linkSettings={{
-          viewURL: "",
-          editURL: "",
-        }}
+        doenetViewerUrl={doenetViewerUrl}
         includeVariantSelector={true}
       />
     </BlueBanner>

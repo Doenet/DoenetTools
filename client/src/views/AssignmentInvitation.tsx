@@ -39,7 +39,7 @@ export function AssignmentInvitation({
   //   setUrlCopied(false);
   // }, [isOpen]);
 
-  const baseUrl = window.location.host;
+  const baseUrl = window.location.protocol + "//" + window.location.host;
 
   return (
     <Modal
@@ -69,7 +69,7 @@ export function AssignmentInvitation({
                 </Text>
                 <Center>
                   <QRCode
-                    value={`https://${baseUrl}/code/${classCode}`}
+                    value={`${baseUrl}/code/${classCode}`}
                     logoImage={"/Doenet_Logo_Frontpage.png"}
                     removeQrCodeBehindLogo
                     logoPaddingStyle="circle"
