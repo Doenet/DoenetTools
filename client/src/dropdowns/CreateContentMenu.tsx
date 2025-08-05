@@ -126,27 +126,6 @@ export function CreateContentMenu({
           >
             {menuIcons.folder} Folder
           </MenuItem>
-          <Tooltip
-            openDelay={500}
-            label={
-              followAllowedParents && !allowedParents.includes("select")
-                ? "Some selected items cannot be added to a question bank"
-                : null
-            }
-          >
-            <MenuItem
-              data-test="Create Question Bank"
-              isDisabled={
-                followAllowedParents && !allowedParents.includes("select")
-              }
-              onClick={() => {
-                setCreateNewType("select");
-                createDialogOnOpen();
-              }}
-            >
-              {menuIcons.select} Question bank
-            </MenuItem>
-          </Tooltip>
         </MenuList>
       </Menu>
     </>

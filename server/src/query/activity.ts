@@ -35,6 +35,15 @@ export async function createContent({
   inLibrary?: boolean;
   name?: string;
 }) {
+  // TODO: Eventually, when we are sure we do not want question banks,
+  // we will remove them entirely from the codebase. For now, just
+  // log it in the server
+  if (contentType === "select") {
+    console.log(
+      "Creating new question bank. They are deprecated and will be removed shortly.",
+    );
+  }
+
   let ownerId = loggedInUserId;
   if (inLibrary) {
     await mustBeEditor(loggedInUserId);
