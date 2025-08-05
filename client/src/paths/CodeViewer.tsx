@@ -102,6 +102,9 @@ export function CodeViewer() {
     document.title = `${label} - Doenet`;
   }, [label]);
 
+  const baseUrl = window.location.host;
+  const doenetViewerUrl = `${baseUrl}/activityViewer`;
+
   return (
     <>
       {activityData ? (
@@ -259,6 +262,7 @@ export function CodeViewer() {
             border="none"
             showFormatter={false}
             showErrorsWarnings={false}
+            doenetViewerUrl={doenetViewerUrl}
           />
         </GridItem>
       </Grid>

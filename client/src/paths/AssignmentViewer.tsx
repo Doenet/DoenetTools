@@ -559,6 +559,9 @@ export function AssignmentViewer() {
     return <ChangeName hideHomeButton />;
   }
 
+  const baseUrl = window.location.host;
+  const doenetViewerUrl = `${baseUrl}/activityViewer`;
+
   let viewer: ReactElement<any>;
   if (loaderData.type === "singleDoc") {
     const maxAttempts = assignment.assignmentInfo?.maxAttempts ?? 0;
@@ -601,12 +604,7 @@ export function AssignmentViewer() {
             allowSaveEvents: true,
           }}
           attemptNumber={attemptNumber}
-          location={location}
-          navigate={navigate}
-          linkSettings={{
-            viewURL: "/activityViewer",
-            editURL: "/codeViewer",
-          }}
+          doenetViewerUrl={doenetViewerUrl}
         />
       </Box>
     );
@@ -619,7 +617,7 @@ export function AssignmentViewer() {
           // DoenetActivityViewer adjusts variant based on attempt number, so we don't need to add it to initial variant
           requestedVariantIndex={initialVariant}
           userId={user.userId}
-          linkSettings={{ viewUrl: "", editURL: "" }}
+          doenetViewerUrl={doenetViewerUrl}
           paginate={
             assignment.type === "sequence" ? assignment.paginate : false
           }

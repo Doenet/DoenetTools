@@ -45,13 +45,16 @@ export function CompoundEditorViewMode() {
     maxAttemptsAllowed?: number;
   };
 
+  const baseUrl = window.location.host;
+  const doenetViewerUrl = `${baseUrl}/activityViewer`;
+
   return (
     <BlueBanner>
       <DoenetActivityViewer
         source={source}
         requestedVariantIndex={1}
         userId={"hi"}
-        linkSettings={{ viewUrl: "", editURL: "" }}
+        doenetViewerUrl={doenetViewerUrl}
         paginate={paginate}
         activityLevelAttempts={activityLevelAttempts}
         itemLevelAttempts={itemLevelAttempts}

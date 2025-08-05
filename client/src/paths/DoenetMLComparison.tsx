@@ -129,6 +129,9 @@ export function DoenetMLComparison() {
     updateMessage = `Show possible actions for updating your activity from the ${compareRelation === "source" ? "remix source" : "remixed activity"}`;
   }
 
+  const baseUrl = window.location.host;
+  const doenetViewerUrl = `${baseUrl}/activityViewer`;
+
   const currentEditor = (
     <Box height="100%">
       <Flex
@@ -157,6 +160,7 @@ export function DoenetMLComparison() {
         viewerLocation="bottom"
         showErrorsWarnings={false}
         showResponses={false}
+        doenetViewerUrl={doenetViewerUrl}
       />
     </Box>
   );
@@ -201,6 +205,7 @@ export function DoenetMLComparison() {
         readOnly={true}
         showErrorsWarnings={false}
         showResponses={false}
+        doenetViewerUrl={doenetViewerUrl}
       />
     </Box>
   );

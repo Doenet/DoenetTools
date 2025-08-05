@@ -161,6 +161,9 @@ export function DocEditorHistoryMode() {
     />
   );
 
+  const baseUrl = window.location.host;
+  const doenetViewerUrl = `${baseUrl}/activityViewer`;
+
   let updateButton: ReactElement<any> | null = null;
   if (selectedRevision) {
     const message =
@@ -226,6 +229,7 @@ export function DocEditorHistoryMode() {
         viewerLocation="bottom"
         showErrorsWarnings={false}
         showResponses={false}
+        doenetViewerUrl={doenetViewerUrl}
       />
     </Box>
   );
@@ -308,6 +312,7 @@ export function DocEditorHistoryMode() {
             showErrorsWarnings={false}
             showResponses={false}
             readOnly={true}
+            doenetViewerUrl={doenetViewerUrl}
           />
         </>
       ) : (
