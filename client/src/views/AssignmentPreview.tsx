@@ -1,7 +1,6 @@
 import React, { ReactElement, useState } from "react";
 import { Box } from "@chakra-ui/react";
 import { DoenetViewer } from "@doenet/doenetml-iframe";
-import { useLocation, useNavigate } from "react-router";
 import { DoenetmlVersion } from "../types";
 import { ActivitySource } from "../viewerTypes";
 // @ts-expect-error assignment-viewer doesn't publish types, see https://github.com/Doenet/assignment-viewer/issues/20
@@ -35,10 +34,10 @@ export default function AssignmentPreview({
     allPossibleVariants: ["a"],
   });
 
-  const navigate = useNavigate();
-  const location = useLocation();
-
   let viewer: ReactElement<any> | null = null;
+
+  const baseUrl = window.location.protocol + "//" + window.location.host;
+  const doenetViewerUrl = `${baseUrl}/activityViewer`;
 
   if (active) {
     if (data.type === "singleDoc") {
@@ -60,12 +59,7 @@ export default function AssignmentPreview({
           attemptNumber={1}
           generatedVariantCallback={setVariants}
           requestedVariantIndex={variants.index}
-          location={location}
-          navigate={navigate}
-          linkSettings={{
-            viewURL: "/activityViewer",
-            editURL: "/codeViewer",
-          }}
+          doenetViewerUrl={doenetViewerUrl}
           showAnswerTitles={true}
         />
       );
@@ -79,7 +73,7 @@ export default function AssignmentPreview({
         <DoenetActivityViewer
           source={source}
           requestedVariantIndex={1}
-          linkSettings={{ viewUrl: "", editURL: "" }}
+          doenetViewerUrl={doenetViewerUrl}
           paginate={false}
           showTitle={false}
           flags={{

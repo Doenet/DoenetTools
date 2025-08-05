@@ -102,6 +102,7 @@ export async function getContent({
   includeClassifications = false,
   includeShareDetails = false,
   includeOwnerDetails = false,
+  includeRepeatInProblemSet = false,
   isEditor = false,
   skipPermissionCheck = false,
 }: {
@@ -111,6 +112,7 @@ export async function getContent({
   includeClassifications?: boolean;
   includeShareDetails?: boolean;
   includeOwnerDetails?: boolean;
+  includeRepeatInProblemSet?: boolean;
   isEditor?: boolean;
   skipPermissionCheck?: boolean;
 }) {
@@ -163,6 +165,7 @@ export async function getContent({
     includeClassifications,
     includeShareDetails,
     includeOwnerDetails,
+    includeRepeatInProblemSet,
   });
 
   const preliminaryList = await prisma.content.findMany({

@@ -263,6 +263,7 @@ export async function getCompoundEditorView({
     isEditor,
     skipPermissionCheck: true,
     includeAssignInfo: true,
+    includeRepeatInProblemSet: true,
   });
 
   return {
@@ -307,6 +308,7 @@ export async function getCompoundEditorEdit({
     loggedInUserId,
     isEditor,
     skipPermissionCheck: true,
+    includeRepeatInProblemSet: true,
   });
 
   return { content };

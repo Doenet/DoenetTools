@@ -146,6 +146,7 @@ export function returnContentSelect({
   includeClassifications = false,
   includeShareDetails = false,
   includeOwnerDetails = false,
+  includeRepeatInProblemSet = false,
 }) {
   const sharedWith = {
     select: includeShareDetails
@@ -256,6 +257,10 @@ export function returnContentSelect({
     paginate: true,
   };
 
+  const repeatInProblemSetSelect = includeRepeatInProblemSet && {
+    repeatInProblemSet: true,
+  };
+
   return {
     rootAssignment,
     nonRootAssignment,
@@ -263,6 +268,7 @@ export function returnContentSelect({
     ...docSelect,
     ...questionBankSelect,
     ...problemSetSelect,
+    ...repeatInProblemSetSelect,
   };
 }
 
@@ -330,6 +336,7 @@ type PreliminaryContent = {
   }[];
   activityLevelAttempts: boolean;
   itemLevelAttempts: boolean;
+  repeatInProblemSet?: number;
 
   // if `includeAssignInfo` is specified
   rootAssignment?: {
@@ -433,6 +440,9 @@ export function processContent(
     shuffle,
     paginate,
 
+    // document inside problem set
+    repeatInProblemSet,
+
     ...preliminaryContent2
   } = preliminaryContent;
 
@@ -483,6 +493,7 @@ export function processContent(
         numVariants: number;
         doenetmlVersion: DoenetmlVersion;
         revisionNum?: number;
+        repeatInProblemSet?: number;
       };
 
       if (
@@ -494,6 +505,7 @@ export function processContent(
           doenetML: sourceOrig,
           numVariants: numVariantsOrig,
           doenetmlVersion: doenetmlVersionOrig,
+          repeatInProblemSet,
         };
       } else {
         throw new InvalidRequestError("Invalid document");
@@ -591,7 +603,7 @@ export function compileActivityFromContent(
 ): ActivitySource {
   switch (activity.type) {
     case "singleDoc": {
-      return {
+      const documentJson = {
         id: fromUUID(activity.contentId),
         type: activity.type,
         isDescription: false,
@@ -601,6 +613,20 @@ export function compileActivityFromContent(
           : activity.doenetmlVersion.fullVersion,
         numVariants: activity.numVariants,
       };
+      if (activity.repeatInProblemSet && activity.repeatInProblemSet > 1) {
+        // If the document repeats, wrap this document in
+        // a `select` which can select that many variants.
+        return {
+          id: `select_for_${fromUUID(activity.contentId)}`,
+          type: "select",
+          title: `Repeat ${activity.repeatInProblemSet} times`,
+          numToSelect: activity.repeatInProblemSet,
+          selectByVariant: true,
+          items: [documentJson],
+        };
+      } else {
+        return documentJson;
+      }
     }
     case "select": {
       return {

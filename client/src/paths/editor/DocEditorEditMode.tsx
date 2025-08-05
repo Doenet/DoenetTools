@@ -130,6 +130,9 @@ function DocumentEditor({
     };
   }, [handleSaveDoc]);
 
+  const baseUrl = window.location.protocol + "//" + window.location.host;
+  const doenetViewerUrl = `${baseUrl}/activityViewer`;
+
   return (
     <DoenetEditor
       height={`calc(100vh - ${headerHeight})`}
@@ -154,6 +157,7 @@ function DocumentEditor({
       initialWarnings={initialWarnings}
       border="none"
       readOnly={readOnly}
+      doenetViewerUrl={doenetViewerUrl}
     />
   );
 }

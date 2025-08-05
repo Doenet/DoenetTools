@@ -146,6 +146,9 @@ export function AssignmentItemResponseStudent({
       />
     ) : null;
 
+  const baseUrl = window.location.protocol + "//" + window.location.host;
+  const doenetViewerUrl = `${baseUrl}/activityViewer`;
+
   const viewer = (
     <DoenetViewer
       doenetML={doenetML}
@@ -168,10 +171,7 @@ export function AssignmentItemResponseStudent({
       //   forceShowCorrectness={true}
       forceShowSolution={true}
       forceUnsuppressCheckwork={true}
-      linkSettings={{
-        viewURL: "/activityViewer",
-        editURL: "/codeViewer",
-      }}
+      doenetViewerUrl={doenetViewerUrl}
       showAnswerResponseButton={true}
       answerResponseCounts={responseCounts}
     />

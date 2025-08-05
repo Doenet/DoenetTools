@@ -277,6 +277,9 @@ export function ActivityViewer() {
 
   let mainContent: ReactElement<any> = <></>;
 
+  const baseUrl = window.location.protocol + "//" + window.location.host;
+  const doenetViewerUrl = `${baseUrl}/activityViewer`;
+
   if (data.type === "singleDoc") {
     if (mode === "Edit") {
       const initialWarnings = getDoenetMLDeprecationWarnings(
@@ -292,6 +295,7 @@ export function ActivityViewer() {
           initialWarnings={initialWarnings}
           border="none"
           readOnly={true}
+          doenetViewerUrl={doenetViewerUrl}
         />
       );
     } else {
@@ -312,12 +316,7 @@ export function ActivityViewer() {
               allowSaveEvents: false,
             }}
             attemptNumber={1}
-            location={location}
-            navigate={navigate}
-            linkSettings={{
-              viewURL: "",
-              editURL: "",
-            }}
+            doenetViewerUrl={doenetViewerUrl}
             includeVariantSelector={true}
           />
         </BlueBanner>
@@ -352,6 +351,7 @@ export function ActivityViewer() {
             }
             maxAttemptsAllowed={activityData.assignmentInfo?.maxAttempts}
             showTitle={false}
+            doenetViewerUrl={doenetViewerUrl}
           />
         </BlueBanner>
       );
