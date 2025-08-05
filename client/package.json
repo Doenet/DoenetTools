@@ -3,7 +3,7 @@
   "version": "1.0.1",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "cross-env NODE_ENV=production vite",
     "build": "tsc && vite build",
     "test": "cypress open",
     "test:all": "cypress run -b 'chrome' --config video=false --headless",
@@ -59,6 +59,7 @@
     "@types/react-router": "^5.1.20",
     "@vitejs/plugin-react": "^4.7.0",
     "@web/test-runner": "^0.20.2",
+    "cross-env": "^10.0.0",
     "esbuild": "^0.25.8",
     "eslint": "^9.32.0",
     "eslint-config-prettier": "^10.1.8",
