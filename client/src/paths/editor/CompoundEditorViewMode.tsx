@@ -45,7 +45,7 @@ export function CompoundEditorViewMode() {
     maxAttemptsAllowed?: number;
   };
 
-  const baseUrl = window.location.host;
+  const baseUrl = window.location.protocol + "//" + window.location.host;
   const doenetViewerUrl = `${baseUrl}/activityViewer`;
 
   return (

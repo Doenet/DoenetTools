@@ -26,7 +26,7 @@ export function DocEditorViewMode() {
     doenetmlVersion: DoenetmlVersion | null;
   };
 
-  const baseUrl = window.location.host;
+  const baseUrl = window.location.protocol + "//" + window.location.host;
   const doenetViewerUrl = `${baseUrl}/activityViewer`;
 
   return (

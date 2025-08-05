@@ -277,7 +277,7 @@ export function ActivityViewer() {
 
   let mainContent: ReactElement<any> = <></>;
 
-  const baseUrl = window.location.host;
+  const baseUrl = window.location.protocol + "//" + window.location.host;
   const doenetViewerUrl = `${baseUrl}/activityViewer`;
 
   if (data.type === "singleDoc") {

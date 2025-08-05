@@ -129,7 +129,7 @@ export function DoenetMLComparison() {
     updateMessage = `Show possible actions for updating your activity from the ${compareRelation === "source" ? "remix source" : "remixed activity"}`;
   }
 
-  const baseUrl = window.location.host;
+  const baseUrl = window.location.protocol + "//" + window.location.host;
   const doenetViewerUrl = `${baseUrl}/activityViewer`;
 
   const currentEditor = (

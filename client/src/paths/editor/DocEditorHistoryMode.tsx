@@ -161,7 +161,7 @@ export function DocEditorHistoryMode() {
     />
   );
 
-  const baseUrl = window.location.host;
+  const baseUrl = window.location.protocol + "//" + window.location.host;
   const doenetViewerUrl = `${baseUrl}/activityViewer`;
 
   let updateButton: ReactElement<any> | null = null;

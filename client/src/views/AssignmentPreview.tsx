@@ -36,7 +36,7 @@ export default function AssignmentPreview({
 
   let viewer: ReactElement<any> | null = null;
 
-  const baseUrl = window.location.host;
+  const baseUrl = window.location.protocol + "//" + window.location.host;
   const doenetViewerUrl = `${baseUrl}/activityViewer`;
 
   if (active) {

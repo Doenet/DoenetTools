@@ -146,7 +146,7 @@ export function AssignmentItemResponseStudent({
       />
     ) : null;
 
-  const baseUrl = window.location.host;
+  const baseUrl = window.location.protocol + "//" + window.location.host;
   const doenetViewerUrl = `${baseUrl}/activityViewer`;
 
   const viewer = (

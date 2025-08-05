@@ -559,7 +559,7 @@ export function AssignmentViewer() {
     return <ChangeName hideHomeButton />;
   }
 
-  const baseUrl = window.location.host;
+  const baseUrl = window.location.protocol + "//" + window.location.host;
   const doenetViewerUrl = `${baseUrl}/activityViewer`;
 
   let viewer: ReactElement<any>;
