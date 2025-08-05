@@ -24,9 +24,11 @@ import {
   Card,
   CardBody,
   CardHeader,
+  Stack,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router";
-import { HiOutlineMail } from "react-icons/hi";
+import { HiOutlineMail, HiOfficeBuilding } from "react-icons/hi";
+import { MdEmail } from "react-icons/md";
 import { BsGithub, BsDiscord } from "react-icons/bs";
 import { Content } from "../types";
 import { ContentInfoDrawer } from "../drawers/ContentInfoDrawer";
@@ -128,44 +130,50 @@ export function Home() {
             Create and share your own.
           </Text>
 
-          <ChakraLink as={ReactRouterLink} to="/code">
-            <Button
-              mt="20px"
-              p="10px"
-              colorScheme="blue"
-              // these are out of order because on phones we change the number of columns
-              w={["260px", "260px", "260px", "300px"]}
-              h={["40px", "40px", "40px", "50px", "60px"]}
-              fontSize={["18px", "18px", "18px", "22px", "26px"]}
+          <Stack>
+            <ChakraLink as={ReactRouterLink} to="/code">
+              <Button
+                mt="20px"
+                p="10px"
+                colorScheme="blue"
+                // these are out of order because on phones we change the number of columns
+                w={["260px", "260px", "260px", "300px"]}
+                h={["40px", "40px", "40px", "50px", "60px"]}
+                fontSize={["18px", "18px", "18px", "22px", "26px"]}
+              >
+                Join with Class Code
+              </Button>
+            </ChakraLink>
+            <ChakraLink as={ReactRouterLink} to="/explore">
+              <Button
+                mt="20px"
+                p="10px"
+                colorScheme="blue"
+                // these are out of order because on phones we change the number of columns
+                w={["260px", "260px", "260px", "300px"]}
+                h={["40px", "40px", "40px", "50px", "60px"]}
+                fontSize={["18px", "18px", "18px", "22px", "26px"]}
+              >
+                Explore Activities
+              </Button>
+            </ChakraLink>
+
+            <ChakraLink
+              href="https://docs.doenet.org/tutorials/quickStart"
+              isExternal
             >
-              Join with Class Code
-            </Button>
-          </ChakraLink>
-          <ChakraLink as={ReactRouterLink} to="/explore">
-            <Button
-              mt="20px"
-              p="10px"
-              colorScheme="blue"
-              // these are out of order because on phones we change the number of columns
-              w={["260px", "260px", "260px", "300px"]}
-              h={["40px", "40px", "40px", "50px", "60px"]}
-              fontSize={["18px", "18px", "18px", "22px", "26px"]}
-            >
-              Explore Activities
-            </Button>
-          </ChakraLink>
-          <ReactRouterLink to="https://www.doenet.org/activityViewer/_7OlapeBhtcfQaa5f7sOCH">
-            <Button
-              mt="20px"
-              p="10px"
-              colorScheme="blue"
-              w={["260px", "260px", "260px", "300px"]}
-              h={["40px", "40px", "40px", "50px", "60px"]}
-              fontSize={["18px", "18px", "18px", "22px", "26px"]}
-            >
-              Learn to Make Your Own
-            </Button>
-          </ReactRouterLink>
+              <Button
+                mt="20px"
+                p="10px"
+                colorScheme="blue"
+                w={["260px", "260px", "260px", "300px"]}
+                h={["40px", "40px", "40px", "50px", "60px"]}
+                fontSize={["18px", "18px", "18px", "22px", "26px"]}
+              >
+                Learn to Make Your Own
+              </Button>
+            </ChakraLink>
+          </Stack>
         </Flex>
       </Box>
     );
@@ -344,9 +352,9 @@ export function Home() {
         </VStack>
       </Center> */}
 
-      <Center w="100%" bg={grayColor} pl="10px" pr="10px">
+      <Center w="100%" bg={blueColor} pl="10px" pr="10px">
         <VStack
-          maxWidth="900px"
+          // maxWidth="900px"
           w="100%"
           spacing={4}
           marginTop="40px"
@@ -361,23 +369,36 @@ export function Home() {
           >
             Questions? We&apos;re available.
           </Heading>
-          <Heading size="md">Here&apos;s how to get in touch</Heading>
           <Wrap direction="row">
             <Card width="25rem">
               <CardHeader>
-                <Heading size="sm">Discord</Heading>
+                <HStack>
+                  <BsDiscord fontSize="2rem" />
+                  <Heading size="md">Discord</Heading>
+                </HStack>
               </CardHeader>
               <CardBody>
                 <Text>
                   Our Discord server is a great place to get a quick response to
                   your question.
                 </Text>
-                <Text>Join our Discord server here.</Text>
+                <ChakraLink
+                  href="https://discord.gg/PUduwtKJ5h"
+                  textDecoration="underline"
+                >
+                  Join our Discord server here.
+                </ChakraLink>
               </CardBody>
             </Card>
             <Card width="25rem">
               <CardHeader>
-                <Heading size="sm">Weekly drop-in hours</Heading>
+                <HStack>
+                  <HiOfficeBuilding fontSize="2rem" />
+                  <Heading size="md" mb="0.25rem">
+                    Virtual drop-in hours
+                  </Heading>
+                </HStack>
+                <em>Weekly on Tuesdays 1-3pm CST</em>
               </CardHeader>
               <CardBody>
                 <Text
@@ -393,7 +414,7 @@ export function Home() {
                   >
                     PROSE Consortium
                   </ChakraLink>
-                  , Doenet invites you to join us each Thursday 1-3pm Central{" "}
+                  , Doenet invites you to join us each Tuesday 1-3pm Central{" "}
                   <ChakraLink
                     href="https://prose.runestone.academy/dropin/"
                     textDecoration="underline"
@@ -418,10 +439,51 @@ export function Home() {
             </Card>
             <Card width="25rem">
               <CardHeader>
-                <Heading size="sm">Email</Heading>
+                <HStack>
+                  <MdEmail fontSize="2rem" />
+                  <Heading size="md">Email</Heading>
+                </HStack>
               </CardHeader>
               <CardBody>
-                <Text>Email us at info@doenet.org</Text>
+                <Text>
+                  Feel free to email us at <em>info@doenet.org</em> with your
+                  questions.
+                </Text>
+              </CardBody>
+            </Card>
+          </Wrap>
+        </VStack>
+      </Center>
+
+      <Center w="100%" bg={grayColor} pl="10px" pr="10px">
+        <VStack
+          // maxWidth="900px"
+          w="100%"
+          spacing={4}
+          marginTop="40px"
+          marginBottom="40px"
+        >
+          <Heading
+            // fontSize={["30px", "30px", "30px", "40px", "60px"]}
+            // fontSize="60px"
+            // fontWeight="700"
+            size="lg"
+            color={blackColor}
+          >
+            Events
+          </Heading>
+          <Wrap>
+            <Card>
+              <CardHeader>
+                <Heading size="sm">
+                  Nov 7-8: Doenet Workshop @ Saint Louis University
+                </Heading>
+              </CardHeader>
+              <CardBody mt="0" pt="0">
+                <Text>
+                  One of our community members is leading a workshop at SLU!
+                  Contact <em>info@doenet.org</em> for more info.
+                </Text>
               </CardBody>
             </Card>
           </Wrap>
