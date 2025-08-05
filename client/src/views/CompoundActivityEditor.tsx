@@ -50,10 +50,7 @@ import {
 } from "../dropdowns/CreateContentMenu";
 import { AddContentToMenu } from "../popups/AddContentToMenu";
 import { DeleteContent, deleteContentActions } from "../popups/DeleteContent";
-import {
-  CreateLocalContent,
-  createLocalContentActions,
-} from "../popups/CreateLocalContent";
+import { createLocalContentActions } from "../popups/CreateLocalContent";
 import {
   ActivateAuthorMode,
   activateAuthorModeActions,
@@ -275,23 +272,6 @@ export function CompoundActivityEditor({
       finalFocusRef={finalFocusRef}
     />
   ) : null;
-
-  const {
-    isOpen: createQuestionBankIsOpen,
-    onOpen: createQuestionBankOnOpen,
-    onClose: createQuestionBankOnClose,
-  } = useDisclosure();
-
-  const createQuestionBankModal = (
-    <CreateLocalContent
-      isOpen={createQuestionBankIsOpen}
-      onClose={createQuestionBankOnClose}
-      contentType="select"
-      parentId={activity.contentId}
-      fetcher={fetcher}
-      finalFocusRef={finalFocusRef}
-    />
-  );
 
   const {
     isOpen: authorModePromptIsOpen,
@@ -815,16 +795,6 @@ export function CompoundActivityEditor({
           >
             Items from My Activities
           </MenuItem>
-          {activity.type === "sequence" ? (
-            <MenuItem
-              data-test="Add Question Bank Button"
-              onClick={() => {
-                createQuestionBankOnOpen();
-              }}
-            >
-              Empty Question Bank
-            </MenuItem>
-          ) : null}
           <MenuItem
             data-test="Add Document Button"
             onClick={() => {
@@ -848,7 +818,6 @@ export function CompoundActivityEditor({
       {moveContentModal}
       {copyContentModal}
       {deleteModal}
-      {createQuestionBankModal}
       {authorModeModal}
       {heading}
       <Flex

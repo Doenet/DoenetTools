@@ -308,30 +308,6 @@ export function AddContentToMenu({
               {menuIcons.folder} Folder
             </MenuItem>
           </Tooltip>
-          <Tooltip
-            openDelay={500}
-            label={
-              !baseContains.includes("select")
-                ? "No existing question banks"
-                : restrictToAllowedParents && !allowedParents.includes("select")
-                  ? "Some selected items cannot be added to a question bank"
-                  : null
-            }
-          >
-            <MenuItem
-              data-test="Add To Question Bank"
-              isDisabled={
-                !baseContains.includes("select") ||
-                (restrictToAllowedParents && !allowedParents.includes("select"))
-              }
-              onClick={() => {
-                setAddToType("select");
-                moveCopyContentOnOpen();
-              }}
-            >
-              {menuIcons.select} Question bank
-            </MenuItem>
-          </Tooltip>
           <MenuItem
             data-test="Add To My Activities"
             onClick={() => {

@@ -717,18 +717,6 @@ export function Activities() {
                 >
                   Folder
                 </MenuItem>
-                <MenuItem
-                  data-test="Add Question Bank Button"
-                  onClick={() => {
-                    setHaveContentSpinner(true);
-                    fetcher.submit(
-                      { _action: "Add Activity", type: "select" },
-                      { method: "post" },
-                    );
-                  }}
-                >
-                  Question Bank
-                </MenuItem>
               </MenuList>
             </Menu>
 
