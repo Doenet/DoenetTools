@@ -16,11 +16,7 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import axios from "axios";
-import {
-  FetcherWithComponents,
-  useNavigate,
-  useOutletContext,
-} from "react-router";
+import { useFetcher, useNavigate, useOutletContext } from "react-router";
 import { ContentType } from "../types";
 import { contentTypeToName } from "../utils/activity";
 import { SiteContext } from "../paths/SiteHeader";
@@ -70,67 +66,70 @@ export async function createContentAndPromptNameActions({
  * When the copy is finished, the modal allows the user to close it or navigate to the new item.
  */
 export function CreateContentAndPromptName({
-  fetcher,
   isOpen,
   onClose,
   finalFocusRef,
   contentIds,
   desiredType,
 }: {
-  fetcher: FetcherWithComponents<any>;
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement | null>;
   contentIds: string[];
   desiredType: ContentType;
 }) {
+  const { user } = useOutletContext<SiteContext>();
+  const navigate = useNavigate();
+  const [errMsg, setErrMsg] = useState("");
+  const nameRef = useRef<HTMLInputElement>(null);
+
+  const fetcher = useFetcher();
+
   const [newActivityData, setNewActivityData] = useState<{
     newChildContentIds: string[];
     newContentId: string;
     newContentName: string;
   } | null>(null);
 
-  const { user } = useOutletContext<SiteContext>();
-
-  const navigate = useNavigate();
-
-  const [errMsg, setErrMsg] = useState("");
-
-  const nameRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (fetcher.data?.action === "createdContent") {
-      if (fetcher.data.success) {
-        setNewActivityData(fetcher.data.activityData);
-      } else {
-        setErrMsg(`An error occurred while creating content.`);
-      }
-      document.body.style.cursor = "default";
-    } else if (fetcher.data?.action === "savedName") {
-      if (!fetcher.data.success) {
-        setErrMsg("An error occurred while saving the name.");
-      }
+  function saveName(newName: string) {
+    if (newActivityData) {
+      fetcher.submit(
+        {
+          _action: "save name",
+          name: newName,
+          contentId: newActivityData.newContentId,
+        },
+        { method: "post" },
+      );
     }
-  }, [fetcher.data]);
+  }
 
-  useEffect(() => {
-    if (isOpen) {
-      if (newActivityData === null) {
-        document.body.style.cursor = "wait";
-        fetcher.submit(
-          {
-            _action: "create content",
-            contentIds: JSON.stringify(contentIds),
-            desiredType,
-          },
-          { method: "post" },
-        );
-      }
+  // Create the content when this modal opens
+  // Only once - don't create if fetcher already has data
+  if (isOpen && fetcher.state === "idle" && !fetcher.data) {
+    document.body.style.cursor = "wait";
+    fetcher.submit(
+      {
+        _action: "create content",
+        contentIds: JSON.stringify(contentIds),
+        desiredType,
+      },
+      { method: "post" },
+    );
+  }
+
+  if (newActivityData === null && fetcher.data?.action === "createdContent") {
+    if (fetcher.data.success) {
+      setNewActivityData(fetcher.data.activityData);
     } else {
-      setNewActivityData(null);
-      setErrMsg("");
+      setErrMsg(`An error occurred while creating content.`);
     }
-  }, [contentIds, desiredType, fetcher, isOpen, newActivityData]);
+    document.body.style.cursor = "default";
+  } else if (fetcher.data?.action === "savedName") {
+    if (!fetcher.data.success) {
+      setErrMsg("An error occurred while saving the name.");
+    }
+  }
 
   useEffect(() => {
     nameRef.current?.select();
@@ -148,20 +147,9 @@ export function CreateContentAndPromptName({
     destinationUrl = `/activities/${user?.userId}/${newActivityData?.newContentId}`;
   } else {
     destinationAction = `Open ${typeName}`;
-    destinationUrl = editorUrl(newActivityData!.newContentId, desiredType);
-  }
-
-  function saveName(newName: string) {
-    if (newActivityData) {
-      fetcher.submit(
-        {
-          _action: "save name",
-          name: newName,
-          contentId: newActivityData.newContentId,
-        },
-        { method: "post" },
-      );
-    }
+    destinationUrl = newActivityData
+      ? editorUrl(newActivityData.newContentId, desiredType)
+      : "";
   }
 
   return (
