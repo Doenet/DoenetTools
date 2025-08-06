@@ -2,12 +2,13 @@ import express from "express";
 import {
   createContentSchema,
   contentIdSchema,
-  createContentRevisionScheme,
-  revertToRevisionScheme,
+  createContentRevisionSchema,
+  revertToRevisionSchema,
   updateContentDoenetMLSchema,
   updateCategoriesSchema,
-  updateContentRevisionScheme,
+  updateContentRevisionSchema,
   updateContentSettingsSchema,
+  saveSyntaxUpdateSchema,
 } from "../schemas/contentSchema";
 import {
   createContent,
@@ -15,6 +16,7 @@ import {
   deleteContent,
   restoreDeletedContent,
   revertToRevision,
+  saveSyntaxUpdate,
   updateCategories,
   updateContent,
   updateContentRevision,
@@ -55,15 +57,20 @@ updateContentRouter.post(
 
 updateContentRouter.post(
   "/createContentRevision",
-  queryLoggedIn(createContentRevision, createContentRevisionScheme),
+  queryLoggedIn(createContentRevision, createContentRevisionSchema),
 );
 
 updateContentRouter.post(
   "/updateContentRevision",
-  queryLoggedIn(updateContentRevision, updateContentRevisionScheme),
+  queryLoggedIn(updateContentRevision, updateContentRevisionSchema),
 );
 
 updateContentRouter.post(
   "/revertToRevision",
-  queryLoggedIn(revertToRevision, revertToRevisionScheme),
+  queryLoggedIn(revertToRevision, revertToRevisionSchema),
+);
+
+updateContentRouter.post(
+  "/saveSyntaxUpdate",
+  queryLoggedIn(saveSyntaxUpdate, saveSyntaxUpdateSchema),
 );
