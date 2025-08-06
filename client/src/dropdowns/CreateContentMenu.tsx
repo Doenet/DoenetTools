@@ -75,7 +75,6 @@ export function CreateContentMenu({
 
   const createContentModal = (
     <CreateContentAndPromptName
-      fetcher={fetcher}
       isOpen={createDialogIsOpen}
       onClose={createDialogOnClose}
       contentIds={sourceContent.map((sc) => sc.contentId)}
