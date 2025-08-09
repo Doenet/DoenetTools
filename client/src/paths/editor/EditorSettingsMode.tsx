@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   FetcherWithComponents,
   useFetcher,
@@ -287,6 +287,8 @@ function UpgradeSyntax({
 }) {
   const fetcher = useFetcher();
 
+  const [upgradeInitiated, setUpgradeInitiated] = useState(false);
+
   const newVersionId = allVersions.find(
     (v) => v.displayedVersion === "0.7",
   )!.id;
@@ -295,9 +297,13 @@ function UpgradeSyntax({
     <Button
       colorScheme="blue"
       size="sm"
-      onClick={() => performSyntaxUpgrade(contentId, fetcher, newVersionId)}
+      onClick={() => {
+        setUpgradeInitiated(true);
+        performSyntaxUpgrade(contentId, fetcher, newVersionId);
+      }}
       ml="10px"
       mt="15px"
+      disabled={upgradeInitiated}
     >
       Upgrade to version 0.7
     </Button>
