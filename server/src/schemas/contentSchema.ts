@@ -48,20 +48,26 @@ export const updateContentDoenetMLSchema = z
     numVariants,
   }));
 
-export const createContentRevisionScheme = z.object({
+export const createContentRevisionSchema = z.object({
   contentId: uuidSchema,
   revisionName: z.string(),
   note: z.string(),
 });
 
-export const updateContentRevisionScheme = z.object({
+export const updateContentRevisionSchema = z.object({
   contentId: uuidSchema,
   revisionNum: z.int(),
   revisionName: z.string(),
   note: z.string(),
 });
 
-export const revertToRevisionScheme = z.object({
+export const revertToRevisionSchema = z.object({
   contentId: uuidSchema,
   revisionNum: z.int(),
+});
+
+export const saveSyntaxUpdateSchema = z.object({
+  contentId: uuidSchema,
+  doenetmlVersionId: z.int(),
+  source: z.string(),
 });

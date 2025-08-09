@@ -220,7 +220,7 @@ export function DocEditorHistoryMode() {
       </Flex>
 
       <DoenetEditor
-        height="100%"
+        height="calc(100% - 30px)"
         width="100%"
         doenetML={doenetML}
         doenetmlVersion={doenetmlVersion.fullVersion}
@@ -229,6 +229,7 @@ export function DocEditorHistoryMode() {
         viewerLocation="bottom"
         showErrorsWarnings={false}
         showResponses={false}
+        showFormatter={false}
         doenetViewerUrl={doenetViewerUrl}
       />
     </Box>
@@ -303,7 +304,7 @@ export function DocEditorHistoryMode() {
       {haveOtherDoc ? (
         <>
           <DoenetEditor
-            height="100%"
+            height="calc(100% - 30px)"
             width="100%"
             doenetML={otherDoenetML}
             doenetmlVersion={otherDoenetmlVersion}
@@ -312,6 +313,7 @@ export function DocEditorHistoryMode() {
             showErrorsWarnings={false}
             showResponses={false}
             readOnly={true}
+            showFormatter={false}
             doenetViewerUrl={doenetViewerUrl}
           />
         </>
