@@ -334,8 +334,8 @@ async function performSyntaxUpgrade(
   fetcher.submit(
     {
       path: "updateContent/saveSyntaxUpdate",
-      doenetmlVersionId: newVersionId,
-      source: upgraded,
+      updatedDoenetmlVersionId: newVersionId,
+      updatedSource: upgraded,
     },
     { method: "post", encType: "application/json" },
   );

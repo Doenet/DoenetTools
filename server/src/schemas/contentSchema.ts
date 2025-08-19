@@ -68,6 +68,6 @@ export const revertToRevisionSchema = z.object({
 
 export const saveSyntaxUpdateSchema = z.object({
   contentId: uuidSchema,
-  doenetmlVersionId: z.int(),
-  source: z.string(),
+  updatedDoenetmlVersionId: z.int(),
+  updatedSource: z.string(),
 });
