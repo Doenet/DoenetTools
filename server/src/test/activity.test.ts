@@ -47,7 +47,7 @@ import { Doc } from "../types";
 const currentDoenetmlVersion = {
   id: 2,
   displayedVersion: "0.7",
-  fullVersion: "0.7.0-beta2",
+  fullVersion: "0.7.0-beta3",
   default: true,
   deprecated: false,
   removed: false,

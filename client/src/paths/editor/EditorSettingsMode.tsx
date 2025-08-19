@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import {
+  FetcherWithComponents,
   useFetcher,
   useLoaderData,
   useOutletContext,
@@ -20,6 +21,7 @@ import {
   AlertIcon,
   AlertTitle,
   Box,
+  Button,
   Heading,
   HStack,
   Select,
@@ -35,6 +37,7 @@ import { EditCategories } from "../../widgets/editor/EditCategories";
 import { EditClassifications } from "../../widgets/editor/EditClassifications";
 import { EditLicense } from "../../widgets/editor/EditLicense";
 import { AuthorLicenseBox } from "../../widgets/Licenses";
+import { updateSyntaxFromV06toV07 } from "@doenet/v06-to-v07";
 
 export async function loader({ params }: { params: any }) {
   const { data } = await axios.get(
@@ -65,6 +68,7 @@ export async function loader({ params }: { params: any }) {
     classifications: data.classifications,
     remixSourceLicenseCode,
     allCategories,
+    contentId: params.contentId,
   };
 
   if (data.doenetmlVersionId) {
@@ -95,6 +99,7 @@ export function EditorSettingsMode() {
     remixSourceLicenseCode,
     allCategories,
     doenetmlVersionId,
+    contentId,
   } = useLoaderData() as {
     isPublic: boolean;
     isShared: boolean;
@@ -108,6 +113,7 @@ export function EditorSettingsMode() {
     remixSourceLicenseCode: LicenseCode | null;
     allCategories: CategoryGroup[];
     doenetmlVersionId?: number;
+    contentId: string;
   };
 
   const { allLicenses, allDoenetmlVersions, inLibrary, contentType } =
@@ -115,6 +121,11 @@ export function EditorSettingsMode() {
 
   const [searchParams, _] = useSearchParams();
   const showRequired = searchParams.get("showRequired") === null ? false : true;
+
+  const showUpgradeSyntax = Boolean(
+    doenetmlVersionId &&
+      allDoenetmlVersions.find((v) => v.id === doenetmlVersionId)?.deprecated,
+  );
 
   return (
     <BlueBanner>
@@ -178,6 +189,16 @@ export function EditorSettingsMode() {
                 isAssigned={assigned}
               />
             </Box>
+          </Box>
+        )}
+
+        {showUpgradeSyntax && (
+          <Box>
+            <Heading size="md">Upgrade document to version 0.7 syntax</Heading>
+            <UpgradeSyntax
+              contentId={contentId}
+              allVersions={allDoenetmlVersions}
+            />
           </Box>
         )}
 
@@ -254,5 +275,68 @@ function DoenetMLSelectionBox({
         </p>
       )}
     </>
+  );
+}
+
+function UpgradeSyntax({
+  contentId,
+  allVersions,
+}: {
+  contentId: string;
+  allVersions: DoenetmlVersion[];
+}) {
+  const fetcher = useFetcher();
+
+  const [upgradeInitiated, setUpgradeInitiated] = useState(false);
+
+  const newVersionId = allVersions.find(
+    (v) => v.displayedVersion === "0.7",
+  )!.id;
+
+  return (
+    <Button
+      colorScheme="blue"
+      size="sm"
+      onClick={() => {
+        setUpgradeInitiated(true);
+        performSyntaxUpgrade(contentId, fetcher, newVersionId);
+      }}
+      ml="10px"
+      mt="15px"
+      disabled={upgradeInitiated}
+    >
+      Upgrade to version 0.7
+    </Button>
+  );
+}
+
+async function performSyntaxUpgrade(
+  contentId: string,
+  fetcher: FetcherWithComponents<any>,
+  newVersionId: number,
+) {
+  const { data } = await axios.get(
+    `/api/activityEditView/getContentSource/${contentId}`,
+  );
+
+  const source: string = data.source;
+
+  const update = await updateSyntaxFromV06toV07(source);
+  const upgraded = update.xml;
+
+  if (update.vfile.messages.length > 0) {
+    console.warn(
+      "There were warnings during syntax update:",
+      update.vfile.messages,
+    );
+  }
+
+  fetcher.submit(
+    {
+      path: "updateContent/saveSyntaxUpdate",
+      updatedDoenetmlVersionId: newVersionId,
+      updatedSource: upgraded,
+    },
+    { method: "post", encType: "application/json" },
   );
 }
