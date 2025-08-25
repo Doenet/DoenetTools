@@ -16,12 +16,10 @@ import { DoenetViewer } from "@doenet/doenetml-iframe";
 
 import { Box, Button, Grid, GridItem, Text, Tooltip } from "@chakra-ui/react";
 import axios, { AxiosError } from "axios";
-import { useLocation, useNavigate } from "react-router";
 import {
   EnterClassCode,
   action as enterClassCodeAction,
 } from "./EnterClassCode";
-import { ChangeName, action as changeNameAction } from "./ChangeName";
 import { SiteContext } from "./SiteHeader";
 import { Content, DoenetmlVersion } from "../types";
 import {
@@ -93,15 +91,6 @@ export async function action({ params, request }: ActionFunctionArgs) {
     return codeResults;
   }
 
-  const changeNameResults = await changeNameAction({
-    params,
-    request,
-    formData,
-  });
-  if (changeNameResults !== null) {
-    return changeNameResults;
-  }
-
   return null;
 }
 
@@ -151,6 +140,17 @@ export async function loader({ params }: { params: any }) {
     return redirect(
       `/assignedData/${data.assignment!.contentId}?shuffledOrder`,
     );
+  }
+
+  // Due to the fact that the API `getAssignmentViewerDataFromCode` has the side effect
+  // of creating an anonymous user if not logged in, we wait until that happens and
+  // then redirect to the enter name screen.
+  // One downside of this is that we load the assignment data twice, once at
+  // user creation and once when `ChangeName` redirects back here.
+  // TODO: find cleaner way of creating anonymous user
+  const { data: userData } = await axios.get("/api/user/getMyUserInfo");
+  if (!userData.user || !userData.user.lastNames) {
+    return redirect(`/changeName?redirect=/code/${params.classCode}`);
   }
 
   if (data.scoreData.calculatedScore) {
@@ -252,9 +252,9 @@ export function AssignmentViewer() {
     : "";
 
   const { user } = useOutletContext<SiteContext>();
-
-  const navigate = useNavigate();
-  const location = useLocation();
+  if (!user) {
+    throw Error("User should have been defined");
+  }
 
   const [attemptNumber, setAttemptNumber] = useState<number>(
     loaderData.attemptNumber,
@@ -553,10 +553,6 @@ export function AssignmentViewer() {
 
   if (!loaderData.assignmentFound || !assignment) {
     return <EnterClassCode invalidCode={code} />;
-  }
-
-  if (!user?.lastNames) {
-    return <ChangeName hideHomeButton />;
   }
 
   const baseUrl = window.location.protocol + "//" + window.location.host;

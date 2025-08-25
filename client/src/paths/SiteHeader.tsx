@@ -26,7 +26,7 @@ import {
 } from "@chakra-ui/react";
 import { HiOutlineMail } from "react-icons/hi";
 import { BsDiscord } from "react-icons/bs";
-import { Outlet, useFetcher, useLoaderData } from "react-router";
+import { Outlet, useFetcher, useLoaderData, useLocation } from "react-router";
 import { NavLink } from "react-router";
 import RouterLogo from "../RouterLogo";
 import { ExternalLinkIcon, HamburgerIcon } from "@chakra-ui/icons";
@@ -49,9 +49,9 @@ export type User =
 export type SiteContext = {
   user?: User;
   exploreTab: number | null;
-  setExploreTab: (arg: number | null) => void;
+  setExploreTab: (_: number | null) => void;
   addTo: ContentDescription | null;
-  setAddTo: (arg: ContentDescription | null) => void;
+  setAddTo: (_: ContentDescription | null) => void;
   allLicenses: License[];
   allDoenetmlVersions: DoenetmlVersion[];
 };
@@ -179,6 +179,8 @@ export function SiteHeader() {
     allLicenses: License[];
     allDoenetmlVersions: DoenetmlVersion[];
   };
+
+  const currentPath = useLocation().pathname;
 
   const [exploreTab, setExploreTab] = useState<number | null>(null);
 
@@ -381,7 +383,11 @@ export function SiteHeader() {
                             </Box>
                           ) : null}
                         </VStack>
-                        <MenuItem as={Link} href="/changeName">
+                        <MenuItem
+                          as={Link}
+                          // When name change complete, redirect back to current page
+                          href={`/changeName?redirect=${currentPath}`}
+                        >
                           Update {user.isAnonymous ? "pseudonym" : "name"}
                         </MenuItem>
                         <MenuItem as="a" href="/api/login/logout">
