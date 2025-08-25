@@ -8,16 +8,10 @@ import {
   Input,
   Spinner,
 } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
-import {
-  Form,
-  useLoaderData,
-  useNavigate,
-  useOutletContext,
-} from "react-router";
+import React, { useState } from "react";
+import { Form, replace, useLoaderData, useOutletContext } from "react-router";
 import axios from "axios";
 import { SiteContext } from "./SiteHeader";
-import { createNameNoTag } from "../utils/names";
 
 export async function action({
   request,
@@ -37,7 +31,7 @@ export async function action({
       firstNames: formObj.firstNames,
       lastNames: formObj.lastNames,
     });
-    return true;
+    return replace(formObj.redirectTo);
   }
 
   return null;
@@ -50,55 +44,28 @@ export async function loader({ request }: { request: any }) {
   return { redirectTo };
 }
 
-export function ChangeName({
-  hideHomeButton = false,
-}: {
-  hideHomeButton?: boolean;
-}) {
+/**
+ * A page that allows a user to change their name. There must already be a logged in user
+ * for this page to work.
+ *
+ * Upon submissions, this page redirects to the search param address `redirect` or
+ * the homepage if `redirect` is not provided.
+ */
+export function ChangeName() {
   const { redirectTo } = useLoaderData();
 
   const { user } = useOutletContext<SiteContext>();
-
-  const navigate = useNavigate();
+  if (user === undefined) {
+    throw Error("No user logged in.");
+  }
 
   const [firstNames, setFirstNames] = useState(user?.firstNames ?? "");
   const [lastNames, setLastNames] = useState(user?.lastNames ?? "");
   const [submitted, setSubmitted] = useState(false);
-  const [statusText, setStatusText] = useState("");
-
-  useEffect(() => {
-    if (submitted) {
-      if (user === undefined) {
-        setStatusText("Cannot change name; no user logged in.");
-      } else {
-        setStatusText(`Name changed to ${createNameNoTag(user)}`);
-        if (
-          redirectTo &&
-          user.firstNames === firstNames &&
-          user.lastNames === lastNames
-        ) {
-          navigate(redirectTo);
-        } else {
-          setSubmitted(false);
-        }
-      }
-    }
-  }, [firstNames, lastNames, navigate, redirectTo, submitted, user]);
 
   return (
     <Box margin="20px">
       <Heading size="lg">Enter your name</Heading>
-      {statusText !== "" ? (
-        <Box
-          border="solid 1px lightgray"
-          borderRadius="5px"
-          padding="5px 10px"
-          marginTop="10px"
-          backgroundColor="orange.100"
-        >
-          {statusText}
-        </Box>
-      ) : null}
 
       <Form
         method="post"
@@ -106,6 +73,9 @@ export function ChangeName({
           setSubmitted(true);
         }}
       >
+        <input type="hidden" name="_action" value="change user name" />
+        <input type="hidden" name="redirectTo" value={redirectTo ?? "/"} />
+
         <Flex wrap="wrap">
           <FormControl width="13rem">
             <FormLabel mt="16px">First name(s):</FormLabel>
@@ -145,21 +115,8 @@ export function ChangeName({
           >
             Submit
           </Button>
-          {!redirectTo && !hideHomeButton ? (
-            <Button
-              colorScheme="blue"
-              mr="12px"
-              size="xs"
-              onClick={() => {
-                navigate("/");
-              }}
-            >
-              Go to home
-            </Button>
-          ) : null}
           <Spinner hidden={!submitted} />
         </Flex>
-        <input type="hidden" name="_action" value="change user name" />
       </Form>
     </Box>
   );
