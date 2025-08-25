@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import {
   ActionFunctionArgs,
-  redirect,
+  replace,
   useLoaderData,
   useOutletContext,
 } from "react-router";
@@ -137,9 +137,7 @@ export async function loader({ params }: { params: any }) {
   }
 
   if (!data.assignmentOpen) {
-    return redirect(
-      `/assignedData/${data.assignment!.contentId}?shuffledOrder`,
-    );
+    return replace(`/assignedData/${data.assignment!.contentId}?shuffledOrder`);
   }
 
   // Due to the fact that the API `getAssignmentViewerDataFromCode` has the side effect
@@ -150,7 +148,7 @@ export async function loader({ params }: { params: any }) {
   // TODO: find cleaner way of creating anonymous user
   const { data: userData } = await axios.get("/api/user/getMyUserInfo");
   if (!userData.user || !userData.user.lastNames) {
-    return redirect(`/changeName?redirect=/code/${params.classCode}`);
+    return replace(`/changeName?redirect=/code/${params.classCode}`);
   }
 
   if (data.scoreData.calculatedScore) {

@@ -9,7 +9,7 @@ import {
   Spinner,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
-import { Form, redirect, useLoaderData, useOutletContext } from "react-router";
+import { Form, replace, useLoaderData, useOutletContext } from "react-router";
 import axios from "axios";
 import { SiteContext } from "./SiteHeader";
 
@@ -31,7 +31,7 @@ export async function action({
       firstNames: formObj.firstNames,
       lastNames: formObj.lastNames,
     });
-    return redirect(formObj.redirectTo);
+    return replace(formObj.redirectTo);
   }
 
   return null;
