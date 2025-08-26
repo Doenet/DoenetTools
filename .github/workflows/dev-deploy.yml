@@ -1,0 +1,36 @@
+# Build server and client code
+# Copy distribution folder to development server
+# DOES NOT perform database migration
+name: Build and copy to dev server
+jobs:
+  deploy:
+    name: Deploy to dev server
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_DEV_DEPLOY_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+      - name: Client npm setup
+        run: npm ci
+        working-directory: ./client
+      - name: Client build
+        run: npm run build
+        working-directory: ./client
+      - name: Server npm setup
+        run: npm ci
+        working-directory: ./server
+      - name: Server build
+        run: npm run build
+        working-directory: ./server
+
+      - name: Client copy build to dev server
+        run: scp -i ~/.ssh/id_rsa -r dist/* ${{ secrets.DEV_CLIENT_DIR }}
+        working-directory: ./client
+      - name: Server copy build to dev server
+        run: scp -i ~/.ssh/id_rsa -r dist/* ${{ secrets.DEV_SERVER_DIR }}
+        working-directory: ./server
