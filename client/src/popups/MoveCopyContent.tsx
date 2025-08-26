@@ -389,7 +389,7 @@ export function MoveCopyContent({
               ${
                 allowedParentTypes.length === 1
                   ? `to ${contentTypeToName[allowedParentTypes[0]].toLowerCase()}`
-                  : null
+                  : ""
               }`;
   }
 
