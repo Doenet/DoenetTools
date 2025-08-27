@@ -4,9 +4,8 @@ import bodyParser from "body-parser";
 
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
-import { prisma } from "./model";
 import session from "express-session";
-import { PrismaSessionStore } from "@quixo3/prisma-session-store";
+import mysqlCreateStore from "express-mysql-session";
 
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
@@ -44,6 +43,9 @@ import { compareRouter } from "./routes/compareRoutes";
 import { editorRouter } from "./routes/editorRoutes";
 
 const client = new SESClient({ region: "us-east-2" });
+
+//@ts-expect-error type of session isn't correct
+const MySQLStore = mysqlCreateStore(session);
 
 dotenv.config();
 
@@ -283,10 +285,12 @@ app.use(
     secret: process.env.SESSION_SECRET || "",
     resave: true,
     saveUninitialized: true,
-    store: new PrismaSessionStore(prisma, {
-      checkPeriod: 2 * 60 * 1000, //ms
-      dbRecordIdIsSessionId: true,
-      dbRecordIdFunction: undefined,
+    store: new MySQLStore({
+      host: process.env.DATABASE_HOST,
+      port: Number(process.env.DATABASE_PORT),
+      user: process.env.DATABASE_USER,
+      password: process.env.DATABASE_PASSWORD,
+      database: process.env.DATABASE_NAME,
     }),
   }),
 );
