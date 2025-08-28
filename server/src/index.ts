@@ -278,7 +278,7 @@ passport.deserializeUser(async (userId: string, done) => {
 app.use(
   session({
     cookie: {
-      maxAge: 365 * 24 * 60 * 60 * 1000, // ms
+      maxAge: 365 * 24 * 60 * 60 * 1000, // 1 year, in ms
     },
     secret: process.env.SESSION_SECRET || "",
     resave: true,
