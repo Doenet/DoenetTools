@@ -4,18 +4,18 @@ import bodyParser from "body-parser";
 
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
-import { prisma } from "./model";
 import session from "express-session";
-import { PrismaSessionStore } from "@quixo3/prisma-session-store";
+import mysqlCreateStore from "express-mysql-session";
 
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as MagicLinkStrategy } from "passport-magic-link";
 //@ts-expect-error no declaration file
-import { Strategy as AnonymIdStrategy } from "passport-anonym-uuid";
+import { Strategy as AnonymIdStrategy } from "passport-anonymous";
 
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 
+import { nanoid } from "nanoid";
 import * as fs from "fs/promises";
 import { fromUUID, toUUID } from "./utils/uuid";
 import { UserInfo, UserInfoWithEmail } from "./types";
@@ -44,6 +44,9 @@ import { compareRouter } from "./routes/compareRoutes";
 import { editorRouter } from "./routes/editorRoutes";
 
 const client = new SESClient({ region: "us-east-2" });
+
+//@ts-expect-error type of session isn't correct
+const MySQLStore = mysqlCreateStore(session);
 
 dotenv.config();
 
@@ -233,8 +236,8 @@ passport.serializeUser<any, any>(async (req, user: any, done) => {
     }
 
     return done(undefined, fromUUID(u.userId));
-  } else if (user.uuid) {
-    let email = user.uuid + "@anonymous.doenet.org";
+  } else if (user.anonymous) {
+    let email = nanoid() + "@anonymous.doenet.org";
     let lastNames = "";
     let firstNames: string | null = null;
     let isAnonymous = true;
@@ -283,10 +286,12 @@ app.use(
     secret: process.env.SESSION_SECRET || "",
     resave: true,
     saveUninitialized: true,
-    store: new PrismaSessionStore(prisma, {
-      checkPeriod: 2 * 60 * 1000, //ms
-      dbRecordIdIsSessionId: true,
-      dbRecordIdFunction: undefined,
+    store: new MySQLStore({
+      host: process.env.DATABASE_HOST,
+      port: Number(process.env.DATABASE_PORT),
+      user: process.env.DATABASE_USER,
+      password: process.env.DATABASE_PASSWORD,
+      database: process.env.SESSION_DATABASE_NAME,
     }),
   }),
 );

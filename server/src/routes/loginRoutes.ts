@@ -10,7 +10,7 @@ if (
 ) {
   loginRouter.post(
     "/createOrLoginAsTest",
-    passport.authenticate("anonymId"),
+    passport.authenticate("anonymous"),
     (_req: Request, res: Response) => {
       res.send();
     },
@@ -41,7 +41,7 @@ loginRouter.get(
 
 loginRouter.post(
   "/anonymous",
-  passport.authenticate("anonymId"),
+  passport.authenticate("anonymous"),
   (req: Request, res: Response) => {
     res.send(req.user);
   },
