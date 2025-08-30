@@ -11,8 +11,7 @@ import { PrismaSessionStore } from "@quixo3/prisma-session-store";
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as MagicLinkStrategy } from "passport-magic-link";
-//@ts-expect-error no declaration file
-import { Strategy as AnonymIdStrategy } from "passport-anonymous";
+import { Strategy as AnonymIdStrategy } from "../passport-anonymous/lib/strategy";
 
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 
