@@ -97,8 +97,21 @@ export async function action({ params, request }: ActionFunctionArgs) {
 export async function loader({ params }: { params: any }) {
   // TODO: need to select variant for each student (just once)
 
+  // Test to see if the user is logged in
+  // If they're not, create an anonymous user
+  // If there's no last name, redirect to change name page
+  const {
+    data: { user },
+  } = await axios.get("/api/user/getMyUserInfo");
+  if (!user) {
+    await axios.post(`/api/login/anonymous`);
+  }
+  if (!user || !user.lastNames) {
+    return replace(`/changeName?redirect=/code/${params.classCode}`);
+  }
+
   const { data } = (await axios.get(
-    `/api/info/getAssignmentViewerDataFromCode/${params.classCode}`,
+    `/api/assign/getAssignmentViewerDataFromCode/${params.classCode}`,
   )) as {
     data:
       | {
@@ -138,17 +151,6 @@ export async function loader({ params }: { params: any }) {
 
   if (!data.assignmentOpen) {
     return replace(`/assignedData/${data.assignment!.contentId}?shuffledOrder`);
-  }
-
-  // Due to the fact that the API `getAssignmentViewerDataFromCode` has the side effect
-  // of creating an anonymous user if not logged in, we wait until that happens and
-  // then redirect to the enter name screen.
-  // One downside of this is that we load the assignment data twice, once at
-  // user creation and once when `ChangeName` redirects back here.
-  // TODO: find cleaner way of creating anonymous user
-  const { data: userData } = await axios.get("/api/user/getMyUserInfo");
-  if (!userData.user || !userData.user.lastNames) {
-    return replace(`/changeName?redirect=/code/${params.classCode}`);
   }
 
   if (data.scoreData.calculatedScore) {

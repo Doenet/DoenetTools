@@ -13,6 +13,7 @@ import {
   updateAssignmentCloseAt,
   updateAssignmentMaxAttempts,
   updateAssignmentSettings,
+  getAssignmentViewerDataFromCode,
 } from "../query/assign";
 import { contentIdSchema } from "../schemas/contentSchema";
 import {
@@ -25,6 +26,7 @@ import {
   getAssignmentResponseStudentSchema,
   getStudentSubmittedResponsesSchema,
   createAssignmentSchema,
+  codeSchema,
 } from "../schemas/assignSchema";
 import {
   queryLoggedIn,
@@ -59,6 +61,11 @@ assignRouter.post(
 );
 
 assignRouter.get("/getAssigned", queryLoggedInNoArguments(listUserAssigned));
+
+assignRouter.get(
+  "/getAssignmentViewerDataFromCode/:code",
+  queryLoggedIn(getAssignmentViewerDataFromCode, codeSchema),
+);
 
 assignRouter.get(
   "/getAssignedScores",
