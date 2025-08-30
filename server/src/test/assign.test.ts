@@ -627,6 +627,27 @@ test("cannot assign an ancestor of an assignment", async () => {
   ).rejects.toThrow();
 });
 
+test("cannot assign sub-part of problem set", async () => {
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+
+  const [_, docId] = await setupTestContent(ownerId, {
+    "A problem set": pset({
+      "Some question": doc("some content"),
+    }),
+  });
+
+  // cannot assign the inner document
+  await expect(
+    createAssignment({
+      contentId: docId,
+      loggedInUserId: ownerId,
+      closeAt: DateTime.now().plus({ days: 1 }),
+      destinationParentId: null,
+    }),
+  ).rejects.toThrow();
+});
+
 test("cannot change closeAt, maxAttempts, mode, individualizeByStudent of a non-root assignment activity", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;

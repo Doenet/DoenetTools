@@ -3,7 +3,14 @@ import { expect, test, vi } from "vitest";
 import { DateTime } from "luxon";
 
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { createTestUser, doc, pset, qbank, setupTestContent } from "./utils";
+import {
+  createTestUser,
+  doc,
+  fold,
+  pset,
+  qbank,
+  setupTestContent,
+} from "./utils";
 import {
   createContent,
   deleteContent,
@@ -1346,41 +1353,18 @@ test("getActivitySource gets source", async () => {
   expect(activitySource.source).eqls("some content");
 });
 
-test("getContentDescription gets name, type, and parent type", async () => {
+test("getContentDescription gets correct fields", async () => {
   const { userId: ownerId } = await createTestUser();
+  const { userId: randomUserId } = await createTestUser();
 
-  const { contentId: contentId } = await createContent({
-    loggedInUserId: ownerId,
-    contentType: "singleDoc",
-    parentId: null,
-  });
-  await updateContent({
-    contentId: contentId,
-    name: "Activity 1",
-    loggedInUserId: ownerId,
-  });
-  expect(
-    await getContentDescription({
-      contentId: contentId,
-      loggedInUserId: ownerId,
+  const [folderId, problemSetId, docId] = await setupTestContent(ownerId, {
+    "folder 1": fold({
+      "problem set 1": pset({
+        "doc 1": doc("hi"),
+      }),
     }),
-  ).eqls({
-    contentId: contentId,
-    name: "Activity 1",
-    type: "singleDoc",
-    parent: null,
   });
 
-  const { contentId: folderId } = await createContent({
-    loggedInUserId: ownerId,
-    contentType: "folder",
-    parentId: null,
-  });
-  await updateContent({
-    contentId: folderId,
-    name: "Folder 2",
-    loggedInUserId: ownerId,
-  });
   expect(
     await getContentDescription({
       contentId: folderId,
@@ -1388,78 +1372,97 @@ test("getContentDescription gets name, type, and parent type", async () => {
     }),
   ).eqls({
     contentId: folderId,
-    name: "Folder 2",
+    name: "folder 1",
     type: "folder",
     parent: null,
+    grandparentId: null,
   });
 
-  const { contentId: sequenceId } = await createContent({
-    loggedInUserId: ownerId,
-    contentType: "sequence",
-    parentId: folderId,
-  });
-  await updateContent({
-    contentId: sequenceId,
-    name: "Sequence 3",
-    loggedInUserId: ownerId,
-  });
   expect(
     await getContentDescription({
-      contentId: sequenceId,
+      contentId: problemSetId,
       loggedInUserId: ownerId,
     }),
   ).eqls({
-    contentId: sequenceId,
-    name: "Sequence 3",
+    contentId: problemSetId,
+    name: "problem set 1",
     type: "sequence",
-    parent: { type: "folder", contentId: folderId },
+    parent: { type: "folder", contentId: folderId, name: "folder 1" },
+    grandparentId: null,
   });
 
-  const { contentId: selectId } = await createContent({
-    loggedInUserId: ownerId,
-    contentType: "select",
-    parentId: sequenceId,
-  });
-  await updateContent({
-    contentId: selectId,
-    name: "Select 4",
-    loggedInUserId: ownerId,
-  });
+  const expectedDoc = {
+    contentId: docId,
+    name: "doc 1",
+    type: "singleDoc",
+    parent: {
+      type: "sequence",
+      contentId: problemSetId,
+      name: "problem set 1",
+    },
+    grandparentId: folderId,
+  };
+
   expect(
     await getContentDescription({
-      contentId: selectId,
+      contentId: docId,
       loggedInUserId: ownerId,
     }),
-  ).eqls({
-    contentId: selectId,
-    name: "Select 4",
-    type: "select",
-    parent: { type: "sequence", contentId: sequenceId },
-  });
+  ).eqls(expectedDoc);
 
-  const { userId: userId } = await createTestUser();
+  // Test random user at various levels of access
+  // No access
   await expect(
-    getContentDescription({ contentId: selectId, loggedInUserId: userId }),
+    getContentDescription({
+      contentId: docId,
+      loggedInUserId: randomUserId,
+    }),
   ).rejects.toThrow("not found");
 
+  // Document access
   await modifyContentSharedWith({
     action: "share",
-    contentId: selectId,
+    contentId: docId,
     loggedInUserId: ownerId,
-    users: [userId],
+    users: [randomUserId],
   });
-
   expect(
     await getContentDescription({
-      contentId: selectId,
-      loggedInUserId: userId,
+      contentId: docId,
+      loggedInUserId: randomUserId,
+    }),
+  ).eqls({ ...expectedDoc, parent: null, grandparentId: null });
+
+  // Parent access
+  await modifyContentSharedWith({
+    action: "share",
+    contentId: problemSetId,
+    loggedInUserId: ownerId,
+    users: [randomUserId],
+  });
+  expect(
+    await getContentDescription({
+      contentId: docId,
+      loggedInUserId: randomUserId,
     }),
   ).eqls({
-    contentId: selectId,
-    name: "Select 4",
-    type: "select",
-    parent: { type: "sequence", contentId: sequenceId },
+    ...expectedDoc,
+    grandparentId: null,
   });
+
+  // Grandparent access
+  await modifyContentSharedWith({
+    action: "share",
+    contentId: folderId,
+    loggedInUserId: ownerId,
+    users: [randomUserId],
+  });
+  expect(
+    await getContentDescription({
+      contentId: docId,
+      loggedInUserId: randomUserId,
+    }),
+  ).eqls(expectedDoc);
 });
 
 test("get compound activity", async () => {
