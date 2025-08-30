@@ -12,10 +12,11 @@ import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as MagicLinkStrategy } from "passport-magic-link";
 //@ts-expect-error no declaration file
-import { Strategy as AnonymIdStrategy } from "passport-anonym-uuid";
+import { Strategy as AnonymIdStrategy } from "passport-anonymous";
 
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 
+import { nanoid } from "nanoid";
 import * as fs from "fs/promises";
 import { fromUUID, toUUID } from "./utils/uuid";
 import { UserInfo, UserInfoWithEmail } from "./types";
@@ -233,8 +234,8 @@ passport.serializeUser<any, any>(async (req, user: any, done) => {
     }
 
     return done(undefined, fromUUID(u.userId));
-  } else if (user.uuid) {
-    let email = user.uuid + "@anonymous.doenet.org";
+  } else if (user.anonymous) {
+    let email = nanoid() + "@anonymous.doenet.org";
     let lastNames = "";
     let firstNames: string | null = null;
     let isAnonymous = true;
