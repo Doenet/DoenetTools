@@ -491,11 +491,17 @@ export async function getContentDescription({
       name: true,
       type: true,
       parent: {
+        where: {
+          ...filterViewableContent(loggedInUserId, isEditor),
+        },
         select: {
           type: true,
           id: true,
           name: true,
           parent: {
+            where: {
+              ...filterViewableContent(loggedInUserId, isEditor),
+            },
             select: {
               id: true,
             },
