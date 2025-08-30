@@ -311,7 +311,12 @@ export type ContentDescription = {
   contentId: Uuid;
   name: string;
   type: ContentType;
-  parent: { contentId: string; type: ContentType } | null;
+  parent: {
+    contentId: Uuid;
+    type: ContentType;
+    name?: string;
+  } | null;
+  grandparentId: Uuid | null;
 };
 
 export function isContentDescription(obj: unknown): obj is ContentDescription {

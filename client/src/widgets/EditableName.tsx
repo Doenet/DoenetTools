@@ -1,16 +1,28 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, ReactElement } from "react";
 import {
   Editable,
   EditablePreview,
   EditableInput,
-  Tooltip,
+  Box,
+  Show,
 } from "@chakra-ui/react";
 import { useLoaderData, useFetcher } from "react-router";
+import "../utils/editor-header.css";
 
 /**
  * This is separate as <Editable> wasn't updating when defaultValue was changed
  */
-export function EditableName({ dataTest }: { dataTest: string }) {
+export function EditableName({
+  leftIcon,
+  dataTest,
+  widthLargeScreen = "400px",
+  widthBaseScreen = "100%",
+}: {
+  leftIcon: ReactElement;
+  dataTest: string;
+  widthLargeScreen?: string;
+  widthBaseScreen?: string;
+}) {
   const { contentName } = useLoaderData();
 
   const [name, setName] = useState(contentName);
@@ -27,34 +39,53 @@ export function EditableName({ dataTest }: { dataTest: string }) {
   lastBaseDataName.current = contentName;
 
   return (
-    <Editable
-      data-test={dataTest}
-      mt="4px"
-      value={name}
-      textAlign="center"
-      onChange={(value) => {
-        setName(value);
-      }}
-      onSubmit={(value) => {
-        let submitValue = value;
-        if (submitValue.trim() === "") {
-          submitValue = "Untitled";
-        }
+    <Box position="relative">
+      <Editable
+        data-test={dataTest}
+        mt="4px"
+        value={name}
+        width={{ base: widthBaseScreen, lg: widthLargeScreen }}
+        fontWeight="bold"
+        onChange={(value) => {
+          setName(value);
+        }}
+        onSubmit={(value) => {
+          let submitValue = value;
+          if (submitValue.trim() === "") {
+            submitValue = "Untitled";
+          }
 
-        fetcher.submit(
-          { path: "updateContent/updateContentSettings", name: submitValue },
-          { method: "post", encType: "application/json" },
-        );
-      }}
-    >
-      <Tooltip label={name}>
-        <EditablePreview data-test="Editable Title" noOfLines={1} />
-      </Tooltip>
-      <EditableInput
-        maxLength={191}
-        width={{ base: "100%", lg: "450px" }}
-        data-test="Editable Input"
-      />
-    </Editable>
+          fetcher.submit(
+            { path: "updateContent/updateContentSettings", name: submitValue },
+            { method: "post", encType: "application/json" },
+          );
+        }}
+      >
+        <EditablePreview
+          className="editable-name"
+          data-test="Editable Title"
+          noOfLines={1}
+          pl={{ base: "0rem", md: "2rem" }}
+        />
+        <EditableInput
+          data-test="Editable Input"
+          maxLength={191}
+          pl={{ base: "0rem", md: "2rem" }}
+        />
+      </Editable>
+
+      <Show above="md">
+        <Box
+          height="100%"
+          alignContent="baseline"
+          padding="0.5rem 3px"
+          position="absolute"
+          top="0"
+          pointerEvents="none"
+        >
+          {leftIcon}
+        </Box>
+      </Show>
+    </Box>
   );
 }

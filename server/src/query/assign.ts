@@ -43,6 +43,7 @@ function generateClassCode() {
  * 1. `contentId` and `destinationParentId` must be owned by user
  * 2. `contentId` must not be an assignment or have any assignments as children
  * 3. `contentId` must not be a hidden sub-assignment id
+ * 4. `contentId` must not be a sub-document of a problem set
  */
 export async function createAssignment({
   contentId,
@@ -55,10 +56,18 @@ export async function createAssignment({
   loggedInUserId: Uint8Array;
   destinationParentId: Uint8Array | null;
 }) {
-  // Verify content is owned by user and is not an assignment or part of an assignment
+  // Verify that
+  // 1. content is owned by user
+  // 2. content is not an assignment or part of an assignment
+  // 3. content is not part of a problem set
   await prisma.content.findUniqueOrThrow({
     where: {
       id: contentId,
+      NOT: {
+        parent: {
+          type: "sequence",
+        },
+      },
       ...filterEditableActivity(loggedInUserId),
     },
     select: { id: true },
