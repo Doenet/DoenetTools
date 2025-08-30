@@ -4,11 +4,10 @@
 [![Coverage](https://coveralls.io/repos/jaredhanson/passport-anonymous/badge.png)](https://coveralls.io/r/jaredhanson/passport-anonymous)
 [![Dependencies](https://david-dm.org/jaredhanson/passport-anonymous.png)](http://david-dm.org/jaredhanson/passport-anonymous)
 
-
 [Passport](http://passportjs.org/) strategy for anonymous authentication.
 
 This module lets you provide anonymous authentication in your Node.js
-applications.  By plugging into Passport, anonymous authentication can be easily
+applications. By plugging into Passport, anonymous authentication can be easily
 and unobtrusively integrated into any application or framework that supports
 [Connect](http://www.senchalabs.org/connect/)-style middleware, including
 [Express](http://expressjs.com/).
@@ -29,14 +28,14 @@ with `req.user` remaining `undefined`.
 #### Authenticate Requests
 
 Use `passport.authenticate()`, specifying the `'anonymous'` strategy, to
-pass authentication of a request.  This is typically used alongside a strategy
+pass authentication of a request. This is typically used alongside a strategy
 that verifies credentials, as a fallback for routes that prefer authentication
 but can also respond to unauthenticated requests.
 
 For example, as route middleware in an [Express](http://expressjs.com/)
 application:
 
-    app.post('/hello', 
+    app.post('/hello',
       passport.authenticate(['basic', 'anonymous'], { session: false }),
       function(req, res) {
         if (req.user) {
@@ -57,7 +56,7 @@ For a complete, working example, refer to the [login example](https://github.com
 
 ## Credits
 
-  - [Jared Hanson](http://github.com/jaredhanson)
+- [Jared Hanson](http://github.com/jaredhanson)
 
 ## License
 
