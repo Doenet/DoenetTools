@@ -156,6 +156,7 @@ function ShareWithPeople({
     <>
       {sharedWith.length > 0 && (
         <ShareTable
+          contentId={contentId}
           isPublic={false}
           parentIsPublic={false}
           sharedWith={sharedWith}

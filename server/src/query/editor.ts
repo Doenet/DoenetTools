@@ -141,7 +141,6 @@ export async function getEditor({
 }
 
 /**
- * TODO: FIXME: 
  * Get the settings for this activity.
  * Needed for `/documentEditor/[id]/settings` and `/compoundEditor/[id]/settings` pages
  */
