@@ -538,17 +538,22 @@ export function Activities() {
         </Box>
       </Flex>
 
-      <Heading
-        as="h2"
-        size="lg"
-        marginBottom=".5em"
-        noOfLines={1}
-        maxHeight="1.5em"
-        lineHeight="normal"
-        data-test="Folder Heading"
-      >
-        <Tooltip label={headingText}>{headingText}</Tooltip>
-      </Heading>
+      <HStack justify="center" align="center">
+        <Heading
+          as="h2"
+          size="lg"
+          marginBottom=".5em"
+          noOfLines={1}
+          maxHeight="1.5em"
+          lineHeight="normal"
+          data-test="Folder Heading"
+        >
+          <Tooltip label={headingText}>{headingText}</Tooltip>
+        </Heading>
+        <Button size="sm" colorScheme="blue" mb="0.6rem">
+          Share
+        </Button>
+      </HStack>
       <VStack width="100%">
         <Flex
           width="100%"
