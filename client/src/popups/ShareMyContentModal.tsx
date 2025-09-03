@@ -68,7 +68,10 @@ export function ShareMyContentModal({
   useEffect(() => {
     if (isOpen && fetcher.state === "idle" && !fetcher.data) {
       fetcher.load(`/loadShareStatus/${contentId}`);
-      settingsFetcher.load(editorUrl(contentId, contentType, "settings"));
+
+      if (contentType !== "folder") {
+        settingsFetcher.load(editorUrl(contentId, contentType, "settings"));
+      }
     }
   }, [isOpen, fetcher, settingsFetcher, contentId, contentType]);
 
@@ -84,26 +87,29 @@ export function ShareMyContentModal({
         <ModalCloseButton />
         <ModalBody m="1rem">
           <VStack spacing="3rem" align="flex-start">
-            <Box>
-              <Heading size="sm">With the public</Heading>
-              {fetcher.data && settingsFetcher.data ? (
-                <SharePublicly
-                  isPublic={fetcher.data.isPublic}
-                  parentIsPublic={fetcher.data.parentIsPublic}
-                  contentId={contentId}
-                  contentType={contentType}
-                  settings={settingsFetcher.data}
-                  closeModal={onClose}
-                />
-              ) : (
-                <p>Loading...</p>
-              )}
-            </Box>
+            {contentType !== "folder" && (
+              <Box>
+                <Heading size="sm">With the public</Heading>
+                {fetcher.data && settingsFetcher.data ? (
+                  <SharePublicly
+                    isPublic={fetcher.data.isPublic}
+                    parentIsPublic={fetcher.data.parentIsPublic}
+                    contentId={contentId}
+                    contentType={contentType}
+                    settings={settingsFetcher.data}
+                    closeModal={onClose}
+                  />
+                ) : (
+                  <p>Loading...</p>
+                )}
+              </Box>
+            )}
 
             <Box>
               <Heading size="sm">With specific people</Heading>
               {fetcher.data ? (
                 <ShareWithPeople
+                  contentId={contentId}
                   sharedWith={fetcher.data.sharedWith}
                   parentSharedWith={fetcher.data.parentSharedWith}
                 />
@@ -119,9 +125,11 @@ export function ShareMyContentModal({
 }
 
 function ShareWithPeople({
+  contentId,
   sharedWith,
   parentSharedWith,
 }: {
+  contentId: string;
   sharedWith: UserInfoWithEmail[];
   parentSharedWith: UserInfoWithEmail[];
 }) {
@@ -138,7 +146,7 @@ function ShareWithPeople({
 
   function addEmail() {
     addEmailFetcher.submit(
-      { path: "share/shareContent", email: emailInput },
+      { path: "share/shareContent", contentId, email: emailInput },
       { method: "POST", encType: "application/json" },
     );
     setInputHasChanged(false);

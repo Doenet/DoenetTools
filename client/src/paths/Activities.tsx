@@ -70,7 +70,9 @@ import {
 } from "../popups/ActivateAuthorMode";
 import { formatAssignmentBlurb } from "../utils/assignment";
 import { editorUrl } from "../utils/url";
+import { ShareMyContentModal } from "../popups/ShareMyContentModal";
 
+// FIX: unconverted actions!
 export async function action({ request, params }: ActionFunctionArgs) {
   const formData: FormData = await request.formData();
   const formObj = Object.fromEntries(formData.entries());
@@ -103,32 +105,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const resultDMM = await activateAuthorModeActions({ formObj });
   if (resultDMM) {
     return resultDMM;
-  }
-
-  if (formObj?._action == "Add Activity") {
-    //Create an activity and redirect to the editor for it
-    const { data } = await axios.post(`/api/updateContent/createContent`, {
-      contentType: formObj.type,
-      parentId:
-        params.parentId && params.parentId !== "null" ? params.parentId : null,
-    });
-
-    const { contentId } = data;
-    return redirect(editorUrl(contentId, formObj.type as ContentType));
-  } else if (formObj?._action == "Duplicate Content") {
-    await axios.post(`/api/copyMove/copyContent`, {
-      contentIds: [formObj.contentId],
-      parentId: formObj.parentId === "null" ? null : formObj.parentId,
-      prependCopy: true,
-    });
-    return true;
-  } else if (formObj?._action == "Move") {
-    await axios.post(`/api/copyMove/moveContent`, {
-      contentId: formObj.contentId,
-      parentId: formObj.parentId === "null" ? null : formObj.parentId,
-      desiredPosition: Number(formObj.desiredPosition),
-    });
-    return true;
   }
 
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
@@ -188,6 +164,12 @@ export function Activities() {
     isOpen: deleteContentIsOpen,
     onOpen: deleteContentOnOpen,
     onClose: deleteContentOnClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: shareFolderIsOpen,
+    onOpen: shareFolderOnOpen,
+    onClose: shareFolderOnClose,
   } = useDisclosure();
 
   const { addTo, setAddTo, user } = useOutletContext<SiteContext>();
@@ -302,12 +284,12 @@ export function Activities() {
             onClick={() => {
               fetcher.submit(
                 {
-                  _action: "Move",
+                  path: "copyMove/moveContent",
                   contentId,
                   desiredPosition: position - 1,
                   parentId,
                 },
-                { method: "post" },
+                { method: "post", encType: "application/json" },
               );
             }}
           >
@@ -320,12 +302,12 @@ export function Activities() {
             onClick={() => {
               fetcher.submit(
                 {
-                  _action: "Move",
+                  path: "copyMove/moveContent",
                   contentId,
                   desiredPosition: position + 1,
                   parentId,
                 },
-                { method: "post" },
+                { method: "post", encType: "application/json" },
               );
             }}
           >
@@ -356,11 +338,12 @@ export function Activities() {
           onClick={() => {
             fetcher.submit(
               {
-                _action: "Duplicate Content",
-                contentId,
+                path: "copyMove/copyContent",
+                contentIds: [contentId],
                 parentId,
+                prependCopy: true,
               },
-              { method: "post" },
+              { method: "post", encType: "application/json" },
             );
           }}
         >
@@ -424,8 +407,11 @@ export function Activities() {
   function createNewDocument() {
     setHaveContentSpinner(true);
     fetcher.submit(
-      { _action: "Add Activity", type: "singleDoc" },
-      { method: "post" },
+      {
+        path: "updateContent/createContent",
+        type: "singleDoc",
+      },
+      { method: "post", encType: "application/json" },
     );
   }
 
@@ -499,6 +485,15 @@ export function Activities() {
     />
   );
 
+  const shareFolderModal = parent && (
+    <ShareMyContentModal
+      contentId={parent.contentId}
+      contentType={parent.type}
+      isOpen={shareFolderIsOpen}
+      onClose={shareFolderOnClose}
+    />
+  );
+
   const heading = (
     <Box
       backgroundColor="#fff"
@@ -550,9 +545,16 @@ export function Activities() {
         >
           <Tooltip label={headingText}>{headingText}</Tooltip>
         </Heading>
-        <Button size="sm" colorScheme="blue" mb="0.6rem">
-          Share
-        </Button>
+        {parent && (
+          <Button
+            size="sm"
+            colorScheme="blue"
+            mb="0.6rem"
+            onClick={shareFolderOnOpen}
+          >
+            Share
+          </Button>
+        )}
       </HStack>
       <VStack width="100%">
         <Flex
@@ -707,8 +709,11 @@ export function Activities() {
                   onClick={() => {
                     setHaveContentSpinner(true);
                     fetcher.submit(
-                      { _action: "Add Activity", type: "sequence" },
-                      { method: "post" },
+                      {
+                        path: "updateContent/createContent",
+                        type: "sequence",
+                      },
+                      { method: "post", encType: "application/json" },
                     );
                   }}
                 >
@@ -837,6 +842,7 @@ export function Activities() {
       {deleteModal}
       {copyContentModal}
       {authorModeModal}
+      {shareFolderModal}
 
       {heading}
 

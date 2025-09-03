@@ -25,11 +25,7 @@ import {
 } from "./paths/SiteHeader";
 import { loader as carouselLoader, Home } from "./paths/Home";
 
-import {
-  loader as activitiesLoader,
-  action as activitiesAction,
-  Activities,
-} from "./paths/Activities";
+import { loader as activitiesLoader, Activities } from "./paths/Activities";
 import {
   loader as sharedActivitiesLoader,
   action as sharedActivitiesAction,
@@ -245,7 +241,7 @@ const router = createBrowserRouter([
       {
         path: "activities/:userId/:parentId?",
         loader: activitiesLoader,
-        action: activitiesAction,
+        action: genericAction,
         element: <Activities />,
         errorElement: <ErrorPage />,
       },
@@ -273,7 +269,7 @@ const router = createBrowserRouter([
       {
         path: "documentEditor/:contentId",
         loader: editorHeaderLoader,
-        action: genericContentIdAction,
+        action: genericAction,
         element: <EditorHeader />,
         errorElement: <ErrorPage />,
         children: [
@@ -292,28 +288,28 @@ const router = createBrowserRouter([
           {
             path: "settings",
             loader: docEditorSettingsModeLoader,
-            action: genericContentIdAction,
+            action: genericAction,
             element: <EditorSettingsMode />,
             errorElement: <ErrorPage />,
           },
           {
             path: "history",
             loader: docEditorHistoryModeLoader,
-            action: genericContentIdAction,
+            action: genericAction,
             element: <DocEditorHistoryMode />,
             errorElement: <ErrorPage />,
           },
           {
             path: "remixes",
             loader: docEditorRemixModeLoader,
-            action: genericContentIdAction,
+            action: genericAction,
             element: <DocEditorRemixMode />,
             errorElement: <ErrorPage />,
           },
           {
             path: "library",
             loader: editorLibraryModeLoader,
-            action: genericContentIdAction,
+            action: genericAction,
             element: <EditorLibraryMode />,
             errorElement: <ErrorPage />,
           },
@@ -322,7 +318,7 @@ const router = createBrowserRouter([
       {
         path: "compoundEditor/:contentId",
         loader: editorHeaderLoader,
-        action: genericContentIdAction,
+        action: genericAction,
         element: <EditorHeader />,
         errorElement: <ErrorPage />,
         children: [
@@ -342,14 +338,14 @@ const router = createBrowserRouter([
           {
             path: "settings",
             loader: docEditorSettingsModeLoader,
-            action: genericContentIdAction,
+            action: genericAction,
             element: <EditorSettingsMode />,
             errorElement: <ErrorPage />,
           },
           {
             path: "remixes",
             loader: docEditorRemixModeLoader,
-            action: genericContentIdAction,
+            action: genericAction,
             element: <DocEditorRemixMode />,
             errorElement: <ErrorPage />,
           },
@@ -390,7 +386,7 @@ const router = createBrowserRouter([
       {
         path: "assignmentData/:contentId",
         loader: assignmentResponseOverviewLoader,
-        action: genericContentIdAction,
+        action: genericAction,
         element: <AssignmentResponseOverview />,
         errorElement: <ErrorPage />,
       },
@@ -456,12 +452,20 @@ const router = createBrowserRouter([
 const root = createRoot(document.getElementById("root")!);
 root.render(<RouterProvider router={router} />);
 
-async function genericContentIdAction({ request, params }: ActionFunctionArgs) {
+// TODO: BUG: Mechanism to redirect for some endpoints, such as the one for creating content
+async function genericAction({ request, params }: ActionFunctionArgs) {
   const { path, ...body } = await request.json();
+
+  // If the content id is part of this page's path,
+  // we'll add it to the request body.
+  // In the future, we might want to disable this for some requests, TBD.
+  const contentIdParam = params.contentId
+    ? { contentId: params.contentId }
+    : {};
 
   try {
     await axios.post(`/api/${path}`, {
-      contentId: params.contentId,
+      ...contentIdParam,
       ...body,
     });
 
