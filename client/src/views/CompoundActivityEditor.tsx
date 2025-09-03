@@ -50,7 +50,6 @@ import {
 } from "../dropdowns/CreateContentMenu";
 import { AddContentToMenu } from "../popups/AddContentToMenu";
 import { DeleteContent, deleteContentActions } from "../popups/DeleteContent";
-import { createLocalContentActions } from "../popups/CreateLocalContent";
 import {
   ActivateAuthorMode,
   activateAuthorModeActions,
@@ -80,11 +79,6 @@ export async function compoundActivityEditorActions({
   const resultCCM = await createContentMenuActions({ formObj });
   if (resultCCM) {
     return resultCCM;
-  }
-
-  const resultCF = await createLocalContentActions({ formObj });
-  if (resultCF) {
-    return resultCF;
   }
 
   const resultDMM = await activateAuthorModeActions({ formObj });

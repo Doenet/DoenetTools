@@ -39,7 +39,7 @@ import { MdClose, MdOutlineSearch } from "react-icons/md";
 import { getAllowedParentTypes } from "../utils/activity";
 import {
   CreateLocalContent,
-  createLocalContentActions,
+  // createLocalContentActions,
 } from "../popups/CreateLocalContent";
 import { editorUrl } from "../utils/url";
 
@@ -52,10 +52,10 @@ export async function action({ request }: ActionFunctionArgs) {
     return resultMC;
   }
 
-  const resultCF = await createLocalContentActions({ formObj });
-  if (resultCF) {
-    return resultCF;
-  }
+  // const resultCF = await createLocalContentActions({ formObj });
+  // if (resultCF) {
+  //   return resultCF;
+  // }
 
   if (formObj?._action == "Delete Draft") {
     await axios.post(`/api/curate/deleteDraftFromLibrary`, {

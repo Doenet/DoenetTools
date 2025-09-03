@@ -87,23 +87,23 @@ export function ShareMyContentModal({
         <ModalCloseButton />
         <ModalBody m="1rem">
           <VStack spacing="3rem" align="flex-start">
-            {contentType !== "folder" && (
-              <Box>
-                <Heading size="sm">With the public</Heading>
-                {fetcher.data && settingsFetcher.data ? (
-                  <SharePublicly
-                    isPublic={fetcher.data.isPublic}
-                    parentIsPublic={fetcher.data.parentIsPublic}
-                    contentId={contentId}
-                    contentType={contentType}
-                    settings={settingsFetcher.data}
-                    closeModal={onClose}
-                  />
-                ) : (
-                  <p>Loading...</p>
-                )}
-              </Box>
-            )}
+            <Box>
+              <Heading size="sm">With the public</Heading>
+              {contentType === "folder" ? (
+                <p>Not implemented yet.</p>
+              ) : fetcher.data && settingsFetcher.data ? (
+                <SharePublicly
+                  isPublic={fetcher.data.isPublic}
+                  parentIsPublic={fetcher.data.parentIsPublic}
+                  contentId={contentId}
+                  contentType={contentType}
+                  settings={settingsFetcher.data}
+                  closeModal={onClose}
+                />
+              ) : (
+                <p>Loading...</p>
+              )}
+            </Box>
 
             <Box>
               <Heading size="sm">With specific people</Heading>

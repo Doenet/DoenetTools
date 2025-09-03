@@ -49,10 +49,7 @@ import {
 } from "../types";
 import { MdClose, MdOutlineSearch } from "react-icons/md";
 import { getAllowedParentTypes, menuIcons } from "../utils/activity";
-import {
-  CreateLocalContent,
-  createLocalContentActions,
-} from "../popups/CreateLocalContent";
+import { CreateLocalContent } from "../popups/CreateLocalContent";
 import { DeleteContent, deleteContentActions } from "../popups/DeleteContent";
 import {
   AddContentToMenu,
@@ -73,18 +70,13 @@ import { editorUrl } from "../utils/url";
 import { ShareMyContentModal } from "../popups/ShareMyContentModal";
 
 // FIX: unconverted actions!
-export async function action({ request, params }: ActionFunctionArgs) {
+async function action({ request, params }: ActionFunctionArgs) {
   const formData: FormData = await request.formData();
   const formObj = Object.fromEntries(formData.entries());
 
   const resultMC = await moveCopyContentActions({ formObj });
   if (resultMC) {
     return resultMC;
-  }
-
-  const resultCF = await createLocalContentActions({ formObj });
-  if (resultCF) {
-    return resultCF;
   }
 
   const resultDM = await deleteContentActions({ formObj });
@@ -409,7 +401,8 @@ export function Activities() {
     fetcher.submit(
       {
         path: "updateContent/createContent",
-        type: "singleDoc",
+        parentId,
+        contentType: "singleDoc",
       },
       { method: "post", encType: "application/json" },
     );
@@ -711,7 +704,8 @@ export function Activities() {
                     fetcher.submit(
                       {
                         path: "updateContent/createContent",
-                        type: "sequence",
+                        parentId,
+                        contentType: "sequence",
                       },
                       { method: "post", encType: "application/json" },
                     );

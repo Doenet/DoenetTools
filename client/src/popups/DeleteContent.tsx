@@ -56,9 +56,10 @@ export function DeleteContent({
   const [errMsg, setErrMsg] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
 
+  //TODO: YET: cleanup
+  // Is this still necessary?
   useEffect(() => {
     if (isOpen) {
-      document.body.style.cursor = "default";
       setIsDeleting(false);
     }
   }, [isOpen]);
@@ -66,11 +67,9 @@ export function DeleteContent({
   useEffect(() => {
     if (isDeleting) {
       if (fetcher.data?.contentDeleted) {
-        document.body.style.cursor = "default";
         setIsDeleting(false);
         onClose();
       } else if (fetcher.data?.errorDeletingContent) {
-        document.body.style.cursor = "default";
         setIsDeleting(false);
         setErrMsg(fetcher.data.errorDeletingContent);
       }
@@ -79,13 +78,13 @@ export function DeleteContent({
 
   function deleteContent() {
     setIsDeleting(true);
-    document.body.style.cursor = "wait";
+    // document.body.style.cursor = "wait";
     fetcher.submit(
       {
-        _action: "Delete Content",
+        path: "updateContent/deleteContent",
         contentId: content.contentId,
       },
-      { method: "post" },
+      { method: "post", encType: "application/json" },
     );
   }
 

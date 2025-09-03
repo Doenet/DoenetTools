@@ -11,52 +11,9 @@ import {
   Spinner,
   Input,
 } from "@chakra-ui/react";
-import axios from "axios";
 import { FetcherWithComponents } from "react-router";
 import { ContentType } from "../types";
 import { contentTypeToName } from "../utils/activity";
-
-export async function createLocalContentActions({
-  formObj,
-}: {
-  [k: string]: any;
-}) {
-  const contentType = formObj.contentType as
-    | "singleDoc"
-    | "select"
-    | "sequence"
-    | "folder";
-  if (formObj?._action == "Add Content") {
-    try {
-      await axios.post(`/api/updateContent/createContent`, {
-        name: formObj.contentName,
-        parentId: formObj.parentId === "null" ? null : formObj.parentId,
-        contentType,
-      });
-      return { contentCreated: true };
-    } catch (e) {
-      console.error(e);
-      return {
-        errorCreatingContent: `Error creating ${contentTypeToName[contentType].toLowerCase()}`,
-      };
-    }
-  } else if (formObj?._action == "Add Curation Folder") {
-    try {
-      await axios.post(`/api/curate/createCurationFolder`, {
-        name: formObj.contentName,
-        parentId: formObj.parentId === "null" ? null : formObj.parentId,
-      });
-      return { contentCreated: true };
-    } catch (e) {
-      console.error(e);
-      return {
-        errorCreatingContent: `Error creating ${contentTypeToName[contentType].toLowerCase()}`,
-      };
-    }
-  }
-
-  return null;
-}
 
 /**
  * A modal designed for creating content locally, i.e., in the current folder.
@@ -95,14 +52,21 @@ export function CreateLocalContent({
     }
   }, [contentType, isOpen]);
 
+  // useEffect(() => {
+  //   if (!submitted) {
+  //     // trigger when changing submitted to false as this happens
+  //     // after set content name to `Untitled ${contentTypeToName[contentType]}`
+  //     inputRef.current?.focus();
+  //     inputRef.current?.select();
+  //   }
+  // }, [submitted]);
+
   useEffect(() => {
-    if (!submitted) {
-      // trigger when changing submitted to false as this happens
-      // after set content name to `Untitled ${contentTypeToName[contentType]}`
+    if (isOpen) {
       inputRef.current?.focus();
       inputRef.current?.select();
     }
-  }, [submitted]);
+  }, [isOpen]);
 
   useEffect(() => {
     if (fetcher.data?.contentCreated) {
@@ -120,26 +84,26 @@ export function CreateLocalContent({
       // We can't create other types in the library, just remix them
       fetcher.submit(
         {
-          _action: "Add Curation Folder",
-          contentName,
+          path: "curate/createCurationFolder",
+          name: contentName,
           contentType,
           parentId,
         },
-        { method: "post" },
+        { method: "post", encType: "application/json" },
       );
     } else {
       fetcher.submit(
         {
-          _action: "Add Content",
-          contentName,
+          path: "updateContent/createContent",
+          name: contentName,
           contentType,
           parentId,
         },
-        { method: "post" },
+        { method: "post", encType: "application/json" },
       );
     }
-    document.body.style.cursor = "wait";
     setSubmitted(true);
+    onClose();
   }
 
   return (
