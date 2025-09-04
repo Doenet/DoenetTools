@@ -110,12 +110,12 @@ export function CopyContentAndReportFinish({
         document.body.style.cursor = "wait";
         fetcher.submit(
           {
-            _action: "copy content",
-            contentIds: JSON.stringify(contentIds),
+            path: "copyMove/copyContent",
+            contentIds,
             parentId: desiredParent ? desiredParent.contentId : null,
             prependCopy,
           },
-          { method: "post" },
+          { method: "post", encType: "application/json" },
         );
       }
     } else {

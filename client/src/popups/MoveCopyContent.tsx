@@ -189,13 +189,16 @@ export function MoveCopyContent({
   const fetcher = useFetcher();
 
   useEffect(() => {
-    if (fetcher.data) {
-      if (fetcher.data.success === true) {
-        setActionFinished(true);
-        setNumItems(fetcher.data.numItems);
-      } else if (fetcher.data.success === false) {
-        setErrMsg(fetcher.data.message);
+    if (fetcher.data && fetcher.data.status === 200) {
+      setActionFinished(true);
+      if (action === "Move") {
+        setNumItems(1);
+      } else {
+        const numItems: number = fetcher.data.contentIds.length;
+        setNumItems(numItems);
       }
+    } else if (fetcher.data && fetcher.data.success === false) {
+      setErrMsg(fetcher.data.message);
     }
   }, [fetcher.data]);
 
@@ -493,15 +496,34 @@ export function MoveCopyContent({
   );
 
   function performAction() {
-    fetcher.submit(
-      {
-        _action: "Move or copy",
-        contentIds: JSON.stringify(sourceContent.map((sc) => sc.contentId)),
-        parentId: activeView.parent?.id ?? null,
-        desiredPosition: activeView.contents.length, // place it as the last item
-        action,
-      },
-      { method: "post" },
-    );
+    const contentIds = sourceContent.map((sc) => sc.contentId);
+    const parentId = activeView.parent?.id ?? null;
+
+    if (action === "Move") {
+      if (contentIds.length === 1) {
+        fetcher.submit(
+          {
+            path: `copyMove/moveContent`,
+            contentId: contentIds[0],
+            parentId,
+            desiredPosition: activeView.contents.length, // place it as the last item
+          },
+          { method: "post", encType: "application/json" },
+        );
+      } else {
+        throw Error("Have not implemented moving more than one content");
+      }
+    } else if (action === "Copy") {
+      fetcher.submit(
+        {
+          path: "copyMove/copyContent",
+          contentIds,
+          parentId,
+        },
+        { method: "post", encType: "application/json" },
+      );
+    } else {
+      throw Error("Add action not implemented in `MoveCopyContent`");
+    }
   }
 }

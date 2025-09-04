@@ -464,12 +464,11 @@ async function genericAction({ request, params }: ActionFunctionArgs) {
     : {};
 
   try {
-    await axios.post(`/api/${path}`, {
+    const results = await axios.post(`/api/${path}`, {
       ...contentIdParam,
       ...body,
     });
-
-    return null;
+    return results;
   } catch (e) {
     /**
      * Special case: sharing content with specific people by email address
