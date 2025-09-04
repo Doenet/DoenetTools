@@ -194,7 +194,7 @@ export function MoveCopyContent({
       if (action === "Move") {
         setNumItems(1);
       } else {
-        const numItems: number = fetcher.data.contentIds.length;
+        const numItems: number = fetcher.data.data.newContentIds.length;
         setNumItems(numItems);
       }
     } else if (fetcher.data && fetcher.data.success === false) {
@@ -513,7 +513,7 @@ export function MoveCopyContent({
       } else {
         throw Error("Have not implemented moving more than one content");
       }
-    } else if (action === "Copy") {
+    } else if (action === "Copy" || action === "Add") {
       fetcher.submit(
         {
           path: "copyMove/copyContent",
@@ -523,7 +523,7 @@ export function MoveCopyContent({
         { method: "post", encType: "application/json" },
       );
     } else {
-      throw Error("Add action not implemented in `MoveCopyContent`");
+      throw Error("Action not implemented in `MoveCopyContent`");
     }
   }
 }
