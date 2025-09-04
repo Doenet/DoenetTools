@@ -13,11 +13,7 @@ import {
   Spinner,
 } from "@chakra-ui/react";
 import axios, { AxiosError } from "axios";
-import {
-  FetcherWithComponents,
-  useNavigate,
-  useOutletContext,
-} from "react-router";
+import { useFetcher, useNavigate, useOutletContext } from "react-router";
 import { ContentDescription } from "../types";
 import { contentTypeToName } from "../utils/activity";
 import { SiteContext } from "../paths/SiteHeader";
@@ -61,7 +57,6 @@ export async function copyContentAndReportFinishActions({
  * When the copy is finished, the modal allows the user to close it or navigate to the parent.
  */
 export function CopyContentAndReportFinish({
-  fetcher,
   isOpen,
   onClose,
   finalFocusRef,
@@ -70,7 +65,6 @@ export function CopyContentAndReportFinish({
   action,
   prependCopy = false,
 }: {
-  fetcher: FetcherWithComponents<any>;
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement | null>;
@@ -87,12 +81,14 @@ export function CopyContentAndReportFinish({
   const actionPastWord = action === "Add" ? "added" : "copied";
   const actionProgressiveWord = action === "Add" ? "Adding" : "Copying";
 
+  const fetcher = useFetcher();
+
   const { user, setAddTo } = useOutletContext<SiteContext>();
 
   useEffect(() => {
-    if (fetcher.data?.action === "copiedContent") {
-      if (fetcher.data.success) {
-        setNewContentIds(fetcher.data.newContentIds);
+    if (fetcher.data) {
+      if (fetcher.data.status === 200) {
+        setNewContentIds(fetcher.data.data.newContentIds);
       } else {
         const message = fetcher.data.message;
         setErrMsg(

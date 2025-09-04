@@ -55,10 +55,7 @@ import {
   AddContentToMenu,
   addContentToMenuActions,
 } from "../popups/AddContentToMenu";
-import {
-  CreateContentMenu,
-  createContentMenuActions,
-} from "../dropdowns/CreateContentMenu";
+import { CreateContentMenu } from "../dropdowns/CreateContentMenu";
 import { CopyContentAndReportFinish } from "../popups/CopyContentAndReportFinish";
 import { SiteContext } from "../paths/SiteHeader";
 import {
@@ -87,11 +84,6 @@ async function action({ request, params }: ActionFunctionArgs) {
   const resultACM = await addContentToMenuActions({ formObj });
   if (resultACM) {
     return resultACM;
-  }
-
-  const resultCCM = await createContentMenuActions({ formObj });
-  if (resultCCM) {
-    return resultCCM;
   }
 
   const resultDMM = await activateAuthorModeActions({ formObj });
@@ -452,7 +444,6 @@ export function Activities() {
   const copyContentModal =
     addTo !== null ? (
       <CopyContentAndReportFinish
-        fetcher={fetcher}
         isOpen={copyDialogIsOpen}
         onClose={copyDialogOnClose}
         contentIds={selectedCardsFiltered.map((sc) => sc.contentId)}

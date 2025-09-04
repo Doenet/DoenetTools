@@ -44,10 +44,7 @@ import {
   CopyContentAndReportFinish,
   copyContentAndReportFinishActions,
 } from "../popups/CopyContentAndReportFinish";
-import {
-  CreateContentMenu,
-  createContentMenuActions,
-} from "../dropdowns/CreateContentMenu";
+import { CreateContentMenu } from "../dropdowns/CreateContentMenu";
 import { AddContentToMenu } from "../popups/AddContentToMenu";
 import { DeleteContent, deleteContentActions } from "../popups/DeleteContent";
 import {
@@ -75,12 +72,6 @@ export async function compoundActivityEditorActions({
   if (resultCC) {
     return resultCC;
   }
-
-  const resultCCM = await createContentMenuActions({ formObj });
-  if (resultCCM) {
-    return resultCCM;
-  }
-
   const resultDMM = await activateAuthorModeActions({ formObj });
   if (resultDMM) {
     return resultDMM;
@@ -248,7 +239,6 @@ export function CompoundActivityEditor({
   const copyContentModal =
     addTo !== null ? (
       <CopyContentAndReportFinish
-        fetcher={fetcher}
         isOpen={copyDialogIsOpen}
         onClose={copyDialogOnClose}
         contentIds={selectedCardsFiltered.map((sc) => sc.contentId)}

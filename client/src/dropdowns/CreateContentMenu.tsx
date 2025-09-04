@@ -11,22 +11,8 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { getAllowedParentTypes, menuIcons } from "../utils/activity";
-import {
-  CreateContentAndPromptName,
-  createContentAndPromptNameActions,
-} from "../popups/CreateContentAndPromptName";
+import { CreateContentAndPromptName } from "../popups/CreateContentAndPromptName";
 import { FetcherWithComponents } from "react-router";
-
-export async function createContentMenuActions({
-  formObj,
-}: {
-  [k: string]: any;
-}) {
-  const resultCC = createContentAndPromptNameActions({ formObj });
-  if (resultCC) {
-    return resultCC;
-  }
-}
 
 export function CreateContentMenu({
   sourceContent,

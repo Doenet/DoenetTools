@@ -33,10 +33,7 @@ import {
   AddContentToMenu,
   addContentToMenuActions,
 } from "../popups/AddContentToMenu";
-import {
-  CreateContentMenu,
-  createContentMenuActions,
-} from "../dropdowns/CreateContentMenu";
+import { CreateContentMenu } from "../dropdowns/CreateContentMenu";
 import {
   CopyContentAndReportFinish,
   copyContentAndReportFinishActions,
@@ -54,11 +51,6 @@ export async function action({ request }: ActionFunctionArgs) {
   const resultCC = await copyContentAndReportFinishActions({ formObj });
   if (resultCC) {
     return resultCC;
-  }
-
-  const resultCCM = await createContentMenuActions({ formObj });
-  if (resultCCM) {
-    return resultCCM;
   }
 
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
@@ -165,7 +157,6 @@ export function SharedActivities() {
   const copyContentModal =
     addTo !== null ? (
       <CopyContentAndReportFinish
-        fetcher={fetcher}
         isOpen={copyDialogIsOpen}
         onClose={copyDialogOnClose}
         contentIds={selectedCardsFiltered.map((sc) => sc.contentId)}

@@ -154,7 +154,6 @@ export function AddContentToMenu({
 
   const copyContentModal = (
     <CopyContentAndReportFinish
-      fetcher={fetcher}
       isOpen={copyDialogIsOpen}
       onClose={copyDialogOnClose}
       contentIds={sourceContent.map((sc) => sc.contentId)}

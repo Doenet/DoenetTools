@@ -452,6 +452,10 @@ const router = createBrowserRouter([
 const root = createRoot(document.getElementById("root")!);
 root.render(<RouterProvider router={router} />);
 
+// TODO before merge::
+// Should `genericAction` return the entire http request or just the data portion?
+// For example, do we want fetchers to be able to check the status number?
+
 // TODO: BUG: Mechanism to redirect for some endpoints, such as the one for creating content
 async function genericAction({ request, params }: ActionFunctionArgs) {
   const { path, ...body } = await request.json();
