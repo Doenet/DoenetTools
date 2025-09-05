@@ -119,7 +119,6 @@ import {
 import {
   CompoundEditorEditMode,
   loader as compoundEditorEditModeLoader,
-  action as compoundEditorEditModeAction,
 } from "./paths/editor/CompoundEditorEditMode";
 import {
   EditorSettingsMode,
@@ -325,7 +324,7 @@ const router = createBrowserRouter([
           {
             path: "edit",
             loader: compoundEditorEditModeLoader,
-            action: compoundEditorEditModeAction,
+            action: genericAction,
             element: <CompoundEditorEditMode />,
             errorElement: <ErrorPage />,
           },

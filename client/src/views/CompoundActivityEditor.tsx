@@ -28,97 +28,20 @@ import {
   useNavigate,
   useOutletContext,
 } from "react-router";
-import {
-  MoveCopyContent,
-  moveCopyContentActions,
-} from "../popups/MoveCopyContent";
+import { MoveCopyContent } from "../popups/MoveCopyContent";
 import { SiteContext } from "../paths/SiteHeader";
 import CardList from "../widgets/CardList";
-import axios from "axios";
 import {
   contentTypeToName,
   getAllowedParentTypes,
   menuIcons,
 } from "../utils/activity";
-import {
-  CopyContentAndReportFinish,
-  copyContentAndReportFinishActions,
-} from "../popups/CopyContentAndReportFinish";
+import { CopyContentAndReportFinish } from "../popups/CopyContentAndReportFinish";
 import { CreateContentMenu } from "../dropdowns/CreateContentMenu";
 import { AddContentToMenu } from "../popups/AddContentToMenu";
-import { DeleteContent, deleteContentActions } from "../popups/DeleteContent";
-import {
-  ActivateAuthorMode,
-  activateAuthorModeActions,
-} from "../popups/ActivateAuthorMode";
+import { DeleteContent } from "../popups/DeleteContent";
+import { ActivateAuthorMode } from "../popups/ActivateAuthorMode";
 import { editorUrl } from "../utils/url";
-
-export async function compoundActivityEditorActions({
-  formObj,
-}: {
-  [k: string]: any;
-}) {
-  const resultMC = await moveCopyContentActions({ formObj });
-  if (resultMC) {
-    return resultMC;
-  }
-
-  const resultDM = await deleteContentActions({ formObj });
-  if (resultDM) {
-    return resultDM;
-  }
-
-  const resultCC = await copyContentAndReportFinishActions({ formObj });
-  if (resultCC) {
-    return resultCC;
-  }
-  const resultDMM = await activateAuthorModeActions({ formObj });
-  if (resultDMM) {
-    return resultDMM;
-  }
-
-  if (formObj?._action == "Add Document") {
-    //Create an activity and redirect to the editor for it
-    const { data } = await axios.post(`/api/updateContent/createContent`, {
-      contentType: formObj.type,
-      parentId: formObj.parentId,
-    });
-
-    const { contentId } = data;
-
-    if (formObj.type === "singleDoc") {
-      return { createdDoc: contentId, createNum: Number(formObj.createNum) };
-
-      // Note: do not know why this redirect does not work when the action is call from a Card inside a CardList.
-      // Returning the above {createdDoc} is a workaround
-      // redirect(`/activityEditor/${contentId}`);
-    } else {
-      return true;
-    }
-  } else if (formObj?._action == "Duplicate Content") {
-    await axios.post(`/api/copyMove/copyContent`, {
-      contentIds: [formObj.contentId],
-      parentId: formObj.parentId === "null" ? null : formObj.parentId,
-      prependCopy: true,
-    });
-    return true;
-  } else if (formObj?._action == "Move") {
-    await axios.post(`/api/copyMove/moveContent`, {
-      contentId: formObj.contentId,
-      parentId: formObj.parentId === "null" ? null : formObj.parentId,
-      desiredPosition: Number(formObj.desiredPosition),
-    });
-    return true;
-  } else if (formObj?._action == "Update problem set copies") {
-    await axios.post(`/api/updateContent/updateContentSettings`, {
-      contentId: formObj.contentId,
-      repeatInProblemSet: Number(formObj.repeatInProblemSet),
-    });
-    return true;
-  }
-
-  return null;
-}
 
 export function CompoundActivityEditor({
   activity,
@@ -258,7 +181,6 @@ export function CompoundActivityEditor({
       isOpen={deleteContentIsOpen}
       onClose={deleteContentOnClose}
       content={contentToDelete}
-      fetcher={fetcher}
       finalFocusRef={finalFocusRef}
     />
   ) : null;
@@ -409,11 +331,11 @@ export function CompoundActivityEditor({
         updateRepeatInProblemSet: (copies) => {
           fetcher.submit(
             {
-              _action: "Update problem set copies",
+              path: "updateContent/updateContentSettings",
               contentId: content.contentId,
               repeatInProblemSet: copies,
             },
-            { method: "post" },
+            { method: "post", encType: "application/json" },
           );
         },
       });
@@ -563,12 +485,12 @@ export function CompoundActivityEditor({
             onClick={() => {
               fetcher.submit(
                 {
-                  _action: "Move",
+                  path: "copyMove/moveContent",
                   contentId,
                   desiredPosition: nextPositionUp.position,
                   parentId: nextPositionUp.parent,
                 },
-                { method: "post" },
+                { method: "post", encType: "application/json" },
               );
             }}
           >
@@ -582,12 +504,12 @@ export function CompoundActivityEditor({
             onClick={() => {
               fetcher.submit(
                 {
-                  _action: "Move",
+                  path: "copyMove/moveContent",
                   contentId,
                   desiredPosition: nextPositionDown.position,
                   parentId: nextPositionDown.parent,
                 },
-                { method: "post" },
+                { method: "post", encType: "application/json" },
               );
             }}
           >
@@ -618,11 +540,12 @@ export function CompoundActivityEditor({
           onClick={() => {
             fetcher.submit(
               {
-                _action: "Duplicate Content",
-                contentId,
+                path: "copyMove/copyContent",
+                contentIds: [contentId],
                 parentId: activity.contentId,
+                prependCopy: true,
               },
-              { method: "post" },
+              { method: "post", encType: "application/json" },
             );
           }}
         >
@@ -647,6 +570,7 @@ export function CompoundActivityEditor({
     (contentId?: string) => {
       setHaveContentSpinner(true);
 
+      // TODO: BEFORE: MERGE: Do we need this?
       const createNum = Math.round(Math.random() * 1000000);
 
       setCreatingDoc({
@@ -656,12 +580,12 @@ export function CompoundActivityEditor({
 
       fetcher.submit(
         {
-          _action: "Add Document",
-          type: "singleDoc",
+          path: "updateContent/createContent",
+          contentType: "singleDoc",
           parentId: contentId || activity.contentId,
-          createNum,
+          // createNum,
         },
-        { method: "post" },
+        { method: "post", encType: "application/json" },
       );
     },
     [activity.contentId, fetcher],

@@ -30,16 +30,12 @@ import {
   Link,
   Form,
   useOutletContext,
-  ActionFunctionArgs,
 } from "react-router";
 
 import { CardContent } from "../widgets/Card";
 import CardList from "../widgets/CardList";
 import axios from "axios";
-import {
-  MoveCopyContent,
-  moveCopyContentActions,
-} from "../popups/MoveCopyContent";
+import { MoveCopyContent } from "../popups/MoveCopyContent";
 import {
   ContentDescription,
   Content,
@@ -50,49 +46,15 @@ import {
 import { MdClose, MdOutlineSearch } from "react-icons/md";
 import { getAllowedParentTypes, menuIcons } from "../utils/activity";
 import { CreateLocalContent } from "../popups/CreateLocalContent";
-import { DeleteContent, deleteContentActions } from "../popups/DeleteContent";
-import {
-  AddContentToMenu,
-  addContentToMenuActions,
-} from "../popups/AddContentToMenu";
+import { DeleteContent } from "../popups/DeleteContent";
+import { AddContentToMenu } from "../popups/AddContentToMenu";
 import { CreateContentMenu } from "../dropdowns/CreateContentMenu";
 import { CopyContentAndReportFinish } from "../popups/CopyContentAndReportFinish";
 import { SiteContext } from "../paths/SiteHeader";
-import {
-  ActivateAuthorMode,
-  activateAuthorModeActions,
-} from "../popups/ActivateAuthorMode";
+import { ActivateAuthorMode } from "../popups/ActivateAuthorMode";
 import { formatAssignmentBlurb } from "../utils/assignment";
 import { editorUrl } from "../utils/url";
 import { ShareMyContentModal } from "../popups/ShareMyContentModal";
-
-// FIX: unconverted actions!
-async function action({ request, params }: ActionFunctionArgs) {
-  const formData: FormData = await request.formData();
-  const formObj = Object.fromEntries(formData.entries());
-
-  const resultMC = await moveCopyContentActions({ formObj });
-  if (resultMC) {
-    return resultMC;
-  }
-
-  const resultDM = await deleteContentActions({ formObj });
-  if (resultDM) {
-    return resultDM;
-  }
-
-  const resultACM = await addContentToMenuActions({ formObj });
-  if (resultACM) {
-    return resultACM;
-  }
-
-  const resultDMM = await activateAuthorModeActions({ formObj });
-  if (resultDMM) {
-    return resultDMM;
-  }
-
-  throw Error(`Action "${formObj?._action}" not defined or not handled.`);
-}
 
 export async function loader({ params, request }: any) {
   const url = new URL(request.url);
@@ -430,7 +392,6 @@ export function Activities() {
         isOpen={deleteContentIsOpen}
         onClose={deleteContentOnClose}
         content={contentData}
-        fetcher={fetcher}
         finalFocusRef={finalFocusRef}
       />
     ) : null;

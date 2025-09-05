@@ -50,7 +50,6 @@ import {
   ActivateAuthorMode,
   activateAuthorModeActions,
 } from "../../popups/ActivateAuthorMode";
-import { compoundActivityEditorActions } from "../../views/CompoundActivityEditor";
 import { ConfirmAssignModal } from "../../popups/ConfirmAssignModal";
 import { ShareMyContentModal } from "../../popups/ShareMyContentModal";
 import { NotificationDot } from "../../widgets/NotificationDot";
@@ -76,11 +75,6 @@ export async function action({ params, request }: ActionFunctionArgs) {
     return true;
   } else if (formObj._action === "go to data") {
     return redirect(`/assignmentData/${params.contentId}`);
-  }
-
-  const resultNAE = await compoundActivityEditorActions({ formObj });
-  if (resultNAE) {
-    return resultNAE;
   }
 
   const resultDM = await activateAuthorModeActions({ formObj });
@@ -240,7 +234,6 @@ export function EditorHeader() {
 
   const copyContentModal = (
     <CopyContentAndReportFinish
-      fetcher={fetcher}
       isOpen={copyDialogIsOpen}
       onClose={copyDialogOnClose}
       contentIds={[contentId]}
