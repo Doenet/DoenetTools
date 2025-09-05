@@ -17,7 +17,6 @@ import {
   useFetcher,
   Link,
   useOutletContext,
-  ActionFunctionArgs,
 } from "react-router";
 
 import { CardContent } from "../widgets/Card";
@@ -29,32 +28,9 @@ import { ContentInfoDrawer } from "../drawers/ContentInfoDrawer";
 import CardList from "../widgets/CardList";
 import { menuIcons } from "../utils/activity";
 import { SiteContext } from "./SiteHeader";
-import {
-  AddContentToMenu,
-  addContentToMenuActions,
-} from "../popups/AddContentToMenu";
+import { AddContentToMenu } from "../popups/AddContentToMenu";
 import { CreateContentMenu } from "../dropdowns/CreateContentMenu";
-import {
-  CopyContentAndReportFinish,
-  copyContentAndReportFinishActions,
-} from "../popups/CopyContentAndReportFinish";
-
-export async function action({ request }: ActionFunctionArgs) {
-  const formData = await request.formData();
-  const formObj = Object.fromEntries(formData);
-
-  const resultACM = await addContentToMenuActions({ formObj });
-  if (resultACM) {
-    return resultACM;
-  }
-
-  const resultCC = await copyContentAndReportFinishActions({ formObj });
-  if (resultCC) {
-    return resultCC;
-  }
-
-  throw Error(`Action "${formObj?._action}" not defined or not handled.`);
-}
+import { CopyContentAndReportFinish } from "../popups/CopyContentAndReportFinish";
 
 export async function loader({ params }: { params: any }) {
   const { data } = await axios.get(

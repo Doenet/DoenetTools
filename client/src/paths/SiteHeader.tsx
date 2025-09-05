@@ -357,7 +357,6 @@ export function SiteHeader() {
                                     onChange={() => {
                                       fetcher.submit(
                                         {
-                                          _action: "set is author",
                                           path: "user/setIsAuthor",
                                           isAuthor: !user.isAuthor,
                                         },

@@ -12,44 +12,12 @@ import {
   Text,
   Spinner,
 } from "@chakra-ui/react";
-import axios, { AxiosError } from "axios";
 import { useFetcher, useNavigate, useOutletContext } from "react-router";
 import { ContentDescription } from "../types";
 import { contentTypeToName } from "../utils/activity";
 import { SiteContext } from "../paths/SiteHeader";
 import { editorUrl } from "../utils/url";
 
-export async function copyContentAndReportFinishActions({
-  formObj,
-}: {
-  [k: string]: any;
-}) {
-  if (formObj._action === "copy content") {
-    const newContentIds: string[] = [];
-
-    try {
-      const contentIds = JSON.parse(formObj.contentIds);
-      const { data } = await axios.post(`/api/copyMove/copyContent`, {
-        contentIds,
-        parentId: formObj.parentId === "null" ? null : formObj.parentId,
-        prependCopy: formObj.prependCopy === "true",
-      });
-
-      newContentIds.push(...data.newContentIds);
-      return { action: "copiedContent", success: true, newContentIds };
-    } catch (e) {
-      console.error(e);
-      let message: string | null = null;
-      if (e instanceof AxiosError) {
-        message = e.response?.data.details;
-      }
-
-      return { action: "copiedContent", success: false, message };
-    }
-  }
-
-  return null;
-}
 /**
  * A modal that immediately upon opening copies source content into a parent or Activities
  * Alternatively, if the `copyToLibrary` flag is set and the user is an editor, it copies the activity into the library as a draft.

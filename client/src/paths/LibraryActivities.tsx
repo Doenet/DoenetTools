@@ -24,65 +24,17 @@ import {
   useFetcher,
   Link,
   Form,
-  ActionFunctionArgs,
 } from "react-router";
 
 import { CardContent } from "../widgets/Card";
 import CardList from "../widgets/CardList";
 import axios from "axios";
-import {
-  MoveCopyContent,
-  moveCopyContentActions,
-} from "../popups/MoveCopyContent";
+import { MoveCopyContent } from "../popups/MoveCopyContent";
 import { Content, LicenseCode, UserInfo, ContentType } from "../types";
 import { MdClose, MdOutlineSearch } from "react-icons/md";
 import { getAllowedParentTypes } from "../utils/activity";
-import {
-  CreateLocalContent,
-  // createLocalContentActions,
-} from "../popups/CreateLocalContent";
+import { CreateLocalContent } from "../popups/CreateLocalContent";
 import { editorUrl } from "../utils/url";
-
-export async function action({ request }: ActionFunctionArgs) {
-  const formData = await request.formData();
-  const formObj = Object.fromEntries(formData);
-
-  const resultMC = await moveCopyContentActions({ formObj });
-  if (resultMC) {
-    return resultMC;
-  }
-
-  // const resultCF = await createLocalContentActions({ formObj });
-  // if (resultCF) {
-  //   return resultCF;
-  // }
-
-  if (formObj?._action == "Delete Draft") {
-    await axios.post(`/api/curate/deleteDraftFromLibrary`, {
-      contentId: formObj.contentId,
-      contentType: formObj.contentType,
-    });
-    return true;
-
-    // TODO: Figure out how to delete folders in library (some activities may be published)
-    // One idea is that you can only delete folders that are empty (or have only drafts?)
-
-    // } else if (formObj?._action == "Delete Folder") {
-    //   await axios.post(`/api/deleteCurationFolder`, {
-    //     folderId: formObj.contentId === "null" ? null : formObj.contentId,
-    //   });
-    //   return true;
-  } else if (formObj?._action == "Move") {
-    await axios.post(`/api/copyMove/moveContent`, {
-      contentId: formObj.contentId,
-      parentId: formObj.folderId === "null" ? null : formObj.folderId,
-      desiredPosition: Number(formObj.desiredPosition),
-    });
-    return true;
-  }
-
-  throw Error(`Action "${formObj?._action}" not defined or not handled.`);
-}
 
 export async function loader({
   params,
@@ -222,12 +174,12 @@ export function LibraryActivities() {
             onClick={() => {
               fetcher.submit(
                 {
-                  _action: "Move",
+                  path: "copyMove/moveContent",
                   contentId,
                   desiredPosition: position - 1,
-                  folderId,
+                  parentId: folderId,
                 },
-                { method: "post" },
+                { method: "post", encType: "application/json" },
               );
             }}
           >
@@ -240,12 +192,12 @@ export function LibraryActivities() {
             onClick={() => {
               fetcher.submit(
                 {
-                  _action: "Move",
+                  path: "copyMove/moveContent",
                   contentId,
                   desiredPosition: position + 1,
-                  folderId,
+                  parentId: folderId,
                 },
-                { method: "post" },
+                { method: "post", encType: "application/json" },
               );
             }}
           >
@@ -290,11 +242,11 @@ export function LibraryActivities() {
               onClick={() => {
                 fetcher.submit(
                   {
-                    _action: "Delete Draft",
+                    path: "curate/deleteDraftFromLibrary",
                     contentId,
                     contentType,
                   },
-                  { method: "post" },
+                  { method: "post", encType: "application/json" },
                 );
               }}
             >

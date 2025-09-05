@@ -3,7 +3,6 @@ import {
   useFetcher,
   Link as ReactRouterLink,
   useNavigate,
-  ActionFunctionArgs,
   Outlet,
   redirect,
   useLoaderData,
@@ -53,29 +52,6 @@ import { NotificationDot } from "../../widgets/NotificationDot";
 import { LibraryEditorControls } from "../../widgets/editor/LibraryEditorControls";
 import { editorUrl } from "../../utils/url";
 import { EditableName } from "../../widgets/EditableName";
-
-export async function action({ params, request }: ActionFunctionArgs) {
-  const formData = await request.formData();
-  const formObj = Object.fromEntries(formData);
-
-  if (formObj._action == "update name") {
-    //Don't let name be blank
-    let name = formObj.name.toString().trim();
-    if (name === "") {
-      name = "Untitled";
-    }
-
-    await axios.post(`/api/updateContent/updateContentSettings`, {
-      contentId: params.contentId,
-      name,
-    });
-    return true;
-  } else if (formObj._action === "go to data") {
-    return redirect(`/assignmentData/${params.contentId}`);
-  }
-
-  return null;
-}
 
 export async function loader({
   params,

@@ -10,11 +10,7 @@ import { createRoot } from "react-dom/client";
 import "@doenet/doenetml-iframe/style.css";
 
 import { MathJaxContext } from "better-react-mathjax";
-import {
-  loader as exploreLoader,
-  action as exploreAction,
-  Explore,
-} from "./paths/Explore";
+import { loader as exploreLoader, Explore } from "./paths/Explore";
 
 import { loader as curateLoader, Curate } from "./paths/Curate";
 
@@ -24,19 +20,13 @@ import { loader as carouselLoader, Home } from "./paths/Home";
 import { loader as activitiesLoader, Activities } from "./paths/Activities";
 import {
   loader as sharedActivitiesLoader,
-  action as sharedActivitiesAction,
   SharedActivities,
 } from "./paths/SharedActivities";
 import {
   loader as activityViewerLoader,
-  action as activityViewerAction,
   ActivityViewer,
 } from "./paths/ActivityViewer";
-import {
-  loader as assignedLoader,
-  action as assignedAction,
-  Assigned,
-} from "./paths/Assigned";
+import { loader as assignedLoader, Assigned } from "./paths/Assigned";
 import {
   loader as assignmentResponseOverviewLoader,
   AssignmentData as AssignmentResponseOverview,
@@ -63,11 +53,7 @@ import {
   StudentAssignmentScores,
   assignedDataloader,
 } from "./paths/StudentAssignmentScores";
-import {
-  loader as trashLoader,
-  action as trashAction,
-  Trash,
-} from "./paths/Trash";
+import { loader as trashLoader, Trash } from "./paths/Trash";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 
 import ErrorPage from "./paths/ErrorPage";
@@ -98,7 +84,6 @@ import {
 import {
   LibraryActivities,
   loader as libraryActivitiesLoader,
-  action as libraryActivitiesAction,
 } from "./paths/LibraryActivities";
 import {
   DocEditorViewMode,
@@ -216,7 +201,7 @@ const router = createBrowserRouter([
       {
         path: "explore/:systemId?/:categoryId?/:subCategoryId?/:classificationId?",
         loader: exploreLoader,
-        action: exploreAction,
+        action: genericAction,
         element: <Explore />,
         errorElement: <ErrorPage />,
       },
@@ -229,7 +214,7 @@ const router = createBrowserRouter([
       {
         path: "libraryActivities/:parentId?",
         loader: libraryActivitiesLoader,
-        action: libraryActivitiesAction,
+        action: genericAction,
         element: <LibraryActivities />,
         errorElement: <ErrorPage />,
       },
@@ -243,21 +228,21 @@ const router = createBrowserRouter([
       {
         path: "trash",
         loader: trashLoader,
-        action: trashAction,
+        action: genericAction,
         element: <Trash />,
         errorElement: <ErrorPage />,
       },
       {
         path: "sharedActivities/:ownerId/:parentId?",
         loader: sharedActivitiesLoader,
-        action: sharedActivitiesAction,
+        action: genericAction,
         element: <SharedActivities />,
         errorElement: <ErrorPage />,
       },
       {
         path: "activityViewer/:contentId",
         loader: activityViewerLoader,
-        action: activityViewerAction,
+        action: genericAction,
         errorElement: <ErrorPage />,
         element: <ActivityViewer />,
       },
@@ -361,7 +346,7 @@ const router = createBrowserRouter([
       },
       {
         path: "assigned",
-        action: assignedAction,
+        // no actions on this page
         loader: assignedLoader,
         element: <Assigned />,
         errorElement: <ErrorPage />,
