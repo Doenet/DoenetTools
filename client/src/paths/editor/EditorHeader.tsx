@@ -46,10 +46,7 @@ import { AssignmentStatus, ContentType, ContentDescription } from "../../types";
 import { contentTypeToName, getIconInfo } from "../../utils/activity";
 import { CopyContentAndReportFinish } from "../../popups/CopyContentAndReportFinish";
 import { SiteContext } from "../SiteHeader";
-import {
-  ActivateAuthorMode,
-  activateAuthorModeActions,
-} from "../../popups/ActivateAuthorMode";
+import { ActivateAuthorMode } from "../../popups/ActivateAuthorMode";
 import { ConfirmAssignModal } from "../../popups/ConfirmAssignModal";
 import { ShareMyContentModal } from "../../popups/ShareMyContentModal";
 import { NotificationDot } from "../../widgets/NotificationDot";
@@ -75,11 +72,6 @@ export async function action({ params, request }: ActionFunctionArgs) {
     return true;
   } else if (formObj._action === "go to data") {
     return redirect(`/assignmentData/${params.contentId}`);
-  }
-
-  const resultDM = await activateAuthorModeActions({ formObj });
-  if (resultDM) {
-    return resultDM;
   }
 
   return null;

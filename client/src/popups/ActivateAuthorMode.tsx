@@ -10,22 +10,7 @@ import {
 } from "@chakra-ui/react";
 import React, { RefObject, useRef } from "react";
 import { FetcherWithComponents } from "react-router";
-import axios from "axios";
 import { AssignmentStatus, UserInfo } from "../types";
-
-export async function activateAuthorModeActions({
-  formObj,
-}: {
-  [k: string]: any;
-}) {
-  if (formObj?._action == "set is author") {
-    await axios.post("/api/user/setIsAuthor", {
-      isAuthor: formObj.isAuthor === "true",
-    });
-  }
-
-  return null;
-}
 
 export function ActivateAuthorMode({
   isOpen,
@@ -95,11 +80,10 @@ export function ActivateAuthorMode({
             onClick={() => {
               fetcher.submit(
                 {
-                  _action: "set is author",
-                  userId: user.userId,
+                  path: "user/setIsAuthor",
                   isAuthor: !user.isAuthor,
                 },
-                { method: "post" },
+                { method: "post", encType: "application/json" },
               );
               proceedCallback();
               onClose();

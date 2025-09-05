@@ -18,11 +18,7 @@ import {
 
 import { loader as curateLoader, Curate } from "./paths/Curate";
 
-import {
-  loader as siteLoader,
-  action as siteAction,
-  SiteHeader,
-} from "./paths/SiteHeader";
+import { loader as siteLoader, SiteHeader } from "./paths/SiteHeader";
 import { loader as carouselLoader, Home } from "./paths/Home";
 
 import { loader as activitiesLoader, Activities } from "./paths/Activities";
@@ -213,7 +209,7 @@ const router = createBrowserRouter([
       {
         path: "/",
         loader: carouselLoader,
-        action: siteAction,
+        action: genericAction,
         errorElement: <ErrorPage />,
         element: <Home />,
       },

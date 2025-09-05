@@ -56,19 +56,6 @@ export type SiteContext = {
   allDoenetmlVersions: DoenetmlVersion[];
 };
 
-export async function action({ request }: { request: any }) {
-  const formData = await request.formData();
-  const formObj = Object.fromEntries(formData);
-
-  if (formObj?._action == "set is author") {
-    await axios.post("/api/user/setIsAuthor", {
-      isAuthor: formObj.isAuthor === "true",
-    });
-  }
-
-  return null;
-}
-
 export async function loader() {
   const {
     data: { user },
@@ -371,10 +358,13 @@ export function SiteHeader() {
                                       fetcher.submit(
                                         {
                                           _action: "set is author",
-                                          userId: user.userId,
+                                          path: "user/setIsAuthor",
                                           isAuthor: !user.isAuthor,
                                         },
-                                        { method: "post" },
+                                        {
+                                          method: "post",
+                                          encType: "application/json",
+                                        },
                                       );
                                     }}
                                   />
