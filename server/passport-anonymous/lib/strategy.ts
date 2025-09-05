@@ -34,11 +34,11 @@ class Strategy extends _Strategy {
   authenticate() {
     // Duane Nykamp, August 2025: made two modifications from original `passport-anonymous`
     // - call `this.success` rather than `this.pass` so that `passport.serializeUser` is called.
-    // - wait 200 ms before calling to mitigate a race condition where we get a failure of the anonymous user being logged in
+    // - wait 1000 ms before calling to mitigate a race condition where we get a failure of the anonymous user being logged in
     //   when the log out of the previous session occurs after this anonymous session is logged in and supersedes it
     setTimeout(() => {
       this.success({ anonymous: true });
-    }, 200);
+    }, 1000);
   }
 }
 
