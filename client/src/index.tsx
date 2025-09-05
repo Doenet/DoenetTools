@@ -3,6 +3,8 @@ import React from "react";
 import {
   ActionFunctionArgs,
   createBrowserRouter,
+  redirect,
+  replace,
   RouterProvider,
 } from "react-router";
 import { createRoot } from "react-dom/client";
@@ -74,7 +76,6 @@ import { SignIn, action as signInAction } from "./paths/SignIn";
 import {
   ConfirmSignIn,
   loader as confirmSignInLoader,
-  action as confirmSignInAction,
 } from "./paths/ConfirmSignIn";
 import {
   ChangeName,
@@ -410,7 +411,7 @@ const router = createBrowserRouter([
       {
         path: "confirmSignIn",
         loader: confirmSignInLoader,
-        action: confirmSignInAction,
+        // no actions on this page
         errorElement: <ErrorPage />,
         element: <ConfirmSignIn />,
       },
@@ -438,7 +439,8 @@ root.render(<RouterProvider router={router} />);
 
 // TODO: BUG: Mechanism to redirect for some endpoints, such as the one for creating content
 async function genericAction({ request, params }: ActionFunctionArgs) {
-  const { path, ...body } = await request.json();
+  const { path, redirectOnSuccess, replaceOnSuccess, ...body } =
+    await request.json();
 
   // If the content id is part of this page's path,
   // we'll add it to the request body.
@@ -452,7 +454,15 @@ async function genericAction({ request, params }: ActionFunctionArgs) {
       ...contentIdParam,
       ...body,
     });
-    return results;
+
+    // TODO: Is this a good pattern?
+    if (replaceOnSuccess) {
+      return replace(redirectOnSuccess);
+    } else if (redirectOnSuccess) {
+      return redirect(redirectOnSuccess);
+    } else {
+      return results;
+    }
   } catch (e) {
     /**
      * Special case: sharing content with specific people by email address
