@@ -581,6 +581,7 @@ export function CompoundActivityEditor({
       fetcher.submit(
         {
           path: "updateContent/createContent",
+          redirectNewContentId: true,
           contentType: "singleDoc",
           parentId: contentId || activity.contentId,
           // createNum,

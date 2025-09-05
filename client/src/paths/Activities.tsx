@@ -355,6 +355,7 @@ export function Activities() {
     fetcher.submit(
       {
         path: "updateContent/createContent",
+        redirectNewContentId: true,
         parentId,
         contentType: "singleDoc",
       },
@@ -656,6 +657,7 @@ export function Activities() {
                     fetcher.submit(
                       {
                         path: "updateContent/createContent",
+                        redirectNewContentId: true,
                         parentId,
                         contentType: "sequence",
                       },

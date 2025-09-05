@@ -120,6 +120,7 @@ import {
   EditorLibraryMode,
   loader as editorLibraryModeLoader,
 } from "./paths/editor/EditorLibraryMode";
+import { editorUrl } from "./utils/url";
 
 const theme = extendTheme({
   fonts: {
@@ -439,8 +440,13 @@ root.render(<RouterProvider router={router} />);
 
 // TODO: BUG: Mechanism to redirect for some endpoints, such as the one for creating content
 async function genericAction({ request, params }: ActionFunctionArgs) {
-  const { path, redirectOnSuccess, replaceOnSuccess, ...body } =
-    await request.json();
+  const {
+    path,
+    redirectOnSuccess,
+    replaceOnSuccess,
+    redirectNewContentId,
+    ...body
+  } = await request.json();
 
   // If the content id is part of this page's path,
   // we'll add it to the request body.
@@ -456,7 +462,10 @@ async function genericAction({ request, params }: ActionFunctionArgs) {
     });
 
     // TODO: Is this a good pattern?
-    if (replaceOnSuccess) {
+    if (redirectNewContentId) {
+      const newContentId: string = results.data.contentId;
+      return redirect(editorUrl(newContentId, body.contentType));
+    } else if (replaceOnSuccess) {
       return replace(redirectOnSuccess);
     } else if (redirectOnSuccess) {
       return redirect(redirectOnSuccess);

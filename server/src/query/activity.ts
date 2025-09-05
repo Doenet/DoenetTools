@@ -141,7 +141,11 @@ export async function createContent({
     },
   });
 
-  return { contentId: content.id, name: content.name };
+  return {
+    contentId: content.id,
+    name: content.name,
+    contentType: content.type,
+  };
 }
 
 /**
