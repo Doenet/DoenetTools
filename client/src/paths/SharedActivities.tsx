@@ -231,7 +231,6 @@ export function SharedActivities() {
                 label="Add selected to"
               />
               <CreateContentMenu
-                fetcher={fetcher}
                 sourceContent={selectedCardsFiltered}
                 size="xs"
                 colorScheme="blue"

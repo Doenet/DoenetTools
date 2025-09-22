@@ -809,7 +809,6 @@ export function Explore() {
                   label="Add selected to"
                 />
                 <CreateContentMenu
-                  fetcher={fetcher}
                   sourceContent={selectedCardsFiltered}
                   size="xs"
                   colorScheme="blue"

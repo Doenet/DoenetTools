@@ -548,7 +548,6 @@ export function Activities() {
                   label="Copy selected to"
                 />
                 <CreateContentMenu
-                  fetcher={fetcher}
                   sourceContent={selectedCardsFiltered}
                   size="xs"
                   colorScheme="blue"
