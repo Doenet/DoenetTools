@@ -137,7 +137,7 @@ function ShareWithPeople({
   const [emailInput, setEmailInput] = useState("");
   const [inputHasChanged, setInputHasChanged] = useState(false);
 
-  const addEmailError = addEmailFetcher.data?.data;
+  const addEmailError = addEmailFetcher.data;
   useEffect(() => {
     if (!addEmailError) {
       setEmailInput("");
