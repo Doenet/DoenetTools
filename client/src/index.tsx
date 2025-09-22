@@ -434,12 +434,21 @@ const router = createBrowserRouter([
 const root = createRoot(document.getElementById("root")!);
 root.render(<RouterProvider router={router} />);
 
-// TODO before merge::
-// Should `genericAction` return the entire http request or just the data portion?
-// For example, do we want fetchers to be able to check the status number?
-
-// TODO: BUG: Mechanism to redirect for some endpoints, such as the one for creating content
+/**
+ * A generic action handler for React Router pages
+ * 1. Takes in an action of type `application/json` (not the default `multipart/form-data`)
+ * 2. Calls the endpoint specified by `path` field, passing the others field as the POST body
+ * 3. Returns the results
+ *
+ * Special case: redirect to new page. Triggered if `redirectOnSuccess`, `replaceOnSuccess`, or `redirectNewContentId` is included.
+ *
+ * Special case: the route `shareContent`. Handle invalid email address.
+ *
+ */
 async function genericAction({ request, params }: ActionFunctionArgs) {
+  // TODO: DESIGN: Should this function only return the data portion of the response?
+  // Currently this function returns entire http response. It comes down to a question
+  // of whether pages/fetchers should have access to status information.
   const {
     path,
     redirectOnSuccess,
@@ -461,12 +470,11 @@ async function genericAction({ request, params }: ActionFunctionArgs) {
       ...body,
     });
 
-    // TODO: Is this a good pattern?
     if (redirectNewContentId) {
       const newContentId: string = results.data.contentId;
       return redirect(editorUrl(newContentId, body.contentType));
     } else if (replaceOnSuccess) {
-      return replace(redirectOnSuccess);
+      return replace(replaceOnSuccess);
     } else if (redirectOnSuccess) {
       return redirect(redirectOnSuccess);
     } else {
