@@ -25,7 +25,6 @@ import { CardContent } from "../widgets/Card";
 import {
   FetcherWithComponents,
   Link as ReactRouterLink,
-  useNavigate,
   useOutletContext,
 } from "react-router";
 import { MoveCopyContent } from "../popups/MoveCopyContent";
@@ -71,7 +70,6 @@ export function CompoundActivityEditor({
   const readOnlyStructure = readOnly || inLibrary;
 
   const { user, addTo, setAddTo } = useOutletContext<SiteContext>();
-  const navigate = useNavigate();
 
   const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
   const selectedCardsFiltered = selectedCards.filter((c) => c);
@@ -91,28 +89,6 @@ export function CompoundActivityEditor({
   useEffect(() => {
     setHaveContentSpinner(false);
   }, [activity]);
-
-  // Note: this is a workaround for the the `redirect` inside the action, above,
-  // not working when called from a Card inside a CardList
-  const [creatingDoc, setCreatingDoc] = useState<{
-    n: number;
-    creating: boolean;
-  }>({ n: 0, creating: false });
-  useEffect(() => {
-    if (typeof fetcher.data === "object" && fetcher.data !== null) {
-      if (
-        fetcher.data.createdDoc &&
-        creatingDoc.creating &&
-        creatingDoc.n === fetcher.data.createNum
-      ) {
-        setCreatingDoc((was) => ({
-          creating: false,
-          n: was.n,
-        }));
-        navigate(editorUrl(fetcher.data.createdDoc, "singleDoc"));
-      }
-    }
-  }, [fetcher.data, creatingDoc, navigate]);
 
   const [moveCopyData, setMoveCopyData] = useState<{
     contentId: string;
@@ -570,21 +546,12 @@ export function CompoundActivityEditor({
     (contentId?: string) => {
       setHaveContentSpinner(true);
 
-      // TODO: BEFORE: MERGE: Do we need this?
-      const createNum = Math.round(Math.random() * 1000000);
-
-      setCreatingDoc({
-        creating: true,
-        n: createNum,
-      });
-
       fetcher.submit(
         {
           path: "updateContent/createContent",
           redirectNewContentId: true,
           contentType: "singleDoc",
           parentId: contentId || activity.contentId,
-          // createNum,
         },
         { method: "post", encType: "application/json" },
       );

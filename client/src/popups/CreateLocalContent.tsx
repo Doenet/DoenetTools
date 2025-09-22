@@ -52,15 +52,6 @@ export function CreateLocalContent({
     }
   }, [contentType, isOpen]);
 
-  // useEffect(() => {
-  //   if (!submitted) {
-  //     // trigger when changing submitted to false as this happens
-  //     // after set content name to `Untitled ${contentTypeToName[contentType]}`
-  //     inputRef.current?.focus();
-  //     inputRef.current?.select();
-  //   }
-  // }, [submitted]);
-
   useEffect(() => {
     if (isOpen) {
       inputRef.current?.focus();
