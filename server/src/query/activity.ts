@@ -504,6 +504,7 @@ export async function getContentDescription({
             },
             select: {
               id: true,
+              name: true,
             },
           },
         },
@@ -521,9 +522,11 @@ export async function getContentDescription({
 
   return {
     contentId,
-    ...description,
+    name: description.name,
+    type: description.type,
     parent,
     grandparentId: description.parent?.parent?.id ?? null,
+    grandparentName: description.parent?.parent?.name ?? null,
   };
 }
 

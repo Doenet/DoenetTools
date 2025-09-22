@@ -298,18 +298,47 @@ export function EditorHeader() {
   const { iconImage: problemSetIconImage, iconColor: problemSetIconColor } =
     getIconInfo("sequence", false);
 
-  const folderButton = (
-    <Show above="md">
-      <IconButton
-        as={ReactRouterLink}
-        aria-label="Go to containing folder"
-        icon={<FaRegFolder color="gray.500" fontSize="1.1rem" />}
-        variant="ghost"
-        size="sm"
-        to={`/activities/${editorContext.user!.userId}/${contentDescription.grandparentId ?? ""}`}
-      />
-      <FaChevronRight color="gray.500" fontSize="0.7rem" />
-    </Show>
+  const folderIcon = (
+    <Icon
+      as={FaRegFolder}
+      aria-label="Go to containing folder"
+      size="sm"
+      color="gray.500"
+      fontSize="1.1rem"
+      ml="1rem"
+    />
+  );
+
+  const folderIdOrBlank = isSubActivity
+    ? (contentDescription.grandparentId ?? "")
+    : (parent?.contentId ?? "");
+  const folderName = isSubActivity
+    ? (contentDescription.grandparentName ?? "My Activities")
+    : (parent?.name ?? "My Activities");
+  const folderLink = `/activities/${editorContext.user!.userId}/${folderIdOrBlank}`;
+
+  const folder = (
+    <Hide below="md">
+      <Show below="xl">
+        <IconButton
+          as={ReactRouterLink}
+          icon={folderIcon}
+          variant="ghost"
+          aria-label={"Folder"}
+          to={folderLink}
+        />
+      </Show>
+
+      <Show above="xl">
+        {folderIcon}
+        <ChakraLink as={ReactRouterLink} mb="-3px" to={folderLink}>
+          {folderName}
+        </ChakraLink>
+      </Show>
+      <Box ml="0.5rem" mr="0.5rem">
+        <FaChevronRight color="gray.500" fontSize="0.7rem" />
+      </Box>
+    </Hide>
   );
 
   const outerActivityIcon = (
@@ -320,8 +349,6 @@ export function EditorHeader() {
       width="20px"
       height="20px"
       verticalAlign="middle"
-      mr="0.5rem"
-      ml="0.5rem"
       aria-label={"Problem set"}
     />
   );
@@ -337,7 +364,6 @@ export function EditorHeader() {
           to={`/compoundEditor/${parent!.contentId}/${tab}`}
         />
       </Show>
-
       <Show above="lg">
         {outerActivityIcon}
         <ChakraLink
@@ -523,7 +549,7 @@ export function EditorHeader() {
           borderColor="doenet.mediumGray"
         >
           <HStack width="100%">
-            {folderButton}
+            {folder}
             {outerActivity}
             {editableName}
             {tabButtons}
