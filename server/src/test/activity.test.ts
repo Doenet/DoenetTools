@@ -1376,6 +1376,7 @@ test("getContentDescription gets correct fields", async () => {
     type: "folder",
     parent: null,
     grandparentId: null,
+    grandparentName: null,
   });
 
   expect(
@@ -1389,6 +1390,7 @@ test("getContentDescription gets correct fields", async () => {
     type: "sequence",
     parent: { type: "folder", contentId: folderId, name: "folder 1" },
     grandparentId: null,
+    grandparentName: null,
   });
 
   const expectedDoc = {
@@ -1401,6 +1403,7 @@ test("getContentDescription gets correct fields", async () => {
       name: "problem set 1",
     },
     grandparentId: folderId,
+    grandparentName: "folder 1",
   };
 
   expect(
@@ -1431,7 +1434,12 @@ test("getContentDescription gets correct fields", async () => {
       contentId: docId,
       loggedInUserId: randomUserId,
     }),
-  ).eqls({ ...expectedDoc, parent: null, grandparentId: null });
+  ).eqls({
+    ...expectedDoc,
+    parent: null,
+    grandparentId: null,
+    grandparentName: null,
+  });
 
   // Parent access
   await modifyContentSharedWith({
@@ -1448,6 +1456,7 @@ test("getContentDescription gets correct fields", async () => {
   ).eqls({
     ...expectedDoc,
     grandparentId: null,
+    grandparentName: null,
   });
 
   // Grandparent access
