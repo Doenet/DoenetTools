@@ -90,7 +90,7 @@ export function ShareMyContentModal({
             <Box>
               <Heading size="sm">With the public</Heading>
               {contentType === "folder" ? (
-                <p>Not implemented yet.</p>
+                <p>Not implemented yet for folders.</p>
               ) : fetcher.data && settingsFetcher.data ? (
                 <SharePublicly
                   isPublic={fetcher.data.isPublic}
