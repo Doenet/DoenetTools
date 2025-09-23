@@ -15,7 +15,7 @@ import "../utils/editor-header.css";
 export function EditableName({
   leftIcon,
   dataTest,
-  widthLargeScreen = "400px",
+  widthLargeScreen = "300px",
   widthBaseScreen = "100%",
 }: {
   leftIcon: ReactElement;
