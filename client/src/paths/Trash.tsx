@@ -12,7 +12,6 @@ import {
   useNavigate,
   useFetcher,
   Link as ReactRouterLink,
-  ActionFunctionArgs,
 } from "react-router";
 
 import { CardContent } from "../widgets/Card";
@@ -21,19 +20,6 @@ import axios from "axios";
 import {} from "../popups/MoveCopyContent";
 import { DateTime } from "luxon";
 import { Content } from "../types";
-
-export async function action({ request }: ActionFunctionArgs) {
-  const formData = await request.formData();
-  const formObj = Object.fromEntries(formData);
-
-  if (formObj?._action == "restore content") {
-    await axios.post(`/api/updateContent/restoreDeletedContent`, {
-      contentId: formObj.contentId,
-    });
-    return true;
-  }
-  throw Error(`Action "${formObj?._action}" not defined or not handled.`);
-}
 
 export async function loader() {
   const { data: results } = await axios.get(`/api/contentList/getMyTrash`);
@@ -115,10 +101,10 @@ export function Trash() {
         onClick={() => {
           fetcher.submit(
             {
-              _action: "restore content",
+              path: "updateContent/restoreDeletedContent",
               contentId,
             },
-            { method: "post" },
+            { method: "post", encType: "application/json" },
           );
         }}
       >

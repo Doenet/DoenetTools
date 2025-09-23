@@ -3,7 +3,6 @@ import {
   useFetcher,
   Link as ReactRouterLink,
   useNavigate,
-  ActionFunctionArgs,
   Outlet,
   redirect,
   useLoaderData,
@@ -46,50 +45,13 @@ import { AssignmentStatus, ContentType, ContentDescription } from "../../types";
 import { contentTypeToName, getIconInfo } from "../../utils/activity";
 import { CopyContentAndReportFinish } from "../../popups/CopyContentAndReportFinish";
 import { SiteContext } from "../SiteHeader";
-import {
-  ActivateAuthorMode,
-  activateAuthorModeActions,
-} from "../../popups/ActivateAuthorMode";
-import { compoundActivityEditorActions } from "../../views/CompoundActivityEditor";
+import { ActivateAuthorMode } from "../../popups/ActivateAuthorMode";
 import { ConfirmAssignModal } from "../../popups/ConfirmAssignModal";
 import { ShareMyContentModal } from "../../popups/ShareMyContentModal";
 import { NotificationDot } from "../../widgets/NotificationDot";
 import { LibraryEditorControls } from "../../widgets/editor/LibraryEditorControls";
 import { editorUrl } from "../../utils/url";
 import { EditableName } from "../../widgets/EditableName";
-
-export async function action({ params, request }: ActionFunctionArgs) {
-  const formData = await request.formData();
-  const formObj = Object.fromEntries(formData);
-
-  if (formObj._action == "update name") {
-    //Don't let name be blank
-    let name = formObj.name.toString().trim();
-    if (name === "") {
-      name = "Untitled";
-    }
-
-    await axios.post(`/api/updateContent/updateContentSettings`, {
-      contentId: params.contentId,
-      name,
-    });
-    return true;
-  } else if (formObj._action === "go to data") {
-    return redirect(`/assignmentData/${params.contentId}`);
-  }
-
-  const resultNAE = await compoundActivityEditorActions({ formObj });
-  if (resultNAE) {
-    return resultNAE;
-  }
-
-  const resultDM = await activateAuthorModeActions({ formObj });
-  if (resultDM) {
-    return resultDM;
-  }
-
-  return null;
-}
 
 export async function loader({
   params,
@@ -240,7 +202,6 @@ export function EditorHeader() {
 
   const copyContentModal = (
     <CopyContentAndReportFinish
-      fetcher={fetcher}
       isOpen={copyDialogIsOpen}
       onClose={copyDialogOnClose}
       contentIds={[contentId]}

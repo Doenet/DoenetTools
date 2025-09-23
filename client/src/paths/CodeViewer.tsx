@@ -112,7 +112,6 @@ export function CodeViewer() {
           <CopyContentAndReportFinish
             isOpen={copyDialogIsOpen}
             onClose={copyDialogOnClose}
-            fetcher={fetcher}
             contentIds={[activityData.contentId]}
             desiredParent={null}
             action="Copy"

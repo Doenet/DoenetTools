@@ -27,7 +27,6 @@ import {
   HStack,
 } from "@chakra-ui/react";
 import {
-  ActionFunctionArgs,
   Link as ReactRouterLink,
   useLoaderData,
   useLocation,
@@ -54,40 +53,9 @@ import { FilterPanel } from "../widgets/FilterPanel";
 import { ExploreFilterDrawer } from "../drawers/ExploreFilterDrawer";
 import { contentTypeToName, menuIcons } from "../utils/activity";
 import { SiteContext } from "./SiteHeader";
-import {
-  AddContentToMenu,
-  addContentToMenuActions,
-} from "../popups/AddContentToMenu";
-import {
-  CopyContentAndReportFinish,
-  copyContentAndReportFinishActions,
-} from "../popups/CopyContentAndReportFinish";
-import {
-  CreateContentMenu,
-  createContentMenuActions,
-} from "../dropdowns/CreateContentMenu";
-
-export async function action({ request }: ActionFunctionArgs) {
-  const formData = await request.formData();
-  const formObj = Object.fromEntries(formData);
-
-  const resultACM = await addContentToMenuActions({ formObj });
-  if (resultACM) {
-    return resultACM;
-  }
-
-  const resultCC = await copyContentAndReportFinishActions({ formObj });
-  if (resultCC) {
-    return resultCC;
-  }
-
-  const resultCCM = await createContentMenuActions({ formObj });
-  if (resultCCM) {
-    return resultCCM;
-  }
-
-  throw Error(`Action "${formObj?._action}" not defined or not handled.`);
-}
+import { AddContentToMenu } from "../popups/AddContentToMenu";
+import { CopyContentAndReportFinish } from "../popups/CopyContentAndReportFinish";
+import { CreateContentMenu } from "../dropdowns/CreateContentMenu";
 
 export async function loader({
   params,
@@ -309,7 +277,6 @@ export function Explore() {
   const copyContentModal =
     addTo !== null ? (
       <CopyContentAndReportFinish
-        fetcher={fetcher}
         isOpen={copyDialogIsOpen}
         onClose={copyDialogOnClose}
         contentIds={selectedCardsFiltered.map((sc) => sc.contentId)}
@@ -842,7 +809,6 @@ export function Explore() {
                   label="Add selected to"
                 />
                 <CreateContentMenu
-                  fetcher={fetcher}
                   sourceContent={selectedCardsFiltered}
                   size="xs"
                   colorScheme="blue"

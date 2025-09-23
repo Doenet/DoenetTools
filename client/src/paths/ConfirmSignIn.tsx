@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ActionFunctionArgs, useLoaderData } from "react-router";
+import { useLoaderData } from "react-router";
 import axios from "axios";
 import {
   Box,
@@ -12,12 +12,6 @@ import {
   Spinner,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router";
-import { action as changeNameAction } from "./ChangeName";
-
-export async function action({ params, request }: ActionFunctionArgs) {
-  const formData = await request.formData();
-  return changeNameAction({ params, request, formData });
-}
 
 export async function loader({ request }: { request: any }) {
   const url = new URL(request.url);

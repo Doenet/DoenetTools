@@ -1,23 +1,8 @@
 import React from "react";
-import { ActionFunctionArgs, useFetcher, useLoaderData } from "react-router";
+import { useFetcher, useLoaderData } from "react-router";
 import axios from "axios";
 import { Content } from "../../types";
-import {
-  CompoundActivityEditor,
-  compoundActivityEditorActions,
-} from "../../views/CompoundActivityEditor";
-
-export async function action({ request }: ActionFunctionArgs) {
-  const formData = await request.formData();
-  const formObj = Object.fromEntries(formData);
-
-  const resultNAE = await compoundActivityEditorActions({ formObj });
-  if (resultNAE) {
-    return resultNAE;
-  }
-
-  return null;
-}
+import { CompoundActivityEditor } from "../../views/CompoundActivityEditor";
 
 export async function loader({ params }: { params: any }) {
   const {

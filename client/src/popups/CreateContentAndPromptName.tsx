@@ -15,50 +15,11 @@ import {
   Box,
   Flex,
 } from "@chakra-ui/react";
-import axios from "axios";
 import { useFetcher, useNavigate, useOutletContext } from "react-router";
 import { ContentType } from "../types";
 import { contentTypeToName } from "../utils/activity";
 import { SiteContext } from "../paths/SiteHeader";
 import { editorUrl } from "../utils/url";
-
-export async function createContentAndPromptNameActions({
-  formObj,
-}: {
-  [k: string]: any;
-}) {
-  if (formObj._action === "create content") {
-    try {
-      const contentIds = JSON.parse(formObj.contentIds);
-      const { data } = await axios.post(
-        `/api/copyMove/createContentCopyInChildren`,
-        {
-          childSourceContentIds: contentIds,
-          contentType: formObj.desiredType,
-          parentId: null,
-        },
-      );
-
-      return { action: "createdContent", success: true, activityData: data };
-    } catch (e) {
-      console.error(e);
-      return { action: "createdContent", success: false };
-    }
-  } else if (formObj._action === "save name") {
-    try {
-      await axios.post("/api/updateContent/updateContentSettings", {
-        name: formObj.name,
-        contentId: formObj.contentId,
-      });
-      return { action: "savedName", success: true };
-    } catch (e) {
-      console.error(e);
-      return { action: "savedName", success: false };
-    }
-  }
-
-  return null;
-}
 
 /**
  * A modal that immediately creates a new item in Activities and copies source content into that item
@@ -83,7 +44,8 @@ export function CreateContentAndPromptName({
   const [errMsg, setErrMsg] = useState("");
   const nameRef = useRef<HTMLInputElement>(null);
 
-  const fetcher = useFetcher();
+  const createFetcher = useFetcher();
+  const saveNameFetcher = useFetcher();
 
   const [newActivityData, setNewActivityData] = useState<{
     newChildContentIds: string[];
@@ -93,42 +55,43 @@ export function CreateContentAndPromptName({
 
   function saveName(newName: string) {
     if (newActivityData) {
-      fetcher.submit(
+      saveNameFetcher.submit(
         {
-          _action: "save name",
+          path: "updateContent/updateContentSettings",
           name: newName,
           contentId: newActivityData.newContentId,
         },
-        { method: "post" },
+        { method: "post", encType: "application/json" },
       );
     }
   }
 
   // Create the content when this modal opens
   // Only once - don't create if fetcher already has data
-  if (isOpen && fetcher.state === "idle" && !fetcher.data) {
+  if (isOpen && createFetcher.state === "idle" && !createFetcher.data) {
     document.body.style.cursor = "wait";
-    fetcher.submit(
+    createFetcher.submit(
       {
-        _action: "create content",
-        contentIds: JSON.stringify(contentIds),
-        desiredType,
+        path: "copyMove/createContentCopyInChildren",
+        childSourceContentIds: contentIds,
+        contentType: desiredType,
+        parentId: null,
       },
-      { method: "post" },
+      { method: "post", encType: "application/json" },
     );
   }
 
-  if (newActivityData === null && fetcher.data?.action === "createdContent") {
-    if (fetcher.data.success) {
-      setNewActivityData(fetcher.data.activityData);
+  if (newActivityData === null && createFetcher.data) {
+    if (createFetcher.data.status === 200) {
+      setNewActivityData(createFetcher.data.data);
     } else {
       setErrMsg(`An error occurred while creating content.`);
     }
     document.body.style.cursor = "default";
-  } else if (fetcher.data?.action === "savedName") {
-    if (!fetcher.data.success) {
-      setErrMsg("An error occurred while saving the name.");
-    }
+  }
+
+  if (saveNameFetcher.data && saveNameFetcher.data.status !== 200) {
+    setErrMsg("An error occurred while saving the name.");
   }
 
   useEffect(() => {

@@ -12,48 +12,12 @@ import {
   Text,
   Spinner,
 } from "@chakra-ui/react";
-import axios, { AxiosError } from "axios";
-import {
-  FetcherWithComponents,
-  useNavigate,
-  useOutletContext,
-} from "react-router";
+import { useFetcher, useNavigate, useOutletContext } from "react-router";
 import { ContentDescription } from "../types";
 import { contentTypeToName } from "../utils/activity";
 import { SiteContext } from "../paths/SiteHeader";
 import { editorUrl } from "../utils/url";
 
-export async function copyContentAndReportFinishActions({
-  formObj,
-}: {
-  [k: string]: any;
-}) {
-  if (formObj._action === "copy content") {
-    const newContentIds: string[] = [];
-
-    try {
-      const contentIds = JSON.parse(formObj.contentIds);
-      const { data } = await axios.post(`/api/copyMove/copyContent`, {
-        contentIds,
-        parentId: formObj.parentId === "null" ? null : formObj.parentId,
-        prependCopy: formObj.prependCopy === "true",
-      });
-
-      newContentIds.push(...data.newContentIds);
-      return { action: "copiedContent", success: true, newContentIds };
-    } catch (e) {
-      console.error(e);
-      let message: string | null = null;
-      if (e instanceof AxiosError) {
-        message = e.response?.data.details;
-      }
-
-      return { action: "copiedContent", success: false, message };
-    }
-  }
-
-  return null;
-}
 /**
  * A modal that immediately upon opening copies source content into a parent or Activities
  * Alternatively, if the `copyToLibrary` flag is set and the user is an editor, it copies the activity into the library as a draft.
@@ -61,7 +25,6 @@ export async function copyContentAndReportFinishActions({
  * When the copy is finished, the modal allows the user to close it or navigate to the parent.
  */
 export function CopyContentAndReportFinish({
-  fetcher,
   isOpen,
   onClose,
   finalFocusRef,
@@ -70,7 +33,6 @@ export function CopyContentAndReportFinish({
   action,
   prependCopy = false,
 }: {
-  fetcher: FetcherWithComponents<any>;
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement | null>;
@@ -87,12 +49,14 @@ export function CopyContentAndReportFinish({
   const actionPastWord = action === "Add" ? "added" : "copied";
   const actionProgressiveWord = action === "Add" ? "Adding" : "Copying";
 
+  const fetcher = useFetcher();
+
   const { user, setAddTo } = useOutletContext<SiteContext>();
 
   useEffect(() => {
-    if (fetcher.data?.action === "copiedContent") {
-      if (fetcher.data.success) {
-        setNewContentIds(fetcher.data.newContentIds);
+    if (fetcher.data) {
+      if (fetcher.data.status === 200) {
+        setNewContentIds(fetcher.data.data.newContentIds);
       } else {
         const message = fetcher.data.message;
         setErrMsg(
@@ -110,12 +74,12 @@ export function CopyContentAndReportFinish({
         document.body.style.cursor = "wait";
         fetcher.submit(
           {
-            _action: "copy content",
-            contentIds: JSON.stringify(contentIds),
+            path: "copyMove/copyContent",
+            contentIds,
             parentId: desiredParent ? desiredParent.contentId : null,
             prependCopy,
           },
-          { method: "post" },
+          { method: "post", encType: "application/json" },
         );
       }
     } else {
