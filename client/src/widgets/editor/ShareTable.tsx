@@ -27,11 +27,13 @@ import { SpinnerWhileFetching } from "../../utils/optimistic_ui";
  * This widget must be used on a React Router page that accepts actions encoded as `application/json`.
  */
 export function ShareTable({
+  contentId,
   isPublic,
   parentIsPublic,
   sharedWith,
   parentSharedWith,
 }: {
+  contentId: string;
   isPublic: boolean;
   parentIsPublic: boolean;
   sharedWith: UserInfoWithEmail[];
@@ -69,7 +71,7 @@ export function ShareTable({
       ? undefined
       : () => {
           fetcher.submit(
-            { path: "share/unshareContent", userId: user.userId },
+            { path: "share/unshareContent", contentId, userId: user.userId },
             { method: "post", encType: "application/json" },
           );
         };

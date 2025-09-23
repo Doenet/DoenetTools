@@ -13,7 +13,7 @@ export const contentTypeSchema = z.enum([
 ]);
 
 export const createContentSchema = z.object({
-  contentType: contentTypeSchema.prefault("singleDoc"),
+  contentType: contentTypeSchema,
   name: z.string().optional(),
   parentId: uuidOrNullSchema,
 });

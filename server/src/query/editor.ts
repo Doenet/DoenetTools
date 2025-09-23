@@ -11,6 +11,7 @@ import {
 } from "../utils/contentStructure";
 import {
   filterEditableActivity,
+  filterEditableContent,
   filterViewableActivity,
   getIsEditor,
 } from "../utils/permissions";
@@ -315,6 +316,8 @@ export async function getCompoundEditorEdit({
 }
 
 /**
+ * TODO: FIXME: This function should not be specific to the editor. We're also using it for folders.
+ *
  * Get the share status of an activity. This included whether it is public, who it has been shared with, and which of these
  * were inherited from the parent.
  * Needed for the `Share content` modal in the editor.
@@ -329,7 +332,7 @@ export async function getEditorShareStatus({
   const results = await prisma.content.findUniqueOrThrow({
     where: {
       id: contentId,
-      ...filterEditableActivity(loggedInUserId, false),
+      ...filterEditableContent(loggedInUserId, false),
     },
     select: {
       isPublic: true,

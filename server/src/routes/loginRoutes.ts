@@ -4,25 +4,13 @@ import { getUserInfoFromEmail } from "../query/user";
 
 export const loginRouter = express.Router();
 
-// An anonymous login that will be redirected to
-// when going to getAssignmentViewerDataFromCode without being logged in.
-// Redirect back to that page after anonymous user is created and logged in.
-loginRouter.get(
-  "/anonymId/:code",
-  passport.authenticate("anonymId"),
-  (req: Request, res: Response) => {
-    const code = req.params.code;
-    res.redirect(`/api/info/getAssignmentViewerDataFromCode/${code}`);
-  },
-);
-
 if (
   process.env.ALLOW_TEST_LOGIN &&
   process.env.ALLOW_TEST_LOGIN.toLocaleLowerCase() !== "false"
 ) {
   loginRouter.post(
     "/createOrLoginAsTest",
-    passport.authenticate("anonymId"),
+    passport.authenticate("anonymous"),
     (_req: Request, res: Response) => {
       res.send();
     },
@@ -48,6 +36,14 @@ loginRouter.get(
       (req.user as { email: string }).email,
     );
     res.send({ user });
+  },
+);
+
+loginRouter.post(
+  "/anonymous",
+  passport.authenticate("anonymous"),
+  (req: Request, res: Response) => {
+    res.send(req.user);
   },
 );
 

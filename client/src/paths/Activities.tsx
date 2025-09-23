@@ -30,16 +30,12 @@ import {
   Link,
   Form,
   useOutletContext,
-  ActionFunctionArgs,
 } from "react-router";
 
 import { CardContent } from "../widgets/Card";
 import CardList from "../widgets/CardList";
 import axios from "axios";
-import {
-  MoveCopyContent,
-  moveCopyContentActions,
-} from "../popups/MoveCopyContent";
+import { MoveCopyContent } from "../popups/MoveCopyContent";
 import {
   ContentDescription,
   Content,
@@ -49,90 +45,16 @@ import {
 } from "../types";
 import { MdClose, MdOutlineSearch } from "react-icons/md";
 import { getAllowedParentTypes, menuIcons } from "../utils/activity";
-import {
-  CreateLocalContent,
-  createLocalContentActions,
-} from "../popups/CreateLocalContent";
-import { DeleteContent, deleteContentActions } from "../popups/DeleteContent";
-import {
-  AddContentToMenu,
-  addContentToMenuActions,
-} from "../popups/AddContentToMenu";
-import {
-  CreateContentMenu,
-  createContentMenuActions,
-} from "../dropdowns/CreateContentMenu";
+import { CreateLocalContent } from "../popups/CreateLocalContent";
+import { DeleteContent } from "../popups/DeleteContent";
+import { AddContentToMenu } from "../popups/AddContentToMenu";
+import { CreateContentMenu } from "../dropdowns/CreateContentMenu";
 import { CopyContentAndReportFinish } from "../popups/CopyContentAndReportFinish";
 import { SiteContext } from "../paths/SiteHeader";
-import {
-  ActivateAuthorMode,
-  activateAuthorModeActions,
-} from "../popups/ActivateAuthorMode";
+import { ActivateAuthorMode } from "../popups/ActivateAuthorMode";
 import { formatAssignmentBlurb } from "../utils/assignment";
 import { editorUrl } from "../utils/url";
-
-export async function action({ request, params }: ActionFunctionArgs) {
-  const formData: FormData = await request.formData();
-  const formObj = Object.fromEntries(formData.entries());
-
-  const resultMC = await moveCopyContentActions({ formObj });
-  if (resultMC) {
-    return resultMC;
-  }
-
-  const resultCF = await createLocalContentActions({ formObj });
-  if (resultCF) {
-    return resultCF;
-  }
-
-  const resultDM = await deleteContentActions({ formObj });
-  if (resultDM) {
-    return resultDM;
-  }
-
-  const resultACM = await addContentToMenuActions({ formObj });
-  if (resultACM) {
-    return resultACM;
-  }
-
-  const resultCCM = await createContentMenuActions({ formObj });
-  if (resultCCM) {
-    return resultCCM;
-  }
-
-  const resultDMM = await activateAuthorModeActions({ formObj });
-  if (resultDMM) {
-    return resultDMM;
-  }
-
-  if (formObj?._action == "Add Activity") {
-    //Create an activity and redirect to the editor for it
-    const { data } = await axios.post(`/api/updateContent/createContent`, {
-      contentType: formObj.type,
-      parentId:
-        params.parentId && params.parentId !== "null" ? params.parentId : null,
-    });
-
-    const { contentId } = data;
-    return redirect(editorUrl(contentId, formObj.type as ContentType));
-  } else if (formObj?._action == "Duplicate Content") {
-    await axios.post(`/api/copyMove/copyContent`, {
-      contentIds: [formObj.contentId],
-      parentId: formObj.parentId === "null" ? null : formObj.parentId,
-      prependCopy: true,
-    });
-    return true;
-  } else if (formObj?._action == "Move") {
-    await axios.post(`/api/copyMove/moveContent`, {
-      contentId: formObj.contentId,
-      parentId: formObj.parentId === "null" ? null : formObj.parentId,
-      desiredPosition: Number(formObj.desiredPosition),
-    });
-    return true;
-  }
-
-  throw Error(`Action "${formObj?._action}" not defined or not handled.`);
-}
+import { ShareMyContentModal } from "../popups/ShareMyContentModal";
 
 export async function loader({ params, request }: any) {
   const url = new URL(request.url);
@@ -188,6 +110,12 @@ export function Activities() {
     isOpen: deleteContentIsOpen,
     onOpen: deleteContentOnOpen,
     onClose: deleteContentOnClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: shareFolderIsOpen,
+    onOpen: shareFolderOnOpen,
+    onClose: shareFolderOnClose,
   } = useDisclosure();
 
   const { addTo, setAddTo, user } = useOutletContext<SiteContext>();
@@ -302,12 +230,12 @@ export function Activities() {
             onClick={() => {
               fetcher.submit(
                 {
-                  _action: "Move",
+                  path: "copyMove/moveContent",
                   contentId,
                   desiredPosition: position - 1,
                   parentId,
                 },
-                { method: "post" },
+                { method: "post", encType: "application/json" },
               );
             }}
           >
@@ -320,12 +248,12 @@ export function Activities() {
             onClick={() => {
               fetcher.submit(
                 {
-                  _action: "Move",
+                  path: "copyMove/moveContent",
                   contentId,
                   desiredPosition: position + 1,
                   parentId,
                 },
-                { method: "post" },
+                { method: "post", encType: "application/json" },
               );
             }}
           >
@@ -356,11 +284,12 @@ export function Activities() {
           onClick={() => {
             fetcher.submit(
               {
-                _action: "Duplicate Content",
-                contentId,
+                path: "copyMove/copyContent",
+                contentIds: [contentId],
                 parentId,
+                prependCopy: true,
               },
-              { method: "post" },
+              { method: "post", encType: "application/json" },
             );
           }}
         >
@@ -424,8 +353,13 @@ export function Activities() {
   function createNewDocument() {
     setHaveContentSpinner(true);
     fetcher.submit(
-      { _action: "Add Activity", type: "singleDoc" },
-      { method: "post" },
+      {
+        path: "updateContent/createContent",
+        redirectNewContentId: true,
+        parentId,
+        contentType: "singleDoc",
+      },
+      { method: "post", encType: "application/json" },
     );
   }
 
@@ -459,7 +393,6 @@ export function Activities() {
         isOpen={deleteContentIsOpen}
         onClose={deleteContentOnClose}
         content={contentData}
-        fetcher={fetcher}
         finalFocusRef={finalFocusRef}
       />
     ) : null;
@@ -473,7 +406,6 @@ export function Activities() {
   const copyContentModal =
     addTo !== null ? (
       <CopyContentAndReportFinish
-        fetcher={fetcher}
         isOpen={copyDialogIsOpen}
         onClose={copyDialogOnClose}
         contentIds={selectedCardsFiltered.map((sc) => sc.contentId)}
@@ -496,6 +428,15 @@ export function Activities() {
       user={user!}
       proceedCallback={createNewDocument}
       fetcher={fetcher}
+    />
+  );
+
+  const shareFolderModal = parent && (
+    <ShareMyContentModal
+      contentId={parent.contentId}
+      contentType={parent.type}
+      isOpen={shareFolderIsOpen}
+      onClose={shareFolderOnClose}
     />
   );
 
@@ -538,17 +479,29 @@ export function Activities() {
         </Box>
       </Flex>
 
-      <Heading
-        as="h2"
-        size="lg"
-        marginBottom=".5em"
-        noOfLines={1}
-        maxHeight="1.5em"
-        lineHeight="normal"
-        data-test="Folder Heading"
-      >
-        <Tooltip label={headingText}>{headingText}</Tooltip>
-      </Heading>
+      <HStack justify="center" align="center">
+        <Heading
+          as="h2"
+          size="lg"
+          marginBottom=".5em"
+          noOfLines={1}
+          maxHeight="1.5em"
+          lineHeight="normal"
+          data-test="Folder Heading"
+        >
+          <Tooltip label={headingText}>{headingText}</Tooltip>
+        </Heading>
+        {parent && (
+          <Button
+            size="sm"
+            colorScheme="blue"
+            mb="0.6rem"
+            onClick={shareFolderOnOpen}
+          >
+            Share
+          </Button>
+        )}
+      </HStack>
       <VStack width="100%">
         <Flex
           width="100%"
@@ -595,7 +548,6 @@ export function Activities() {
                   label="Copy selected to"
                 />
                 <CreateContentMenu
-                  fetcher={fetcher}
                   sourceContent={selectedCardsFiltered}
                   size="xs"
                   colorScheme="blue"
@@ -702,8 +654,13 @@ export function Activities() {
                   onClick={() => {
                     setHaveContentSpinner(true);
                     fetcher.submit(
-                      { _action: "Add Activity", type: "sequence" },
-                      { method: "post" },
+                      {
+                        path: "updateContent/createContent",
+                        redirectNewContentId: true,
+                        parentId,
+                        contentType: "sequence",
+                      },
+                      { method: "post", encType: "application/json" },
                     );
                   }}
                 >
@@ -832,6 +789,7 @@ export function Activities() {
       {deleteModal}
       {copyContentModal}
       {authorModeModal}
+      {shareFolderModal}
 
       {heading}
 

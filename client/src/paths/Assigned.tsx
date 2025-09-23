@@ -1,7 +1,6 @@
-// import axios from 'axios';
 import { Button, Box, Flex, Heading, VStack, HStack } from "@chakra-ui/react";
 import React, { useEffect } from "react";
-import { ActionFunctionArgs, useLoaderData, useNavigate } from "react-router";
+import { useLoaderData, useNavigate } from "react-router";
 
 import { CardContent } from "../widgets/Card";
 import axios from "axios";
@@ -9,13 +8,6 @@ import { createNameNoTag } from "../utils/names";
 import CardList from "../widgets/CardList";
 import { formatAssignmentBlurb } from "../utils/assignment";
 import { Content, UserInfo } from "../types";
-
-export async function action({ request }: ActionFunctionArgs) {
-  const formData = await request.formData();
-  const formObj = Object.fromEntries(formData);
-
-  throw Error(`Action "${formObj?._action}" not defined or not handled.`);
-}
 
 export async function loader() {
   const { data: assignmentData } = await axios.get(`/api/assign/getAssigned`);

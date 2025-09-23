@@ -11,22 +11,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { getAllowedParentTypes, menuIcons } from "../utils/activity";
-import {
-  CreateContentAndPromptName,
-  createContentAndPromptNameActions,
-} from "../popups/CreateContentAndPromptName";
-import { FetcherWithComponents } from "react-router";
-
-export async function createContentMenuActions({
-  formObj,
-}: {
-  [k: string]: any;
-}) {
-  const resultCC = createContentAndPromptNameActions({ formObj });
-  if (resultCC) {
-    return resultCC;
-  }
-}
+import { CreateContentAndPromptName } from "../popups/CreateContentAndPromptName";
 
 export function CreateContentMenu({
   sourceContent,
@@ -34,7 +19,6 @@ export function CreateContentMenu({
   label,
   colorScheme,
   followAllowedParents = false,
-  fetcher,
 }: {
   sourceContent: ContentDescription[];
   size?: ResponsiveValue<(string & {}) | "xs" | "sm" | "md" | "lg">;
@@ -54,7 +38,6 @@ export function CreateContentMenu({
     | "whiteAlpha"
     | "blackAlpha";
   followAllowedParents?: boolean;
-  fetcher: FetcherWithComponents<any>;
 }) {
   const [createNewType, setCreateNewType] = useState<ContentType>("folder");
   const [allowedParents, setAllowedParents] = useState<ContentType[]>([]);

@@ -23,42 +23,11 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import axios from "axios";
-import {
-  MoveCopyContent,
-  moveCopyContentActions,
-} from "../popups/MoveCopyContent";
-import {
-  CopyContentAndReportFinish,
-  copyContentAndReportFinishActions,
-} from "../popups/CopyContentAndReportFinish";
+import { MoveCopyContent } from "../popups/MoveCopyContent";
+import { CopyContentAndReportFinish } from "../popups/CopyContentAndReportFinish";
 import { FetcherWithComponents, useOutletContext } from "react-router";
 import { SiteContext } from "../paths/SiteHeader";
 import { getAllowedParentTypes, menuIcons } from "../utils/activity";
-
-export async function addContentToMenuActions({
-  formObj,
-}: {
-  [k: string]: any;
-}) {
-  if (formObj._action === "suggest curation") {
-    await axios.post(`/api/curate/suggestToBeCurated`, {
-      contentId: formObj.contentId,
-    });
-    return true;
-  }
-
-  const resultMC = await moveCopyContentActions({ formObj });
-  if (resultMC) {
-    return resultMC;
-  }
-
-  const resultCC = await copyContentAndReportFinishActions({ formObj });
-  if (resultCC) {
-    return resultCC;
-  }
-
-  return null;
-}
 
 export function AddContentToMenu({
   sourceContent,
@@ -154,7 +123,6 @@ export function AddContentToMenu({
 
   const copyContentModal = (
     <CopyContentAndReportFinish
-      fetcher={fetcher}
       isOpen={copyDialogIsOpen}
       onClose={copyDialogOnClose}
       contentIds={sourceContent.map((sc) => sc.contentId)}
@@ -254,10 +222,10 @@ export function AddContentToMenu({
               onClick={() => {
                 fetcher.submit(
                   {
-                    _action: "suggest curation",
+                    path: "curate/suggestToBeCurated",
                     contentId: sourceContent[0].contentId,
                   },
-                  { method: "post" },
+                  { method: "post", encType: "application/json" },
                 );
                 suggestCurationOnOpen();
               }}

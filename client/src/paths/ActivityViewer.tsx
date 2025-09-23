@@ -4,7 +4,6 @@ import {
   useNavigate,
   useOutletContext,
   Link as ReactRouterLink,
-  ActionFunctionArgs,
 } from "react-router";
 
 import {
@@ -66,14 +65,8 @@ import { ContentInfoDrawer } from "../drawers/ContentInfoDrawer";
 import { createNameCheckCurateTag } from "../utils/names";
 import { DisplayLicenseItem } from "../widgets/Licenses";
 import { SiteContext } from "./SiteHeader";
-import {
-  AddContentToMenu,
-  addContentToMenuActions,
-} from "../popups/AddContentToMenu";
-import {
-  CopyContentAndReportFinish,
-  copyContentAndReportFinishActions,
-} from "../popups/CopyContentAndReportFinish";
+import { AddContentToMenu } from "../popups/AddContentToMenu";
+import { CopyContentAndReportFinish } from "../popups/CopyContentAndReportFinish";
 import { CloseIcon } from "@chakra-ui/icons";
 import { BsBookmarkCheck } from "react-icons/bs";
 import { ImCheckmark } from "react-icons/im";
@@ -81,23 +74,6 @@ import { DoenetEditor, DoenetViewer } from "@doenet/doenetml-iframe";
 import { BlueBanner } from "../widgets/BlueBanner";
 // @ts-expect-error assignment-viewer doesn't publish types, see https://github.com/Doenet/assignment-viewer/issues/20
 import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";
-
-export async function action({ request }: ActionFunctionArgs) {
-  const formData = await request.formData();
-  const formObj = Object.fromEntries(formData);
-
-  const resultACM = await addContentToMenuActions({ formObj });
-  if (resultACM) {
-    return resultACM;
-  }
-
-  const resultCC = await copyContentAndReportFinishActions({ formObj });
-  if (resultCC) {
-    return resultCC;
-  }
-
-  throw Error(`Action "${formObj?._action}" not defined or not handled.`);
-}
 
 export async function loader({ params }: { params: any }) {
   const {
@@ -247,7 +223,6 @@ export function ActivityViewer() {
   const copyContentModal =
     addTo !== null ? (
       <CopyContentAndReportFinish
-        fetcher={fetcher}
         isOpen={copyDialogIsOpen}
         onClose={copyDialogOnClose}
         contentIds={[activityData.contentId]}

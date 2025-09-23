@@ -3,6 +3,8 @@ import React from "react";
 import {
   ActionFunctionArgs,
   createBrowserRouter,
+  redirect,
+  replace,
   RouterProvider,
 } from "react-router";
 import { createRoot } from "react-dom/client";
@@ -10,41 +12,23 @@ import { createRoot } from "react-dom/client";
 import "@doenet/doenetml-iframe/style.css";
 
 import { MathJaxContext } from "better-react-mathjax";
-import {
-  loader as exploreLoader,
-  action as exploreAction,
-  Explore,
-} from "./paths/Explore";
+import { loader as exploreLoader, Explore } from "./paths/Explore";
 
 import { loader as curateLoader, Curate } from "./paths/Curate";
 
-import {
-  loader as siteLoader,
-  action as siteAction,
-  SiteHeader,
-} from "./paths/SiteHeader";
+import { loader as siteLoader, SiteHeader } from "./paths/SiteHeader";
 import { loader as carouselLoader, Home } from "./paths/Home";
 
-import {
-  loader as activitiesLoader,
-  action as activitiesAction,
-  Activities,
-} from "./paths/Activities";
+import { loader as activitiesLoader, Activities } from "./paths/Activities";
 import {
   loader as sharedActivitiesLoader,
-  action as sharedActivitiesAction,
   SharedActivities,
 } from "./paths/SharedActivities";
 import {
   loader as activityViewerLoader,
-  action as activityViewerAction,
   ActivityViewer,
 } from "./paths/ActivityViewer";
-import {
-  loader as assignedLoader,
-  action as assignedAction,
-  Assigned,
-} from "./paths/Assigned";
+import { loader as assignedLoader, Assigned } from "./paths/Assigned";
 import {
   loader as assignmentResponseOverviewLoader,
   AssignmentData as AssignmentResponseOverview,
@@ -71,11 +55,7 @@ import {
   StudentAssignmentScores,
   assignedDataloader,
 } from "./paths/StudentAssignmentScores";
-import {
-  loader as trashLoader,
-  action as trashAction,
-  Trash,
-} from "./paths/Trash";
+import { loader as trashLoader, Trash } from "./paths/Trash";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 
 import ErrorPage from "./paths/ErrorPage";
@@ -96,7 +76,6 @@ import { SignIn, action as signInAction } from "./paths/SignIn";
 import {
   ConfirmSignIn,
   loader as confirmSignInLoader,
-  action as confirmSignInAction,
 } from "./paths/ConfirmSignIn";
 import {
   ChangeName,
@@ -106,7 +85,6 @@ import {
 import {
   LibraryActivities,
   loader as libraryActivitiesLoader,
-  action as libraryActivitiesAction,
 } from "./paths/LibraryActivities";
 import {
   DocEditorViewMode,
@@ -123,7 +101,6 @@ import {
 import {
   CompoundEditorEditMode,
   loader as compoundEditorEditModeLoader,
-  action as compoundEditorEditModeAction,
 } from "./paths/editor/CompoundEditorEditMode";
 import {
   EditorSettingsMode,
@@ -143,6 +120,7 @@ import {
   EditorLibraryMode,
   loader as editorLibraryModeLoader,
 } from "./paths/editor/EditorLibraryMode";
+import { editorUrl } from "./utils/url";
 
 const theme = extendTheme({
   fonts: {
@@ -218,14 +196,14 @@ const router = createBrowserRouter([
       {
         path: "/",
         loader: carouselLoader,
-        action: siteAction,
+        action: genericAction,
         errorElement: <ErrorPage />,
         element: <Home />,
       },
       {
         path: "explore/:systemId?/:categoryId?/:subCategoryId?/:classificationId?",
         loader: exploreLoader,
-        action: exploreAction,
+        action: genericAction,
         element: <Explore />,
         errorElement: <ErrorPage />,
       },
@@ -238,42 +216,42 @@ const router = createBrowserRouter([
       {
         path: "libraryActivities/:parentId?",
         loader: libraryActivitiesLoader,
-        action: libraryActivitiesAction,
+        action: genericAction,
         element: <LibraryActivities />,
         errorElement: <ErrorPage />,
       },
       {
         path: "activities/:userId/:parentId?",
         loader: activitiesLoader,
-        action: activitiesAction,
+        action: genericAction,
         element: <Activities />,
         errorElement: <ErrorPage />,
       },
       {
         path: "trash",
         loader: trashLoader,
-        action: trashAction,
+        action: genericAction,
         element: <Trash />,
         errorElement: <ErrorPage />,
       },
       {
         path: "sharedActivities/:ownerId/:parentId?",
         loader: sharedActivitiesLoader,
-        action: sharedActivitiesAction,
+        action: genericAction,
         element: <SharedActivities />,
         errorElement: <ErrorPage />,
       },
       {
         path: "activityViewer/:contentId",
         loader: activityViewerLoader,
-        action: activityViewerAction,
+        action: genericAction,
         errorElement: <ErrorPage />,
         element: <ActivityViewer />,
       },
       {
         path: "documentEditor/:contentId",
         loader: editorHeaderLoader,
-        action: genericContentIdAction,
+        action: genericAction,
         element: <EditorHeader />,
         errorElement: <ErrorPage />,
         children: [
@@ -292,28 +270,28 @@ const router = createBrowserRouter([
           {
             path: "settings",
             loader: docEditorSettingsModeLoader,
-            action: genericContentIdAction,
+            action: genericAction,
             element: <EditorSettingsMode />,
             errorElement: <ErrorPage />,
           },
           {
             path: "history",
             loader: docEditorHistoryModeLoader,
-            action: genericContentIdAction,
+            action: genericAction,
             element: <DocEditorHistoryMode />,
             errorElement: <ErrorPage />,
           },
           {
             path: "remixes",
             loader: docEditorRemixModeLoader,
-            action: genericContentIdAction,
+            action: genericAction,
             element: <DocEditorRemixMode />,
             errorElement: <ErrorPage />,
           },
           {
             path: "library",
             loader: editorLibraryModeLoader,
-            action: genericContentIdAction,
+            action: genericAction,
             element: <EditorLibraryMode />,
             errorElement: <ErrorPage />,
           },
@@ -322,14 +300,14 @@ const router = createBrowserRouter([
       {
         path: "compoundEditor/:contentId",
         loader: editorHeaderLoader,
-        action: genericContentIdAction,
+        action: genericAction,
         element: <EditorHeader />,
         errorElement: <ErrorPage />,
         children: [
           {
             path: "edit",
             loader: compoundEditorEditModeLoader,
-            action: compoundEditorEditModeAction,
+            action: genericAction,
             element: <CompoundEditorEditMode />,
             errorElement: <ErrorPage />,
           },
@@ -342,14 +320,14 @@ const router = createBrowserRouter([
           {
             path: "settings",
             loader: docEditorSettingsModeLoader,
-            action: genericContentIdAction,
+            action: genericAction,
             element: <EditorSettingsMode />,
             errorElement: <ErrorPage />,
           },
           {
             path: "remixes",
             loader: docEditorRemixModeLoader,
-            action: genericContentIdAction,
+            action: genericAction,
             element: <DocEditorRemixMode />,
             errorElement: <ErrorPage />,
           },
@@ -370,7 +348,7 @@ const router = createBrowserRouter([
       },
       {
         path: "assigned",
-        action: assignedAction,
+        // no actions on this page
         loader: assignedLoader,
         element: <Assigned />,
         errorElement: <ErrorPage />,
@@ -390,7 +368,7 @@ const router = createBrowserRouter([
       {
         path: "assignmentData/:contentId",
         loader: assignmentResponseOverviewLoader,
-        action: genericContentIdAction,
+        action: genericAction,
         element: <AssignmentResponseOverview />,
         errorElement: <ErrorPage />,
       },
@@ -434,7 +412,7 @@ const router = createBrowserRouter([
       {
         path: "confirmSignIn",
         loader: confirmSignInLoader,
-        action: confirmSignInAction,
+        // no actions on this page
         errorElement: <ErrorPage />,
         element: <ConfirmSignIn />,
       },
@@ -456,16 +434,52 @@ const router = createBrowserRouter([
 const root = createRoot(document.getElementById("root")!);
 root.render(<RouterProvider router={router} />);
 
-async function genericContentIdAction({ request, params }: ActionFunctionArgs) {
-  const { path, ...body } = await request.json();
+/**
+ * A generic action handler for React Router pages
+ * 1. Takes in an action of type `application/json` (not the default `multipart/form-data`)
+ * 2. Calls the endpoint specified by `path` field, passing the others field as the POST body
+ * 3. Returns the results
+ *
+ * Special case: redirect to new page. Triggered if `redirectOnSuccess`, `replaceOnSuccess`, or `redirectNewContentId` is included.
+ *
+ * Special case: the route `shareContent`. Handle invalid email address.
+ *
+ */
+async function genericAction({ request, params }: ActionFunctionArgs) {
+  // TODO: DESIGN: Should this function only return the data portion of the response?
+  // Currently this function returns entire http response. It comes down to a question
+  // of whether pages/fetchers should have access to status information.
+  const {
+    path,
+    redirectOnSuccess,
+    replaceOnSuccess,
+    redirectNewContentId,
+    ...body
+  } = await request.json();
+
+  // If the content id is part of this page's path,
+  // we'll add it to the request body.
+  // In the future, we might want to disable this for some requests, TBD.
+  const contentIdParam = params.contentId
+    ? { contentId: params.contentId }
+    : {};
 
   try {
-    await axios.post(`/api/${path}`, {
-      contentId: params.contentId,
+    const results = await axios.post(`/api/${path}`, {
+      ...contentIdParam,
       ...body,
     });
 
-    return null;
+    if (redirectNewContentId) {
+      const newContentId: string = results.data.contentId;
+      return redirect(editorUrl(newContentId, body.contentType));
+    } else if (replaceOnSuccess) {
+      return replace(replaceOnSuccess);
+    } else if (redirectOnSuccess) {
+      return redirect(redirectOnSuccess);
+    } else {
+      return results;
+    }
   } catch (e) {
     /**
      * Special case: sharing content with specific people by email address
