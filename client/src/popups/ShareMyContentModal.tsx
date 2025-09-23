@@ -141,14 +141,15 @@ function ShareWithPeople({
   // when the user inputs a value that is not in an email format.
   // The better way to do this is to ensure the _server_ is always sending
   // understandable error messages (along with more details only meant for developers)
-  let addEmailError: string;
-  if (
-    addEmailFetcher.data &&
-    addEmailFetcher.data.includes("Invalid email address")
-  ) {
-    addEmailError = "Invalid email address";
+  let addEmailError: string | null;
+  if (addEmailFetcher.data && typeof addEmailFetcher.data === "string") {
+    if (addEmailFetcher.data.includes("Invalid email address")) {
+      addEmailError = "Invalid email address";
+    } else {
+      addEmailError = addEmailFetcher.data;
+    }
   } else {
-    addEmailError = addEmailFetcher.data;
+    addEmailError = null;
   }
 
   useEffect(() => {
