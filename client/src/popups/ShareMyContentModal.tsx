@@ -137,7 +137,20 @@ function ShareWithPeople({
   const [emailInput, setEmailInput] = useState("");
   const [inputHasChanged, setInputHasChanged] = useState(false);
 
-  const addEmailError = addEmailFetcher.data;
+  // TODO: This is hack to display a more understandable error message
+  // when the user inputs a value that is not in an email format.
+  // The better way to do this is to ensure the _server_ is always sending
+  // understandable error messages (along with more details only meant for developers)
+  let addEmailError: string;
+  if (
+    addEmailFetcher.data &&
+    addEmailFetcher.data.includes("Invalid email address")
+  ) {
+    addEmailError = "Invalid email address";
+  } else {
+    addEmailError = addEmailFetcher.data;
+  }
+
   useEffect(() => {
     if (!addEmailError) {
       setEmailInput("");
