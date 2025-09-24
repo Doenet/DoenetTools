@@ -15,6 +15,7 @@ import { cidFromText } from "../utils/cid";
 import { getContent } from "./activity_edit_view";
 import { compileActivityFromContent } from "../utils/contentStructure";
 import { InvalidRequestError } from "../utils/error";
+import { ContentDescription } from "../types";
 
 /**
  * Creates a new content of type `contentType` in `parentId` of `ownerId`,
@@ -482,7 +483,7 @@ export async function getContentDescription({
 }: {
   contentId: Uint8Array;
   loggedInUserId?: Uint8Array;
-}) {
+}): Promise<ContentDescription> {
   const isEditor = await getIsEditor(loggedInUserId);
 
   const description = await prisma.content.findUniqueOrThrow({
@@ -493,15 +494,44 @@ export async function getContentDescription({
     select: {
       name: true,
       type: true,
-      parent: { select: { type: true, id: true } },
+      parent: {
+        where: {
+          ...filterViewableContent(loggedInUserId, isEditor),
+        },
+        select: {
+          type: true,
+          id: true,
+          name: true,
+          parent: {
+            where: {
+              ...filterViewableContent(loggedInUserId, isEditor),
+            },
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      },
     },
   });
 
   const parent = description.parent
-    ? { type: description.parent.type, contentId: description.parent.id }
+    ? {
+        type: description.parent.type,
+        contentId: description.parent.id,
+        name: description.parent.name,
+      }
     : null;
 
-  return { contentId, ...description, parent };
+  return {
+    contentId,
+    name: description.name,
+    type: description.type,
+    parent,
+    grandparentId: description.parent?.parent?.id ?? null,
+    grandparentName: description.parent?.parent?.name ?? null,
+  };
 }
 
 /**
