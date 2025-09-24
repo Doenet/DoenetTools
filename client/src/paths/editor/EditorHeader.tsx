@@ -263,7 +263,6 @@ export function EditorHeader() {
     <Icon
       as={FaRegFolder}
       aria-label="Go to containing folder"
-      size="sm"
       color="gray.500"
       fontSize="1.1rem"
       ml="1rem"
