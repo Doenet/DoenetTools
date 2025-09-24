@@ -24,8 +24,10 @@ import { optimistic } from "../../utils/optimistic_ui";
  * Uses `AddClassificationModal`.
  */
 export function EditClassifications({
+  contentId,
   classifications,
 }: {
+  contentId: string;
   classifications: ContentClassification[];
 }) {
   const deleteExistingFetcher = useFetcher();
@@ -82,6 +84,7 @@ export function EditClassifications({
                       deleteExistingFetcher.submit(
                         {
                           path: "classifications/removeClassification",
+                          contentId,
                           classificationId: classification.id,
                         },
                         { method: "post", encType: "application/json" },
@@ -106,6 +109,7 @@ export function EditClassifications({
         Add a classification
       </Button>
       <AddClassificationModal
+        contentId={contentId}
         existingClassifications={classifications}
         isOpen={addIsOpen}
         onClose={addOnClose}

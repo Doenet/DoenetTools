@@ -96,6 +96,7 @@ export function ConfirmAssignModal({
             <Heading size="sm">Review your assignment settings</Heading>
             {fetcher.data ? (
               <EditAssignmentSettings
+                contentId={contentId}
                 maxAttempts={fetcher.data.maxAttempts}
                 individualizeByStudent={fetcher.data.individualizeByStudent}
                 mode={fetcher.data.mode}

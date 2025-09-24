@@ -21,10 +21,12 @@ import { Category, CategoryGroup } from "../../types";
 import { activityCategoryIcons } from "../../utils/activity";
 
 export function EditCategories({
+  contentId,
   categories,
   allCategories,
   showRequired = false,
 }: {
+  contentId: string;
   categories: Category[];
   allCategories: CategoryGroup[];
   showRequired?: boolean;
@@ -54,6 +56,7 @@ export function EditCategories({
         categories.find((c) => groupCodes.includes(c.code)) ?? null;
       groupBox.push(
         <CategoryRadios
+          contentId={contentId}
           key={`Radio ${group.name}`}
           selected={selected}
           categoryGroup={group}
@@ -67,6 +70,7 @@ export function EditCategories({
 
         groupBox.push(
           <CategoryCheckbox
+            contentId={contentId}
             key={category.code}
             category={category}
             isChecked={isChecked}
@@ -98,9 +102,11 @@ export function EditCategories({
  * This widget allows owners to view and edit the content categories of their activity - 1 checkbox for each category.
  */
 function CategoryCheckbox({
+  contentId,
   category,
   isChecked,
 }: {
+  contentId: string;
   category: Category;
   isChecked: boolean;
 }) {
@@ -132,6 +138,7 @@ function CategoryCheckbox({
           fetcher.submit(
             {
               path: "updateContent/updateCategories",
+              contentId,
               categories,
             },
             { method: "post", encType: "application/json" },
@@ -160,9 +167,11 @@ function CategoryCheckbox({
 }
 
 function CategoryRadios({
+  contentId,
   selected,
   categoryGroup,
 }: {
+  contentId: string;
   selected: Category | null;
   categoryGroup: CategoryGroup;
 }) {
@@ -221,6 +230,7 @@ function CategoryRadios({
         fetcher.submit(
           {
             path: "updateContent/updateCategories",
+            contentId,
             categories,
           },
           { method: "post", encType: "application/json" },

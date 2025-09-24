@@ -25,12 +25,14 @@ import { AssignmentMode } from "../../types";
  * If you don't want users to be able to change formative/summative mode, set `includeMode` to false. (Do this for single docs)
  */
 export function EditAssignmentSettings({
+  contentId,
   maxAttempts,
   individualizeByStudent,
   mode,
   includeMode,
   isAssigned = false,
 }: {
+  contentId: string;
   maxAttempts: number;
   individualizeByStudent: boolean;
   mode: AssignmentMode | null;
@@ -40,10 +42,18 @@ export function EditAssignmentSettings({
   return (
     <VStack align="left" ml="1rem">
       {includeMode && (
-        <AssignmentModeSelection mode={mode!} editable={!isAssigned} />
+        <AssignmentModeSelection
+          contentId={contentId}
+          mode={mode!}
+          editable={!isAssigned}
+        />
       )}
-      <MaxAttemptsSelectionBox attempts={maxAttempts ?? 0} />
+      <MaxAttemptsSelectionBox
+        contentId={contentId}
+        attempts={maxAttempts ?? 0}
+      />
       <VariantSelectionBox
+        contentId={contentId}
         editable={!isAssigned}
         isIndividualized={individualizeByStudent}
       />
@@ -55,7 +65,13 @@ export function EditAssignmentSettings({
  * A number input to set an activity's max attempt count
  * If `attempts` is 0, that means unlimited
  */
-function MaxAttemptsSelectionBox({ attempts }: { attempts: number }) {
+function MaxAttemptsSelectionBox({
+  contentId,
+  attempts,
+}: {
+  contentId: string;
+  attempts: number;
+}) {
   const fetcher = useFetcher();
 
   const optimisticAttempts = optimistic<number>(
@@ -73,6 +89,7 @@ function MaxAttemptsSelectionBox({ attempts }: { attempts: number }) {
     fetcher.submit(
       {
         path: "assign/updateAssignmentMaxAttempts",
+        contentId,
         maxAttempts: val,
       },
       { method: "post", encType: "application/json" },
@@ -135,9 +152,11 @@ function MaxAttemptsSelectionBox({ attempts }: { attempts: number }) {
 }
 
 function VariantSelectionBox({
+  contentId,
   isIndividualized,
   editable = true,
 }: {
+  contentId: string;
   isIndividualized: boolean;
   editable?: boolean;
 }) {
@@ -161,6 +180,7 @@ function VariantSelectionBox({
             fetcher.submit(
               {
                 path: "assign/updateAssignmentSettings",
+                contentId,
                 individualizeByStudent: !e.target.checked,
               },
               { method: "post", encType: "application/json" },
@@ -173,9 +193,11 @@ function VariantSelectionBox({
 }
 
 function AssignmentModeSelection({
+  contentId,
   mode,
   editable,
 }: {
+  contentId: string;
   mode: AssignmentMode;
   editable: boolean;
 }) {
@@ -194,6 +216,7 @@ function AssignmentModeSelection({
             fetcher.submit(
               {
                 path: "assign/updateAssignmentSettings",
+                contentId,
                 mode,
               },
               { method: "post", encType: "application/json" },

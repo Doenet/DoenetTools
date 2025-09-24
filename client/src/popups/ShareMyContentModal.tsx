@@ -247,6 +247,7 @@ function SharePublicly({
             fetcher.submit(
               {
                 path: "share/setContentIsPublic",
+                contentId,
                 isPublic: false,
               },
               { method: "post", encType: "application/json" },
@@ -316,6 +317,7 @@ function SharePublicly({
             fetcher.submit(
               {
                 path: "share/setContentIsPublic",
+                contentId,
                 isPublic: true,
               },
               { method: "post", encType: "application/json" },
