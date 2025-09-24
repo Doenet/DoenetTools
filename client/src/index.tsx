@@ -445,7 +445,7 @@ root.render(<RouterProvider router={router} />);
  * Special case: the route `shareContent`. Handle invalid email address.
  *
  */
-async function genericAction({ request, params }: ActionFunctionArgs) {
+async function genericAction({ request }: ActionFunctionArgs) {
   // TODO: DESIGN: Should this function only return the data portion of the response?
   // Currently this function returns entire http response. It comes down to a question
   // of whether pages/fetchers should have access to status information.
@@ -457,18 +457,8 @@ async function genericAction({ request, params }: ActionFunctionArgs) {
     ...body
   } = await request.json();
 
-  // If the content id is part of this page's path,
-  // we'll add it to the request body.
-  // In the future, we might want to disable this for some requests, TBD.
-  const contentIdParam = params.contentId
-    ? { contentId: params.contentId }
-    : {};
-
   try {
-    const results = await axios.post(`/api/${path}`, {
-      ...contentIdParam,
-      ...body,
-    });
+    const results = await axios.post(`/api/${path}`, body);
 
     if (redirectNewContentId) {
       const newContentId: string = results.data.contentId;

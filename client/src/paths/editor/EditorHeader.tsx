@@ -341,7 +341,12 @@ export function EditorHeader() {
   );
 
   const editableName = (
-    <EditableName leftIcon={typeIcon} dataTest="Activity Name Editable" />
+    <EditableName
+      contentId={contentId}
+      contentName={contentName}
+      leftIcon={typeIcon}
+      dataTest="Activity Name Editable"
+    />
   );
 
   const tabButtons = !isSubActivity && (

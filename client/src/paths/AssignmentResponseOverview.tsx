@@ -660,6 +660,8 @@ export function AssignmentData() {
         <GridItem area="label">
           <Flex justifyContent="center" alignItems="center">
             <EditableName
+              contentName={assignment.name}
+              contentId={assignment.contentId}
               leftIcon={typeIcon}
               dataTest="Assignment Name Editable"
             />
