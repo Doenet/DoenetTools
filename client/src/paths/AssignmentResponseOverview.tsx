@@ -660,6 +660,8 @@ export function AssignmentData() {
         <GridItem area="label">
           <Flex justifyContent="center" alignItems="center">
             <EditableName
+              contentName={assignment.name}
+              contentId={assignment.contentId}
               leftIcon={typeIcon}
               dataTest="Assignment Name Editable"
             />
@@ -673,6 +675,7 @@ export function AssignmentData() {
           </ChakraHeading>
           <ChakraHeading size="sm">Settings</ChakraHeading>
           <EditAssignmentSettings
+            contentId={contentId}
             maxAttempts={assignment.assignmentInfo!.maxAttempts}
             individualizeByStudent={
               assignment.assignmentInfo!.individualizeByStudent
@@ -702,6 +705,7 @@ export function AssignmentData() {
                 fetcher.submit(
                   {
                     path: "assign/updateAssignmentCloseAt",
+                    contentId,
                     closeAt,
                   },
                   { method: "post", encType: "application/json" },
