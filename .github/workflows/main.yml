@@ -24,6 +24,7 @@ jobs:
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v5
         with:
+          audience: sts.amazonaws.com
           role-to-assume: "arn:aws:iam::568298704244:role/doenet-github-actions"
           role-skip-session-tagging: true
           # role-session-name: GitHub_to_AWS_via_FederatedOIDC
