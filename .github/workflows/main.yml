@@ -9,7 +9,7 @@ on:
     branches: [main]
 
 env:
-  AWS_REGION: "us-east-2"
+  AWS_REGION: "us-east-1"
 
 # Permission can be added at job level or workflow level
 permissions:
