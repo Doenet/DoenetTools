@@ -626,57 +626,6 @@ export function Activities() {
                 </Tooltip>
               </Form>
             </Flex>
-            <Menu>
-              <MenuButton
-                as={Button}
-                size="sm"
-                colorScheme="blue"
-                hidden={searchOpen}
-                data-test="New Button"
-              >
-                {haveContentSpinner ? <Spinner size="sm" /> : "New"}
-              </MenuButton>
-              <MenuList>
-                <MenuItem
-                  data-test="Add Document Button"
-                  onClick={() => {
-                    if (user?.isAuthor) {
-                      createNewDocument();
-                    } else {
-                      authorModePromptOnOpen();
-                    }
-                  }}
-                >
-                  Document {!user?.isAuthor && <>(with source code)</>}
-                </MenuItem>
-                <MenuItem
-                  data-test="Add Problem Set Button"
-                  onClick={() => {
-                    setHaveContentSpinner(true);
-                    fetcher.submit(
-                      {
-                        path: "updateContent/createContent",
-                        redirectNewContentId: true,
-                        parentId,
-                        contentType: "sequence",
-                      },
-                      { method: "post", encType: "application/json" },
-                    );
-                  }}
-                >
-                  Problem Set
-                </MenuItem>
-                <MenuItem
-                  data-test="Add Folder Button"
-                  onClick={() => {
-                    createFolderOnOpen();
-                  }}
-                >
-                  Folder
-                </MenuItem>
-              </MenuList>
-            </Menu>
-
             <Button
               colorScheme="blue"
               size="sm"
@@ -689,14 +638,14 @@ export function Activities() {
             >
               See Scores
             </Button>
-            <Button
+            {/* <Button
               colorScheme="blue"
               size="sm"
               onClick={() => navigate(`/trash`)}
               hidden={searchOpen}
             >
               My Trash
-            </Button>
+            </Button> */}
           </HStack>
         </Flex>
       </VStack>
@@ -729,6 +678,65 @@ export function Activities() {
       </Form>
     </Flex>
   ) : null;
+
+  const sidePanel = (
+    <VStack width="15rem" align="flex-start" bgColor="lightgray">
+      <Menu>
+        <MenuButton
+          as={Button}
+          size="sm"
+          colorScheme="blue"
+          hidden={searchOpen}
+          data-test="New Button"
+        >
+          {haveContentSpinner ? <Spinner size="sm" /> : "New"}
+        </MenuButton>
+        <MenuList>
+          <MenuItem
+            data-test="Add Document Button"
+            onClick={() => {
+              if (user?.isAuthor) {
+                createNewDocument();
+              } else {
+                authorModePromptOnOpen();
+              }
+            }}
+          >
+            Document {!user?.isAuthor && <>(with source code)</>}
+          </MenuItem>
+          <MenuItem
+            data-test="Add Problem Set Button"
+            onClick={() => {
+              setHaveContentSpinner(true);
+              fetcher.submit(
+                {
+                  path: "updateContent/createContent",
+                  redirectNewContentId: true,
+                  parentId,
+                  contentType: "sequence",
+                },
+                { method: "post", encType: "application/json" },
+              );
+            }}
+          >
+            Problem Set
+          </MenuItem>
+          <MenuItem
+            data-test="Add Folder Button"
+            onClick={() => {
+              createFolderOnOpen();
+            }}
+          >
+            Folder
+          </MenuItem>
+        </MenuList>
+      </Menu>
+
+      <Heading size="md">My Activities</Heading>
+      <Heading size="md">Shared with me</Heading>
+      <Heading size="md">My trash</Heading>
+    </VStack>
+  );
 
   const emptyMessage = haveQuery
     ? "No Results Found"
@@ -804,7 +812,10 @@ export function Activities() {
         minHeight={{ base: "calc(100vh - 225px)", md: "calc(100vh - 235px)" }}
         direction="column"
       >
-        {mainPanel}
+        <HStack align="flex-start">
+          {sidePanel}
+          {mainPanel}
+        </HStack>
       </Flex>
     </>
   );
