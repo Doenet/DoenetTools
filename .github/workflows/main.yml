@@ -7,9 +7,7 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
-on:
   workflow_dispatch:
-    branches: [aws-gh=action]
 
 env:
   AWS_REGION: "us-east-1"
