@@ -22,9 +22,9 @@ jobs:
       - name: Git clone the repository
         uses: actions/checkout@v3
       - name: configure aws credentials
-        uses: aws-actions/configure-aws-credentials@v1.7.0
+        uses: aws-actions/configure-aws-credentials@v5
         with:
-          role-to-assume: "arn:aws:iam::568298704244:role/GitHubAction-AssumeRoleWithAction"
+          role-to-assume: "arn:aws:iam::568298704244:role/doenet-github-actions"
           role-skip-session-tagging: true
           # role-session-name: GitHub_to_AWS_via_FederatedOIDC
           aws-region: ${{ env.AWS_REGION }}
