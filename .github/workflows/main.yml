@@ -25,7 +25,8 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1.7.0
         with:
           role-to-assume: "arn:aws:iam::568298704244:role/GitHubAction-AssumeRoleWithAction"
-          role-session-name: GitHub_to_AWS_via_FederatedOIDC
+          role-skip-session-tagging: true
+          # role-session-name: GitHub_to_AWS_via_FederatedOIDC
           aws-region: ${{ env.AWS_REGION }}
       # Hello from AWS: WhoAmI
       - name: Sts GetCallerIdentity
