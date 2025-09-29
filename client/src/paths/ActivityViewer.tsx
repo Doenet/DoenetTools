@@ -587,7 +587,7 @@ export function ActivityViewer() {
                           navigate("/signIn");
                         }}
                       >
-                        Sign In To Add Content
+                        Sign In To Use Content
                       </Button>
                     )}
 
