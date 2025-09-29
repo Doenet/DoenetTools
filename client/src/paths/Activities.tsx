@@ -5,7 +5,6 @@ import {
   Flex,
   useDisclosure,
   MenuItem,
-  Heading,
   Tooltip,
   Menu,
   MenuButton,
@@ -20,6 +19,7 @@ import {
   Spinner,
   CloseButton,
   MenuDivider,
+  Icon,
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -44,7 +44,11 @@ import {
   UserInfo,
 } from "../types";
 import { MdClose, MdOutlineSearch } from "react-icons/md";
-import { getAllowedParentTypes, menuIcons } from "../utils/activity";
+import {
+  getAllowedParentTypes,
+  getIconInfo,
+  menuIcons,
+} from "../utils/activity";
 import { CreateLocalContent } from "../popups/CreateLocalContent";
 import { DeleteContent } from "../popups/DeleteContent";
 import { AddContentToMenu } from "../popups/AddContentToMenu";
@@ -55,6 +59,7 @@ import { ActivateAuthorMode } from "../popups/ActivateAuthorMode";
 import { formatAssignmentBlurb } from "../utils/assignment";
 import { editorUrl } from "../utils/url";
 import { ShareMyContentModal } from "../popups/ShareMyContentModal";
+import { EditableName } from "../widgets/EditableName";
 
 export async function loader({ params, request }: any) {
   const url = new URL(request.url);
@@ -321,20 +326,36 @@ export function Activities() {
     );
   }
 
-  const folderType =
-    parent?.type === "select"
-      ? "Select Activity"
-      : parent?.type === "sequence"
-        ? "Sequence Activity"
-        : "Folder";
+  const { iconImage: folderIcon, iconColor: folderColor } = getIconInfo(
+    "folder",
+    false,
+  );
+  const parentName = parent?.name ?? "My Activities";
 
-  const headingText = parent ? (
-    <>
-      {parent.isPublic ? "Public " : ""}
-      {folderType}: {parent.name}
-    </>
-  ) : (
-    `My Activities`
+  const titleIcon = (
+    <Tooltip label={parentName}>
+      <Box>
+        <Icon
+          as={folderIcon}
+          color={folderColor}
+          boxSizing="content-box"
+          width="24px"
+          height="24px"
+          mr="0.5rem"
+          verticalAlign="middle"
+          aria-label={"Folder"}
+        />
+      </Box>
+    </Tooltip>
+  );
+
+  const headingText = (
+    <EditableName
+      contentId={parentId}
+      contentName={parentName}
+      leftIcon={titleIcon}
+      dataTest="Folder Title"
+    />
   );
 
   let contentData: Content | undefined;
@@ -480,24 +501,9 @@ export function Activities() {
       </Flex>
 
       <HStack justify="center" align="center">
-        <Heading
-          as="h2"
-          size="lg"
-          marginBottom=".5em"
-          noOfLines={1}
-          maxHeight="1.5em"
-          lineHeight="normal"
-          data-test="Folder Heading"
-        >
-          <Tooltip label={headingText}>{headingText}</Tooltip>
-        </Heading>
+        {headingText}
         {parent && (
-          <Button
-            size="sm"
-            colorScheme="blue"
-            mb="0.6rem"
-            onClick={shareFolderOnOpen}
-          >
+          <Button size="sm" colorScheme="blue" onClick={shareFolderOnOpen}>
             Share
           </Button>
         )}

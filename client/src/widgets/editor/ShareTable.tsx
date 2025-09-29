@@ -47,7 +47,7 @@ export function ShareTable({
       ? undefined
       : () => {
           fetcher.submit(
-            { path: "share/setContentIsPublic", isPublic: false },
+            { path: "share/setContentIsPublic", contentId, isPublic: false },
             { method: "post", encType: "application/json" },
           );
         };

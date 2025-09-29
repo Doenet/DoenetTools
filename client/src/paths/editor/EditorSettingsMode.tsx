@@ -135,6 +135,7 @@ export function EditorSettingsMode() {
             Assignment
           </Heading>
           <EditAssignmentSettings
+            contentId={contentId}
             maxAttempts={maxAttempts}
             individualizeByStudent={individualizeByStudent}
             mode={mode}
@@ -144,6 +145,7 @@ export function EditorSettingsMode() {
 
         <Box>
           <EditCategories
+            contentId={contentId}
             categories={categories}
             allCategories={allCategories}
             showRequired={showRequired}
@@ -153,7 +155,10 @@ export function EditorSettingsMode() {
         <Box>
           <Heading size="md">Classifications</Heading>
           <Box ml="1rem">
-            <EditClassifications classifications={classifications} />
+            <EditClassifications
+              contentId={contentId}
+              classifications={classifications}
+            />
           </Box>
         </Box>
 
@@ -169,6 +174,7 @@ export function EditorSettingsMode() {
               />
             ) : (
               <EditLicense
+                contentId={contentId}
                 code={licenseCode ?? null}
                 remixSourceLicenseCode={remixSourceLicenseCode}
                 isPublic={isPublic}
@@ -184,6 +190,7 @@ export function EditorSettingsMode() {
             <Heading size="md">Version</Heading>
             <Box ml="1rem">
               <DoenetMLSelectionBox
+                contentId={contentId}
                 versionId={doenetmlVersionId}
                 allVersions={allDoenetmlVersions}
                 isAssigned={assigned}
@@ -209,10 +216,12 @@ export function EditorSettingsMode() {
 }
 
 function DoenetMLSelectionBox({
+  contentId,
   versionId,
   allVersions,
   isAssigned,
 }: {
+  contentId: string;
   versionId: number;
   allVersions: DoenetmlVersion[];
   isAssigned: boolean;
@@ -254,6 +263,7 @@ function DoenetMLSelectionBox({
             fetcher.submit(
               {
                 path: "updateContent/updateContentSettings",
+                contentId,
                 doenetmlVersionId: newVersionId,
               },
               { method: "post", encType: "application/json" },
@@ -334,6 +344,7 @@ async function performSyntaxUpgrade(
   fetcher.submit(
     {
       path: "updateContent/saveSyntaxUpdate",
+      contentId,
       updatedDoenetmlVersionId: newVersionId,
       updatedSource: upgraded,
     },

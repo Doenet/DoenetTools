@@ -14,12 +14,14 @@ import { AuthorLicenseBox } from "../Licenses";
  * compatible licenses. `remixSourceLicenseCode` should be the LicenseCode of the source activity, if it exists.
  */
 export function EditLicense({
+  contentId,
   code,
   remixSourceLicenseCode,
   isPublic,
   isShared,
   allLicenses,
 }: {
+  contentId: string;
   code: LicenseCode | null;
   remixSourceLicenseCode: LicenseCode | null;
   isPublic: boolean;
@@ -68,6 +70,7 @@ export function EditLicense({
             fetcher.submit(
               {
                 path: "share/setContentLicense",
+                contentId,
                 licenseCode: e.target.value as LicenseCode,
               },
               { method: "post", encType: "application/json" },

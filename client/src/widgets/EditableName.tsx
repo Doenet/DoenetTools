@@ -5,26 +5,32 @@ import {
   EditableInput,
   Box,
   Show,
+  Text,
+  HStack,
 } from "@chakra-ui/react";
-import { useLoaderData, useFetcher } from "react-router";
+import { useFetcher } from "react-router";
 import "../utils/editor-header.css";
 
 /**
  * This is separate as <Editable> wasn't updating when defaultValue was changed
+ *
+ * If the contentId is null, this name won't be editable
  */
 export function EditableName({
+  contentId,
+  contentName,
   leftIcon,
   dataTest,
   widthLargeScreen = "300px",
   widthBaseScreen = "100%",
 }: {
+  contentId: string | null;
+  contentName: string;
   leftIcon: ReactElement;
   dataTest: string;
   widthLargeScreen?: string;
   widthBaseScreen?: string;
 }) {
-  const { contentName } = useLoaderData();
-
   const [name, setName] = useState(contentName);
   const fetcher = useFetcher();
 
@@ -38,6 +44,22 @@ export function EditableName({
   }
   lastBaseDataName.current = contentName;
 
+  // Special case: My Activities root folder
+  // A null content id means we're at top-level folder, "My Activities"
+  // We can't edit the name of that, so just show read-only text
+  if (contentId === null) {
+    return (
+      <HStack position="relative" textAlign="left" spacing="0">
+        <Box height="100%" alignContent="baseline" top="0" pointerEvents="none">
+          {leftIcon}
+        </Box>
+        <Text data-test={dataTest} mt="4px" fontWeight="bold">
+          {name}
+        </Text>
+      </HStack>
+    );
+  }
+
   return (
     <Box position="relative">
       <Editable
@@ -46,6 +68,7 @@ export function EditableName({
         value={name}
         width={{ base: widthBaseScreen, lg: widthLargeScreen }}
         fontWeight="bold"
+        textAlign="left"
         onChange={(value) => {
           setName(value);
         }}
@@ -56,7 +79,11 @@ export function EditableName({
           }
 
           fetcher.submit(
-            { path: "updateContent/updateContentSettings", name: submitValue },
+            {
+              path: "updateContent/updateContentSettings",
+              contentId,
+              name: submitValue,
+            },
             { method: "post", encType: "application/json" },
           );
         }}

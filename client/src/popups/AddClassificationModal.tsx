@@ -38,10 +38,12 @@ import { useFetcher } from "react-router";
  * To manage this modal's visibility, use Chakra's `useDisclosure`. See https://v2.chakra-ui.com/docs/components/modal/usage
  */
 export function AddClassificationModal({
+  contentId,
   existingClassifications,
   isOpen,
   onClose,
 }: {
+  contentId: string;
   existingClassifications: ContentClassification[];
   isOpen: boolean;
   onClose: () => void;
@@ -455,6 +457,7 @@ export function AddClassificationModal({
                           fetcher.submit(
                             {
                               path: actionPath,
+                              contentId,
                               classificationId: classification.id,
                             },
                             { method: "post", encType: "application/json" },
