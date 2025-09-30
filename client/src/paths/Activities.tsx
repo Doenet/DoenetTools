@@ -12,10 +12,8 @@ import {
   IconButton,
   Input,
   Spacer,
-  Show,
   HStack,
   VStack,
-  Hide,
   Spinner,
   CloseButton,
   MenuDivider,
@@ -27,7 +25,6 @@ import {
   useLoaderData,
   useNavigate,
   useFetcher,
-  Link,
   Form,
   useOutletContext,
 } from "react-router";
@@ -462,200 +459,189 @@ export function Activities() {
   );
 
   const heading = (
-    <Box
-      backgroundColor="#fff"
-      color="#000"
-      height={{ base: "170px", md: "180px" }}
-      width="100%"
-      textAlign="center"
-    >
-      <Flex
-        width="100%"
-        paddingRight="0.5em"
-        paddingLeft="1em"
-        alignItems="middle"
-      >
-        <Box marginTop="5px" height="24px">
-          {parent && !haveQuery ? (
-            <Link
-              data-test="Back Link"
-              to={`/activities/${userId}${parent.parent ? "/" + parent.parent.contentId : ""}`}
-              style={{
-                color: "var(--mainBlue)",
+    <HStack justify="flex-start" align="center" pt="30px" pb="30px">
+      {headingText}
+      <Flex>
+        <Form>
+          <Input
+            type="search"
+            size="sm"
+            colorScheme="blue"
+            width="200px"
+            ref={searchRef}
+            placeholder={parent ? `Search in folder` : `Search my activities`}
+            value={searchString}
+            name="q"
+            onInput={(e) => {
+              setSearchString((e.target as HTMLInputElement).value);
+            }}
+            onBlur={() => {
+              searchBlurTimeout.current = setTimeout(() => {
+                setFocusSearch(false);
+              }, 200);
+            }}
+          />
+          <Tooltip
+            label={parent ? `Search in folder` : `Search my activities`}
+            placement="bottom-end"
+          >
+            <IconButton
+              size="sm"
+              colorScheme="blue"
+              icon={<MdOutlineSearch />}
+              aria-label={parent ? `Search in folder` : `Search my activities`}
+              type="submit"
+              onClick={(e) => {
+                if (focusSearch) {
+                  clearTimeout(searchBlurTimeout.current);
+                  searchRef.current?.focus();
+                } else {
+                  setFocusSearch(true);
+                }
+                if (!searchOpen) {
+                  e.preventDefault();
+                }
               }}
-            >
-              <Text
-                noOfLines={1}
-                maxWidth={{ sm: "200px", md: "300px" }}
-                textAlign="left"
-              >
-                <Show above="sm">
-                  &lt; Back to:{" "}
-                  {parent.parent ? parent.parent.name : `My Activities`}
-                </Show>
-                <Hide above="sm">&lt; Back</Hide>
-              </Text>
-            </Link>
-          ) : null}
-        </Box>
+            />
+          </Tooltip>
+        </Form>
       </Flex>
 
-      <HStack justify="center" align="center">
-        {headingText}
-        {parent && (
-          <Button size="sm" colorScheme="blue" onClick={shareFolderOnOpen}>
-            Share
-          </Button>
-        )}
-      </HStack>
-      <VStack width="100%">
-        <Flex
-          width="100%"
-          height="40px"
-          justifyContent="center"
-          alignItems="center"
+      {parent && (
+        <Button size="sm" colorScheme="blue" onClick={shareFolderOnOpen}>
+          Share
+        </Button>
+      )}
+      <Button
+        colorScheme="blue"
+        size="sm"
+        onClick={() =>
+          navigate(`/allAssignmentScores${parentId ? "/" + parentId : ""}`)
+        }
+      >
+        See Scores
+      </Button>
+    </HStack>
+  );
+
+  const createNewButton = (
+    <Menu>
+      <MenuButton
+        as={Button}
+        size="sm"
+        colorScheme="blue"
+        data-test="New Button"
+        // mb="2rem"
+      >
+        {haveContentSpinner ? <Spinner size="sm" /> : "New"}
+      </MenuButton>
+      <MenuList>
+        <MenuItem
+          data-test="Add Document Button"
+          onClick={() => {
+            if (user?.isAuthor) {
+              createNewDocument();
+            } else {
+              authorModePromptOnOpen();
+            }
+          }}
         >
-          <Flex
-            height="30px"
-            width="100%"
-            alignContent="center"
-            hidden={numSelected === 0 && addTo === null}
-            backgroundColor="gray.100"
-            justifyContent="center"
+          Document {!user?.isAuthor && <>(with source code)</>}
+        </MenuItem>
+        <MenuItem
+          data-test="Add Problem Set Button"
+          onClick={() => {
+            setHaveContentSpinner(true);
+            fetcher.submit(
+              {
+                path: "updateContent/createContent",
+                redirectNewContentId: true,
+                parentId,
+                contentType: "sequence",
+              },
+              { method: "post", encType: "application/json" },
+            );
+          }}
+        >
+          Problem Set
+        </MenuItem>
+        <MenuItem
+          data-test="Add Folder Button"
+          onClick={() => {
+            createFolderOnOpen();
+          }}
+        >
+          Folder
+        </MenuItem>
+      </MenuList>
+    </Menu>
+  );
+
+  const actionItems = (
+    <HStack
+      width="100%"
+      height="30px"
+      // alignContent="center"
+      hidden={numSelected === 0 && addTo === null}
+      backgroundColor="gray.100"
+      justifyContent="center"
+    >
+      {addTo !== null ? (
+        <HStack hidden={numSelected > 0}>
+          <CloseButton
+            data-test="Stop Adding Items"
+            size="sm"
+            onClick={() => {
+              setAddTo(null);
+            }}
+          />{" "}
+          <Text noOfLines={1} data-test="Adding Items Message">
+            Adding items to: {menuIcons[addTo.type]}
+            <strong>{addTo.name}</strong>
+          </Text>
+        </HStack>
+      ) : null}
+      <HStack hidden={numSelected === 0}>
+        <CloseButton
+          data-test="Clear Selection"
+          size="sm"
+          onClick={() => setSelectedCards([])}
+        />
+        <Text>{numSelected} selected</Text>
+        <HStack hidden={addTo !== null}>
+          <AddContentToMenu
+            fetcher={fetcher}
+            sourceContent={selectedCardsFiltered}
+            size="xs"
+            colorScheme="blue"
+            label="Copy selected to"
+          />
+          <CreateContentMenu
+            sourceContent={selectedCardsFiltered}
+            size="xs"
+            colorScheme="blue"
+            label="Create from selected"
+          />
+        </HStack>
+        {addTo !== null ? (
+          <Button
+            data-test="Add Selected To Button"
+            size="xs"
+            colorScheme="blue"
+            onClick={() => {
+              copyDialogOnOpen();
+            }}
           >
-            {addTo !== null ? (
-              <HStack hidden={numSelected > 0}>
-                <CloseButton
-                  data-test="Stop Adding Items"
-                  size="sm"
-                  onClick={() => {
-                    setAddTo(null);
-                  }}
-                />{" "}
-                <Text noOfLines={1} data-test="Adding Items Message">
-                  Adding items to: {menuIcons[addTo.type]}
-                  <strong>{addTo.name}</strong>
-                </Text>
-              </HStack>
-            ) : null}
-            <HStack hidden={numSelected === 0}>
-              <CloseButton
-                data-test="Clear Selection"
-                size="sm"
-                onClick={() => setSelectedCards([])}
-              />{" "}
-              <Text>{numSelected} selected</Text>
-              <HStack hidden={addTo !== null}>
-                <AddContentToMenu
-                  fetcher={fetcher}
-                  sourceContent={selectedCardsFiltered}
-                  size="xs"
-                  colorScheme="blue"
-                  label="Copy selected to"
-                />
-                <CreateContentMenu
-                  sourceContent={selectedCardsFiltered}
-                  size="xs"
-                  colorScheme="blue"
-                  label="Create from selected"
-                />
-              </HStack>
-              {addTo !== null ? (
-                <Button
-                  data-test="Add Selected To Button"
-                  size="xs"
-                  colorScheme="blue"
-                  onClick={() => {
-                    copyDialogOnOpen();
-                  }}
-                >
-                  Add selected to: {menuIcons[addTo.type]}
-                  <strong>
-                    {addTo.name.substring(0, 10)}
-                    {addTo.name.length > 10 ? "..." : ""}
-                  </strong>
-                </Button>
-              ) : null}
-            </HStack>
-          </Flex>
-        </Flex>
-        <Flex paddingRight="26px" width="100%">
-          <Spacer />
-          <HStack>
-            <Flex>
-              <Form>
-                <Input
-                  type="search"
-                  hidden={!searchOpen}
-                  size="sm"
-                  colorScheme="blue"
-                  width="250px"
-                  ref={searchRef}
-                  placeholder={
-                    parent ? `Search in folder` : `Search my activities`
-                  }
-                  value={searchString}
-                  name="q"
-                  onInput={(e) => {
-                    setSearchString((e.target as HTMLInputElement).value);
-                  }}
-                  onBlur={() => {
-                    searchBlurTimeout.current = setTimeout(() => {
-                      setFocusSearch(false);
-                    }, 200);
-                  }}
-                />
-                <Tooltip
-                  label={parent ? `Search in folder` : `Search my activities`}
-                  placement="bottom-end"
-                >
-                  <IconButton
-                    size="sm"
-                    colorScheme="blue"
-                    icon={<MdOutlineSearch />}
-                    aria-label={
-                      parent ? `Search in folder` : `Search my activities`
-                    }
-                    type="submit"
-                    onClick={(e) => {
-                      if (focusSearch) {
-                        clearTimeout(searchBlurTimeout.current);
-                        searchRef.current?.focus();
-                      } else {
-                        setFocusSearch(true);
-                      }
-                      if (!searchOpen) {
-                        e.preventDefault();
-                      }
-                    }}
-                  />
-                </Tooltip>
-              </Form>
-            </Flex>
-            <Button
-              colorScheme="blue"
-              size="sm"
-              onClick={() =>
-                navigate(
-                  `/allAssignmentScores${parentId ? "/" + parentId : ""}`,
-                )
-              }
-              hidden={searchOpen}
-            >
-              See Scores
-            </Button>
-            {/* <Button
-              colorScheme="blue"
-              size="sm"
-              onClick={() => navigate(`/trash`)}
-              hidden={searchOpen}
-            >
-              My Trash
-            </Button> */}
-          </HStack>
-        </Flex>
-      </VStack>
-    </Box>
+            Add selected to: {menuIcons[addTo.type]}
+            <strong>
+              {addTo.name.substring(0, 10)}
+              {addTo.name.length > 10 ? "..." : ""}
+            </strong>
+          </Button>
+        ) : null}
+      </HStack>
+      {createNewButton}
+    </HStack>
   );
 
   const searchResultsHeading = haveQuery ? (
@@ -686,61 +672,18 @@ export function Activities() {
   ) : null;
 
   const sidePanel = (
-    <VStack width="15rem" align="flex-start" bgColor="lightgray">
-      <Menu>
-        <MenuButton
-          as={Button}
-          size="sm"
-          colorScheme="blue"
-          hidden={searchOpen}
-          data-test="New Button"
-        >
-          {haveContentSpinner ? <Spinner size="sm" /> : "New"}
-        </MenuButton>
-        <MenuList>
-          <MenuItem
-            data-test="Add Document Button"
-            onClick={() => {
-              if (user?.isAuthor) {
-                createNewDocument();
-              } else {
-                authorModePromptOnOpen();
-              }
-            }}
-          >
-            Document {!user?.isAuthor && <>(with source code)</>}
-          </MenuItem>
-          <MenuItem
-            data-test="Add Problem Set Button"
-            onClick={() => {
-              setHaveContentSpinner(true);
-              fetcher.submit(
-                {
-                  path: "updateContent/createContent",
-                  redirectNewContentId: true,
-                  parentId,
-                  contentType: "sequence",
-                },
-                { method: "post", encType: "application/json" },
-              );
-            }}
-          >
-            Problem Set
-          </MenuItem>
-          <MenuItem
-            data-test="Add Folder Button"
-            onClick={() => {
-              createFolderOnOpen();
-            }}
-          >
-            Folder
-          </MenuItem>
-        </MenuList>
-      </Menu>
-
-      <Heading size="md">My Activities</Heading>
-      <Heading size="md">Shared with me</Heading>
-      <Heading size="md">My trash</Heading>
+    <VStack
+      width="15rem"
+      align="flex-start"
+      // bgColor="lightgray"
+      borderRight="solid 2px black"
+      p="30px"
+      spacing="0.25rem"
+      minHeight="75vh"
+    >
+      <Text fontSize="large">My Activities</Text>
+      <Text fontSize="large">Shared with me</Text>
+      <Text fontSize="large">My trash</Text>
     </VStack>
   );
 
@@ -805,24 +748,25 @@ export function Activities() {
       {authorModeModal}
       {shareFolderModal}
 
-      {heading}
-
-      {searchResultsHeading}
-
-      <Flex
-        data-test="Activities"
-        padding="0 10px"
-        margin="0px"
-        width="100%"
-        background={"white"}
-        minHeight={{ base: "calc(100vh - 225px)", md: "calc(100vh - 235px)" }}
-        direction="column"
-      >
-        <HStack align="flex-start">
-          {sidePanel}
+      <HStack align="flex-start">
+        {sidePanel}
+        <Box
+          // justify="left"
+          data-test="Activities"
+          // padding="0 10px"
+          // margin="0px"
+          ml="50px"
+          // width="100%"
+          background={"white"}
+          // minHeight={{ base: "calc(100vh - 225px)", md: "calc(100vh - 235px)" }}
+          // direction="column"
+        >
+          {heading}
+          {searchResultsHeading}
+          {actionItems}
           {mainPanel}
-        </HStack>
-      </Flex>
+        </Box>
+      </HStack>
     </>
   );
 }

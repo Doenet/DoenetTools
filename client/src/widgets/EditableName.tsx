@@ -6,7 +6,6 @@ import {
   Box,
   Show,
   Text,
-  HStack,
 } from "@chakra-ui/react";
 import { useFetcher } from "react-router";
 import "../utils/editor-header.css";
@@ -48,23 +47,60 @@ export function EditableName({
   // A null content id means we're at top-level folder, "My Activities"
   // We can't edit the name of that, so just show read-only text
   if (contentId === null) {
+    // Read-only header for root folder: icon sits inside the title box (non-editable)
     return (
-      <HStack position="relative" textAlign="left" spacing="0">
-        <Box height="100%" alignContent="baseline" top="0" pointerEvents="none">
-          {leftIcon}
-        </Box>
-        <Text data-test={dataTest} mt="4px" fontWeight="bold">
+      <Box
+        position="relative"
+        width={{ base: widthBaseScreen, lg: widthLargeScreen }}
+      >
+        <Show above="md">
+          <Box
+            position="absolute"
+            top="50%"
+            transform="translateY(-50%)"
+            pointerEvents="none"
+            display="flex"
+            alignItems="center"
+            padding="0 0.75rem"
+          >
+            {leftIcon}
+          </Box>
+        </Show>
+        <Text
+          data-test={dataTest}
+          fontWeight="bold"
+          noOfLines={1}
+          lineHeight="1.2"
+          pl={{ base: "0rem", md: "2.5rem" }}
+          isTruncated
+        >
           {name}
         </Text>
-      </HStack>
+      </Box>
     );
   }
 
   return (
-    <Box position="relative">
+    <Box
+      position="relative"
+      width={{ base: widthBaseScreen, lg: widthLargeScreen }}
+    >
+      <Show above="md">
+        <Box
+          position="absolute"
+          top="50%"
+          transform="translateY(-50%)"
+          pointerEvents="none"
+          display="flex"
+          alignItems="center"
+          padding="0 0.75rem"
+        >
+          {leftIcon}
+        </Box>
+      </Show>
+
       <Editable
         data-test={dataTest}
-        mt="4px"
         value={name}
         width={{ base: widthBaseScreen, lg: widthLargeScreen }}
         fontWeight="bold"
@@ -92,27 +128,16 @@ export function EditableName({
           className="editable-name"
           data-test="Editable Title"
           noOfLines={1}
-          pl={{ base: "0rem", md: "2rem" }}
+          lineHeight="1.2"
+          pl={{ base: "0rem", md: "2.5rem" }}
         />
         <EditableInput
           data-test="Editable Input"
           maxLength={191}
-          pl={{ base: "0rem", md: "2rem" }}
+          lineHeight="1.2"
+          pl={{ base: "0rem", md: "2.5rem" }}
         />
       </Editable>
-
-      <Show above="md">
-        <Box
-          height="100%"
-          alignContent="baseline"
-          padding="0.5rem 3px"
-          position="absolute"
-          top="0"
-          pointerEvents="none"
-        >
-          {leftIcon}
-        </Box>
-      </Show>
     </Box>
   );
 }
