@@ -22,6 +22,7 @@ export function EditableName({
   dataTest,
   widthLargeScreen = "300px",
   widthBaseScreen = "100%",
+  isFolderView = false,
 }: {
   contentId: string | null;
   contentName: string;
@@ -29,6 +30,7 @@ export function EditableName({
   dataTest: string;
   widthLargeScreen?: string;
   widthBaseScreen?: string;
+  isFolderView?: boolean;
 }) {
   const [name, setName] = useState(contentName);
   const fetcher = useFetcher();
@@ -69,6 +71,7 @@ export function EditableName({
         <Text
           data-test={dataTest}
           fontWeight="bold"
+          fontSize={isFolderView ? "xl" : undefined}
           noOfLines={1}
           lineHeight="1.2"
           pl={{ base: "0rem", md: "2.5rem" }}
@@ -104,6 +107,7 @@ export function EditableName({
         value={name}
         width={{ base: widthBaseScreen, lg: widthLargeScreen }}
         fontWeight="bold"
+        fontSize={isFolderView ? "xl" : undefined}
         textAlign="left"
         onChange={(value) => {
           setName(value);

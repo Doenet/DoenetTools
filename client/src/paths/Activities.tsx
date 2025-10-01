@@ -11,9 +11,7 @@ import {
   MenuList,
   IconButton,
   Input,
-  Spacer,
   HStack,
-  VStack,
   Spinner,
   CloseButton,
   MenuDivider,
@@ -41,6 +39,7 @@ import {
   UserInfo,
 } from "../types";
 import { MdClose, MdOutlineSearch } from "react-icons/md";
+import { FaPlus } from "react-icons/fa";
 import {
   getAllowedParentTypes,
   getIconInfo,
@@ -352,6 +351,8 @@ export function Activities() {
       contentName={parentName}
       leftIcon={titleIcon}
       dataTest="Folder Title"
+      isFolderView={true}
+      widthLargeScreen="400px"
     />
   );
 
@@ -458,6 +459,65 @@ export function Activities() {
     />
   );
 
+  const createNewButton = (
+    <Menu>
+      <MenuButton
+        as={Button}
+        size="sm"
+        colorScheme="blue"
+        data-test="New Button"
+      >
+        {haveContentSpinner ? (
+          <Spinner size="sm" />
+        ) : (
+          <HStack>
+            <FaPlus />
+            <Text>New</Text>
+          </HStack>
+        )}
+      </MenuButton>
+      <MenuList>
+        <MenuItem
+          data-test="Add Document Button"
+          onClick={() => {
+            if (user?.isAuthor) {
+              createNewDocument();
+            } else {
+              authorModePromptOnOpen();
+            }
+          }}
+        >
+          Document {!user?.isAuthor && <>(with source code)</>}
+        </MenuItem>
+        <MenuItem
+          data-test="Add Problem Set Button"
+          onClick={() => {
+            setHaveContentSpinner(true);
+            fetcher.submit(
+              {
+                path: "updateContent/createContent",
+                redirectNewContentId: true,
+                parentId,
+                contentType: "sequence",
+              },
+              { method: "post", encType: "application/json" },
+            );
+          }}
+        >
+          Problem Set
+        </MenuItem>
+        <MenuItem
+          data-test="Add Folder Button"
+          onClick={() => {
+            createFolderOnOpen();
+          }}
+        >
+          Folder
+        </MenuItem>
+      </MenuList>
+    </Menu>
+  );
+
   const heading = (
     <HStack justify="flex-start" align="center" pt="30px" pb="30px">
       {headingText}
@@ -521,126 +581,77 @@ export function Activities() {
       >
         See Scores
       </Button>
+
+      {createNewButton}
     </HStack>
   );
 
-  const createNewButton = (
-    <Menu>
-      <MenuButton
-        as={Button}
-        size="sm"
-        colorScheme="blue"
-        data-test="New Button"
-        // mb="2rem"
-      >
-        {haveContentSpinner ? <Spinner size="sm" /> : "New"}
-      </MenuButton>
-      <MenuList>
-        <MenuItem
-          data-test="Add Document Button"
-          onClick={() => {
-            if (user?.isAuthor) {
-              createNewDocument();
-            } else {
-              authorModePromptOnOpen();
-            }
-          }}
-        >
-          Document {!user?.isAuthor && <>(with source code)</>}
-        </MenuItem>
-        <MenuItem
-          data-test="Add Problem Set Button"
-          onClick={() => {
-            setHaveContentSpinner(true);
-            fetcher.submit(
-              {
-                path: "updateContent/createContent",
-                redirectNewContentId: true,
-                parentId,
-                contentType: "sequence",
-              },
-              { method: "post", encType: "application/json" },
-            );
-          }}
-        >
-          Problem Set
-        </MenuItem>
-        <MenuItem
-          data-test="Add Folder Button"
-          onClick={() => {
-            createFolderOnOpen();
-          }}
-        >
-          Folder
-        </MenuItem>
-      </MenuList>
-    </Menu>
-  );
-
-  const actionItems = (
+  const selectedItemsActions = (
     <HStack
+      spacing={3}
+      align="center"
+      justify="center"
+      backgroundColor={numSelected > 0 || addTo ? "gray.100" : undefined}
       width="100%"
-      height="30px"
-      // alignContent="center"
-      hidden={numSelected === 0 && addTo === null}
-      backgroundColor="gray.100"
-      justifyContent="center"
+      height="2.3rem"
+      mb="10px"
     >
-      {addTo !== null ? (
-        <HStack hidden={numSelected > 0}>
+      {addTo !== null && (
+        <>
           <CloseButton
             data-test="Stop Adding Items"
             size="sm"
-            onClick={() => {
-              setAddTo(null);
-            }}
-          />{" "}
+            onClick={() => setAddTo(null)}
+          />
           <Text noOfLines={1} data-test="Adding Items Message">
             Adding items to: {menuIcons[addTo.type]}
             <strong>{addTo.name}</strong>
           </Text>
-        </HStack>
-      ) : null}
-      <HStack hidden={numSelected === 0}>
-        <CloseButton
-          data-test="Clear Selection"
-          size="sm"
-          onClick={() => setSelectedCards([])}
-        />
-        <Text>{numSelected} selected</Text>
-        <HStack hidden={addTo !== null}>
-          <AddContentToMenu
-            fetcher={fetcher}
-            sourceContent={selectedCardsFiltered}
-            size="xs"
-            colorScheme="blue"
-            label="Copy selected to"
+        </>
+      )}
+
+      {numSelected > 0 && (
+        <HStack spacing={2} align="center">
+          <CloseButton
+            data-test="Clear Selection"
+            size="sm"
+            onClick={() => setSelectedCards([])}
           />
-          <CreateContentMenu
-            sourceContent={selectedCardsFiltered}
-            size="xs"
-            colorScheme="blue"
-            label="Create from selected"
-          />
+          <Text>{numSelected} selected</Text>
+          {addTo === null && (
+            <>
+              <AddContentToMenu
+                fetcher={fetcher}
+                sourceContent={selectedCardsFiltered}
+                size="xs"
+                colorScheme="blue"
+                label="Copy selected to"
+              />
+              <CreateContentMenu
+                sourceContent={selectedCardsFiltered}
+                size="xs"
+                colorScheme="blue"
+                label="Create from selected"
+              />
+            </>
+          )}
+
+          {addTo !== null && (
+            <Button
+              data-test="Add Selected To Button"
+              size="xs"
+              colorScheme="blue"
+              onClick={() => copyDialogOnOpen()}
+            >
+              Add selected to: {menuIcons[addTo.type]}
+              <strong>
+                {addTo.name.substring(0, 10)}
+                {addTo.name.length > 10 ? "..." : ""}
+              </strong>
+            </Button>
+          )}
         </HStack>
-        {addTo !== null ? (
-          <Button
-            data-test="Add Selected To Button"
-            size="xs"
-            colorScheme="blue"
-            onClick={() => {
-              copyDialogOnOpen();
-            }}
-          >
-            Add selected to: {menuIcons[addTo.type]}
-            <strong>
-              {addTo.name.substring(0, 10)}
-              {addTo.name.length > 10 ? "..." : ""}
-            </strong>
-          </Button>
-        ) : null}
-      </HStack>
-      {createNewButton}
+      )}
     </HStack>
   );
 
@@ -651,10 +662,13 @@ export function Activities() {
       fontSize="large"
       alignItems="center"
       padding="5px"
+      paddingLeft={[".1em", "1em"]}
+      paddingRight={[".1em", "1em"]}
     >
-      <Spacer />
-      Search results for: {query}
-      <Spacer />
+      <Flex width="100%" alignItems="center" ml="2rem">
+        {/* left offset to align with card content (checkbox + icon + title padding) */}
+        Search results for: {query}
+      </Flex>
       <Form>
         <Tooltip label="Close search results" placement="bottom-end">
           <IconButton
@@ -670,22 +684,6 @@ export function Activities() {
       </Form>
     </Flex>
   ) : null;
-
-  const sidePanel = (
-    <VStack
-      width="15rem"
-      align="flex-start"
-      // bgColor="lightgray"
-      borderRight="solid 2px black"
-      p="30px"
-      spacing="0.25rem"
-      minHeight="75vh"
-    >
-      <Text fontSize="large">My Activities</Text>
-      <Text fontSize="large">Shared with me</Text>
-      <Text fontSize="large">My trash</Text>
-    </VStack>
-  );
 
   const emptyMessage = haveQuery
     ? "No Results Found"
@@ -740,7 +738,14 @@ export function Activities() {
   );
 
   return (
-    <>
+    <Box
+      data-test="Activities"
+      flex="1"
+      width="100%"
+      background={"white"}
+      ml="20px"
+      mr="20px"
+    >
       {moveCopyContentModal}
       {createFolderModal}
       {deleteModal}
@@ -748,25 +753,10 @@ export function Activities() {
       {authorModeModal}
       {shareFolderModal}
 
-      <HStack align="flex-start">
-        {sidePanel}
-        <Box
-          // justify="left"
-          data-test="Activities"
-          // padding="0 10px"
-          // margin="0px"
-          ml="50px"
-          // width="100%"
-          background={"white"}
-          // minHeight={{ base: "calc(100vh - 225px)", md: "calc(100vh - 235px)" }}
-          // direction="column"
-        >
-          {heading}
-          {searchResultsHeading}
-          {actionItems}
-          {mainPanel}
-        </Box>
-      </HStack>
-    </>
+      {heading}
+      {searchResultsHeading}
+      {selectedItemsActions}
+      {mainPanel}
+    </Box>
   );
 }
