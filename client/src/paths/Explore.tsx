@@ -372,6 +372,7 @@ export function Explore() {
         background={"white"}
         paddingTop="16px"
         paddingBottom="16px"
+        marginLeft={["0.1rem", "1rem"]}
         minHeight={minHeight}
       >
         <CardList
