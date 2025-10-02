@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { useLoaderData } from "react-router";
 import {
   Button,
-  Heading,
   TableContainer,
   Table,
   Thead,
@@ -22,6 +21,7 @@ import axios from "axios";
 import { lastNameFirst } from "../utils/names";
 import { downloadScoresToCsv } from "../utils/scores";
 import { getIconInfo } from "../utils/activity";
+import { EditableName } from "../widgets/EditableName";
 
 type AssignmentScore = {
   contentId: string;
@@ -161,21 +161,31 @@ export function AllAssignmentScores() {
     "folder",
     false,
   );
+  const icon = (
+    <Icon
+      as={folderIcon}
+      color={folderColor}
+      boxSizing="content-box"
+      width="24px"
+      height="24px"
+      mr="0.5rem"
+      verticalAlign="middle"
+      aria-label={"Folder"}
+    />
+  );
 
   return (
     <Box flex="1" width="100%" pt="30px" pb="30px" paddingLeft="15px">
       <Wrap align="center" spacing="1rem" mb="20px">
-        <Heading size="md" display="flex" alignItems="center" gap="0.5rem">
-          Scores for assignments in
-          <Icon
-            as={folderIcon}
-            color={folderColor}
-            boxSizing="content-box"
-            width="24px"
-            height="24px"
-          />
-          {name}
-        </Heading>
+        <EditableName
+          contentId={null}
+          contentName={name + " -- Scores"}
+          leftIcon={icon}
+          dataTest="Scores Heading"
+          isFolderView={true}
+          widthLargeScreen="400px"
+        />
+
         <Button colorScheme="blue" size="sm" onClick={downloadScores}>
           Download scores
         </Button>
