@@ -49,7 +49,8 @@ export function Trash() {
     <Box
       backgroundColor="#fff"
       color="#000"
-      height={{ base: "170px", md: "180px" }}
+      // keep the height but allow content to flow
+      minHeight={{ base: "170px", md: "180px" }}
       width="100%"
       textAlign="center"
     >
@@ -57,7 +58,7 @@ export function Trash() {
         width="100%"
         paddingRight="0.5em"
         paddingLeft="1em"
-        alignItems="middle"
+        alignItems="center"
       >
         <Box marginTop="5px" height="24px">
           <ChakraLink
@@ -136,9 +137,8 @@ export function Trash() {
   );
 
   return (
-    <>
+    <Flex direction="column" width="100%">
       {heading}
-
       <Flex
         data-test="Trash"
         padding="0 10px"
@@ -150,6 +150,6 @@ export function Trash() {
       >
         {mainPanel}
       </Flex>
-    </>
+    </Flex>
   );
 }
