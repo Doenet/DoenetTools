@@ -20,7 +20,7 @@ export function EditableName({
   contentName,
   leftIcon,
   dataTest,
-  widthLargeScreen = "300px",
+  widthLargeScreen = "20rem",
   widthBaseScreen = "100%",
   isFolderView = false,
 }: {

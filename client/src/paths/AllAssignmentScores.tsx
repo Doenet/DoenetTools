@@ -183,7 +183,6 @@ export function AllAssignmentScores() {
           leftIcon={icon}
           dataTest="Scores Heading"
           isFolderView={true}
-          widthLargeScreen="400px"
         />
 
         <Button colorScheme="blue" size="sm" onClick={downloadScores}>

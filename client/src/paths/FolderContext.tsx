@@ -1,4 +1,4 @@
-import { VStack, Button, HStack } from "@chakra-ui/react";
+import { Button, Flex } from "@chakra-ui/react";
 import React from "react";
 import { Outlet, useLocation, useOutletContext } from "react-router";
 import { Link as ReactRouterLink } from "react-router";
@@ -16,16 +16,16 @@ export function FolderContext() {
   const isTrashActive = location.pathname.startsWith("/trash");
 
   const sidePanel = (
-    <VStack
-      width="15rem"
-      minWidth="15rem"
-      maxWidth="15rem"
+    <Flex
+      minWidth={{ base: "100%", lg: "8rem", xl: "15rem" }}
+      maxWidth={{ base: "100%", lg: "8rem", xl: "15rem" }}
       flexShrink={0}
       align="flex-start"
-      borderRight="solid 2px black"
-      p="30px"
-      spacing="0.25rem"
-      minHeight="75vh"
+      borderRight={["none", "solid 2px black"]}
+      p={{ base: "0px", xl: "30px" }}
+      // spacing="0.25rem"
+      minHeight={["fit-content", "75vh"]}
+      flexDir={["row", "column"]}
     >
       <Button
         as={ReactRouterLink}
@@ -66,13 +66,13 @@ export function FolderContext() {
       >
         <Text fontSize="large">My trash</Text>
       </Button>
-    </VStack>
+    </Flex>
   );
 
   return (
-    <HStack align="flex-start" width="100%">
+    <Flex align="flex-start" width="100%" flexDir={["column", "row"]}>
       {sidePanel}
       <Outlet context={context} />
-    </HStack>
+    </Flex>
   );
 }

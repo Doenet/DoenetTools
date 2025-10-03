@@ -352,7 +352,6 @@ export function Activities() {
       leftIcon={titleIcon}
       dataTest="Folder Title"
       isFolderView={true}
-      widthLargeScreen="400px"
     />
   );
 
@@ -519,71 +518,78 @@ export function Activities() {
   );
 
   const heading = (
-    <HStack justify="flex-start" align="center" pt="30px" pb="30px">
+    <Flex
+      justify="flex-start"
+      align={["left", "center"]}
+      pt="30px"
+      pb="30px"
+      flexDir={["column", "row"]}
+      gap="5px"
+    >
       {headingText}
-      <Flex>
-        <Form>
-          <Input
-            type="search"
+      <Form>
+        <Input
+          type="search"
+          size="sm"
+          colorScheme="blue"
+          width="200px"
+          ref={searchRef}
+          placeholder={parent ? `Search in folder` : `Search my activities`}
+          value={searchString}
+          name="q"
+          onInput={(e) => {
+            setSearchString((e.target as HTMLInputElement).value);
+          }}
+          onBlur={() => {
+            searchBlurTimeout.current = setTimeout(() => {
+              setFocusSearch(false);
+            }, 200);
+          }}
+        />
+        <Tooltip
+          label={parent ? `Search in folder` : `Search my activities`}
+          placement="bottom-end"
+        >
+          <IconButton
             size="sm"
             colorScheme="blue"
-            width="200px"
-            ref={searchRef}
-            placeholder={parent ? `Search in folder` : `Search my activities`}
-            value={searchString}
-            name="q"
-            onInput={(e) => {
-              setSearchString((e.target as HTMLInputElement).value);
-            }}
-            onBlur={() => {
-              searchBlurTimeout.current = setTimeout(() => {
-                setFocusSearch(false);
-              }, 200);
+            icon={<MdOutlineSearch />}
+            aria-label={parent ? `Search in folder` : `Search my activities`}
+            type="submit"
+            onClick={(e) => {
+              if (focusSearch) {
+                clearTimeout(searchBlurTimeout.current);
+                searchRef.current?.focus();
+              } else {
+                setFocusSearch(true);
+              }
+              if (!searchOpen) {
+                e.preventDefault();
+              }
             }}
           />
-          <Tooltip
-            label={parent ? `Search in folder` : `Search my activities`}
-            placement="bottom-end"
-          >
-            <IconButton
-              size="sm"
-              colorScheme="blue"
-              icon={<MdOutlineSearch />}
-              aria-label={parent ? `Search in folder` : `Search my activities`}
-              type="submit"
-              onClick={(e) => {
-                if (focusSearch) {
-                  clearTimeout(searchBlurTimeout.current);
-                  searchRef.current?.focus();
-                } else {
-                  setFocusSearch(true);
-                }
-                if (!searchOpen) {
-                  e.preventDefault();
-                }
-              }}
-            />
-          </Tooltip>
-        </Form>
-      </Flex>
+        </Tooltip>
+      </Form>
 
-      {parent && (
-        <Button size="sm" colorScheme="blue" onClick={shareFolderOnOpen}>
-          Share
+      <HStack gap="5px">
+        {parent && (
+          <Button size="sm" colorScheme="blue" onClick={shareFolderOnOpen}>
+            Share
+          </Button>
+        )}
+        <Button
+          colorScheme="blue"
+          size="sm"
+          onClick={() =>
+            navigate(`/allAssignmentScores${parentId ? "/" + parentId : ""}`)
+          }
+        >
+          Scores
         </Button>
-      )}
-      <Button
-        colorScheme="blue"
-        size="sm"
-        onClick={() =>
-          navigate(`/allAssignmentScores${parentId ? "/" + parentId : ""}`)
-        }
-      >
-        See Scores
-      </Button>
 
-      {createNewButton}
-    </HStack>
+        {createNewButton}
+      </HStack>
+    </Flex>
   );
 
   const selectedItemsActions = (
@@ -743,8 +749,8 @@ export function Activities() {
       flex="1"
       width="100%"
       background={"white"}
-      ml="20px"
-      mr="20px"
+      ml={["0px", "20px"]}
+      mr={["0px", "20px"]}
     >
       {moveCopyContentModal}
       {createFolderModal}
