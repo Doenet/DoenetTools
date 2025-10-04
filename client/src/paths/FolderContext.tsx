@@ -64,7 +64,7 @@ export function FolderContext() {
         borderLeftColor={isTrashActive ? "doenet.mainBlue" : "transparent"}
         aria-current={isTrashActive ? "page" : undefined}
       >
-        <Text fontSize="large">My trash</Text>
+        <Text fontSize="large">My Trash</Text>
       </Button>
     </Flex>
   );

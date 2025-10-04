@@ -746,7 +746,6 @@ export function Activities() {
   return (
     <Box
       data-test="Activities"
-      flex="1"
       width="100%"
       background={"white"}
       ml={["0px", "20px"]}
