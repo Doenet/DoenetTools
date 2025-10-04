@@ -40,6 +40,8 @@ import {
 } from "../types";
 import { MdClose, MdOutlineSearch } from "react-icons/md";
 import { FaPlus } from "react-icons/fa";
+import { IoIosFolderOpen } from "react-icons/io";
+
 import {
   getAllowedParentTypes,
   getIconInfo,
@@ -326,14 +328,15 @@ export function Activities() {
     "folder",
     false,
   );
+
   const parentName = parent?.name ?? "My Activities";
 
   const titleIcon = (
     <Tooltip label={parentName}>
       <Box>
         <Icon
-          as={folderIcon}
-          color={folderColor}
+          as={parent ? folderIcon : IoIosFolderOpen}
+          color={parent ? folderColor : "black"}
           boxSizing="content-box"
           width="24px"
           height="24px"
