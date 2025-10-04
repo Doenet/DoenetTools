@@ -442,5 +442,5 @@ export async function getSharedWithMe({
     processContent(content, loggedInUserId),
   );
 
-  return sharedWithMeContent;
+  return { content: sharedWithMeContent };
 }

@@ -10,12 +10,7 @@ import {
   Icon,
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
-import {
-  redirect,
-  useLoaderData,
-  useFetcher,
-  useOutletContext,
-} from "react-router";
+import { useLoaderData, useFetcher, useOutletContext } from "react-router";
 
 import { CardContent } from "../widgets/Card";
 import CardList from "../widgets/CardList";
@@ -29,36 +24,9 @@ import { SiteContext } from "./SiteHeader";
 import { formatAssignmentBlurb } from "../utils/assignment";
 import { EditableName } from "../widgets/EditableName";
 
-export async function loader({ params, request }: any) {
-  const url = new URL(request.url);
-  const q = url.searchParams.get("q");
-
-  let data;
-  if (q) {
-    const results = await axios.get(
-      `/api/contentList/searchMyContent/${params.userId}/${params.parentId ?? ""}?query=${q}`,
-    );
-    data = results.data;
-  } else {
-    const results = await axios.get(
-      `/api/contentList/getMyContent/${params.userId}/${params.parentId ?? ""}`,
-    );
-    data = results.data;
-  }
-
-  if (data.notMe) {
-    return redirect(
-      `/sharedActivities/${params.userId}${params.parentId ? "/" + params.parentId : ""}`,
-    );
-  }
-
-  return {
-    parentId: params.parentId ? params.parentId : null,
-    content: data.content,
-    userId: params.userId,
-    parent: data.parent,
-    query: q,
-  };
+export async function loader() {
+  const { data: results } = await axios.get(`/api/contentList/getSharedWithMe`);
+  return results;
 }
 
 export function SharedWithMe() {
