@@ -14,6 +14,7 @@ export function FolderContext() {
   const activitiesPath = `/activities/${context.user?.userId ?? ""}`;
   const isActivitiesActive = location.pathname === activitiesPath;
   const isTrashActive = location.pathname.startsWith("/trash");
+  const isSharedWithMeActive = location.pathname.startsWith("/sharedWithMe");
 
   const sidePanel = (
     <Flex
@@ -45,6 +46,29 @@ export function FolderContext() {
         aria-current={isActivitiesActive ? "page" : undefined}
       >
         <Text fontSize="large">My Activities</Text>
+      </Button>
+
+      <Button
+        as={ReactRouterLink}
+        to={`/sharedWithMe/${context.user?.userId ?? ""}`}
+        variant="ghost"
+        justifyContent="flex-start"
+        width="100%"
+        backgroundColor={
+          isSharedWithMeActive ? "doenet.lightBlue" : "transparent"
+        }
+        _hover={
+          isSharedWithMeActive
+            ? { backgroundColor: "doenet.lightBlue" }
+            : { backgroundColor: "gray.50" }
+        }
+        borderLeftWidth={isSharedWithMeActive ? "4px" : "0"}
+        borderLeftColor={
+          isSharedWithMeActive ? "doenet.mainBlue" : "transparent"
+        }
+        aria-current={isSharedWithMeActive ? "page" : undefined}
+      >
+        <Text fontSize="large">Shared with me</Text>
       </Button>
 
       <Button
