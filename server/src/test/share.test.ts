@@ -16,6 +16,8 @@ import {
   getAllLicenses,
 } from "../query/license";
 import { getEditorSettings, getEditorShareStatus } from "../query/editor";
+import { getSharedWithMe } from "../query/content_list";
+import { isEqualUUID } from "../utils/uuid";
 
 describe("Share tests", () => {
   test("content in public folder is created as public", async () => {
@@ -1589,5 +1591,68 @@ describe("Share tests", () => {
     expect(fullLicense.composedOf[1].imageURL).eq(
       "/creative_commons_by_nc_sa.png",
     );
+  });
+
+  test("can see all content shared with me by email", async () => {
+    const owner = await createTestUser();
+    const ownerId = owner.userId;
+
+    const recipient = await createTestUser();
+    const recipientId = recipient.userId;
+
+    // create some content and share with recipient by email
+    const { contentId: sharedFolderId } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "folder",
+      parentId: null,
+    });
+
+    const { contentId: docId } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "singleDoc",
+      parentId: sharedFolderId,
+    });
+
+    await shareContentWithEmail({
+      contentId: sharedFolderId,
+      loggedInUserId: ownerId,
+      email: recipient.email,
+    });
+
+    // get content shared with recipient
+    const shared = await getSharedWithMe({ loggedInUserId: recipientId });
+
+    console.log(shared);
+
+    // Should include at least the folder (owner's content shared with recipient)
+    expect(shared.length).toEqual(2);
+
+    const foundFolder = shared.find((c) =>
+      isEqualUUID(c.contentId, sharedFolderId),
+    );
+    expect(foundFolder).toBeDefined();
+
+    // shared entries should include owner details but not owner's email
+    if (foundFolder) {
+      expect(foundFolder.owner).toHaveProperty("userId");
+      expect(foundFolder.owner).toHaveProperty("firstNames");
+      expect(foundFolder.owner).toHaveProperty("lastNames");
+      // owner details returned to viewer should not include email
+      // (the owner object in shared results uses includeOwnerDetails which omits email)
+      expect(foundFolder.owner).not.toHaveProperty("email");
+    }
+
+    const foundDoc = shared.find((c) => isEqualUUID(c.contentId, docId));
+    expect(foundDoc).toBeDefined();
+
+    // shared entries should include owner details but not owner's email
+    if (foundDoc) {
+      expect(foundDoc.owner).toHaveProperty("userId");
+      expect(foundDoc.owner).toHaveProperty("firstNames");
+      expect(foundDoc.owner).toHaveProperty("lastNames");
+      // owner details returned to viewer should not include email
+      // (the owner object in shared results uses includeOwnerDetails which omits email)
+      expect(foundDoc.owner).not.toHaveProperty("email");
+    }
   });
 });
