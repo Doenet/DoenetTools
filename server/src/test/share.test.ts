@@ -1625,9 +1625,9 @@ describe("Share tests", () => {
     console.log(shared);
 
     // Should include at least the folder (owner's content shared with recipient)
-    expect(shared.length).toEqual(2);
+    expect(shared.content.length).toEqual(2);
 
-    const foundFolder = shared.find((c) =>
+    const foundFolder = shared.content.find((c) =>
       isEqualUUID(c.contentId, sharedFolderId),
     );
     expect(foundFolder).toBeDefined();
@@ -1642,7 +1642,9 @@ describe("Share tests", () => {
       expect(foundFolder.owner).not.toHaveProperty("email");
     }
 
-    const foundDoc = shared.find((c) => isEqualUUID(c.contentId, docId));
+    const foundDoc = shared.content.find((c) =>
+      isEqualUUID(c.contentId, docId),
+    );
     expect(foundDoc).toBeDefined();
 
     // shared entries should include owner details but not owner's email
