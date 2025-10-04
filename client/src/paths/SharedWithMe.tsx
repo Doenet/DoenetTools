@@ -16,13 +16,14 @@ import { CardContent } from "../widgets/Card";
 import CardList from "../widgets/CardList";
 import axios from "axios";
 import { ContentDescription, Content } from "../types";
-import { getIconInfo, menuIcons } from "../utils/activity";
+import { menuIcons } from "../utils/activity";
 import { AddContentToMenu } from "../popups/AddContentToMenu";
 import { CreateContentMenu } from "../dropdowns/CreateContentMenu";
 import { CopyContentAndReportFinish } from "../popups/CopyContentAndReportFinish";
 import { SiteContext } from "./SiteHeader";
 import { formatAssignmentBlurb } from "../utils/assignment";
 import { EditableName } from "../widgets/EditableName";
+import { BsPeople } from "react-icons/bs";
 
 export async function loader() {
   const { data: results } = await axios.get(`/api/contentList/getSharedWithMe`);
@@ -69,24 +70,18 @@ export function SharedWithMe() {
 
   const fetcher = useFetcher();
 
-  const { iconImage: folderIcon, iconColor: folderColor } = getIconInfo(
-    "folder",
-    false,
-  );
-  const parentName = parent?.name ?? "My Activities";
-
   const titleIcon = (
-    <Tooltip label={parentName}>
+    <Tooltip label={"Shared with me"}>
       <Box>
         <Icon
-          as={folderIcon}
-          color={folderColor}
+          as={BsPeople}
+          color="#666699"
           boxSizing="content-box"
           width="24px"
           height="24px"
           mr="0.5rem"
           verticalAlign="middle"
-          aria-label={"Folder"}
+          aria-label={"Shared with me"}
         />
       </Box>
     </Tooltip>
@@ -101,19 +96,6 @@ export function SharedWithMe() {
       isFolderView={true}
     />
   );
-
-  // const moveCopyContentModal = (
-  //   <MoveCopyContent
-  //     isOpen={moveCopyContentIsOpen}
-  //     onClose={moveCopyContentOnClose}
-  //     sourceContent={[moveCopyData]}
-  //     userId={userId}
-  //     currentParentId={parentId}
-  //     finalFocusRef={finalFocusRef}
-  //     allowedParentTypes={getAllowedParentTypes([moveCopyData.type])}
-  //     action="Move"
-  //   />
-  // );
 
   const {
     isOpen: copyDialogIsOpen,
