@@ -20,18 +20,19 @@ export function EditableName({
   contentName,
   leftIcon,
   dataTest,
-  widthLargeScreen = "20rem",
-  widthBaseScreen = "100%",
+  overrideMaxWidth,
   isFolderView = false,
 }: {
   contentId: string | null;
   contentName: string;
   leftIcon: ReactElement;
   dataTest: string;
-  widthLargeScreen?: string;
-  widthBaseScreen?: string;
+  overrideMaxWidth?: string;
   isFolderView?: boolean;
 }) {
+  const maxWidth = overrideMaxWidth ?? "20rem";
+  const width = "100%";
+
   const [name, setName] = useState(contentName);
   const fetcher = useFetcher();
 
@@ -51,10 +52,7 @@ export function EditableName({
   if (contentId === null) {
     // Read-only header for root folder: icon sits inside the title box (non-editable)
     return (
-      <Box
-        position="relative"
-        width={{ base: widthBaseScreen, lg: widthLargeScreen }}
-      >
+      <Box position="relative" maxWidth={maxWidth} width={width}>
         <Show above="md">
           <Box
             position="absolute"
@@ -84,10 +82,7 @@ export function EditableName({
   }
 
   return (
-    <Box
-      position="relative"
-      width={{ base: widthBaseScreen, lg: widthLargeScreen }}
-    >
+    <Box position="relative" maxWidth={maxWidth} width={width}>
       <Show above="md">
         <Box
           position="absolute"
@@ -105,7 +100,8 @@ export function EditableName({
       <Editable
         data-test={dataTest}
         value={name}
-        width={{ base: widthBaseScreen, lg: widthLargeScreen }}
+        width={width}
+        maxWidth={maxWidth}
         fontWeight="bold"
         fontSize={isFolderView ? "xl" : undefined}
         textAlign="left"

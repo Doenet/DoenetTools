@@ -523,76 +523,80 @@ export function Activities() {
   const heading = (
     <Flex
       justify="flex-start"
-      align={["left", "center"]}
+      align={{ base: "left", md: "center" }}
+      flexDirection={{ base: "column", md: "row" }}
       pt="30px"
       pb="30px"
-      flexDir="row"
       gap="5px"
     >
       {headingText}
-      <Form>
-        <HStack>
-          <Input
-            type="search"
-            size="sm"
-            colorScheme="blue"
-            width={{ base: "5rem", md: "10rem", lg: "200px" }}
-            ref={searchRef}
-            placeholder={parent ? `Search in folder` : `Search my activities`}
-            value={searchString}
-            name="q"
-            onInput={(e) => {
-              setSearchString((e.target as HTMLInputElement).value);
-            }}
-            onBlur={() => {
-              searchBlurTimeout.current = setTimeout(() => {
-                setFocusSearch(false);
-              }, 200);
-            }}
-          />
-          <Tooltip
-            label={parent ? `Search in folder` : `Search my activities`}
-            placement="bottom-end"
-          >
-            <IconButton
+      <HStack>
+        <Form>
+          <HStack>
+            <Input
+              type="search"
               size="sm"
               colorScheme="blue"
-              icon={<MdOutlineSearch />}
-              aria-label={parent ? `Search in folder` : `Search my activities`}
-              type="submit"
-              onClick={(e) => {
-                if (focusSearch) {
-                  clearTimeout(searchBlurTimeout.current);
-                  searchRef.current?.focus();
-                } else {
-                  setFocusSearch(true);
-                }
-                if (!searchOpen) {
-                  e.preventDefault();
-                }
+              width={{ base: "5rem", md: "10rem", lg: "200px" }}
+              ref={searchRef}
+              placeholder={parent ? `Search in folder` : `Search my activities`}
+              value={searchString}
+              name="q"
+              onInput={(e) => {
+                setSearchString((e.target as HTMLInputElement).value);
+              }}
+              onBlur={() => {
+                searchBlurTimeout.current = setTimeout(() => {
+                  setFocusSearch(false);
+                }, 200);
               }}
             />
-          </Tooltip>
-        </HStack>
-      </Form>
+            <Tooltip
+              label={parent ? `Search in folder` : `Search my activities`}
+              placement="bottom-end"
+            >
+              <IconButton
+                size="sm"
+                colorScheme="blue"
+                icon={<MdOutlineSearch />}
+                aria-label={
+                  parent ? `Search in folder` : `Search my activities`
+                }
+                type="submit"
+                onClick={(e) => {
+                  if (focusSearch) {
+                    clearTimeout(searchBlurTimeout.current);
+                    searchRef.current?.focus();
+                  } else {
+                    setFocusSearch(true);
+                  }
+                  if (!searchOpen) {
+                    e.preventDefault();
+                  }
+                }}
+              />
+            </Tooltip>
+          </HStack>
+        </Form>
 
-      <HStack gap="5px">
-        {parent && (
-          <Button size="sm" colorScheme="blue" onClick={shareFolderOnOpen}>
-            Share
+        <HStack gap="5px">
+          {parent && (
+            <Button size="sm" colorScheme="blue" onClick={shareFolderOnOpen}>
+              Share
+            </Button>
+          )}
+          <Button
+            colorScheme="blue"
+            size="sm"
+            onClick={() =>
+              navigate(`/allAssignmentScores${parentId ? "/" + parentId : ""}`)
+            }
+          >
+            Scores
           </Button>
-        )}
-        <Button
-          colorScheme="blue"
-          size="sm"
-          onClick={() =>
-            navigate(`/allAssignmentScores${parentId ? "/" + parentId : ""}`)
-          }
-        >
-          Scores
-        </Button>
 
-        {createNewButton}
+          {createNewButton}
+        </HStack>
       </HStack>
     </Flex>
   );
@@ -753,8 +757,8 @@ export function Activities() {
       data-test="Activities"
       width="100%"
       background={"white"}
-      ml={["0px", "20px"]}
-      mr={["0px", "20px"]}
+      ml={{ base: "0px", md: "20px" }}
+      mr={{ base: "0px", md: "20px" }}
     >
       {moveCopyContentModal}
       {createFolderModal}

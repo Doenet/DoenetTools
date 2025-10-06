@@ -55,6 +55,7 @@ export function Trash() {
       leftIcon={titleIcon}
       dataTest="Trash Heading"
       isFolderView={true}
+      overrideMaxWidth="10rem"
     />
   );
 
@@ -118,8 +119,8 @@ export function Trash() {
       data-test="Activities"
       width="100%"
       background={"white"}
-      ml={["0px", "20px"]}
-      mr={["0px", "20px"]}
+      ml={{ base: "0px", md: "20px" }}
+      mr={{ base: "0px", md: "20px" }}
     >
       {heading}
       {mainPanel}

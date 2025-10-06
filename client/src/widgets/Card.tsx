@@ -219,7 +219,10 @@ export default function Card({
   const sharedIcon =
     showPublicStatus &&
     (isPublic || isShared ? (
-      <Tooltip label={(isPublic ? "Public " : "Shared ") + contentTypeName}>
+      <Tooltip
+        openDelay={300}
+        label={(isPublic ? "Public " : "Shared ") + contentTypeName}
+      >
         <Flex alignItems="center" marginLeft={sharedIconMarginLeft}>
           <Icon
             as={BsPeople}

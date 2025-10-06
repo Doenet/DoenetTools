@@ -17,12 +17,12 @@ export function FolderContext() {
 
   const sidePanel = (
     <Flex
-      minWidth={{ base: "100%", md: "8rem", xl: "15rem" }}
-      maxWidth={{ base: "100%", md: "8rem", xl: "15rem" }}
+      minWidth={{ base: "100%", md: "8rem", lg: "12rem" }}
+      maxWidth={{ base: "100%", md: "8rem", lg: "12rem" }}
       flexShrink={0}
       align="flex-start"
       borderRight={{ base: "none", md: "solid 2px black" }}
-      p={{ base: "0px", xl: "30px" }}
+      p={{ base: "0px", xl: "10px" }}
       minHeight={{ base: "fit-content", md: "75vh" }}
       flexDir={{ base: "row", md: "column" }}
     >
