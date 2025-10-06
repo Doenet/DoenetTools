@@ -157,6 +157,7 @@ export default function Card({
   );
   const contentTypeIcon = (
     <Tooltip
+      openDelay={500}
       label={
         cardContent.content.assignmentInfo ? "Assignment" : contentTypeName
       }
@@ -234,7 +235,7 @@ export default function Card({
 
   // Title
   const titleBox = (
-    <Tooltip label={title} placement="bottom-start">
+    <Tooltip openDelay={500} label={title} placement="bottom-start">
       <Flex alignItems="center" flexGrow={1} width={titleWidth}>
         <Text paddingLeft={[".5rem", "1.5rem"]} flexGrow={3} noOfLines={1}>
           {title}

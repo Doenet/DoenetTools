@@ -17,15 +17,14 @@ export function FolderContext() {
 
   const sidePanel = (
     <Flex
-      minWidth={{ base: "100%", lg: "8rem", xl: "15rem" }}
-      maxWidth={{ base: "100%", lg: "8rem", xl: "15rem" }}
+      minWidth={{ base: "100%", md: "8rem", xl: "15rem" }}
+      maxWidth={{ base: "100%", md: "8rem", xl: "15rem" }}
       flexShrink={0}
       align="flex-start"
-      borderRight={["none", "solid 2px black"]}
+      borderRight={{ base: "none", md: "solid 2px black" }}
       p={{ base: "0px", xl: "30px" }}
-      // spacing="0.25rem"
-      minHeight={["fit-content", "75vh"]}
-      flexDir={["row", "column"]}
+      minHeight={{ base: "fit-content", md: "75vh" }}
+      flexDir={{ base: "row", md: "column" }}
     >
       <Button
         as={ReactRouterLink}
@@ -70,7 +69,11 @@ export function FolderContext() {
   );
 
   return (
-    <Flex align="flex-start" width="100%" flexDir={["column", "row"]}>
+    <Flex
+      align="flex-start"
+      width="100%"
+      flexDir={{ base: "column", md: "row" }}
+    >
       {sidePanel}
       <Outlet context={context} />
     </Flex>

@@ -40,7 +40,7 @@ import {
 } from "../types";
 import { MdClose, MdOutlineSearch } from "react-icons/md";
 import { FaPlus } from "react-icons/fa";
-import { IoIosFolderOpen } from "react-icons/io";
+import { LuDessert } from "react-icons/lu";
 
 import {
   getAllowedParentTypes,
@@ -335,7 +335,7 @@ export function Activities() {
     <Tooltip label={parentName}>
       <Box>
         <Icon
-          as={parent ? folderIcon : IoIosFolderOpen}
+          as={parent ? folderIcon : LuDessert}
           color={parent ? folderColor : "black"}
           boxSizing="content-box"
           width="24px"
@@ -526,52 +526,54 @@ export function Activities() {
       align={["left", "center"]}
       pt="30px"
       pb="30px"
-      flexDir={["column", "row"]}
+      flexDir="row"
       gap="5px"
     >
       {headingText}
       <Form>
-        <Input
-          type="search"
-          size="sm"
-          colorScheme="blue"
-          width="200px"
-          ref={searchRef}
-          placeholder={parent ? `Search in folder` : `Search my activities`}
-          value={searchString}
-          name="q"
-          onInput={(e) => {
-            setSearchString((e.target as HTMLInputElement).value);
-          }}
-          onBlur={() => {
-            searchBlurTimeout.current = setTimeout(() => {
-              setFocusSearch(false);
-            }, 200);
-          }}
-        />
-        <Tooltip
-          label={parent ? `Search in folder` : `Search my activities`}
-          placement="bottom-end"
-        >
-          <IconButton
+        <HStack>
+          <Input
+            type="search"
             size="sm"
             colorScheme="blue"
-            icon={<MdOutlineSearch />}
-            aria-label={parent ? `Search in folder` : `Search my activities`}
-            type="submit"
-            onClick={(e) => {
-              if (focusSearch) {
-                clearTimeout(searchBlurTimeout.current);
-                searchRef.current?.focus();
-              } else {
-                setFocusSearch(true);
-              }
-              if (!searchOpen) {
-                e.preventDefault();
-              }
+            width={{ base: "5rem", md: "10rem", lg: "200px" }}
+            ref={searchRef}
+            placeholder={parent ? `Search in folder` : `Search my activities`}
+            value={searchString}
+            name="q"
+            onInput={(e) => {
+              setSearchString((e.target as HTMLInputElement).value);
+            }}
+            onBlur={() => {
+              searchBlurTimeout.current = setTimeout(() => {
+                setFocusSearch(false);
+              }, 200);
             }}
           />
-        </Tooltip>
+          <Tooltip
+            label={parent ? `Search in folder` : `Search my activities`}
+            placement="bottom-end"
+          >
+            <IconButton
+              size="sm"
+              colorScheme="blue"
+              icon={<MdOutlineSearch />}
+              aria-label={parent ? `Search in folder` : `Search my activities`}
+              type="submit"
+              onClick={(e) => {
+                if (focusSearch) {
+                  clearTimeout(searchBlurTimeout.current);
+                  searchRef.current?.focus();
+                } else {
+                  setFocusSearch(true);
+                }
+                if (!searchOpen) {
+                  e.preventDefault();
+                }
+              }}
+            />
+          </Tooltip>
+        </HStack>
       </Form>
 
       <HStack gap="5px">

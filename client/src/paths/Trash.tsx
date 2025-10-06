@@ -8,7 +8,7 @@ import axios from "axios";
 import {} from "../popups/MoveCopyContent";
 import { DateTime } from "luxon";
 import { Content } from "../types";
-import { FaTrash } from "react-icons/fa";
+import { LuTrash2 } from "react-icons/lu";
 import { EditableName } from "../widgets/EditableName";
 
 export async function loader() {
@@ -36,8 +36,7 @@ export function Trash() {
     <Tooltip label={"My Trash"}>
       <Box>
         <Icon
-          as={FaTrash}
-          // color={folderColor}
+          as={LuTrash2}
           boxSizing="content-box"
           width="24px"
           height="24px"
