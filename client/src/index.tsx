@@ -57,6 +57,7 @@ import {
 } from "./paths/StudentAssignmentScores";
 import { loader as trashLoader, Trash } from "./paths/Trash";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+import { FolderContext } from "./paths/FolderContext";
 
 import ErrorPage from "./paths/ErrorPage";
 
@@ -120,6 +121,10 @@ import {
   EditorLibraryMode,
   loader as editorLibraryModeLoader,
 } from "./paths/editor/EditorLibraryMode";
+import {
+  SharedWithMe,
+  loader as sharedWithMeLoader,
+} from "./paths/SharedWithMe";
 import { editorUrl } from "./utils/url";
 
 const theme = extendTheme({
@@ -221,18 +226,38 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "activities/:userId/:parentId?",
-        loader: activitiesLoader,
-        action: genericAction,
-        element: <Activities />,
+        path: "",
+        element: <FolderContext />,
         errorElement: <ErrorPage />,
-      },
-      {
-        path: "trash",
-        loader: trashLoader,
-        action: genericAction,
-        element: <Trash />,
-        errorElement: <ErrorPage />,
+        children: [
+          {
+            path: "activities/:userId/:parentId?",
+            loader: activitiesLoader,
+            action: genericAction,
+            element: <Activities />,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "sharedWithMe/:userId",
+            loader: sharedWithMeLoader,
+            action: genericAction,
+            element: <SharedWithMe />,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "trash",
+            loader: trashLoader,
+            action: genericAction,
+            element: <Trash />,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "allAssignmentScores/:parentId?",
+            loader: allAssignmentScoresLoader,
+            element: <AllAssignmentScores />,
+            errorElement: <ErrorPage />,
+          },
+        ],
       },
       {
         path: "sharedActivities/:ownerId/:parentId?",
@@ -376,12 +401,6 @@ const router = createBrowserRouter([
         path: "assignmentData/:contentId/:studentUserId",
         loader: assignmentResponseStudentLoader,
         element: <AssignmentResponseStudent />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "allAssignmentScores/:parentId?",
-        loader: allAssignmentScoresLoader,
-        element: <AllAssignmentScores />,
         errorElement: <ErrorPage />,
       },
       {

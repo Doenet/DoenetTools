@@ -9,13 +9,15 @@ import { getContent } from "../query/activity_edit_view";
 import { getMyContent } from "../query/content_list";
 import { moveContent } from "../query/copy_move";
 import { updateUser } from "../query/user";
-import { createTestUser } from "./utils";
+import { createTestUser, setupTestContent, doc } from "./utils";
 import {
   setContentLicense,
   getLicense,
   getAllLicenses,
 } from "../query/license";
 import { getEditorSettings, getEditorShareStatus } from "../query/editor";
+import { getSharedWithMe } from "../query/content_list";
+import { isEqualUUID } from "../utils/uuid";
 
 describe("Share tests", () => {
   test("content in public folder is created as public", async () => {
@@ -1589,5 +1591,145 @@ describe("Share tests", () => {
     expect(fullLicense.composedOf[1].imageURL).eq(
       "/creative_commons_by_nc_sa.png",
     );
+  });
+
+  test("can see all content shared with me by email", async () => {
+    const owner = await createTestUser();
+    const ownerId = owner.userId;
+
+    const recipient = await createTestUser();
+    const recipientId = recipient.userId;
+
+    // create some content and share with recipient by email
+    const { contentId: sharedFolderId } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "folder",
+      parentId: null,
+    });
+
+    const { contentId: docId } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "singleDoc",
+      parentId: sharedFolderId,
+    });
+
+    await shareContentWithEmail({
+      contentId: sharedFolderId,
+      loggedInUserId: ownerId,
+      email: recipient.email,
+    });
+
+    // get content shared with recipient
+    const shared = await getSharedWithMe({ loggedInUserId: recipientId });
+
+    console.log(shared);
+
+    // Should include at least the folder (owner's content shared with recipient)
+    expect(shared.content.length).toEqual(2);
+
+    const foundFolder = shared.content.find((c) =>
+      isEqualUUID(c.contentId, sharedFolderId),
+    );
+    expect(foundFolder).toBeDefined();
+
+    // shared entries should include owner details but not owner's email
+    if (foundFolder) {
+      expect(foundFolder.owner).toHaveProperty("userId");
+      expect(foundFolder.owner).toHaveProperty("firstNames");
+      expect(foundFolder.owner).toHaveProperty("lastNames");
+      // owner details returned to viewer should not include email
+      // (the owner object in shared results uses includeOwnerDetails which omits email)
+      expect(foundFolder.owner).not.toHaveProperty("email");
+    }
+
+    const foundDoc = shared.content.find((c) =>
+      isEqualUUID(c.contentId, docId),
+    );
+    expect(foundDoc).toBeDefined();
+
+    // shared entries should include owner details but not owner's email
+    if (foundDoc) {
+      expect(foundDoc.owner).toHaveProperty("userId");
+      expect(foundDoc.owner).toHaveProperty("firstNames");
+      expect(foundDoc.owner).toHaveProperty("lastNames");
+      // owner details returned to viewer should not include email
+      // (the owner object in shared results uses includeOwnerDetails which omits email)
+      expect(foundDoc.owner).not.toHaveProperty("email");
+    }
+  });
+
+  test("content shared with me is correctly ordered by share date", async () => {
+    const { userId: ownerId } = await createTestUser();
+    const recipient = await createTestUser();
+    const recipientId = recipient.userId;
+
+    // create three top-level items using setupTestContent helper
+    const [c1, c2, c3] = await setupTestContent(ownerId, {
+      doc1: doc(""),
+      doc2: doc(""),
+      doc3: doc(""),
+    });
+
+    const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+    // share in order c1, c2, c3 with small delays so sharedOn differs
+    await shareContentWithEmail({
+      contentId: c1,
+      loggedInUserId: ownerId,
+      email: recipient.email,
+    });
+    await sleep(25);
+    await shareContentWithEmail({
+      contentId: c2,
+      loggedInUserId: ownerId,
+      email: recipient.email,
+    });
+    await sleep(25);
+    await shareContentWithEmail({
+      contentId: c3,
+      loggedInUserId: ownerId,
+      email: recipient.email,
+    });
+
+    const shared = await getSharedWithMe({ loggedInUserId: recipientId });
+
+    // Extract the contentIds in the order returned and find our three items
+    const returnedIds = shared.content.map((c) => c.contentId);
+
+    const idx1 = returnedIds.findIndex((id) => isEqualUUID(id, c1));
+    const idx2 = returnedIds.findIndex((id) => isEqualUUID(id, c2));
+    const idx3 = returnedIds.findIndex((id) => isEqualUUID(id, c3));
+
+    // All should be present
+    expect(idx1).toBeGreaterThanOrEqual(0);
+    expect(idx2).toBeGreaterThanOrEqual(0);
+    expect(idx3).toBeGreaterThanOrEqual(0);
+
+    // Newest (c3) should appear before c2, which should appear before c1
+    expect(idx3).toBeLessThan(idx2);
+    expect(idx2).toBeLessThan(idx1);
+
+    // Now unshare c2 and then resharing it should make it the newest
+    await modifyContentSharedWith({
+      action: "unshare",
+      contentId: c2,
+      loggedInUserId: ownerId,
+      users: [recipientId],
+    });
+
+    // small pause to ensure timestamp changes
+    await sleep(25);
+
+    await shareContentWithEmail({
+      contentId: c2,
+      loggedInUserId: ownerId,
+      email: recipient.email,
+    });
+
+    const shared2 = await getSharedWithMe({ loggedInUserId: recipientId });
+    const returned2 = shared2.content.map((c) => c.contentId);
+    const newIdx2 = returned2.findIndex((id) => isEqualUUID(id, c2));
+    // c2 should now be at the top (newest)
+    expect(newIdx2).toBe(0);
   });
 });
