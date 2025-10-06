@@ -24,6 +24,7 @@ import { SiteContext } from "./SiteHeader";
 import { formatAssignmentBlurb } from "../utils/assignment";
 import { EditableName } from "../widgets/EditableName";
 import { BsPeople } from "react-icons/bs";
+import { createNameNoTag } from "../utils/names";
 
 export async function loader() {
   const { data: results } = await axios.get(`/api/contentList/getSharedWithMe`);
@@ -208,17 +209,20 @@ export function SharedWithMe() {
         ? `/sharedActivities/${activity.ownerId}/${activity.contentId}`
         : `/activityViewer/${activity.contentId}`;
 
+    const ownerName = createNameNoTag(activity.owner!);
+
     return {
       menuRef: getCardMenuRef,
       content: activity,
       blurb: formatAssignmentBlurb(activity),
+      ownerName,
       cardLink,
     };
   });
 
   const mainPanel = (
     <CardList
-      showOwnerName={false}
+      showOwnerName={true}
       showBlurb={true}
       showPublicStatus={true}
       showActivityCategories={true}
