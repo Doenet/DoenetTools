@@ -422,6 +422,7 @@ export async function getMyTrash({
 
 /**
  * Get content that others have shared with me specifically.
+ * Sorted by share date, starting with most recent share
  * @param param0
  */
 export async function getSharedWithMe({
@@ -429,18 +430,24 @@ export async function getSharedWithMe({
 }: {
   loggedInUserId: Uint8Array;
 }) {
-  const preliminaryContent = await prisma.content.findMany({
+  // Fetch the share timestamps for these content items for the logged in user
+  const shares = await prisma.contentShares.findMany({
     where: {
-      ...filterViewableContent(loggedInUserId),
-      sharedWith: { some: { userId: loggedInUserId } },
+      userId: loggedInUserId,
+      content: filterViewableContent(loggedInUserId),
     },
-    select: returnContentSelect({ includeOwnerDetails: true }),
+    select: {
+      content: {
+        select: returnContentSelect({ includeOwnerDetails: true }),
+      },
+    },
+    orderBy: { sharedOn: "desc" },
   });
 
-  const sharedWithMeContent = preliminaryContent.map((content) =>
+  const sharedWithMeContent = shares.map((share) => {
     //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
-    processContent(content, loggedInUserId),
-  );
+    return processContent(share.content, loggedInUserId);
+  });
 
   return { content: sharedWithMeContent };
 }
