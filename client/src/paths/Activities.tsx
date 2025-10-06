@@ -532,7 +532,7 @@ export function Activities() {
       {headingText}
       <HStack>
         <Form>
-          <HStack>
+          <HStack gap="1px">
             <Input
               type="search"
               size="sm"
