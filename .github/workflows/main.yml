@@ -5,7 +5,6 @@ name: Connect to an AWS role from a GitHub repository
 on:
   push:
     branches: [main]
-  workflow_dispatch:
 
 env:
   AWS_REGION: "us-east-2"
