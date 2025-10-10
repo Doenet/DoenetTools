@@ -1,7 +1,7 @@
 FROM node:lts-trixie
 WORKDIR /DoenetTools/server
 
-COPY . .
+COPY dist ./dist
 
 EXPOSE 3000
 
