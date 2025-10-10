@@ -8,6 +8,8 @@ on:
 
 env:
   AWS_REGION: "us-east-2"
+  WORKING_DIR: ./server
+  ECR_REPOSITORY: doenet/dev
 
 # Permission can be added at job level or workflow level
 permissions:
@@ -19,6 +21,7 @@ jobs:
     steps:
       - name: Git clone the repository
         uses: actions/checkout@v3
+
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v5
         with:
@@ -27,7 +30,35 @@ jobs:
           role-skip-session-tagging: true
           # role-session-name: GitHub_to_AWS_via_FederatedOIDC
           aws-region: ${{ env.AWS_REGION }}
+
       # Hello from AWS: WhoAmI
       - name: Sts GetCallerIdentity
         run: |
           aws sts get-caller-identity
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: image tag
+        id: vars
+        shell: bash
+        run: |
+          sha_short=$(git rev-parse --short HEAD)
+          date_string=$(date +%Y-%m-%d-%H-%M-%S)
+          tag=${date_string}-${sha_short}
+          echo "tag=$tag" >> $GITHUB_OUTPUT
+
+      - name: Build and push
+        id: build-and-push
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ env.WORKING_DIR }}
+          platforms: linux/amd64
+          # build-args: ${{ inputs.build-args }}
+          push: true
+          tags: |
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ steps.vars.outputs.tag }}
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+          cache-from: type=registry,ref=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+          cache-to: type=inline
