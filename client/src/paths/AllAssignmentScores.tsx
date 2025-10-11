@@ -21,7 +21,7 @@ import axios from "axios";
 import { lastNameFirst } from "../utils/names";
 import { downloadScoresToCsv } from "../utils/scores";
 import { getIconInfo } from "../utils/activity";
-import { EditableName } from "../widgets/EditableName";
+import { NameBar } from "../widgets/NameBar";
 
 type AssignmentScore = {
   contentId: string;
@@ -177,12 +177,13 @@ export function AllAssignmentScores() {
   return (
     <Box flex="1" width="100%" pt="30px" pb="30px" paddingLeft="15px">
       <Wrap align="center" spacing="1rem" mb="20px">
-        <EditableName
+        <NameBar
           contentId={null}
           contentName={name + " -- Scores"}
+          isEditable={false}
           leftIcon={icon}
           dataTest="Scores Heading"
-          isFolderView={true}
+          fontSizeMode="folder"
         />
 
         <Button colorScheme="blue" size="sm" onClick={downloadScores}>

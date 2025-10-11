@@ -11,24 +11,24 @@ import { useFetcher } from "react-router";
 import "../utils/editor-header.css";
 
 /**
- * This is separate as <Editable> wasn't updating when defaultValue was changed
- *
- * If the contentId is null, this name won't be editable
+ * Component to display the title of content, optionally editable
  */
-export function EditableName({
+export function NameBar({
   contentId,
   contentName,
+  isEditable = true,
   leftIcon,
   dataTest,
   overrideMaxWidth,
-  isFolderView = false,
+  fontSizeMode = "editor",
 }: {
   contentId: string | null;
+  isEditable?: boolean;
   contentName: string;
   leftIcon: ReactElement;
   dataTest: string;
   overrideMaxWidth?: string;
-  isFolderView?: boolean;
+  fontSizeMode?: "editor" | "folder";
 }) {
   const maxWidth = overrideMaxWidth ?? "20rem";
   const width = "100%";
@@ -46,10 +46,9 @@ export function EditableName({
   }
   lastBaseDataName.current = contentName;
 
-  // Special case: My Activities root folder
-  // A null content id means we're at top-level folder, "My Activities"
+  // Special case: My Activities root folder or Trash
   // We can't edit the name of that, so just show read-only text
-  if (contentId === null) {
+  if (isEditable === false) {
     // Read-only header for root folder: icon sits inside the title box (non-editable)
     return (
       <Box position="relative" maxWidth={maxWidth} width={width}>
@@ -69,7 +68,7 @@ export function EditableName({
         <Text
           data-test={dataTest}
           fontWeight="bold"
-          fontSize={isFolderView ? "xl" : undefined}
+          fontSize={fontSizeMode === "folder" ? "xl" : undefined}
           noOfLines={1}
           lineHeight="1.2"
           pl={{ base: "0rem", md: "2.5rem" }}
@@ -103,7 +102,7 @@ export function EditableName({
         width={width}
         maxWidth={maxWidth}
         fontWeight="bold"
-        fontSize={isFolderView ? "xl" : undefined}
+        fontSize={fontSizeMode === "folder" ? "xl" : undefined}
         textAlign="left"
         onChange={(value) => {
           setName(value);

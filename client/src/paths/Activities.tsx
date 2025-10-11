@@ -57,7 +57,7 @@ import { ActivateAuthorMode } from "../popups/ActivateAuthorMode";
 import { formatAssignmentBlurb } from "../utils/assignment";
 import { editorUrl } from "../utils/url";
 import { ShareMyContentModal } from "../popups/ShareMyContentModal";
-import { EditableName } from "../widgets/EditableName";
+import { NameBar } from "../widgets/NameBar";
 
 export async function loader({ params, request }: any) {
   const url = new URL(request.url);
@@ -349,12 +349,13 @@ export function Activities() {
   );
 
   const headingText = (
-    <EditableName
-      contentId={parentId}
+    <NameBar
       contentName={parentName}
+      isEditable={parent !== null}
+      contentId={parentId}
       leftIcon={titleIcon}
       dataTest="Folder Title"
-      isFolderView={true}
+      fontSizeMode={"folder"}
     />
   );
 

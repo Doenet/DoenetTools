@@ -9,7 +9,7 @@ import {} from "../popups/MoveCopyContent";
 import { DateTime } from "luxon";
 import { Content } from "../types";
 import { LuTrash2 } from "react-icons/lu";
-import { EditableName } from "../widgets/EditableName";
+import { NameBar } from "../widgets/NameBar";
 
 export async function loader() {
   const { data: results } = await axios.get(`/api/contentList/getMyTrash`);
@@ -49,12 +49,13 @@ export function Trash() {
   );
 
   const headingText = (
-    <EditableName
-      contentId={null}
+    <NameBar
       contentName={"Trash"}
+      isEditable={false}
+      contentId={null}
       leftIcon={titleIcon}
       dataTest="Trash Heading"
-      isFolderView={true}
+      fontSizeMode={"folder"}
       overrideMaxWidth="10rem"
     />
   );
