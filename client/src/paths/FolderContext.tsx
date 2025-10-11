@@ -1,4 +1,4 @@
-import { Button, Flex } from "@chakra-ui/react";
+import { Box, Button, Flex } from "@chakra-ui/react";
 import React from "react";
 import { Outlet, useLocation, useOutletContext } from "react-router";
 import { Link as ReactRouterLink } from "react-router";
@@ -6,7 +6,7 @@ import { SiteContext } from "./SiteHeader";
 import { Text } from "@chakra-ui/react";
 
 /**
- * This is the header bar for the editor. All tabs/sub-pages in the editor use its context `EditorContext`. It works for both `/documentEditor` and `/compoundEditor`.
+ * Layout for folder views, with side panel for navigation
  */
 export function FolderContext() {
   const context = useOutletContext<SiteContext>();
@@ -17,13 +17,12 @@ export function FolderContext() {
 
   const sidePanel = (
     <Flex
-      minWidth={{ base: "100%", md: "8rem", lg: "12rem" }}
-      maxWidth={{ base: "100%", md: "8rem", lg: "12rem" }}
+      width={{ base: "100%", md: "8rem", lg: "12rem" }}
       flexShrink={0}
       align="flex-start"
       borderRight={{ base: "none", md: "solid 2px black" }}
       p={{ base: "0px", xl: "10px" }}
-      minHeight={{ base: "fit-content", md: "75vh" }}
+      minHeight={{ base: "fit-content", md: "100%" }}
       flexDir={{ base: "row", md: "column" }}
     >
       <Button
@@ -41,6 +40,7 @@ export function FolderContext() {
             : { backgroundColor: "gray.50" }
         }
         borderLeftWidth={isActivitiesActive ? "4px" : "0"}
+        marginLeft={isActivitiesActive ? "0" : "4px"}
         borderLeftColor={isActivitiesActive ? "doenet.mainBlue" : "transparent"}
         aria-current={isActivitiesActive ? "page" : undefined}
       >
@@ -60,10 +60,11 @@ export function FolderContext() {
             : { backgroundColor: "gray.50" }
         }
         borderLeftWidth={isTrashActive ? "4px" : "0"}
+        marginLeft={isTrashActive ? "0" : "4px"}
         borderLeftColor={isTrashActive ? "doenet.mainBlue" : "transparent"}
         aria-current={isTrashActive ? "page" : undefined}
       >
-        <Text fontSize="large">My Trash</Text>
+        <Text fontSize="large">Trash</Text>
       </Button>
     </Flex>
   );
@@ -71,11 +72,23 @@ export function FolderContext() {
   return (
     <Flex
       align="flex-start"
+      overflowY="hidden"
+      height="100%"
       width="100%"
       flexDir={{ base: "column", md: "row" }}
     >
       {sidePanel}
-      <Outlet context={context} />
+      <Box
+        width={{
+          base: "100%",
+          md: "calc(100% - 8rem)",
+          lg: "calc(100% - 12rem)",
+        }}
+        height="100%"
+        overflowY="auto"
+      >
+        <Outlet context={context} />
+      </Box>
     </Flex>
   );
 }

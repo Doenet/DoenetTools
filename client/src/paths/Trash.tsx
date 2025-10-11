@@ -27,13 +27,13 @@ export function Trash() {
   };
 
   useEffect(() => {
-    document.title = `My Trash - Doenet`;
+    document.title = `Trash - Doenet`;
   }, []);
 
   const fetcher = useFetcher();
 
   const titleIcon = (
-    <Tooltip label={"My Trash"}>
+    <Tooltip label={"Trash"}>
       <Box>
         <Icon
           as={LuTrash2}
@@ -42,7 +42,7 @@ export function Trash() {
           height="24px"
           mr="0.5rem"
           verticalAlign="middle"
-          aria-label={"My Trash"}
+          aria-label={"Trash"}
         />
       </Box>
     </Tooltip>
@@ -51,7 +51,7 @@ export function Trash() {
   const headingText = (
     <EditableName
       contentId={null}
-      contentName={"My Trash"}
+      contentName={"Trash"}
       leftIcon={titleIcon}
       dataTest="Trash Heading"
       isFolderView={true}
@@ -117,7 +117,7 @@ export function Trash() {
   return (
     <Box
       data-test="Activities"
-      width="100%"
+      width={{ base: "100%", md: "calc(100% - 40px)" }}
       background={"white"}
       ml={{ base: "0px", md: "20px" }}
       mr={{ base: "0px", md: "20px" }}

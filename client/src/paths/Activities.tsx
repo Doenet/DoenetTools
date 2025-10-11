@@ -755,7 +755,7 @@ export function Activities() {
   return (
     <Box
       data-test="Activities"
-      width="100%"
+      width={{ base: "100%", md: "calc(100% - 40px)" }}
       background={"white"}
       ml={{ base: "0px", md: "20px" }}
       mr={{ base: "0px", md: "20px" }}
