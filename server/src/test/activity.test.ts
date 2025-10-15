@@ -1377,6 +1377,7 @@ test("getContentDescription gets correct fields", async () => {
     parent: null,
     grandparentId: null,
     grandparentName: null,
+    hasBadVersion: false,
   });
 
   expect(
@@ -1391,6 +1392,7 @@ test("getContentDescription gets correct fields", async () => {
     parent: { type: "folder", contentId: folderId, name: "folder 1" },
     grandparentId: null,
     grandparentName: null,
+    hasBadVersion: false,
   });
 
   const expectedDoc = {
@@ -1404,6 +1406,7 @@ test("getContentDescription gets correct fields", async () => {
     },
     grandparentId: folderId,
     grandparentName: "folder 1",
+    hasBadVersion: false,
   };
 
   expect(
