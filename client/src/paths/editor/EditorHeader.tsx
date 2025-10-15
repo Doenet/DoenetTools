@@ -48,7 +48,7 @@ import { ShareMyContentModal } from "../../popups/ShareMyContentModal";
 import { NotificationDot } from "../../widgets/NotificationDot";
 import { LibraryEditorControls } from "../../widgets/editor/LibraryEditorControls";
 import { editorUrl } from "../../utils/url";
-import { EditableName } from "../../widgets/EditableName";
+import { NameBar } from "../../widgets/NameBar";
 import "../../utils/editor-header.css";
 
 export async function loader({
@@ -341,7 +341,7 @@ export function EditorHeader() {
   );
 
   const editableName = (
-    <EditableName
+    <NameBar
       contentId={contentId}
       contentName={contentName}
       leftIcon={typeIcon}
