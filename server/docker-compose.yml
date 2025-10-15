@@ -1,0 +1,45 @@
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: mydatabase
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      DB_HOST: mysql
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_NAME: mydatabase
+    depends_on:
+      - mysql
+
+  seed:
+    build:
+      context: ./
+      dockerfile: ./prisma/Dockerfile
+    depends_on:
+      - mysql
+    environment:
+      DB_HOST: mysql
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_NAME: mydatabase
+    profiles: ["seed"]
+    # The 'command' can be used to explicitly run your seed script
+    # command: node seed.js
+    # The 'restart: "no"' ensures the container does not restart after completion
+    restart: "no"
+    command: ["npx", "prisma", "db", "seed"]
+
+volumes:
+  mysql_data:
