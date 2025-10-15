@@ -7,6 +7,7 @@ import {
   getMyContent,
   getMyTrash,
   getSharedContent,
+  getSharedWithMe,
   searchMyContent,
 } from "../query/content_list";
 import {
@@ -33,3 +34,8 @@ contentListRouter.get(
 );
 
 contentListRouter.get("/getMyTrash", queryLoggedIn(getMyTrash, z.object({})));
+
+contentListRouter.get(
+  "/getSharedWithMe",
+  queryLoggedIn(getSharedWithMe, z.object({})),
+);

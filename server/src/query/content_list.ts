@@ -2,6 +2,7 @@ import { getLibraryAccountId, getMultipleLibraryRelations } from "./curate";
 import { prisma } from "../model";
 import {
   filterEditableContent,
+  filterViewableContent,
   getEarliestRecoverableDate,
   mustBeEditor,
 } from "../utils/permissions";
@@ -279,6 +280,9 @@ export async function searchMyContentOrLibraryContent({
   };
 }
 
+/**
+ * Get specific folder owned by someone else but shared either publicly or specifically with logged in user.
+ */
 export async function getSharedContent({
   ownerId,
   parentId,
@@ -414,4 +418,36 @@ export async function getMyTrash({
   );
 
   return { deletionDates, content };
+}
+
+/**
+ * Get content that others have shared with me specifically.
+ * Sorted by share date, starting with most recent share
+ * @param param0
+ */
+export async function getSharedWithMe({
+  loggedInUserId,
+}: {
+  loggedInUserId: Uint8Array;
+}) {
+  // Fetch the share timestamps for these content items for the logged in user
+  const shares = await prisma.contentShares.findMany({
+    where: {
+      userId: loggedInUserId,
+      content: filterViewableContent(loggedInUserId),
+    },
+    select: {
+      content: {
+        select: returnContentSelect({ includeOwnerDetails: true }),
+      },
+    },
+    orderBy: { sharedOn: "desc" },
+  });
+
+  const sharedWithMeContent = shares.map((share) => {
+    //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
+    return processContent(share.content, loggedInUserId);
+  });
+
+  return { content: sharedWithMeContent };
 }
