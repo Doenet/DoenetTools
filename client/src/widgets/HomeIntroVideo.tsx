@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { Box, Link, Show } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 
 const HPVideo = styled.video`
   width: 1200px;
@@ -18,36 +18,28 @@ const HPVideo = styled.video`
 
 export default function HomeIntroVideo() {
   return (
-    <Box overflow="hidden" width={["350px", "30vw", "30vw", "30vw"]}>
-      <Box
-        marginLeft={["-70px", "-300px", "-300px", "-300px"]}
-        overflow="hidden"
-        width={["500px", "100vw", "100vw", "100vw"]}
+    <Box
+      // marginLeft={["-70px", "-300px", "-300px", "-300px"]}
+      overflow="hidden"
+      // width={["500px", "100vw", "100vw", "100vw"]}
+      width="100%"
+      // height="300px"
+    >
+      <HPVideo
+        autoPlay={true}
+        // height='420px'
+        // fluid="false"
+        // src='/media/homepagevideo2.mp4'
+        loop
+        muted
+        playsInline
+        // alt="Demonstration video on making DoenetML content"
+        // ref={videoEl}
+        // controls
+        // zIndex="1"
       >
-        <HPVideo
-          autoPlay={true}
-          // height='420px'
-          // fluid="false"
-          // src='/media/homepagevideo2.mp4'
-          loop
-          muted
-          playsInline
-          // alt="Demonstration video on making DoenetML content"
-          // ref={videoEl}
-          controls
-          // zIndex="1"
-        >
-          <source src="/planet_orbits_smooth.webm" type="video/webm" />
-        </HPVideo>
-      </Box>
-      <Show above="sm">
-        <Link
-          color={"white"}
-          href="https://www.doenet.org/activityViewer/_IDTeopxcrVV2EzMEA4Cg9"
-        >
-          How to Make this Animation
-        </Link>
-      </Show>
+        <source src="/sample_doenet_demo.mp4" type="video/mp4" />
+      </HPVideo>
     </Box>
   );
 }

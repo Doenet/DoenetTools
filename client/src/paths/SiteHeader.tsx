@@ -205,8 +205,7 @@ export function SiteHeader() {
           as="header"
           width="100vw"
           m="0"
-          backgroundColor="#fff"
-          color="#000"
+          backgroundColor="#1D1D21"
           height="40px"
         >
           <Grid
@@ -214,7 +213,7 @@ export function SiteHeader() {
             position="fixed"
             top="0"
             zIndex="1000"
-            borderBottom="1px solid var(--mainGray)"
+            // borderBottom="1px solid var(--mainGray)"
             // paddingBottom="2px"
             width="100%"
             margin="0"
