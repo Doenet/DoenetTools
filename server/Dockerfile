@@ -7,6 +7,8 @@ COPY prisma ./prisma
 COPY passport-anonymous ./passport-anonymous
 COPY tsconfig.json ./
 COPY package*.json ./
+COPY entrypoint.sh ./
+
 
 # Just for testing locally
 # COPY .env ./
@@ -14,7 +16,9 @@ COPY package*.json ./
 RUN npm install
 RUN npm run build
 
-CMD ["npm", "start"]
+RUN chmod +x ./entrypoint.sh
+
+ENTRYPOINT ["./entrypoint.sh"]
 
 EXPOSE 3000
 
