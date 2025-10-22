@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../model";
 import { DoenetmlVersion, UserInfoWithEmail, ContentRevision } from "../types";
-import { cidFromText } from "../utils/cid";
+import { getCidV1FromString } from "../utils/ipfs";
 import {
   compileActivityFromContent,
   returnClassificationListSelect,
@@ -487,7 +487,7 @@ async function checkRemixSourceChange({
     const originCurrentSource = source.originContent.content.source!;
     const originCurrentVersion = source.originContent.content.doenetmlVersionId;
 
-    const currentCid = await cidFromText(
+    const currentCid = await getCidV1FromString(
       originCurrentVersion + "|" + originCurrentSource,
     );
 
