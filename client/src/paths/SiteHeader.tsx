@@ -205,7 +205,6 @@ export function SiteHeader() {
           as="header"
           width="100vw"
           m="0"
-          backgroundColor="#1D1D21"
           height="40px"
         >
           <Grid
