@@ -1,28 +1,13 @@
-import {
-  Button,
-  Box,
-  Text,
-  Flex,
-  useDisclosure,
-  Tooltip,
-  HStack,
-  CloseButton,
-  Icon,
-} from "@chakra-ui/react";
+import { Box, Flex, Tooltip, Icon } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
-import { useLoaderData, useFetcher, useOutletContext } from "react-router";
+import { useLoaderData } from "react-router";
 
 import { CardContent } from "../widgets/Card";
 import CardList from "../widgets/CardList";
 import axios from "axios";
 import { ContentDescription, Content } from "../types";
-import { menuIcons } from "../utils/activity";
-import { AddContentToMenu } from "../popups/AddContentToMenu";
-import { CreateContentMenu } from "../dropdowns/CreateContentMenu";
-import { CopyContentAndReportFinish } from "../popups/CopyContentAndReportFinish";
-import { SiteContext } from "./SiteHeader";
 import { formatAssignmentBlurb } from "../utils/assignment";
-import { EditableName } from "../widgets/EditableName";
+import { NameBar } from "../widgets/NameBar";
 import { BsPeople } from "react-icons/bs";
 import { createNameNoTag } from "../utils/names";
 
@@ -37,15 +22,11 @@ export function SharedWithMe() {
     userId: string;
   };
 
-  const { addTo, setAddTo } = useOutletContext<SiteContext>();
-
   // refs to the menu button of each content card,
   // which should be given focus when drawers are closed
   const cardMenuRefs = useRef<HTMLButtonElement[]>([]);
 
   const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
-  const selectedCardsFiltered = selectedCards.filter((c) => c);
-  const numSelected = selectedCardsFiltered.length;
 
   useEffect(() => {
     setSelectedCards((was) => {
@@ -69,14 +50,11 @@ export function SharedWithMe() {
     document.title = "Shared with me - Doenet";
   }, []);
 
-  const fetcher = useFetcher();
-
   const titleIcon = (
     <Tooltip label={"Shared with me"}>
       <Box>
         <Icon
           as={BsPeople}
-          color="#666699"
           boxSizing="content-box"
           width="24px"
           height="24px"
@@ -89,31 +67,14 @@ export function SharedWithMe() {
   );
 
   const headingText = (
-    <EditableName
+    <NameBar
       contentId={null}
       contentName={"Shared with me"}
       leftIcon={titleIcon}
       dataTest="Folder Title"
-      isFolderView={true}
+      fontSizeMode="folder"
     />
   );
-
-  const {
-    isOpen: copyDialogIsOpen,
-    onOpen: copyDialogOnOpen,
-    onClose: copyDialogOnClose,
-  } = useDisclosure();
-
-  const copyContentModal =
-    addTo !== null ? (
-      <CopyContentAndReportFinish
-        isOpen={copyDialogIsOpen}
-        onClose={copyDialogOnClose}
-        contentIds={selectedCardsFiltered.map((sc) => sc.contentId)}
-        desiredParent={addTo}
-        action="Add"
-      />
-    ) : null;
 
   const heading = (
     <Flex
@@ -126,75 +87,6 @@ export function SharedWithMe() {
     >
       {headingText}
     </Flex>
-  );
-
-  const selectedItemsActions = (
-    <HStack
-      spacing={3}
-      align="center"
-      justify="center"
-      backgroundColor={numSelected > 0 || addTo ? "gray.100" : undefined}
-      width="100%"
-      height="2.3rem"
-      mb="10px"
-    >
-      {addTo !== null && (
-        <>
-          <CloseButton
-            data-test="Stop Adding Items"
-            size="sm"
-            onClick={() => setAddTo(null)}
-          />
-          <Text noOfLines={1} data-test="Adding Items Message">
-            Adding items to: {menuIcons[addTo.type]}
-            <strong>{addTo.name}</strong>
-          </Text>
-        </>
-      )}
-
-      {numSelected > 0 && (
-        <HStack spacing={2} align="center">
-          <CloseButton
-            data-test="Clear Selection"
-            size="sm"
-            onClick={() => setSelectedCards([])}
-          />
-          <Text>{numSelected} selected</Text>
-          {addTo === null && (
-            <>
-              <AddContentToMenu
-                fetcher={fetcher}
-                sourceContent={selectedCardsFiltered}
-                size="xs"
-                colorScheme="blue"
-                label="Copy selected to"
-              />
-              <CreateContentMenu
-                sourceContent={selectedCardsFiltered}
-                size="xs"
-                colorScheme="blue"
-                label="Create from selected"
-              />
-            </>
-          )}
-
-          {addTo !== null && (
-            <Button
-              data-test="Add Selected To Button"
-              size="xs"
-              colorScheme="blue"
-              onClick={() => copyDialogOnOpen()}
-            >
-              Add selected to: {menuIcons[addTo.type]}
-              <strong>
-                {addTo.name.substring(0, 10)}
-                {addTo.name.length > 10 ? "..." : ""}
-              </strong>
-            </Button>
-          )}
-        </HStack>
-      )}
-    </HStack>
   );
 
   const emptyMessage = "Nothing shared with you right now.";
@@ -230,23 +122,18 @@ export function SharedWithMe() {
       content={cardContent}
       selectedCards={selectedCards}
       setSelectedCards={setSelectedCards}
-      disableSelectFor={addTo ? [addTo.contentId] : undefined}
     />
   );
 
   return (
     <Box
-      data-test="Activities"
-      flex="1"
-      width="100%"
+      data-test="Shared with me"
+      width={{ base: "100%", md: "calc(100% - 40px)" }}
       background={"white"}
-      ml={["0px", "20px"]}
-      mr={["0px", "20px"]}
+      ml={{ base: "0px", md: "20px" }}
+      mr={{ base: "0px", md: "20px" }}
     >
-      {copyContentModal}
-
       {heading}
-      {selectedItemsActions}
       {mainPanel}
     </Box>
   );

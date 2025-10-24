@@ -1,4 +1,4 @@
-import { Box, Button, Flex } from "@chakra-ui/react";
+import { Box, Button, Flex, Show } from "@chakra-ui/react";
 import React from "react";
 import { Outlet, useLocation, useOutletContext } from "react-router";
 import { Link as ReactRouterLink } from "react-router";
@@ -63,12 +63,16 @@ export function FolderContext() {
             : { backgroundColor: "gray.50" }
         }
         borderLeftWidth={isSharedWithMeActive ? "4px" : "0"}
+        marginLeft={isSharedWithMeActive ? "0" : "4px"}
         borderLeftColor={
           isSharedWithMeActive ? "doenet.mainBlue" : "transparent"
         }
         aria-current={isSharedWithMeActive ? "page" : undefined}
       >
-        <Text fontSize="large">Shared with me</Text>
+        <Text fontSize="large">
+          <Show above="lg">Shared with me</Show>
+          <Show below="lg">Shared</Show>
+        </Text>
       </Button>
 
       <Button
