@@ -121,6 +121,10 @@ import {
   EditorLibraryMode,
   loader as editorLibraryModeLoader,
 } from "./paths/editor/EditorLibraryMode";
+import {
+  SharedWithMe,
+  loader as sharedWithMeLoader,
+} from "./paths/SharedWithMe";
 import { editorUrl } from "./utils/url";
 
 const theme = extendTheme({
@@ -231,6 +235,13 @@ const router = createBrowserRouter([
             loader: activitiesLoader,
             action: genericAction,
             element: <Activities />,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "sharedWithMe/:userId",
+            loader: sharedWithMeLoader,
+            action: genericAction,
+            element: <SharedWithMe />,
             errorElement: <ErrorPage />,
           },
           {
