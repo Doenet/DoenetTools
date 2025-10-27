@@ -1,7 +1,6 @@
 import React, { Suspense, useEffect } from "react";
 import {
   Box,
-  Center,
   Text,
   IconButton,
   Flex,
@@ -205,7 +204,7 @@ export function Home() {
             <p>
               <strong>Variant control.</strong> Generate multiple variants of
               your activity. Students can practice again with different numbers
-              or get different varian ts than their peers.
+              or get different variants than their peers.
             </p>
           </Flex>
         </Flex>
@@ -282,7 +281,7 @@ export function Home() {
 
   const footerSection = (
     <WithSideBanners bgColor="black">
-      <Center pb="100px" pt="10px">
+      <VStack pb="100px" pt="10px">
         <Flex columnGap="10px" m="10px">
           <ChakraLink href="mailto:info@doenet.org">
             <Tooltip label="mailto:info@doenet.org">
@@ -323,32 +322,32 @@ export function Home() {
             <Image src="https://i.creativecommons.org/l/by/4.0/88x31.png" />
           </ChakraLink>
         </Flex>
-        {/* <Text
-            as="div"
-            fontSize="14px"
-            maxWidth="750px"
-            textAlign="center"
-            color="white"
-          > */}
-        {/* <Text color="white">
-              This work is licensed under a{" "}
-              <ChakraLink
-                color="doenet.mainBlue"
-                href="http://creativecommons.org/licenses/by/4.0/"
-              >
-                Creative Commons Attribution 4.0 International License
-              </ChakraLink>
-              .
-            </Text>
-            Doenet is a collaborative project involving the University of
-            Minnesota, the Ohio State University, and Cornell University, with
-            support from the National Science Foundation (DUE-1915294,
-            DUE-1915363, DUE-1915438). Any opinions, findings, and conclusions
-            or recommendations expressed in this material are those of the
-            author(s) and do not necessarily reflect the views of the National
-            Science Foundation.{" "}
-          </Text> */}
-      </Center>
+        <Text
+          as="div"
+          fontSize="14px"
+          maxWidth="750px"
+          textAlign="center"
+          color="white"
+        >
+          <Text color="white">
+            This work is licensed under a{" "}
+            <ChakraLink
+              color="doenet.mainBlue"
+              href="http://creativecommons.org/licenses/by/4.0/"
+            >
+              Creative Commons Attribution 4.0 International License
+            </ChakraLink>
+            .
+          </Text>
+          Doenet is a collaborative project involving the University of
+          Minnesota, the Ohio State University, and Cornell University, with
+          support from the National Science Foundation (DUE-1915294,
+          DUE-1915363, DUE-1915438). Any opinions, findings, and conclusions or
+          recommendations expressed in this material are those of the author(s)
+          and do not necessarily reflect the views of the National Science
+          Foundation.{" "}
+        </Text>
+      </VStack>
     </WithSideBanners>
   );
 
