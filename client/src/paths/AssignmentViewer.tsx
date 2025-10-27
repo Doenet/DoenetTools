@@ -251,6 +251,9 @@ export function AssignmentViewer() {
     ? loaderData.assignment.name
     : "";
 
+  const viewerContainer = useRef<HTMLDivElement>(null);
+  const scrollingContainer = useRef<HTMLDivElement>(null);
+
   const { user } = useOutletContext<SiteContext>();
   if (!user) {
     throw Error("User should have been defined");
@@ -551,6 +554,20 @@ export function AssignmentViewer() {
     scoresCurrentAttempt,
   ]);
 
+  function requestScrollTo(offset: number) {
+    if (viewerContainer.current && scrollingContainer.current) {
+      const iframeTop =
+        viewerContainer.current.getBoundingClientRect().top +
+        scrollingContainer.current.scrollTop;
+      const targetAbsoluteTop = iframeTop + offset;
+
+      scrollingContainer.current.scrollTo({
+        top: targetAbsoluteTop - 100,
+        behavior: "smooth",
+      });
+    }
+  }
+
   if (!loaderData.assignmentFound || !assignment) {
     return <EnterClassCode invalidCode={code} />;
   }
@@ -601,6 +618,7 @@ export function AssignmentViewer() {
           }}
           attemptNumber={attemptNumber}
           doenetViewerUrl={doenetViewerUrl}
+          requestScrollTo={requestScrollTo}
         />
       </Box>
     );
@@ -686,8 +704,15 @@ export function AssignmentViewer() {
         </Grid>
       </GridItem>
 
-      <GridItem area="centerContent">
-        <BlueBanner>{viewer}</BlueBanner>
+      <GridItem
+        area="centerContent"
+        height="calc(100vh - 80px)"
+        overflowY="scroll"
+        ref={scrollingContainer}
+      >
+        <Box ref={viewerContainer}>
+          <BlueBanner>{viewer}</BlueBanner>
+        </Box>
       </GridItem>
     </Grid>
   );
