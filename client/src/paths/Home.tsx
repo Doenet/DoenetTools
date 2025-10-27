@@ -179,10 +179,8 @@ export function Home() {
           <Flex flex="1 0 75%">
             <p>
               <strong>Instant feedback for students.</strong>
-
-              {/* Specify the
-            solution(s) to your question, and the activity will keep track.
-            Doenet can also calculate many of the answers. */}
+              You specify the solutions and hints, the activiity will respond to
+              student attempts.
             </p>
           </Flex>
         </Flex>
@@ -191,8 +189,7 @@ export function Home() {
           <Flex flex="1 0 75%">
             <p>
               <strong>Interactive graphics.</strong> Construct graphical applets
-              composed of points, lines, derivatives, bezier curves, snapping to
-              grid, etc. (Instant feedback built-in.)
+              with points, lines, derivatives, etc. (Instant feedback built-in.)
             </p>
           </Flex>
           <Flex flex="1 0 25%">{grayBox}</Flex>
@@ -203,8 +200,7 @@ export function Home() {
           <Flex flex="1 0 75%">
             <p>
               <strong>Variant control.</strong> Generate multiple variants of
-              your activity. Students can practice again with different numbers
-              or get different variants than their peers.
+              your activity.
             </p>
           </Flex>
         </Flex>
