@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   Box,
   Text,
@@ -20,39 +20,10 @@ import {
 } from "@chakra-ui/react";
 import { HiOutlineMail } from "react-icons/hi";
 import { BsGithub, BsDiscord } from "react-icons/bs";
-import HomeIntroVideo from "../widgets/HomeIntroVideo";
+// Video carousel lives in this file to keep hero behavior self-contained.
 
 export async function loader() {
   return {};
-}
-
-function WithSideBanners({
-  children,
-  bgColor = "white",
-  padding = "0px",
-  gutterColumns = 2,
-}: {
-  children: React.ReactNode;
-  bgColor?: string;
-  padding?: string;
-  gutterColumns?: number;
-}) {
-  return (
-    <Grid
-      templateColumns={"repeat(12, 1fr)"}
-      w="100%"
-      bg={bgColor}
-      pt={padding}
-      pb={padding}
-    >
-      <GridItem
-        colStart={{ base: 0, md: 1 + gutterColumns }}
-        colSpan={{ base: 12, md: 12 - 2 * gutterColumns }}
-      >
-        {children}
-      </GridItem>
-    </Grid>
-  );
 }
 
 export function Home() {
@@ -60,80 +31,84 @@ export function Home() {
     document.title = `Doenet - Richly interactive classroom activities`;
   }, []);
 
+  // Replace these paths with your actual hero video asset paths in /public or a CDN.
+  const heroVideos = ["/norm_dist.mp4", "/star.mp4"];
+
   const grayBox = <Box width="200px" bgColor="gray" height="170px" />;
 
   const heroSection = (
-    <Box overflow="hidden" width="100%" position="relative" minHeight="500px">
+    <Box width="100%">
       <WithSideBanners
-        bgColor="#24252D"
-        // bgColor="#29293bff"
-        // bgColor="#1e2546ff"
-        // bgColor="rgb(51 63 103)"
-        // bgColor="#302f52ff"
-        // bgColor="doenet.lightBlue"
-        padding="60px"
-        // padding="0px"
-        gutterColumns={1}
+        bgColor="#282a3aff"
+        padding="0px"
+        leftGutterColumns={1}
+        rightGutterColumns={1}
       >
         <Grid
           // pt="40px"
-          templateColumns={{ base: "1fr", md: "1fr 2fr" }}
+          templateColumns={{ base: "1fr", md: "1fr auto" }}
           w="100%"
-          gap="20px"
+          gap="10px"
           // pb="40px"
           // pl="50px"
           // pr="20px"
         >
-          <GridItem pt="80px" position="relative">
+          <GridItem pt="200px" position="relative" ml="20px">
             <Heading
               // color="#472d15"
               color="white"
               fontSize={["50px", "2.5vw"]}
               fontWeight="700"
-              mb="20px"
+              mb="50px"
             >
               Richly interactive classroom activities
             </Heading>
-            <Box ml="5px" pl="10px" borderLeft="3px solid white">
+            <Box
+              ml="5px"
+              pl="10px"
+              borderLeft="4px solid white"
+              mb="80px"
+              // pt="5px"
+              // pb="5px"
+            >
               <Heading
                 color="white"
-                fontSize={["24px", "1.5vw"]}
+                fontSize={["24px", "1.7vw"]}
                 fontWeight="700"
+                mb="5px"
               >
-                An open and collaborative platform
+                A free and open platform
               </Heading>
               <Heading
                 color="white"
-                fontSize={["24px", "1.5vw"]}
+                fontSize={["24px", "1.7vw"]}
                 fontWeight="700"
               >
                 Find, create, customize, share
               </Heading>
             </Box>
+
+            <Heading
+              color="white"
+              fontSize={["18px", "1.3vw"]}
+              fontWeight="400"
+            >
+              {/* Human activities in the age of AI */}
+              Created and curated by expert human instructors
+            </Heading>
           </GridItem>
 
-          <GridItem pl="50px" pr="50px">
-            <Suspense fallback={"Loading..."}>
-              {/* Does this lazy loading do anything? */}
-              <HomeIntroVideo />
-            </Suspense>
+          <GridItem
+            mr="80px"
+            pt="40px"
+            pb="40px"
+            display="flex"
+            justifyContent="flex-end"
+          >
+            <VideoCarousel videos={heroVideos} intervalMs={6000} />
           </GridItem>
         </Grid>
       </WithSideBanners>
-
-      <Image
-        mt="-390px"
-        ml="-100px"
-        position="absolute"
-        src="/Doenet_Logo_cloud_only.png"
-        alt="Doenet logo"
-        // maxW="180px"
-        width="700px"
-        opacity={0.15}
-        pointerEvents="none"
-        userSelect="none"
-        // objectFit="contain"
-      />
     </Box>
   );
 
@@ -355,5 +330,272 @@ export function Home() {
       {communitySection}
       {footerSection}
     </>
+  );
+}
+
+function VideoCarousel({
+  videos,
+  intervalMs = 4000,
+}: {
+  videos: string[];
+  intervalMs?: number;
+}) {
+  const [index, setIndex] = React.useState(0);
+  const [isHovered, setIsHovered] = React.useState(false);
+
+  const [overlayShown, setOverlayShown] = React.useState(false);
+  const transitionMs = 300; // fade duration ms
+  const holdMs = 80; // hold white for a short time while video src swaps
+  const timeouts = React.useRef<number[]>([]);
+  const isTransitioning = React.useRef(false);
+  const indexRef = React.useRef(index);
+  React.useEffect(() => {
+    indexRef.current = index;
+  }, [index]);
+
+  // Single control for arrow-to-video proximity:
+  // arrowGap: px between the arrow button and the video edge.
+  const ARROW_BUTTON_PX = 24; // button size (px)
+  const iconSize = 36; // chevron svg size
+  const iconStroke = 3; // chevron stroke thickness
+
+  useEffect(() => {
+    if (!videos || videos.length <= 1) return;
+    if (isHovered) return; // pause while hovering
+    const id = window.setInterval(() => {
+      const next = (indexRef.current + 1) % videos.length;
+      performTransition(next);
+    }, intervalMs);
+    return () => window.clearInterval(id);
+  }, [videos, intervalMs, isHovered]);
+
+  // performTransition: fade to white, swap video, fade back
+  function performTransition(nextIndex: number) {
+    if (isTransitioning.current) return;
+    isTransitioning.current = true;
+    // show white overlay (fade in)
+    setOverlayShown(true);
+    const t1 = window.setTimeout(() => {
+      // swap video source
+      setIndex(nextIndex);
+      // keep white a short moment then fade out
+      const t2 = window.setTimeout(() => {
+        setOverlayShown(false);
+        // finish after fade-out completes
+        const t3 = window.setTimeout(() => {
+          isTransitioning.current = false;
+        }, transitionMs);
+        timeouts.current.push(t3);
+      }, holdMs);
+      timeouts.current.push(t2);
+    }, transitionMs);
+    timeouts.current.push(t1);
+  }
+
+  // replace manual handlers to perform transition
+  const handlePrev = () => {
+    const next = (indexRef.current - 1 + videos.length) % videos.length;
+    performTransition(next);
+  };
+  const handleNext = () => {
+    const next = (indexRef.current + 1) % videos.length;
+    performTransition(next);
+  };
+
+  // cleanup pending timeouts on unmount
+  React.useEffect(() => {
+    return () => {
+      timeouts.current.forEach((id) => window.clearTimeout(id));
+      timeouts.current = [];
+    };
+  }, []);
+
+  if (!videos || videos.length === 0) return null;
+
+  return (
+    <HStack
+      /* Add horizontal padding so arrows sit inside the bounding box. */
+      // px={{ base: 2, md: `${arrowReserve}px` }}
+      alignItems="center"
+      justifyContent="center"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* key on index forces the video element to reload when index changes */}
+      {/*
+        Wrap the video in a responsive Box that reduces available width on md+
+        so the arrow buttons (inside the outer padding) do not overlap the
+        video. We reserve 112px total (56px per side) on md+; adjust if you
+        change the arrow size.
+      */}
+
+      {/* Left arrow */}
+      <IconButton
+        aria-label="Previous video"
+        icon={<ThickChevronLeft size={iconSize} stroke={iconStroke} />}
+        onClick={handlePrev}
+        bg="transparent"
+        color="white"
+        _hover={{ bg: "rgba(255,255,255,0.06)" }}
+        _active={{ bg: "rgba(255,255,255,0.12)" }}
+        h={`${ARROW_BUTTON_PX}px`}
+        w={`${ARROW_BUTTON_PX}px`}
+        borderRadius="full"
+        display={{ base: "none", md: "flex" }}
+      />
+
+      <Box
+        position="relative"
+        borderStyle="inset"
+        borderLeft="3px solid lightgray"
+        // borderRadius="4px 4px 4px 4px"
+      >
+        <video
+          key={index}
+          src={videos[index]}
+          autoPlay
+          muted
+          playsInline
+          loop
+          style={{
+            height: "580px",
+            width: "500px",
+            display: "block",
+            objectFit: "cover",
+            backgroundColor: "white",
+            // borderBottom: "4px solid lightgray",
+          }}
+        />
+        <Box
+          pointerEvents="none"
+          position="absolute"
+          top={0}
+          left={0}
+          right={0}
+          bottom={0}
+          bg="white"
+          style={{
+            opacity: overlayShown ? 1 : 0,
+            transition: `opacity ${transitionMs}ms ease`,
+          }}
+        />
+      </Box>
+
+      {/* Right arrow */}
+      <IconButton
+        aria-label="Next video"
+        icon={<ThickChevronRight size={iconSize} stroke={iconStroke} />}
+        onClick={handleNext}
+        bg="transparent"
+        color="white"
+        _hover={{ bg: "rgba(255,255,255,0.06)" }}
+        _active={{ bg: "rgba(255,255,255,0.12)" }}
+        h={`${ARROW_BUTTON_PX}px`}
+        w={`${ARROW_BUTTON_PX}px`}
+        borderRadius="full"
+        display={{ base: "none", md: "flex" }}
+      />
+    </HStack>
+  );
+}
+
+function WithSideBanners({
+  children,
+  bgColor = "white",
+  padding = "0px",
+  gutterColumns = 2,
+  leftGutterColumns,
+  rightGutterColumns,
+}: {
+  children: React.ReactNode;
+  bgColor?: string;
+  padding?: string;
+  /**
+   * If `leftGutterColumns` or
+   * `rightGutterColumns` are provided they override this value for that
+   * side.
+   */
+  gutterColumns?: number;
+  leftGutterColumns?: number;
+  rightGutterColumns?: number;
+}) {
+  const left =
+    leftGutterColumns !== undefined ? leftGutterColumns : gutterColumns;
+  const right =
+    rightGutterColumns !== undefined ? rightGutterColumns : gutterColumns;
+
+  return (
+    <Grid
+      templateColumns={"repeat(12, 1fr)"}
+      w="100%"
+      bg={bgColor}
+      pt={padding}
+      pb={padding}
+    >
+      <GridItem
+        colStart={{ base: 0, md: 1 + left }}
+        colSpan={{ base: 12, md: 12 - left - right }}
+      >
+        {children}
+      </GridItem>
+    </Grid>
+  );
+}
+
+function ThickChevronLeft({
+  size = 36,
+  stroke = 3,
+}: {
+  size?: number;
+  stroke?: number;
+}) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden
+      focusable={false}
+    >
+      <path
+        d="M15 6 L9 12 L15 18"
+        stroke="currentColor"
+        strokeWidth={stroke}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
+    </svg>
+  );
+}
+
+function ThickChevronRight({
+  size = 36,
+  stroke = 3,
+}: {
+  size?: number;
+  stroke?: number;
+}) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden
+      focusable={false}
+    >
+      <path
+        d="M9 6 L15 12 L9 18"
+        stroke="currentColor"
+        strokeWidth={stroke}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
+    </svg>
   );
 }
