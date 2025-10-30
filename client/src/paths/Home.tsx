@@ -77,7 +77,7 @@ export function Home() {
                 fontWeight="700"
                 mb="5px"
               >
-                A free and open platform
+                A free community-driven platform
               </Heading>
               <Heading
                 color="white"
@@ -105,7 +105,7 @@ export function Home() {
             display="flex"
             justifyContent="flex-end"
           >
-            <VideoCarousel videos={heroVideos} intervalMs={6000} />
+            <VideoCarousel videos={heroVideos} intervalMs={7000} />
           </GridItem>
         </Grid>
       </WithSideBanners>
