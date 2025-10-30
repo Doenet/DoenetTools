@@ -30,7 +30,7 @@ import {
 import { CreateDocumentSavePoint } from "../../popups/CreateDocumentSavePoint";
 import { SavePointInfo } from "../../popups/SavePointInfo";
 import { DateTime } from "luxon";
-import { cidFromText } from "../../utils/cid";
+import { getCidV1FromString } from "../../utils/ipfs";
 import { SetDocumentToSavePoint } from "../../popups/SetDocumentToSavePoint";
 import { EditorContext } from "./EditorHeader";
 import axios from "axios";
@@ -76,7 +76,7 @@ export function DocEditorHistoryMode() {
   useEffect(() => {
     async function calcCurrentCid() {
       setCurrentCid(
-        await cidFromText(
+        await getCidV1FromString(
           doenetmlVersion.id.toString() + "|" + currentDoenetML,
         ),
       );

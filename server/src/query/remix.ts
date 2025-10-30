@@ -1,6 +1,6 @@
 import { prisma } from "../model";
 import { ActivityRemixItem, LicenseCode, RemixContent } from "../types";
-import { cidFromText } from "../utils/cid";
+import { getCidV1FromString } from "../utils/ipfs";
 import { compileActivityFromContent } from "../utils/contentStructure";
 import { createFullName } from "../utils/names";
 import {
@@ -185,11 +185,11 @@ export async function getRemixSources({
 
   let remixCurrentCid;
   if (remixCurrentSource.doenetMLVersion) {
-    remixCurrentCid = await cidFromText(
+    remixCurrentCid = await getCidV1FromString(
       remixCurrentSource.doenetMLVersion + "|" + remixCurrentSource.source,
     );
   } else {
-    remixCurrentCid = await cidFromText(remixCurrentSource.source);
+    remixCurrentCid = await getCidV1FromString(remixCurrentSource.source);
   }
 
   for (const revision of prelimRemixSources.contentRevisions) {
@@ -218,13 +218,13 @@ export async function getRemixSources({
 
       let originCurrentCid;
       if (originCurrentSource.doenetMLVersion) {
-        originCurrentCid = await cidFromText(
+        originCurrentCid = await getCidV1FromString(
           originCurrentSource.doenetMLVersion +
             "|" +
             originCurrentSource.source,
         );
       } else {
-        originCurrentCid = await cidFromText(originCurrentSource.source);
+        originCurrentCid = await getCidV1FromString(originCurrentSource.source);
       }
 
       const originContent: RemixContent = {
@@ -379,11 +379,11 @@ export async function getRemixes({
 
   let originCurrentCid;
   if (originCurrentSource.doenetMLVersion) {
-    originCurrentCid = await cidFromText(
+    originCurrentCid = await getCidV1FromString(
       originCurrentSource.doenetMLVersion + "|" + originCurrentSource.source,
     );
   } else {
-    originCurrentCid = await cidFromText(originCurrentSource.source);
+    originCurrentCid = await getCidV1FromString(originCurrentSource.source);
   }
 
   for (const revision of prelimRemixes.contentRevisions) {
@@ -412,11 +412,11 @@ export async function getRemixes({
 
       let remixCurrentCid;
       if (remixCurrentSource.doenetMLVersion) {
-        remixCurrentCid = await cidFromText(
+        remixCurrentCid = await getCidV1FromString(
           remixCurrentSource.doenetMLVersion + "|" + remixCurrentSource.source,
         );
       } else {
-        remixCurrentCid = await cidFromText(remixCurrentSource.source);
+        remixCurrentCid = await getCidV1FromString(remixCurrentSource.source);
       }
 
       const remixContent: RemixContent = {
@@ -857,7 +857,7 @@ async function updateOtherMatchingContributorHistory({
 
       const currentOrigin = currentHistory.originContent.content;
 
-      const currentCid = await cidFromText(
+      const currentCid = await getCidV1FromString(
         currentOrigin.doenetmlVersionId?.toString() +
           "|" +
           currentOrigin.source,
@@ -933,7 +933,7 @@ async function updateOtherMatchingContributorHistory({
 
       const currentRemix = currentHistory.remixContent.content;
 
-      const currentCid = await cidFromText(
+      const currentCid = await getCidV1FromString(
         currentRemix.doenetmlVersionId?.toString() + "|" + currentRemix.source,
       );
 
