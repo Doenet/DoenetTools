@@ -20,6 +20,8 @@ import {
 } from "@chakra-ui/react";
 import { HiOutlineMail } from "react-icons/hi";
 import { BsGithub, BsDiscord } from "react-icons/bs";
+import { Link as ReactRouterLink } from "react-router";
+
 // Video carousel lives in this file to keep hero behavior self-contained.
 
 export async function loader() {
@@ -40,7 +42,7 @@ export function Home() {
     <Box width="100%">
       <WithSideBanners
         bgColor="#282a3aff"
-        padding="0px"
+        padding="40px"
         leftGutterColumns={1}
         rightGutterColumns={1}
       >
@@ -49,58 +51,76 @@ export function Home() {
           templateColumns={{ base: "1fr", md: "1fr auto" }}
           w="100%"
           gap="10px"
+          alignItems="stretch"
           // pb="40px"
           // pl="50px"
           // pr="20px"
         >
-          <GridItem pt="200px" position="relative" ml="20px">
+          <GridItem
+            position="relative"
+            // ml="20px"
+            display="flex"
+            flexDirection="column"
+            justifyContent="center"
+            h="100%"
+          >
             <Heading
               // color="#472d15"
               color="white"
               fontSize={["50px", "2.5vw"]}
               fontWeight="700"
-              mb="50px"
+              mb="100px"
             >
               Richly interactive classroom activities
             </Heading>
             <Box
-              ml="5px"
+              // ml="5px"
               pl="10px"
               borderLeft="4px solid white"
-              mb="80px"
+              mb="50px"
               // pt="5px"
               // pb="5px"
             >
               <Heading
                 color="white"
-                fontSize={["24px", "1.7vw"]}
+                fontSize={["24px", "1.8vw"]}
                 fontWeight="700"
                 mb="5px"
               >
-                A free community-driven platform
+                Free, community-driven
               </Heading>
-              <Heading
+              {/* <Heading
                 color="white"
                 fontSize={["24px", "1.7vw"]}
                 fontWeight="700"
               >
                 Find, create, customize, share
-              </Heading>
+              </Heading> */}
             </Box>
 
             <Heading
               color="white"
-              fontSize={["18px", "1.3vw"]}
-              fontWeight="400"
+              fontSize={["24px", "1.5vw"]}
+              fontWeight="450"
+              mb="50px"
             >
-              {/* Human activities in the age of AI */}
-              Created and curated by expert human instructors
+              Tools to enable STEM educators to find, create, customize, and
+              share meaningfully interactive content
+            </Heading>
+
+            <Heading
+              color="white"
+              fontSize={["24px", "1.5vw"]}
+              fontWeight="450"
+              mb="5px"
+            >
+              Human activities in the age of AI
             </Heading>
           </GridItem>
 
           <GridItem
             mr="80px"
-            pt="40px"
+            pt="0px"
             pb="40px"
             display="flex"
             justifyContent="flex-end"
@@ -413,89 +433,139 @@ function VideoCarousel({
   if (!videos || videos.length === 0) return null;
 
   return (
-    <HStack
-      /* Add horizontal padding so arrows sit inside the bounding box. */
-      // px={{ base: 2, md: `${arrowReserve}px` }}
-      alignItems="center"
-      justifyContent="center"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      {/* key on index forces the video element to reload when index changes */}
-      {/*
+    <VStack align="center" spacing={0}>
+      <HStack
+        /* Add horizontal padding so arrows sit inside the bounding box. */
+        // px={{ base: 2, md: `${arrowReserve}px` }}
+        alignItems="center"
+        justifyContent="center"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        /* no negative margin; top padding removed on parent so the video shifts up */
+      >
+        {/* key on index forces the video element to reload when index changes */}
+        {/*
         Wrap the video in a responsive Box that reduces available width on md+
         so the arrow buttons (inside the outer padding) do not overlap the
         video. We reserve 112px total (56px per side) on md+; adjust if you
         change the arrow size.
       */}
-
-      {/* Left arrow */}
-      <IconButton
-        aria-label="Previous video"
-        icon={<ThickChevronLeft size={iconSize} stroke={iconStroke} />}
-        onClick={handlePrev}
-        bg="transparent"
-        color="white"
-        _hover={{ bg: "rgba(255,255,255,0.06)" }}
-        _active={{ bg: "rgba(255,255,255,0.12)" }}
-        h={`${ARROW_BUTTON_PX}px`}
-        w={`${ARROW_BUTTON_PX}px`}
-        borderRadius="full"
-        display={{ base: "none", md: "flex" }}
-      />
-
-      <Box
-        position="relative"
-        borderStyle="inset"
-        borderLeft="3px solid lightgray"
-        // borderRadius="4px 4px 4px 4px"
-      >
-        <video
-          key={index}
-          src={videos[index]}
-          autoPlay
-          muted
-          playsInline
-          loop
-          style={{
-            height: "580px",
-            width: "500px",
-            display: "block",
-            objectFit: "cover",
-            backgroundColor: "white",
-            // borderBottom: "4px solid lightgray",
+        {/* Left arrow */}
+        <IconButton
+          aria-label="Previous video"
+          icon={<ThickChevronLeft size={iconSize} stroke={iconStroke} />}
+          onClick={handlePrev}
+          bg="transparent"
+          color="white"
+          _focus={{ boxShadow: "none" }}
+          transition="none"
+          _hover={{
+            transform: "none",
+            bg: "transparent",
+            "svg path": { strokeWidth: 5 },
           }}
+          _active={{ transform: "none" }}
+          h={`${ARROW_BUTTON_PX}px`}
+          w={`${ARROW_BUTTON_PX}px`}
+          borderRadius="full"
+          display={{ base: "none", md: "flex" }}
         />
         <Box
-          pointerEvents="none"
-          position="absolute"
-          top={0}
-          left={0}
-          right={0}
-          bottom={0}
-          bg="white"
-          style={{
-            opacity: overlayShown ? 1 : 0,
-            transition: `opacity ${transitionMs}ms ease`,
-          }}
-        />
-      </Box>
+          position="relative"
+          borderStyle="inset"
+          borderLeft="3px solid lightgray"
+          // borderRadius="4px 4px 4px 4px"
+        >
+          <video
+            key={index}
+            src={videos[index]}
+            autoPlay
+            muted
+            playsInline
+            loop
+            style={{
+              height: "540px",
+              width: "500px",
+              display: "block",
+              objectFit: "cover",
+              backgroundColor: "white",
+              // borderBottom: "4px solid lightgray",
+            }}
+          />
 
-      {/* Right arrow */}
-      <IconButton
-        aria-label="Next video"
-        icon={<ThickChevronRight size={iconSize} stroke={iconStroke} />}
-        onClick={handleNext}
-        bg="transparent"
-        color="white"
-        _hover={{ bg: "rgba(255,255,255,0.06)" }}
-        _active={{ bg: "rgba(255,255,255,0.12)" }}
-        h={`${ARROW_BUTTON_PX}px`}
-        w={`${ARROW_BUTTON_PX}px`}
-        borderRadius="full"
-        display={{ base: "none", md: "flex" }}
-      />
-    </HStack>
+          {/* overlay used to fade-to-white during transitions (sits above video, below button) */}
+          <Box
+            pointerEvents="none"
+            position="absolute"
+            top={0}
+            left={0}
+            right={0}
+            bottom={0}
+            bg="white"
+            zIndex={2}
+            style={{
+              opacity: overlayShown ? 1 : 0,
+              transition: `opacity ${transitionMs}ms ease`,
+            }}
+          />
+
+          {/* Try me button positioned top-right on the video */}
+          <Button
+            as={ReactRouterLink}
+            to="/try"
+            position="absolute"
+            top={0}
+            right={0}
+            zIndex={3}
+            colorScheme="orange"
+            bg="#ff8c00"
+            color="white"
+            _hover={{
+              bg: "#ff7a00",
+              boxShadow: "0 10px 24px rgba(0,0,0,0.28)",
+              textDecoration: "none",
+            }}
+            size="sm"
+            borderRadius={0}
+            aria-label="Try this activity"
+            pointerEvents={overlayShown ? "none" : "auto"}
+            aria-disabled={overlayShown}
+            disabled={overlayShown}
+            _disabled={{ opacity: 1, cursor: "not-allowed" }}
+            border="2px solid rgba(0,0,0,0.12)"
+            boxShadow="0 6px 18px rgba(0,0,0,0.22)"
+            transition="box-shadow 150ms ease, transform 150ms ease"
+            style={{
+              transform: "scale(1.2)",
+              transformOrigin: "top right",
+            }}
+          >
+            Try me
+          </Button>
+        </Box>
+        {/* Right arrow */}
+        <IconButton
+          aria-label="Next video"
+          icon={<ThickChevronRight size={iconSize} stroke={iconStroke} />}
+          onClick={handleNext}
+          bg="transparent"
+          color="white"
+          transition="none"
+          _hover={{
+            transform: "none",
+            bg: "transparent",
+            "svg path": { strokeWidth: 5 },
+          }}
+          _active={{ transform: "none" }}
+          h={`${ARROW_BUTTON_PX}px`}
+          w={`${ARROW_BUTTON_PX}px`}
+          borderRadius="full"
+          display={{ base: "none", md: "flex" }}
+        />
+      </HStack>
+
+      {/* Removed under-video button; Try button now sits above the video in the video wrapper */}
+    </VStack>
   );
 }
 
