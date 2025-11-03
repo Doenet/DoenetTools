@@ -303,6 +303,7 @@ export async function getSharedContent({
         type: "folder",
         // Note: don't use viewable filter, as we require it to be public/shared even if owned by loggedInUserId
         isDeletedOn: null,
+        
         OR: [
           { isPublic: true },
           { sharedWith: { some: { userId: loggedInUserId } } },
@@ -421,9 +422,9 @@ export async function getMyTrash({
 }
 
 /**
- * Get content that others have shared with me specifically.
- * Sorted by share date, starting with most recent share
- * @param param0
+ * Get content that others have shared specifically with me.
+ * Sorted by share date, starting with most recent share.
+ * Doesn't include inner content which has been implicitly shared with me, such as a document inside a shared folder.
  */
 export async function getSharedWithMe({
   loggedInUserId,
@@ -434,6 +435,7 @@ export async function getSharedWithMe({
   const shares = await prisma.contentShares.findMany({
     where: {
       userId: loggedInUserId,
+      rootSharedId: null,
       content: filterViewableContent(loggedInUserId),
     },
     select: {
