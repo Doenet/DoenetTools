@@ -31,7 +31,7 @@ export function FolderContext() {
         to={activitiesPath}
         variant="ghost"
         justifyContent="flex-start"
-        width="100%"
+        width={isActivitiesActive ? "100%" : "calc(100% - 4px)"}
         backgroundColor={
           isActivitiesActive ? "doenet.lightBlue" : "transparent"
         }
@@ -53,7 +53,7 @@ export function FolderContext() {
         to={`/sharedWithMe/${context.user?.userId ?? ""}`}
         variant="ghost"
         justifyContent="flex-start"
-        width="100%"
+        width={isSharedWithMeActive ? "100%" : "calc(100% - 4px)"}
         backgroundColor={
           isSharedWithMeActive ? "doenet.lightBlue" : "transparent"
         }
@@ -80,7 +80,7 @@ export function FolderContext() {
         to={`/trash`}
         variant="ghost"
         justifyContent="flex-start"
-        width="100%"
+        width={isTrashActive ? "100%" : "calc(100% - 4px)"}
         backgroundColor={isTrashActive ? "doenet.lightBlue" : "transparent"}
         _hover={
           isTrashActive
