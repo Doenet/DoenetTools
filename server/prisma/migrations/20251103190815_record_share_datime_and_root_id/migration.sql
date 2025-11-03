@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE `contentShares` ADD COLUMN `rootSharedId` BINARY(16) NULL,
+    ADD COLUMN `sharedOn` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3);

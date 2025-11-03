@@ -303,7 +303,7 @@ export async function getSharedContent({
         type: "folder",
         // Note: don't use viewable filter, as we require it to be public/shared even if owned by loggedInUserId
         isDeletedOn: null,
-        
+
         OR: [
           { isPublic: true },
           { sharedWith: { some: { userId: loggedInUserId } } },
