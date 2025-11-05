@@ -1,4 +1,6 @@
 import React, { useEffect } from "react";
+import { HiOutlineMail } from "react-icons/hi";
+import { BsGithub, BsDiscord } from "react-icons/bs";
 import {
   Box,
   Text,
@@ -18,11 +20,7 @@ import {
   Stack,
   VStack,
 } from "@chakra-ui/react";
-import { HiOutlineMail } from "react-icons/hi";
-import { BsGithub, BsDiscord } from "react-icons/bs";
 import { Link as ReactRouterLink } from "react-router";
-
-// Video carousel lives in this file to keep hero behavior self-contained.
 
 export async function loader() {
   return {};
@@ -50,7 +48,7 @@ export function Home() {
           // pt="40px"
           templateColumns={{ base: "1fr", md: "1fr auto" }}
           w="100%"
-          gap="10px"
+          gap="20px"
           alignItems="stretch"
           // pb="40px"
           // pl="50px"
@@ -65,61 +63,49 @@ export function Home() {
             h="100%"
           >
             <Heading
-              // color="#472d15"
               color="white"
-              fontSize={["50px", "2.5vw"]}
+              fontSize={["50px", "3.0vw"]}
               fontWeight="700"
-              mb="100px"
+              mb="60px"
+              // bgGradient="linear(to-r, #ffd27a, #ff8c00, #ff5e62)"
+              // bgClip="text"
+              // letterSpacing="tight"
+              // lineHeight="1.05"
+              // display="inline-block"
+              // style={{
+              //   WebkitTextStroke: "0.6px rgba(0,0,0,0.25)",
+              //   textShadow:
+              //     "0 8px 30px rgba(0,0,0,0.55), 0 3px 8px rgba(0,0,0,0.45), 0 1px 0 rgba(255,255,255,0.03)",
+              //   transform: "translateZ(0)",
+              // }}
             >
               Richly interactive classroom activities
             </Heading>
-            <Box
-              // ml="5px"
-              pl="10px"
-              borderLeft="4px solid white"
-              mb="50px"
-              // pt="5px"
-              // pb="5px"
+
+            <Heading
+              color="white"
+              fontSize={["24px", "1.5vw"]}
+              fontWeight="450"
+              mb="10px"
             >
+              Find, create, and share meaningfully interactive content using a
+              free, community-driven tool
+            </Heading>
+
+            {/* <Box mb="60px">
               <Heading
                 color="white"
-                fontSize={["24px", "1.8vw"]}
-                fontWeight="700"
+                fontSize={["24px", "1.5vw"]}
+                fontWeight="450"
                 mb="5px"
               >
-                Free, community-driven
+                A free, community-driven tool
               </Heading>
-              {/* <Heading
-                color="white"
-                fontSize={["24px", "1.7vw"]}
-                fontWeight="700"
-              >
-                Find, create, customize, share
-              </Heading> */}
-            </Box>
-
-            <Heading
-              color="white"
-              fontSize={["24px", "1.5vw"]}
-              fontWeight="450"
-              mb="50px"
-            >
-              Tools to enable STEM educators to find, create, customize, and
-              share meaningfully interactive content
-            </Heading>
-
-            <Heading
-              color="white"
-              fontSize={["24px", "1.5vw"]}
-              fontWeight="450"
-              mb="5px"
-            >
-              Human activities in the age of AI
-            </Heading>
+            </Box> */}
           </GridItem>
 
           <GridItem
-            mr="80px"
+            mr="65px"
             pt="0px"
             pb="40px"
             display="flex"
@@ -169,29 +155,39 @@ export function Home() {
       </Heading>
 
       <VStack align="flex-start" fontSize="1.4rem">
-        <Flex width="100%" alignItems="center">
-          <Flex flex="1 0 25%">{grayBox}</Flex>
-          <Flex flex="1 0 75%">
-            <p>
-              <strong>Instant feedback for students.</strong>
-              You specify the solutions and hints, the activiity will respond to
-              student attempts.
-            </p>
-          </Flex>
-        </Flex>
+        <HStack spacing="20px">
+          <Image
+            src="/instant_feedback4.png"
+            alt="Instant feedback"
+            width="450px"
+            height="200px"
+            // objectFit="cover"
+          />
+
+          <p>
+            <strong>Instant feedback for students.</strong>
+            You specify the solutions and hints, the activiity will respond to
+            student attempts.
+          </p>
+        </HStack>
+
+        <HStack spacing="20px">
+          <p>
+            <strong>Interactive graphics.</strong> Construct graphical applets
+            with points, lines, derivatives, etc. (Instant feedback built-in.)
+          </p>
+
+          <Image
+            src="/feature_interactive_graphics.png"
+            alt="Instant feedback"
+            width="300px"
+            height="170px"
+            // objectFit="cover"
+          />
+        </HStack>
 
         <Flex width="100%" alignItems="center">
-          <Flex flex="1 0 75%">
-            <p>
-              <strong>Interactive graphics.</strong> Construct graphical applets
-              with points, lines, derivatives, etc. (Instant feedback built-in.)
-            </p>
-          </Flex>
-          <Flex flex="1 0 25%">{grayBox}</Flex>
-        </Flex>
-
-        <Flex width="100%" alignItems="center">
-          <Flex flex="1 0 25%">{grayBox}</Flex>
+          {/* <Flex flex="1 0 25%">{grayBox}</Flex> */}
           <Flex flex="1 0 75%">
             <p>
               <strong>Variant control.</strong> Generate multiple variants of
@@ -514,8 +510,8 @@ function VideoCarousel({
             as={ReactRouterLink}
             to="/try"
             position="absolute"
-            top={0}
-            right={0}
+            top="10px"
+            right="10px"
             zIndex={3}
             colorScheme="orange"
             bg="#ff8c00"
@@ -526,7 +522,7 @@ function VideoCarousel({
               textDecoration: "none",
             }}
             size="sm"
-            borderRadius={0}
+            borderRadius="8px"
             aria-label="Try this activity"
             pointerEvents={overlayShown ? "none" : "auto"}
             aria-disabled={overlayShown}
