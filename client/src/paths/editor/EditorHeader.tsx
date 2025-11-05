@@ -467,6 +467,7 @@ export function EditorHeader() {
           contentDescription.hasBadVersion &&
           "Creating assignments is not supported (yet) with documents of version 0.6 or 0.7 intermediate."
         }
+        placement="bottom-end"
       >
         <Button
           colorScheme="blue"
