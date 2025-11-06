@@ -63,7 +63,7 @@ export async function loader({
     ({ data } = await axios.get(`/api/editor/getEditor/${params.contentId}`));
   } catch (e) {
     // TODO: create corresponding error type
-    //@ts-ignore
+    //@ts-expect-error error is unknown so need to determine its type
     if (e?.response?.data?.error === "Permission denied but can redirect") {
       return redirect(`/activityViewer/${params.contentId}`);
     }
