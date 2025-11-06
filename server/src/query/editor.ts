@@ -19,7 +19,11 @@ import { ActivitySource } from "../utils/viewerTypes";
 import { getContent } from "./activity_edit_view";
 import { recordRecentContent } from "./recent";
 import { getAllDoenetmlVersions, getContentSource } from "./activity";
-import { PermissionDeniedRedirectError } from "../utils/error";
+import {
+  InvalidRequestError,
+  PermissionDeniedRedirectError,
+} from "../utils/error";
+import { StatusCodes } from "http-status-codes";
 
 /**
  * Gets the general metadata relevant to editing for an activity.
@@ -30,8 +34,29 @@ export async function getEditor({
   loggedInUserId,
 }: {
   contentId: Uint8Array;
-  loggedInUserId: Uint8Array;
+  loggedInUserId?: Uint8Array;
 }) {
+  if (!loggedInUserId) {
+    // Check whether this activity is viewable for non-logged in user
+    const isViewable = await prisma.content.findUnique({
+      where: {
+        id: contentId,
+        ...filterViewableActivity(loggedInUserId, false),
+      },
+      select: {
+        type: true,
+      },
+    });
+    if (isViewable) {
+      throw new PermissionDeniedRedirectError("Content not editable by you");
+    } else {
+      throw new InvalidRequestError(
+        "Cannot find activity",
+        StatusCodes.NOT_FOUND,
+      );
+    }
+  }
+
   const isEditor = await getIsEditor(loggedInUserId);
 
   try {
