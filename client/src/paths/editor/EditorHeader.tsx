@@ -48,7 +48,7 @@ import { ShareMyContentModal } from "../../popups/ShareMyContentModal";
 import { NotificationDot } from "../../widgets/NotificationDot";
 import { LibraryEditorControls } from "../../widgets/editor/LibraryEditorControls";
 import { editorUrl } from "../../utils/url";
-import { EditableName } from "../../widgets/EditableName";
+import { NameBar } from "../../widgets/NameBar";
 import "../../utils/editor-header.css";
 
 export async function loader({
@@ -341,7 +341,7 @@ export function EditorHeader() {
   );
 
   const editableName = (
-    <EditableName
+    <NameBar
       contentId={contentId}
       contentName={contentName}
       leftIcon={typeIcon}
@@ -462,13 +462,21 @@ export function EditorHeader() {
 
   const actionButtons = !isSubActivity && (
     <ButtonGroup size="sm" mt="4px" mr={{ base: "5px", sm: "10px" }}>
-      <Button
-        colorScheme="blue"
-        isDisabled={inLibrary}
-        onClick={confirmAssignOnOpen}
+      <Tooltip
+        label={
+          contentDescription.hasBadVersion &&
+          "Creating assignments is not supported (yet) with documents of version 0.6 or 0.7 intermediate."
+        }
+        placement="bottom-end"
       >
-        Create assignment
-      </Button>
+        <Button
+          colorScheme="blue"
+          isDisabled={inLibrary || contentDescription.hasBadVersion}
+          onClick={confirmAssignOnOpen}
+        >
+          Create assignment
+        </Button>
+      </Tooltip>
       <Button
         colorScheme="blue"
         isDisabled={inLibrary}

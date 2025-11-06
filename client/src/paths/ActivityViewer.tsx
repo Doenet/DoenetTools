@@ -148,6 +148,8 @@ export function ActivityViewer() {
   const navigate = useNavigate();
 
   const infoBtnRef = useRef<HTMLButtonElement>(null);
+  const doenetViewerContainer = useRef<HTMLDivElement>(null);
+  const scrollingContainer = useRef<HTMLDivElement>(null);
 
   const authorMode = user?.isAuthor || data.type === "select";
 
@@ -255,6 +257,20 @@ export function ActivityViewer() {
   const baseUrl = window.location.protocol + "//" + window.location.host;
   const doenetViewerUrl = `${baseUrl}/activityViewer`;
 
+  function requestScrollTo(offset: number) {
+    if (doenetViewerContainer.current && scrollingContainer.current) {
+      const iframeTop =
+        doenetViewerContainer.current.getBoundingClientRect().top +
+        scrollingContainer.current.scrollTop;
+      const targetAbsoluteTop = iframeTop + offset;
+
+      scrollingContainer.current.scrollTo({
+        top: targetAbsoluteTop - 50,
+        behavior: "smooth",
+      });
+    }
+  }
+
   if (data.type === "singleDoc") {
     if (mode === "Edit") {
       const initialWarnings = getDoenetMLDeprecationWarnings(
@@ -275,26 +291,29 @@ export function ActivityViewer() {
       );
     } else {
       mainContent = (
-        <BlueBanner>
-          <DoenetViewer
-            doenetML={data.doenetML}
-            doenetmlVersion={data.doenetmlVersion.fullVersion}
-            flags={{
-              showCorrectness: true,
-              solutionDisplayMode: "button",
-              showFeedback: true,
-              showHints: true,
-              autoSubmit: false,
-              allowLoadState: false,
-              allowSaveState: false,
-              allowLocalState: false,
-              allowSaveEvents: false,
-            }}
-            attemptNumber={1}
-            doenetViewerUrl={doenetViewerUrl}
-            includeVariantSelector={true}
-          />
-        </BlueBanner>
+        <Box ref={doenetViewerContainer}>
+          <BlueBanner>
+            <DoenetViewer
+              doenetML={data.doenetML}
+              doenetmlVersion={data.doenetmlVersion.fullVersion}
+              flags={{
+                showCorrectness: true,
+                solutionDisplayMode: "button",
+                showFeedback: true,
+                showHints: true,
+                autoSubmit: false,
+                allowLoadState: false,
+                allowSaveState: false,
+                allowLocalState: false,
+                allowSaveEvents: false,
+              }}
+              attemptNumber={1}
+              doenetViewerUrl={doenetViewerUrl}
+              includeVariantSelector={true}
+              requestScrollTo={requestScrollTo}
+            />
+          </BlueBanner>
+        </Box>
       );
     }
   } else {
@@ -432,12 +451,14 @@ export function ActivityViewer() {
       {copyContentModal}
       <Grid
         background="doenet.lightBlue"
-        minHeight="calc(100vh - 40px)" //40px header height
+        height="calc(100vh - 40px)" //40px header height
         templateAreas={`"header"
       "centerContent"
       `}
         templateRows="100px auto"
         position="relative"
+        ref={scrollingContainer}
+        overflowY="scroll"
       >
         <GridItem
           area="header"

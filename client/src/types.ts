@@ -319,6 +319,8 @@ export type ContentDescription = {
 
   grandparentId?: Uuid | null;
   grandparentName?: string | null;
+  // TODO: remove this when fix bad assignment versions
+  hasBadVersion?: boolean;
 };
 
 export function isContentDescription(obj: unknown): obj is ContentDescription {

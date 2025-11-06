@@ -39,7 +39,7 @@ export async function loader() {
 
 const HomeIntroVideo = lazy(() => import("../widgets/HomeIntroVideo"));
 
-const doenetmlVersion = "0.7.0-beta5";
+const doenetmlVersion = "0.7.0-beta7";
 const doenetML = `
 <example>
 <setup>
