@@ -1,5 +1,8 @@
 import express from "express";
-import { queryLoggedIn, queryOptionalLoggedIn } from "../middleware/queryMiddleware";
+import {
+  queryLoggedIn,
+  queryOptionalLoggedIn,
+} from "../middleware/queryMiddleware";
 import {
   getCompoundEditorEdit,
   getCompoundEditorView,
