@@ -65,7 +65,6 @@ export async function loader({
     // TODO: create corresponding error type
     //@ts-ignore
     if (e?.response?.data?.error === "Permission denied but can redirect") {
-      console.log("redirecting to activity viewer");
       return redirect(`/activityViewer/${params.contentId}`);
     }
     throw e;
