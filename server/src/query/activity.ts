@@ -11,7 +11,7 @@ import {
 } from "../utils/permissions";
 import { getNextSortIndexForParent } from "../utils/sort";
 import { DateTime } from "luxon";
-import { cidFromText } from "../utils/cid";
+import { getCidV1FromString } from "../utils/ipfs";
 import { getContent } from "./activity_edit_view";
 import { compileActivityFromContent } from "../utils/contentStructure";
 import { InvalidRequestError } from "../utils/error";
@@ -645,7 +645,7 @@ export async function createContentRevision({
     numVariants = content.numVariants;
     doenetmlVersionId = content.doenetmlVersion.id;
     // use doenetmlVersionId for cid so that cid doesn't change if we upgrade the minor version for all documents
-    cid = await cidFromText(
+    cid = await getCidV1FromString(
       content.doenetmlVersion.id.toString() + "|" + source,
     );
   } else {
@@ -654,7 +654,7 @@ export async function createContentRevision({
     const sourceForCid = JSON.stringify(
       compileActivityFromContent(content, true),
     );
-    cid = await cidFromText(sourceForCid);
+    cid = await getCidV1FromString(sourceForCid);
   }
 
   // find most recent revision with cid
