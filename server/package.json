@@ -15,7 +15,7 @@
   "author": "",
   "license": "ISC",
   "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@aws-sdk/client-ses": "^3.777.0",
