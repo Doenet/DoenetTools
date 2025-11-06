@@ -58,7 +58,18 @@ export async function loader({
   params: any;
   request: Request;
 }) {
-  const { data } = await axios.get(`/api/editor/getEditor/${params.contentId}`);
+  let data;
+  try {
+    ({ data } = await axios.get(`/api/editor/getEditor/${params.contentId}`));
+  } catch (e) {
+    // TODO: create corresponding error type
+    //@ts-ignore
+    if (e?.response?.data?.error === "Permission denied but can redirect") {
+      console.log("redirecting to activity viewer");
+      return redirect(`/activityViewer/${params.contentId}`);
+    }
+    throw e;
+  }
 
   if (data.isNotEditable) {
     return redirect(`/activityEditor/${params.contentId}`);
