@@ -31,8 +31,35 @@ export function Home() {
     document.title = `Doenet - Richly interactive classroom activities`;
   }, []);
 
-  // Replace these paths with your actual hero video asset paths in /public or a CDN.
-  const heroVideos = ["/norm_dist.mp4", "/star.mp4"];
+  // The first string is the video source path,
+  // the second string is the link to try the activity.
+  // Ordered from what to show first to last in the carousel.
+  const heroVideos: [string, string, number][] = [
+    ["/homepage/function_through_point.mp4", "", 18000],
+    [
+      "/homepage/tangrams.mp4",
+      "/activityviewer/qwt1vaYgTc2bVeoS14hVXg/",
+      11000,
+    ],
+    ["/homepage/tangent.mp4", "/activityviewer/gyp15j3SxMKp5QUY8Y6tEr/", 10000],
+    [
+      "/homepage/line_through_two_points.mp4",
+      "/activityviewer/dhZmppQfsZzd1YwumJ6XDB/",
+      10000,
+    ],
+    [
+      "/homepage/sine_1_over_x.mp4",
+      "/activityviewer/hV7Y2RtkeLGN4tQ3VMSEck/",
+      9000,
+    ],
+
+    ["/homepage/star.mp4", "/activityviewer/sHTwF3vMXGzyrKnLc7q5Vp/", 10000],
+    [
+      "/homepage/parametric.mp4",
+      "/activityviewer/pV9Ngvj1XUbBa8T2gb6TNa/",
+      10000,
+    ],
+  ];
 
   const grayBox = <Box width="200px" bgColor="gray" height="170px" />;
 
@@ -111,7 +138,7 @@ export function Home() {
             display="flex"
             justifyContent="flex-end"
           >
-            <VideoCarousel videos={heroVideos} intervalMs={7000} />
+            <VideoCarousel videos={heroVideos} />
           </GridItem>
         </Grid>
       </WithSideBanners>
@@ -349,22 +376,22 @@ export function Home() {
   );
 }
 
-function VideoCarousel({
-  videos,
-  intervalMs = 4000,
-}: {
-  videos: string[];
-  intervalMs?: number;
-}) {
+function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
   const [index, setIndex] = React.useState(0);
-  const [isHovered, setIsHovered] = React.useState(false);
+  // const [isHovered, setIsHovered] = React.useState(false);
 
   const [overlayShown, setOverlayShown] = React.useState(false);
-  const transitionMs = 300; // fade duration ms
-  const holdMs = 80; // hold white for a short time while video src swaps
+
+  const slowTransitionMs = 500; // fade duration ms
+  const slowHoldMs = 500; // hold white for a short time while video src swaps
+
+  const fastTransitionMs = 100;
+  const fastHoldMs = 100;
+
   const timeouts = React.useRef<number[]>([]);
   const isTransitioning = React.useRef(false);
   const indexRef = React.useRef(index);
+  const overlayTransitionMsRef = React.useRef<number | null>(null);
   React.useEffect(() => {
     indexRef.current = index;
   }, [index]);
@@ -376,30 +403,38 @@ function VideoCarousel({
   const iconStroke = 3; // chevron stroke thickness
 
   useEffect(() => {
+    // Use the current video's 3rd tuple element as the delay (ms). Fallback to 10000ms.
+    const current = videos && videos[index];
+    const delay =
+      current && typeof current[2] === "number" ? current[2] : 10000;
+
     if (!videos || videos.length <= 1) return;
-    if (isHovered) return; // pause while hovering
     const id = window.setInterval(() => {
       const next = (indexRef.current + 1) % videos.length;
-      performTransition(next);
-    }, intervalMs);
+      performTransition(next, false);
+    }, delay);
     return () => window.clearInterval(id);
-  }, [videos, intervalMs, isHovered]);
+  }, [videos, index]);
 
   // performTransition: fade to white, swap video, fade back
-  function performTransition(nextIndex: number) {
+  function performTransition(nextIndex: number, useFastTransition = false) {
+    const transitionMs = useFastTransition
+      ? fastTransitionMs
+      : slowTransitionMs;
+    const holdMs = useFastTransition ? fastHoldMs : slowHoldMs;
+
     if (isTransitioning.current) return;
     isTransitioning.current = true;
-    // show white overlay (fade in)
+    overlayTransitionMsRef.current = transitionMs;
     setOverlayShown(true);
+
     const t1 = window.setTimeout(() => {
-      // swap video source
       setIndex(nextIndex);
-      // keep white a short moment then fade out
       const t2 = window.setTimeout(() => {
         setOverlayShown(false);
-        // finish after fade-out completes
         const t3 = window.setTimeout(() => {
           isTransitioning.current = false;
+          overlayTransitionMsRef.current = null;
         }, transitionMs);
         timeouts.current.push(t3);
       }, holdMs);
@@ -411,11 +446,11 @@ function VideoCarousel({
   // replace manual handlers to perform transition
   const handlePrev = () => {
     const next = (indexRef.current - 1 + videos.length) % videos.length;
-    performTransition(next);
+    performTransition(next, true);
   };
   const handleNext = () => {
     const next = (indexRef.current + 1) % videos.length;
-    performTransition(next);
+    performTransition(next, true);
   };
 
   // cleanup pending timeouts on unmount
@@ -428,24 +463,12 @@ function VideoCarousel({
 
   if (!videos || videos.length === 0) return null;
 
+  const currentVideoSrc = videos[index][0];
+  const currentTryLink = videos[index][1];
+
   return (
     <VStack align="center" spacing={0}>
-      <HStack
-        /* Add horizontal padding so arrows sit inside the bounding box. */
-        // px={{ base: 2, md: `${arrowReserve}px` }}
-        alignItems="center"
-        justifyContent="center"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        /* no negative margin; top padding removed on parent so the video shifts up */
-      >
-        {/* key on index forces the video element to reload when index changes */}
-        {/*
-        Wrap the video in a responsive Box that reduces available width on md+
-        so the arrow buttons (inside the outer padding) do not overlap the
-        video. We reserve 112px total (56px per side) on md+; adjust if you
-        change the arrow size.
-      */}
+      <HStack alignItems="center" justifyContent="center">
         {/* Left arrow */}
         <IconButton
           aria-label="Previous video"
@@ -466,30 +489,28 @@ function VideoCarousel({
           borderRadius="full"
           display={{ base: "none", md: "flex" }}
         />
+
         <Box
           position="relative"
           borderStyle="inset"
           borderLeft="3px solid lightgray"
-          // borderRadius="4px 4px 4px 4px"
         >
           <video
             key={index}
-            src={videos[index]}
+            src={currentVideoSrc}
             autoPlay
             muted
             playsInline
-            loop
             style={{
-              height: "540px",
+              height: "580px",
               width: "500px",
               display: "block",
               objectFit: "cover",
               backgroundColor: "white",
-              // borderBottom: "4px solid lightgray",
             }}
           />
 
-          {/* overlay used to fade-to-white during transitions (sits above video, below button) */}
+          {/* white overlay used for fade transition */}
           <Box
             pointerEvents="none"
             position="absolute"
@@ -501,14 +522,14 @@ function VideoCarousel({
             zIndex={2}
             style={{
               opacity: overlayShown ? 1 : 0,
-              transition: `opacity ${transitionMs}ms ease`,
+              transition: `opacity ${overlayTransitionMsRef.current ?? slowTransitionMs}ms ease`,
             }}
           />
 
           {/* Try me button positioned top-right on the video */}
           <Button
             as={ReactRouterLink}
-            to="/try"
+            to={currentTryLink}
             position="absolute"
             top="10px"
             right="10px"
@@ -531,14 +552,12 @@ function VideoCarousel({
             border="2px solid rgba(0,0,0,0.12)"
             boxShadow="0 6px 18px rgba(0,0,0,0.22)"
             transition="box-shadow 150ms ease, transform 150ms ease"
-            style={{
-              transform: "scale(1.2)",
-              transformOrigin: "top right",
-            }}
+            style={{ transform: "scale(1.2)", transformOrigin: "top right" }}
           >
             Try me
           </Button>
         </Box>
+
         {/* Right arrow */}
         <IconButton
           aria-label="Next video"
@@ -559,8 +578,6 @@ function VideoCarousel({
           display={{ base: "none", md: "flex" }}
         />
       </HStack>
-
-      {/* Removed under-video button; Try button now sits above the video in the video wrapper */}
     </VStack>
   );
 }
