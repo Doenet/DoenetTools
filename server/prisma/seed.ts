@@ -29,7 +29,7 @@ async function seedDoenetMLVersions() {
   });
   await updateOrCreateDoenetMLVersion({
     displayedVersion: "0.7",
-    fullVersion: "0.7.0-beta7",
+    fullVersion: "0.7.0-beta8",
     default: true,
   });
 }
