@@ -1,5 +1,5 @@
 import express from "express";
-import { queryLoggedIn } from "../middleware/queryMiddleware";
+import { queryLoggedIn, queryOptionalLoggedIn } from "../middleware/queryMiddleware";
 import {
   getCompoundEditorEdit,
   getCompoundEditorView,
@@ -15,7 +15,7 @@ export const editorRouter = express.Router();
 
 editorRouter.get(
   "/getEditor/:contentId",
-  queryLoggedIn(getEditor, contentIdSchema),
+  queryOptionalLoggedIn(getEditor, contentIdSchema),
 );
 
 editorRouter.get(
