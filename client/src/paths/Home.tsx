@@ -35,27 +35,32 @@ export function Home() {
   // the second string is the link to try the activity.
   // Ordered from what to show first to last in the carousel.
   const heroVideos: [string, string, number][] = [
-    ["/homepage/function_through_point.mp4", "", 18000],
+    ["/homepage/function_through_point2.mp4", "", 18000],
     [
-      "/homepage/tangrams.mp4",
+      "/homepage/tangrams2.mp4",
       "/activityviewer/qwt1vaYgTc2bVeoS14hVXg/",
       11000,
     ],
-    ["/homepage/tangent.mp4", "/activityviewer/gyp15j3SxMKp5QUY8Y6tEr/", 10000],
     [
-      "/homepage/line_through_two_points.mp4",
+      "/homepage/tangent2.mp4",
+      "/activityviewer/gyp15j3SxMKp5QUY8Y6tEr/",
+      10000,
+    ],
+    [
+      "/homepage/line_through_two_points2.mp4",
       "/activityviewer/dhZmppQfsZzd1YwumJ6XDB/",
       10000,
     ],
     [
-      "/homepage/sine_1_over_x.mp4",
+      "/homepage/sine_1_over_x_2.mp4",
       "/activityviewer/hV7Y2RtkeLGN4tQ3VMSEck/",
       9000,
     ],
 
+    // Fix this one!
     ["/homepage/star.mp4", "/activityviewer/sHTwF3vMXGzyrKnLc7q5Vp/", 10000],
     [
-      "/homepage/parametric.mp4",
+      "/homepage/parametric2.mp4",
       "/activityviewer/pV9Ngvj1XUbBa8T2gb6TNa/",
       10000,
     ],
@@ -116,18 +121,13 @@ export function Home() {
               mb="10px"
             >
               Find, create, and share meaningfully interactive content using a
-              free, community-driven tool
+              free community-driven tool
             </Heading>
 
-            {/* <Box mb="60px">
-              <Heading
-                color="white"
-                fontSize={["24px", "1.5vw"]}
-                fontWeight="450"
-                mb="5px"
-              >
-                A free, community-driven tool
-              </Heading>
+            {/* <Box>
+              <Text color="white" fontSize={["24px", "1.5vw"]} mb="5px">
+                Human-crafted activities in the age of AI
+              </Text>
             </Box> */}
           </GridItem>
 
@@ -368,7 +368,7 @@ export function Home() {
   return (
     <>
       {heroSection}
-      {exploreSection}
+      {/* {exploreSection} */}
       {featuresSection}
       {communitySection}
       {footerSection}
