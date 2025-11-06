@@ -47,6 +47,7 @@ import {
 import { setContentLicense } from "../query/license";
 import { isEqualUUID } from "../utils/uuid";
 import { Doc } from "../types";
+import { InvalidRequestError, PermissionDeniedRedirectError } from "../utils/error";
 
 // const EMPTY_DOC_CID =
 //   "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku";
@@ -720,6 +721,9 @@ test("get activity/document data only if owner or limited data for public/shared
     getEditor({ contentId, loggedInUserId: user1Id }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
   await expect(
+    getEditor({ contentId }),
+  ).rejects.toThrow(InvalidRequestError);
+  await expect(
     getActivityViewerData({ contentId, loggedInUserId: user1Id }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
   await expect(
@@ -737,7 +741,10 @@ test("get activity/document data only if owner or limited data for public/shared
       contentId: contentId,
       loggedInUserId: user1Id,
     }),
-  ).rejects.toThrow();
+  ).rejects.toThrow(PermissionDeniedRedirectError);
+  await expect(
+    getEditor({ contentId }),
+  ).rejects.toThrow(PermissionDeniedRedirectError);
 
   await getActivityViewerData({
     contentId: contentId,
@@ -757,6 +764,9 @@ test("get activity/document data only if owner or limited data for public/shared
     getEditor({ contentId: contentId, loggedInUserId: user1Id }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
   await expect(
+    getEditor({ contentId }),
+  ).rejects.toThrow(InvalidRequestError);
+  await expect(
     getActivityViewerData({ contentId: contentId, loggedInUserId: user1Id }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
   await expect(
@@ -771,7 +781,10 @@ test("get activity/document data only if owner or limited data for public/shared
   });
   await expect(
     getEditor({ contentId: contentId, loggedInUserId: user1Id }),
-  ).rejects.toThrow();
+  ).rejects.toThrow(PermissionDeniedRedirectError);
+  await expect(
+    getEditor({ contentId }),
+  ).rejects.toThrow(InvalidRequestError);
 
   await getActivityViewerData({
     contentId: contentId,
