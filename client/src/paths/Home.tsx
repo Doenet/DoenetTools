@@ -35,34 +35,30 @@ export function Home() {
   // the second string is the link to try the activity.
   // Ordered from what to show first to last in the carousel.
   const heroVideos: [string, string, number][] = [
-    ["/homepage/function_through_point2.mp4", "", 18000],
+    ["/homepage/tangent.mp4", "/activityviewer/gyp15j3SxMKp5QUY8Y6tEr/", 8000],
+    ["/homepage/function_through_point.mp4", "", 8000],
+    ["/homepage/tangrams.mp4", "/activityviewer/qwt1vaYgTc2bVeoS14hVXg/", 8000],
+    ["/homepage/distribution.mp4", "", 8000],
+
     [
-      "/homepage/tangrams2.mp4",
-      "/activityviewer/qwt1vaYgTc2bVeoS14hVXg/",
-      11000,
+      "/homepage/sine_1_over_x.mp4",
+      "/activityviewer/hV7Y2RtkeLGN4tQ3VMSEck/",
+      8000,
     ],
+    // Fix this one!
+    ["/homepage/star.mp4", "/activityviewer/sHTwF3vMXGzyrKnLc7q5Vp/", 8000],
+
     [
-      "/homepage/tangent2.mp4",
-      "/activityviewer/gyp15j3SxMKp5QUY8Y6tEr/",
-      10000,
+      "/homepage/parametric.mp4",
+      "/activityviewer/pV9Ngvj1XUbBa8T2gb6TNa/",
+      8000,
     ],
+
+    // Fix
     [
       "/homepage/line_through_two_points2.mp4",
       "/activityviewer/dhZmppQfsZzd1YwumJ6XDB/",
-      10000,
-    ],
-    [
-      "/homepage/sine_1_over_x_2.mp4",
-      "/activityviewer/hV7Y2RtkeLGN4tQ3VMSEck/",
-      9000,
-    ],
-
-    // Fix this one!
-    ["/homepage/star.mp4", "/activityviewer/sHTwF3vMXGzyrKnLc7q5Vp/", 10000],
-    [
-      "/homepage/parametric2.mp4",
-      "/activityviewer/pV9Ngvj1XUbBa8T2gb6TNa/",
-      10000,
+      8000,
     ],
   ];
 
@@ -188,12 +184,13 @@ export function Home() {
             alt="Instant feedback"
             width="450px"
             height="200px"
+            border="1px solid gray"
             // objectFit="cover"
           />
 
           <p>
             <strong>Instant feedback for students.</strong>
-            You specify the solutions and hints, the activiity will respond to
+            You specify the solutions and hints, the activity will respond to
             student attempts.
           </p>
         </HStack>
@@ -209,6 +206,8 @@ export function Home() {
             alt="Instant feedback"
             width="300px"
             height="170px"
+            border="1px solid gray"
+
             // objectFit="cover"
           />
         </HStack>
@@ -382,12 +381,6 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
 
   const [overlayShown, setOverlayShown] = React.useState(false);
 
-  const slowTransitionMs = 500; // fade duration ms
-  const slowHoldMs = 500; // hold white for a short time while video src swaps
-
-  const fastTransitionMs = 100;
-  const fastHoldMs = 100;
-
   const timeouts = React.useRef<number[]>([]);
   const isTransitioning = React.useRef(false);
   const indexRef = React.useRef(index);
@@ -418,29 +411,40 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
 
   // performTransition: fade to white, swap video, fade back
   function performTransition(nextIndex: number, useFastTransition = false) {
-    const transitionMs = useFastTransition
-      ? fastTransitionMs
-      : slowTransitionMs;
-    const holdMs = useFastTransition ? fastHoldMs : slowHoldMs;
-
     if (isTransitioning.current) return;
-    isTransitioning.current = true;
-    overlayTransitionMsRef.current = transitionMs;
-    setOverlayShown(true);
 
-    const t1 = window.setTimeout(() => {
+    const fadeOutMs = useFastTransition ? 50 : 600;
+    const holdMs = useFastTransition ? 0 : 500;
+    const fadeInMs = useFastTransition ? 400 : 800;
+
+    // The following code performs the transition in four steps:
+    // 1. Fade out to white
+    // 2. Swap video source and hold white
+    // 3. Fade back in
+    // 4. cleanup
+    // They are declared in reverse order to allow easier chaining of timeouts.
+
+    const cleanUpTransition = () => {
+      isTransitioning.current = false;
+      overlayTransitionMsRef.current = null;
+    };
+
+    const startFadeIn = () => {
+      overlayTransitionMsRef.current = fadeInMs;
+      setOverlayShown(false);
+      timeouts.current.push(window.setTimeout(cleanUpTransition, fadeInMs));
+    };
+
+    const startSwapAndHold = () => {
       setIndex(nextIndex);
-      const t2 = window.setTimeout(() => {
-        setOverlayShown(false);
-        const t3 = window.setTimeout(() => {
-          isTransitioning.current = false;
-          overlayTransitionMsRef.current = null;
-        }, transitionMs);
-        timeouts.current.push(t3);
-      }, holdMs);
-      timeouts.current.push(t2);
-    }, transitionMs);
-    timeouts.current.push(t1);
+      timeouts.current.push(window.setTimeout(startFadeIn, holdMs));
+    };
+
+    // Start fade out
+    isTransitioning.current = true;
+    overlayTransitionMsRef.current = fadeOutMs;
+    setOverlayShown(true);
+    timeouts.current.push(window.setTimeout(startSwapAndHold, fadeOutMs));
   }
 
   // replace manual handlers to perform transition
@@ -490,11 +494,7 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
           display={{ base: "none", md: "flex" }}
         />
 
-        <Box
-          position="relative"
-          borderStyle="inset"
-          borderLeft="3px solid lightgray"
-        >
+        <Box position="relative" border="3px solid lightgray">
           <video
             key={index}
             src={currentVideoSrc}
@@ -522,7 +522,7 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
             zIndex={2}
             style={{
               opacity: overlayShown ? 1 : 0,
-              transition: `opacity ${overlayTransitionMsRef.current ?? slowTransitionMs}ms ease`,
+              transition: `opacity ${overlayTransitionMsRef.current ?? 0}ms ease`,
             }}
           />
 
