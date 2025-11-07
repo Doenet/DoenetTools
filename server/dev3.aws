@@ -1,0 +1,20 @@
+PROJECT=doenet
+FARGATE_CLUSTER=dev3
+AWS_REGION=us-east-2
+TEMPLATE_BUCKET=doenet-cf-dev
+SSO_ACCOUNT_NAME=CSE-doenet-dev
+SAM_CONFIG_ENV=dev
+
+declare -g -A STACKS
+STACKS['dev3-doenet-networking']='networking'
+
+declare -g -a STACK_ORDER
+STACK_ORDER=(
+  dev3-doenet-networking 
+)
+
+declare -g -a SAM_STACKS
+SAM_STACKS=(
+)
+
+declare -g -A DOCKER_IMAGES
