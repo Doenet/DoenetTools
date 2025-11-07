@@ -97,7 +97,7 @@ export const filterExcludeAssignments = {
  * NOTE: This function does not verify editor privileges. You must pass in the correct `isEditor` flag.
  */
 export function filterViewableActivity(
-  loggedInUserId: Uint8Array,
+  loggedInUserId?: Uint8Array,
   isEditor: boolean = false,
 ) {
   return {
@@ -154,7 +154,7 @@ export function filterViewableRootAssignment(loggedInUserId: Uint8Array) {
  * NOTE: This function does not verify editor privileges. You must pass in the correct `isEditor` flag.
  */
 export function filterViewableContent(
-  loggedInUserId: Uint8Array,
+  loggedInUserId?: Uint8Array,
   isEditor: boolean = false,
 ) {
   const visibilityOptions: (
@@ -162,14 +162,18 @@ export function filterViewableContent(
     | { isPublic: boolean }
     | { sharedWith: { some: { userId: Uint8Array } } }
     | { owner: { isLibrary: boolean } }
-  )[] = [
-    { ownerId: loggedInUserId },
-    { isPublic: true },
-    { sharedWith: { some: { userId: loggedInUserId } } },
-  ];
-  if (isEditor) {
-    visibilityOptions.push({ owner: { isLibrary: true } });
+  )[] = [{ isPublic: true }];
+
+  if (loggedInUserId) {
+    visibilityOptions.push({ ownerId: loggedInUserId });
+    visibilityOptions.push({
+      sharedWith: { some: { userId: loggedInUserId } },
+    });
+    if (isEditor) {
+      visibilityOptions.push({ owner: { isLibrary: true } });
+    }
   }
+
   return {
     isDeletedOn: null,
     OR: visibilityOptions,

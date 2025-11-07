@@ -11,7 +11,7 @@ import {
 } from "../utils/permissions";
 import { getNextSortIndexForParent } from "../utils/sort";
 import { DateTime } from "luxon";
-import { cidFromText } from "../utils/cid";
+import { getCidV1FromString } from "../utils/ipfs";
 import { getContent } from "./activity_edit_view";
 import { compileActivityFromContent } from "../utils/contentStructure";
 import { InvalidRequestError } from "../utils/error";
@@ -494,6 +494,7 @@ export async function getContentDescription({
     select: {
       name: true,
       type: true,
+      doenetmlVersionId: true,
       parent: {
         where: {
           ...filterViewableContent(loggedInUserId, isEditor),
@@ -524,6 +525,49 @@ export async function getContentDescription({
       }
     : null;
 
+  // Temporary hack:
+  // Since currently, versions 0.6 and 0.7 intermediate don't work with assignments,
+  // flag them as bad versions so that can disable the "Create assignment" button.
+
+  // TODO: remove this when fix bad assignment versions
+  const badVersions = (
+    await prisma.doenetmlVersions.findMany({
+      where: { displayedVersion: { in: ["0.6", "0.7 intermediate"] } },
+      select: { id: true },
+    })
+  ).map((x) => x.id);
+
+  let hasBadVersion = false;
+  if (description.type === "singleDoc") {
+    hasBadVersion =
+      description.doenetmlVersionId !== null &&
+      badVersions.includes(description.doenetmlVersionId);
+  } else {
+    const descendants = await prisma.$queryRaw<
+      {
+        id: Uint8Array;
+        doenetmlVersionId: number | null;
+      }[]
+    >(Prisma.sql`
+    WITH RECURSIVE content_tree(id, doenetmlVersionId) AS (
+      SELECT id, doenetmlVersionId FROM content
+      WHERE parentId = ${contentId} AND isDeletedOn IS NULL
+      UNION ALL
+      SELECT content.id, content.doenetmlVersionId FROM content
+      INNER JOIN content_tree AS ct
+      ON content.parentId = ct.id
+      WHERE content.isDeletedOn IS NULL
+    )
+    SELECT id, doenetmlVersionId from content_tree;
+  `);
+
+    hasBadVersion = descendants.some(
+      (x) =>
+        x.doenetmlVersionId !== null &&
+        badVersions.includes(x.doenetmlVersionId),
+    );
+  }
+
   return {
     contentId,
     name: description.name,
@@ -531,6 +575,7 @@ export async function getContentDescription({
     parent,
     grandparentId: description.parent?.parent?.id ?? null,
     grandparentName: description.parent?.parent?.name ?? null,
+    hasBadVersion,
   };
 }
 
@@ -600,7 +645,7 @@ export async function createContentRevision({
     numVariants = content.numVariants;
     doenetmlVersionId = content.doenetmlVersion.id;
     // use doenetmlVersionId for cid so that cid doesn't change if we upgrade the minor version for all documents
-    cid = await cidFromText(
+    cid = await getCidV1FromString(
       content.doenetmlVersion.id.toString() + "|" + source,
     );
   } else {
@@ -609,7 +654,7 @@ export async function createContentRevision({
     const sourceForCid = JSON.stringify(
       compileActivityFromContent(content, true),
     );
-    cid = await cidFromText(sourceForCid);
+    cid = await getCidV1FromString(sourceForCid);
   }
 
   // find most recent revision with cid

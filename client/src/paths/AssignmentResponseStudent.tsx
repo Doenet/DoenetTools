@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect } from "react";
+import React, { ReactElement, useEffect, useRef } from "react";
 
 import {
   Box,
@@ -202,6 +202,9 @@ export function AssignmentResponseStudent() {
 
   const navigate = useNavigate();
 
+  const viewerContainer = useRef<HTMLDivElement>(null);
+  const scrollingContainer = useRef<HTMLDivElement>(null);
+
   const contentTypeName = contentTypeToName[assignment.type];
   const { iconImage, iconColor } = getIconInfo(assignment.type, true);
 
@@ -222,6 +225,20 @@ export function AssignmentResponseStudent() {
     </Tooltip>
   );
 
+  function requestScrollTo(offset: number) {
+    if (viewerContainer.current && scrollingContainer.current) {
+      const iframeTop =
+        viewerContainer.current.getBoundingClientRect().top +
+        scrollingContainer.current.scrollTop;
+      const targetAbsoluteTop = iframeTop + offset;
+
+      scrollingContainer.current.scrollTo({
+        top: targetAbsoluteTop - 0,
+        behavior: "smooth",
+      });
+    }
+  }
+
   let mainPanel: ReactElement<any>;
 
   if (data.singleItemAttempt) {
@@ -241,6 +258,7 @@ export function AssignmentResponseStudent() {
         responseCounts={data.responseCounts}
         doenetML={data.doenetML}
         doenetmlVersion={data.doenetmlVersion}
+        requestScrollTo={requestScrollTo}
       />
     );
   } else {
@@ -266,7 +284,8 @@ export function AssignmentResponseStudent() {
       `}
         templateRows="40px auto"
         position="relative"
-        overflow="scroll"
+        overflowY="scroll"
+        ref={scrollingContainer}
       >
         <GridItem
           area="header"
@@ -321,7 +340,9 @@ export function AssignmentResponseStudent() {
             </GridItem>
           </Grid>
         </GridItem>
-        <GridItem area="centerContent">{mainPanel}</GridItem>
+        <GridItem area="centerContent" ref={viewerContainer}>
+          {mainPanel}
+        </GridItem>
       </Grid>
     </>
   );

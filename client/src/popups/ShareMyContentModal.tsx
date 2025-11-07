@@ -1,6 +1,5 @@
 import {
   Heading,
-  Link as ChakraLink,
   Modal,
   ModalOverlay,
   ModalHeader,
@@ -16,10 +15,6 @@ import {
   HStack,
   Input,
   VStack,
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  AlertDescription,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { contentTypeToName } from "../utils/activity";
@@ -29,11 +24,11 @@ import {
   ContentType,
   UserInfoWithEmail,
 } from "../types";
-import { Link as ReactRouterLink, useFetcher } from "react-router";
+import { useFetcher } from "react-router";
 import { SpinnerWhileFetching } from "../utils/optimistic_ui";
 import { ShareTable } from "../widgets/editor/ShareTable";
 import axios from "axios";
-import { IoCheckmark } from "react-icons/io5";
+import { IoMdLink, IoMdCheckmark } from "react-icons/io";
 
 import { loader as settingsLoader } from "../paths/editor/EditorSettingsMode";
 import { editorUrl } from "../utils/url";
@@ -232,12 +227,33 @@ function SharePublicly({
 }) {
   const fetcher = useFetcher();
 
+  const shareableLink = `${window.location.host}/activityViewer/${contentId}`;
+
+  const [copiedLink, setCopiedLink] = useState(false);
+
   if (parentIsPublic) {
     return <p>Parent is public.</p>;
   } else if (isPublic) {
     return (
-      <>
+      <VStack justify="flex-start" align="flex-start">
         <Text mt="1rem">Content is public.</Text>
+
+        <Button
+          mt="1rem"
+          size="sm"
+          colorScheme="blue"
+          onClick={() => {
+            navigator.clipboard.writeText(shareableLink);
+            setCopiedLink(true);
+          }}
+        >
+          {copiedLink ? (
+            <IoMdCheckmark fontSize="1.2rem" />
+          ) : (
+            <IoMdLink fontSize="1.2rem" />
+          )}
+          <Text ml="0.5rem">Copy shareable link</Text>
+        </Button>
 
         <Button
           mt="1rem"
@@ -256,13 +272,18 @@ function SharePublicly({
         >
           Unshare with the public
         </Button>
-      </>
+      </VStack>
     );
   } else {
     // Detect whether or not this activity has the required categories filled
     // out to share publicly
     // For each group that is required, make sure this activity has at least 1 category in that group.
     // If it doesn't, disable sharing publicly.
+    //
+    // TODO: This restriction is ~really~ annoying. Implement a better system,
+    // one where it can be shared but does not show up on Explore
+    // For now, we'll just allow sharing publicly without restrictions.
+
     let disableSubmit = false;
     const allCategories = settings.allCategories as CategoryGroup[];
     const categories = settings.categories as Category[];
@@ -284,7 +305,9 @@ function SharePublicly({
     return (
       <Box>
         <Text mt="1rem">Allow others to find and use your content.</Text>
-        {disableSubmit ? (
+
+        {/* See above comment. Removing the restriction for now */}
+        {/* {disableSubmit ? (
           <Alert status="warning">
             <AlertIcon />
             <AlertTitle>Incomplete settings</AlertTitle>
@@ -306,13 +329,14 @@ function SharePublicly({
             <IoCheckmark color="green" />
             <Text>Settings are filled out</Text>
           </HStack>
-        )}
+        )} */}
 
         <Button
           mt="1rem"
           size="sm"
           colorScheme="blue"
-          isDisabled={disableSubmit}
+          // See above comment about removing restriction
+          // isDisabled={disableSubmit}
           onClick={() => {
             fetcher.submit(
               {

@@ -57,7 +57,7 @@ import { BiDownArrowAlt, BiUpArrowAlt } from "react-icons/bi";
 import { ActivitySource } from "../viewerTypes";
 import { EditAssignmentSettings } from "../widgets/editor/EditAssignmentSettings";
 import { DateTime } from "luxon";
-import { EditableName } from "../widgets/EditableName";
+import { NameBar } from "../widgets/NameBar";
 import { AssignmentInvitation } from "../views/AssignmentInvitation";
 import { downloadScoresToCsv } from "../utils/scores";
 
@@ -659,7 +659,7 @@ export function AssignmentData() {
         </GridItem>
         <GridItem area="label">
           <Flex justifyContent="center" alignItems="center">
-            <EditableName
+            <NameBar
               contentName={assignment.name}
               contentId={assignment.contentId}
               leftIcon={typeIcon}
