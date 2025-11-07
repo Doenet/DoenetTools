@@ -1,18 +1,6 @@
-import {
-  Box,
-  Flex,
-  MenuItem,
-  Heading,
-  Tooltip,
-  Link as ChakraLink,
-} from "@chakra-ui/react";
+import { Box, Flex, MenuItem, Text, Tooltip, Icon } from "@chakra-ui/react";
 import React, { useEffect } from "react";
-import {
-  useLoaderData,
-  useNavigate,
-  useFetcher,
-  Link as ReactRouterLink,
-} from "react-router";
+import { useLoaderData, useFetcher } from "react-router";
 
 import { CardContent } from "../widgets/Card";
 import CardList from "../widgets/CardList";
@@ -20,6 +8,8 @@ import axios from "axios";
 import {} from "../popups/MoveCopyContent";
 import { DateTime } from "luxon";
 import { Content } from "../types";
+import { LuTrash2 } from "react-icons/lu";
+import { NameBar } from "../widgets/NameBar";
 
 export async function loader() {
   const { data: results } = await axios.get(`/api/contentList/getMyTrash`);
@@ -37,61 +27,51 @@ export function Trash() {
   };
 
   useEffect(() => {
-    document.title = `My Trash - Doenet`;
+    document.title = `Trash - Doenet`;
   }, []);
 
   const fetcher = useFetcher();
-  const navigate = useNavigate();
 
-  const headingText = "My Trash";
+  const titleIcon = (
+    <Tooltip label={"Trash"}>
+      <Box>
+        <Icon
+          as={LuTrash2}
+          boxSizing="content-box"
+          width="24px"
+          height="24px"
+          mr="0.5rem"
+          verticalAlign="middle"
+          aria-label={"Trash"}
+        />
+      </Box>
+    </Tooltip>
+  );
+
+  const headingText = (
+    <NameBar
+      contentName={"Trash"}
+      isEditable={false}
+      contentId={null}
+      leftIcon={titleIcon}
+      dataTest="Trash Heading"
+      fontSizeMode={"folder"}
+      overrideMaxWidth="10rem"
+    />
+  );
 
   const heading = (
-    <Box
-      backgroundColor="#fff"
-      color="#000"
-      height={{ base: "170px", md: "180px" }}
-      width="100%"
-      textAlign="center"
+    <Flex
+      justify="flex-start"
+      align="left"
+      pt="30px"
+      pb="30px"
+      flexDir={["column", "row"]}
+      gap="5px"
     >
-      <Flex
-        width="100%"
-        paddingRight="0.5em"
-        paddingLeft="1em"
-        alignItems="middle"
-      >
-        <Box marginTop="5px" height="24px">
-          <ChakraLink
-            as={ReactRouterLink}
-            to={".."}
-            style={{
-              color: "var(--mainBlue)",
-            }}
-            onClick={(e) => {
-              e.preventDefault();
-              navigate(-1);
-            }}
-          >
-            {" "}
-            &lt; Back
-          </ChakraLink>
-        </Box>
-      </Flex>
-
-      <Heading
-        as="h2"
-        size="lg"
-        marginBottom=".5em"
-        noOfLines={1}
-        maxHeight="1.5em"
-        lineHeight="normal"
-        data-test="Folder Heading"
-      >
-        <Tooltip label={headingText}>{headingText}</Tooltip>
-      </Heading>
-      <Heading size="md">
-        Items in the trash will be deleted forever after 30 days
-      </Heading>
-    </Box>
+      {headingText}
+      <Text>Items in the trash will be deleted forever after 30 days</Text>
+    </Flex>
   );
 
   function getCardMenuList({ contentId }: { contentId: string }) {
@@ -136,20 +116,15 @@ export function Trash() {
   );
 
   return (
-    <>
+    <Box
+      data-test="Activities"
+      width={{ base: "100%", md: "calc(100% - 40px)" }}
+      background={"white"}
+      ml={{ base: "0px", md: "20px" }}
+      mr={{ base: "0px", md: "20px" }}
+    >
       {heading}
-
-      <Flex
-        data-test="Trash"
-        padding="0 10px"
-        margin="0px"
-        width="100%"
-        background={"white"}
-        minHeight={{ base: "calc(100vh - 225px)", md: "calc(100vh - 235px)" }}
-        direction="column"
-      >
-        {mainPanel}
-      </Flex>
-    </>
+      {mainPanel}
+    </Box>
   );
 }

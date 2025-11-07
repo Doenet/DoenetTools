@@ -47,6 +47,10 @@ import {
 import { setContentLicense } from "../query/license";
 import { isEqualUUID } from "../utils/uuid";
 import { Doc } from "../types";
+import {
+  InvalidRequestError,
+  PermissionDeniedRedirectError,
+} from "../utils/error";
 
 // const EMPTY_DOC_CID =
 //   "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku";
@@ -54,7 +58,7 @@ import { Doc } from "../types";
 const currentDoenetmlVersion = {
   id: 2,
   displayedVersion: "0.7",
-  fullVersion: "0.7.0-beta5",
+  fullVersion: "0.7.0-beta8",
   default: true,
   deprecated: false,
   removed: false,
@@ -719,6 +723,7 @@ test("get activity/document data only if owner or limited data for public/shared
   await expect(
     getEditor({ contentId, loggedInUserId: user1Id }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
+  await expect(getEditor({ contentId })).rejects.toThrow(InvalidRequestError);
   await expect(
     getActivityViewerData({ contentId, loggedInUserId: user1Id }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
@@ -737,7 +742,10 @@ test("get activity/document data only if owner or limited data for public/shared
       contentId: contentId,
       loggedInUserId: user1Id,
     }),
-  ).rejects.toThrow();
+  ).rejects.toThrow(PermissionDeniedRedirectError);
+  await expect(getEditor({ contentId })).rejects.toThrow(
+    PermissionDeniedRedirectError,
+  );
 
   await getActivityViewerData({
     contentId: contentId,
@@ -756,6 +764,7 @@ test("get activity/document data only if owner or limited data for public/shared
   await expect(
     getEditor({ contentId: contentId, loggedInUserId: user1Id }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
+  await expect(getEditor({ contentId })).rejects.toThrow(InvalidRequestError);
   await expect(
     getActivityViewerData({ contentId: contentId, loggedInUserId: user1Id }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
@@ -771,7 +780,8 @@ test("get activity/document data only if owner or limited data for public/shared
   });
   await expect(
     getEditor({ contentId: contentId, loggedInUserId: user1Id }),
-  ).rejects.toThrow();
+  ).rejects.toThrow(PermissionDeniedRedirectError);
+  await expect(getEditor({ contentId })).rejects.toThrow(InvalidRequestError);
 
   await getActivityViewerData({
     contentId: contentId,
@@ -1377,6 +1387,7 @@ test("getContentDescription gets correct fields", async () => {
     parent: null,
     grandparentId: null,
     grandparentName: null,
+    hasBadVersion: false,
   });
 
   expect(
@@ -1391,6 +1402,7 @@ test("getContentDescription gets correct fields", async () => {
     parent: { type: "folder", contentId: folderId, name: "folder 1" },
     grandparentId: null,
     grandparentName: null,
+    hasBadVersion: false,
   });
 
   const expectedDoc = {
@@ -1404,6 +1416,7 @@ test("getContentDescription gets correct fields", async () => {
     },
     grandparentId: folderId,
     grandparentName: "folder 1",
+    hasBadVersion: false,
   };
 
   expect(

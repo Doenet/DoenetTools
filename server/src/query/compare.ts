@@ -5,7 +5,7 @@ import {
   filterViewableContent,
   getIsEditor,
 } from "../utils/permissions";
-import { cidFromText } from "../utils/cid";
+import { getCidV1FromString } from "../utils/ipfs";
 
 export async function getDoenetMLComparison({
   contentId,
@@ -126,13 +126,13 @@ export async function getDoenetMLComparison({
     }
   }
 
-  const compareCurrentCid = await cidFromText(
+  const compareCurrentCid = await getCidV1FromString(
     activityCompare.doenetmlVersion?.id.toString() +
       "|" +
       activityCompare.source,
   );
 
-  const activityCurrentCid = await cidFromText(
+  const activityCurrentCid = await getCidV1FromString(
     activity.doenetmlVersion?.id.toString() + "|" + activity.source,
   );
 
