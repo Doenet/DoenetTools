@@ -35,29 +35,32 @@ export function Home() {
   // the second string is the link to try the activity.
   // Ordered from what to show first to last in the carousel.
   const heroVideos: [string, string, number][] = [
-    ["/homepage/tangent.mp4", "/activityviewer/gyp15j3SxMKp5QUY8Y6tEr/", 8000],
-    ["/homepage/function_through_point.mp4", "", 8000],
-    ["/homepage/tangrams.mp4", "/activityviewer/qwt1vaYgTc2bVeoS14hVXg/", 8000],
-    ["/homepage/distribution.mp4", "", 8000],
-
+    ["/homepage/tangent.mp4", "/activityViewer/hV7Y2RtkeLGN4tQ3VMSEck/", 8000],
+    [
+      "/homepage/function_through_point.mp4",
+      "/activityViewer/fw4KSbxXSKzRJMsaN3oTWR/",
+      8000,
+    ],
+    ["/homepage/tangrams.mp4", "/activityViewer/gyp15j3SxMKp5QUY8Y6tEr/", 8000],
+    [
+      "/homepage/distribution.mp4",
+      "/activityViewer/jy8EXxXhrfvpDcn8pjd6Ue",
+      8000,
+    ],
     [
       "/homepage/sine_1_over_x.mp4",
-      "/activityviewer/hV7Y2RtkeLGN4tQ3VMSEck/",
+      "/activityViewer/pV9Ngvj1XUbBa8T2gb6TNa/",
       8000,
     ],
-    // Fix this one!
-    ["/homepage/star.mp4", "/activityviewer/sHTwF3vMXGzyrKnLc7q5Vp/", 8000],
-
+    ["/homepage/star.mp4", "/activityViewer/dhZmppQfsZzd1YwumJ6XDB/", 8000],
     [
       "/homepage/parametric.mp4",
-      "/activityviewer/pV9Ngvj1XUbBa8T2gb6TNa/",
+      "/activityViewer/sHTwF3vMXGzyrKnLc7q5Vp/",
       8000,
     ],
-
-    // Fix
     [
-      "/homepage/line_through_two_points2.mp4",
-      "/activityviewer/dhZmppQfsZzd1YwumJ6XDB/",
+      "/homepage/line_through_two_points.mp4",
+      "/activityViewer/gGgWmLWo3db84kXTV4y6AR/",
       8000,
     ],
   ];
@@ -171,7 +174,7 @@ export function Home() {
     <WithSideBanners
       bgColor="#d3dff1ff"
       // bgColor="doenet.mainGray"
-      padding="50px"
+      padding="70px"
     >
       <Heading size="lg" mb="20px">
         Customize or create your own activities
@@ -179,37 +182,34 @@ export function Home() {
 
       <VStack align="flex-start" fontSize="1.4rem">
         <HStack spacing="20px">
-          <Image
+          {/* <Image
             src="/instant_feedback4.png"
             alt="Instant feedback"
             width="450px"
             height="200px"
             border="1px solid gray"
             // objectFit="cover"
-          />
+          /> */}
 
           <p>
-            <strong>Instant feedback for students.</strong>
-            You specify the solutions and hints, the activity will respond to
-            student attempts.
+            <strong>Instant feedback for students.</strong> Guide students with
+            immediate validation or hints based on their mistake
           </p>
         </HStack>
 
         <HStack spacing="20px">
           <p>
-            <strong>Interactive graphics.</strong> Construct graphical applets
-            with points, lines, derivatives, etc. (Instant feedback built-in.)
+            <strong>Interactive graphics.</strong> Construct gradable graphical
+            applets from points, lines, derivatives, etc.
           </p>
 
-          <Image
+          {/* <Image
             src="/feature_interactive_graphics.png"
             alt="Instant feedback"
             width="300px"
             height="170px"
             border="1px solid gray"
-
-            // objectFit="cover"
-          />
+          /> */}
         </HStack>
 
         <Flex width="100%" alignItems="center">
@@ -217,7 +217,7 @@ export function Home() {
           <Flex flex="1 0 75%">
             <p>
               <strong>Variant control.</strong> Generate multiple variants of
-              your activity.
+              your activity
             </p>
           </Flex>
         </Flex>
@@ -226,7 +226,7 @@ export function Home() {
   );
 
   const communitySection = (
-    <WithSideBanners bgColor="white" padding="50px">
+    <WithSideBanners bgColor="white" padding="70px">
       <Heading size="lg">Join the community - get support, contribute</Heading>
       <Text fontSize="1.2rem">
         Doenet—as a free and open-source platform—derives its value from its
