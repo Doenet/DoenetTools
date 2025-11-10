@@ -75,71 +75,77 @@ export function Home() {
         leftGutterColumns={1}
         rightGutterColumns={1}
       >
-        <Grid
-          // pt="40px"
-          templateColumns={{ base: "1fr", md: "1fr auto" }}
-          w="100%"
-          gap="20px"
-          alignItems="stretch"
-          // pb="40px"
-          // pl="50px"
-          // pr="20px"
-        >
-          <GridItem
-            position="relative"
-            // ml="20px"
-            display="flex"
-            flexDirection="column"
-            justifyContent="center"
-            h="100%"
+        <Box px={{ base: "16px", md: "0px" }}>
+          <Grid
+            templateColumns={{ base: "1fr", md: "1fr auto" }}
+            w="100%"
+            gap={{ base: "0px", md: "20px" }}
+            alignItems="stretch"
           >
-            <Heading
-              color="white"
-              fontSize={["50px", "3.0vw"]}
-              fontWeight="700"
-              mb="60px"
-              // bgGradient="linear(to-r, #ffd27a, #ff8c00, #ff5e62)"
-              // bgClip="text"
-              // letterSpacing="tight"
-              // lineHeight="1.05"
-              // display="inline-block"
-              // style={{
-              //   WebkitTextStroke: "0.6px rgba(0,0,0,0.25)",
-              //   textShadow:
-              //     "0 8px 30px rgba(0,0,0,0.55), 0 3px 8px rgba(0,0,0,0.45), 0 1px 0 rgba(255,255,255,0.03)",
-              //   transform: "translateZ(0)",
-              // }}
+            <GridItem
+              position="relative"
+              display="flex"
+              flexDirection="column"
+              justifyContent="center"
+              h="100%"
+              order={{ base: 2, md: 1 }}
             >
-              Richly interactive classroom activities
-            </Heading>
+              <Heading
+                color="white"
+                fontSize={{ base: "28px", sm: "34px", md: "44px", lg: "56px" }}
+                fontWeight="700"
+                mb={{ base: "24px", md: "40px", lg: "60px" }}
+              >
+                Richly interactive classroom activities
+              </Heading>
 
-            <Heading
-              color="white"
-              fontSize={["24px", "1.5vw"]}
-              fontWeight="450"
-              mb="10px"
-            >
-              Find, create, and share meaningfully interactive content using a
-              free community-driven tool
-            </Heading>
+              <Heading
+                color="white"
+                fontSize={{
+                  base: "16px",
+                  sm: "18px",
+                  md: "20px",
+                  lg: "24px",
+                  xl: "28px",
+                }}
+                fontWeight="400"
+                mb={{ base: "12px", md: "16px", lg: "20px" }}
+                lineHeight={{ base: "1.3", md: "1.4" }}
+                maxW={{ base: "100%", md: "680px", lg: "800px" }}
+              >
+                Find, create, and share meaningfully interactive content using a
+                free community-driven tool
+              </Heading>
 
-            {/* <Box>
+              {/* Mobile video directly under text */}
+              <Box
+                display={{ base: "block", md: "none" }}
+                mt="40px"
+                mx={{ base: "-16px", md: "0" }}
+              >
+                <VideoCarousel videos={heroVideos} />
+              </Box>
+
+              {/* <Box>
               <Text color="white" fontSize={["24px", "1.5vw"]} mb="5px">
                 Human-crafted activities in the age of AI
               </Text>
             </Box> */}
-          </GridItem>
+            </GridItem>
 
-          <GridItem
-            mr="65px"
-            pt="0px"
-            pb="40px"
-            display="flex"
-            justifyContent="flex-end"
-          >
-            <VideoCarousel videos={heroVideos} />
-          </GridItem>
-        </Grid>
+            <GridItem
+              mr={{ base: "0px", md: "65px" }}
+              pt="0px"
+              pb="40px"
+              display={{ base: "none", md: "flex" }}
+              justifyContent="flex-end"
+              order={{ base: 1, md: 2 }}
+              colSpan={{ base: 1, md: "auto" }}
+            >
+              <VideoCarousel videos={heroVideos} />
+            </GridItem>
+          </Grid>
+        </Box>
       </WithSideBanners>
     </Box>
   );
@@ -171,18 +177,15 @@ export function Home() {
   );
 
   const featuresSection = (
-    <WithSideBanners
-      bgColor="#d3dff1ff"
-      // bgColor="doenet.mainGray"
-      padding="70px"
-    >
-      <Heading size="lg" mb="20px">
-        Customize or create your own activities
-      </Heading>
+    <WithSideBanners bgColor="#d3dff1ff" padding="70px">
+      <Box px={{ base: "16px", md: "0px" }}>
+        <Heading size="lg" mb="20px">
+          Customize or create your own activities
+        </Heading>
 
-      <VStack align="flex-start" fontSize="1.4rem">
-        <HStack spacing="20px">
-          {/* <Image
+        <VStack align="flex-start" fontSize="1.4rem">
+          <HStack spacing="20px">
+            {/* <Image
             src="/instant_feedback4.png"
             alt="Instant feedback"
             width="450px"
@@ -191,104 +194,110 @@ export function Home() {
             // objectFit="cover"
           /> */}
 
-          <p>
-            <strong>Instant feedback for students.</strong> Guide students with
-            immediate validation or hints based on their mistake
-          </p>
-        </HStack>
+            <p>
+              <strong>Instant feedback for students.</strong> Guide students
+              with immediate validation or hints based on their mistake
+            </p>
+          </HStack>
 
-        <HStack spacing="20px">
-          <p>
-            <strong>Interactive graphics.</strong> Construct gradable graphical
-            applets from points, lines, derivatives, etc.
-          </p>
+          <HStack spacing="20px">
+            <p>
+              <strong>Interactive graphics.</strong> Construct gradable
+              graphical applets from points, lines, derivatives, etc.
+            </p>
 
-          {/* <Image
+            {/* <Image
             src="/feature_interactive_graphics.png"
             alt="Instant feedback"
             width="300px"
             height="170px"
             border="1px solid gray"
           /> */}
-        </HStack>
+          </HStack>
 
-        <Flex width="100%" alignItems="center">
-          {/* <Flex flex="1 0 25%">{grayBox}</Flex> */}
-          <Flex flex="1 0 75%">
-            <p>
-              <strong>Variant control.</strong> Generate multiple variants of
-              your activity
-            </p>
+          <Flex width="100%" alignItems="center">
+            {/* <Flex flex="1 0 25%">{grayBox}</Flex> */}
+            <Flex flex="1 0 75%">
+              <p>
+                <strong>Variant control.</strong> Generate multiple variants of
+                your activity
+              </p>
+            </Flex>
           </Flex>
-        </Flex>
-      </VStack>
+        </VStack>
+      </Box>
     </WithSideBanners>
   );
 
   const communitySection = (
     <WithSideBanners bgColor="white" padding="70px">
-      <Heading size="lg">Join the community - get support, contribute</Heading>
-      <Text fontSize="1.2rem">
-        Doenet—as a free and open-source platform—derives its value from its
-        community of authors and contributors. We run a Discord server, which is
-        a great place to ask your questions and get support. (Newcomers are
-        always welcome).
-      </Text>
-      <ChakraLink
-        href="https://discord.gg/PUduwtKJ5h"
-        isExternal
-        _hover={{ textDecoration: "none" }}
-      >
-        <Button mt="1rem" mb="90px" colorScheme="blue" size="lg">
-          <BsDiscord fontSize="1.7rem" />
-          <Text ml="10px" fontSize="1.1rem">
-            Join our Discord server
-          </Text>
-        </Button>
-      </ChakraLink>
-
-      <Heading size="md">Events</Heading>
-      <Stack direction={{ base: "column", md: "row" }}>
-        <Card>
-          <CardHeader>
-            <Heading size="sm">
-              <ChakraLink
-                href="https://prose.runestone.academy/"
-                textDecoration="underline"
-              >
-                PROSE Consortium
-              </ChakraLink>{" "}
-              weekly drop-in hours, Tuesdays 1-3pm CST
-            </Heading>
-          </CardHeader>
-          <CardBody>
-            <Text fontSize={"18px"} fontWeight="500">
-              Drop in anytime during the two hours to ask questions. Join us at{" "}
-              <ChakraLink
-                href="https://prose.runestone.academy/dropin/"
-                textDecoration="underline"
-              >
-                this Zoom link
-              </ChakraLink>
-              .
+      <Box px={{ base: "16px", md: "0px" }}>
+        <Heading size="lg">
+          Join the community - get support, contribute
+        </Heading>
+        <Text fontSize="1.2rem">
+          Doenet—as a free and open-source platform—derives its value from its
+          community of authors and contributors. We run a Discord server, which
+          is a great place to ask your questions and get support. (Newcomers are
+          always welcome).
+        </Text>
+        <ChakraLink
+          href="https://discord.gg/PUduwtKJ5h"
+          isExternal
+          _hover={{ textDecoration: "none" }}
+        >
+          <Button mt="1rem" mb="90px" colorScheme="blue" size="lg">
+            <BsDiscord fontSize="1.7rem" />
+            <Text ml="10px" fontSize="1.1rem">
+              Join our Discord server
             </Text>
-          </CardBody>
-        </Card>
+          </Button>
+        </ChakraLink>
 
-        <Card>
-          <CardHeader>
-            <Heading size="sm">
-              Nov 7-8: Doenet Workshop @ Saint Louis University
-            </Heading>
-          </CardHeader>
-          <CardBody mt="0" pt="0">
-            <Text fontSize={"18px"} fontWeight="500">
-              One of our community members is leading a workshop at SLU! Contact{" "}
-              <em>info@doenet.org</em> for more info.
-            </Text>
-          </CardBody>
-        </Card>
-      </Stack>
+        <Heading size="md">Events</Heading>
+        <Stack direction={{ base: "column", md: "row" }}>
+          <Card>
+            <CardHeader>
+              <Heading size="sm">
+                <ChakraLink
+                  href="https://prose.runestone.academy/"
+                  textDecoration="underline"
+                >
+                  PROSE Consortium
+                </ChakraLink>{" "}
+                weekly drop-in hours, Tuesdays 1-3pm CST
+              </Heading>
+            </CardHeader>
+            <CardBody>
+              <Text fontSize={"18px"} fontWeight="500">
+                Drop in anytime during the two hours to ask questions. Join us
+                at{" "}
+                <ChakraLink
+                  href="https://prose.runestone.academy/dropin/"
+                  textDecoration="underline"
+                >
+                  this Zoom link
+                </ChakraLink>
+                .
+              </Text>
+            </CardBody>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <Heading size="sm">
+                Nov 7-8: Doenet Workshop @ Saint Louis University
+              </Heading>
+            </CardHeader>
+            <CardBody mt="0" pt="0">
+              <Text fontSize={"18px"} fontWeight="500">
+                One of our community members is leading a workshop at SLU!
+                Contact <em>info@doenet.org</em> for more info.
+              </Text>
+            </CardBody>
+          </Card>
+        </Stack>
+      </Box>
     </WithSideBanners>
   );
 
@@ -471,8 +480,13 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
   const currentTryLink = videos[index][1];
 
   return (
-    <VStack align="center" spacing={0}>
-      <HStack alignItems="center" justifyContent="center">
+    <VStack align="center" spacing={4}>
+      {/* Desktop layout: arrows on sides */}
+      <HStack
+        alignItems="center"
+        justifyContent="center"
+        display={{ base: "none", md: "flex" }}
+      >
         {/* Left arrow */}
         <IconButton
           aria-label="Previous video"
@@ -491,10 +505,16 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
           h={`${ARROW_BUTTON_PX}px`}
           w={`${ARROW_BUTTON_PX}px`}
           borderRadius="full"
-          display={{ base: "none", md: "flex" }}
         />
 
-        <Box position="relative" border="3px solid lightgray">
+        <Box
+          position="relative"
+          border="3px solid lightgray"
+          width="500px"
+          height="580px"
+          overflow="hidden"
+          flexShrink={0}
+        >
           <video
             key={index}
             src={currentVideoSrc}
@@ -502,8 +522,11 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
             muted
             playsInline
             style={{
-              height: "580px",
-              width: "500px",
+              position: "absolute",
+              top: 0,
+              left: 0,
+              height: "100%",
+              width: "100%",
               display: "block",
               objectFit: "cover",
               backgroundColor: "white",
@@ -575,9 +598,128 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
           h={`${ARROW_BUTTON_PX}px`}
           w={`${ARROW_BUTTON_PX}px`}
           borderRadius="full"
-          display={{ base: "none", md: "flex" }}
         />
       </HStack>
+
+      {/* Mobile layout: video with arrows underneath */}
+      <VStack spacing={4} display={{ base: "flex", md: "none" }} w="100%">
+        <Box
+          position="relative"
+          border="3px solid lightgray"
+          w="100%"
+          height="calc(100vw * 580 / 500)"
+          maxHeight="580px"
+          overflow="hidden"
+          flexShrink={0}
+        >
+          <video
+            key={index}
+            src={currentVideoSrc}
+            autoPlay
+            muted
+            playsInline
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              display: "block",
+              objectFit: "cover",
+              backgroundColor: "white",
+            }}
+          />
+
+          {/* white overlay used for fade transition */}
+          <Box
+            pointerEvents="none"
+            position="absolute"
+            top={0}
+            left={0}
+            right={0}
+            bottom={0}
+            bg="white"
+            zIndex={2}
+            style={{
+              opacity: overlayShown ? 1 : 0,
+              transition: `opacity ${overlayTransitionMsRef.current ?? 0}ms ease`,
+            }}
+          />
+
+          {/* Try me button positioned top-right on the video */}
+          <Button
+            as={ReactRouterLink}
+            to={currentTryLink}
+            position="absolute"
+            top="10px"
+            right="10px"
+            zIndex={3}
+            colorScheme="orange"
+            bg="#ff8c00"
+            color="white"
+            _hover={{
+              bg: "#ff7a00",
+              boxShadow: "0 10px 24px rgba(0,0,0,0.28)",
+              textDecoration: "none",
+            }}
+            size="sm"
+            borderRadius="8px"
+            aria-label="Try this activity"
+            pointerEvents={overlayShown ? "none" : "auto"}
+            aria-disabled={overlayShown}
+            disabled={overlayShown}
+            _disabled={{ opacity: 1, cursor: "not-allowed" }}
+            border="2px solid rgba(0,0,0,0.12)"
+            boxShadow="0 6px 18px rgba(0,0,0,0.22)"
+            transition="box-shadow 150ms ease, transform 150ms ease"
+            style={{ transform: "scale(1.2)", transformOrigin: "top right" }}
+          >
+            Try me
+          </Button>
+        </Box>
+
+        {/* Mobile navigation arrows underneath video */}
+        <HStack spacing={6} justifyContent="center">
+          <IconButton
+            aria-label="Previous video"
+            icon={<ThickChevronLeft size={iconSize} stroke={iconStroke} />}
+            onClick={handlePrev}
+            bg="rgba(255, 255, 255, 0.2)"
+            color="white"
+            _focus={{ boxShadow: "none" }}
+            transition="none"
+            _hover={{
+              transform: "none",
+              bg: "rgba(255, 255, 255, 0.3)",
+              "svg path": { strokeWidth: 5 },
+            }}
+            _active={{ transform: "none" }}
+            h={`${ARROW_BUTTON_PX + 8}px`}
+            w={`${ARROW_BUTTON_PX + 8}px`}
+            borderRadius="full"
+            border="1px solid rgba(255, 255, 255, 0.3)"
+          />
+
+          <IconButton
+            aria-label="Next video"
+            icon={<ThickChevronRight size={iconSize} stroke={iconStroke} />}
+            onClick={handleNext}
+            bg="rgba(255, 255, 255, 0.2)"
+            color="white"
+            transition="none"
+            _hover={{
+              transform: "none",
+              bg: "rgba(255, 255, 255, 0.3)",
+              "svg path": { strokeWidth: 5 },
+            }}
+            _active={{ transform: "none" }}
+            h={`${ARROW_BUTTON_PX + 8}px`}
+            w={`${ARROW_BUTTON_PX + 8}px`}
+            borderRadius="full"
+            border="1px solid rgba(255, 255, 255, 0.3)"
+          />
+        </HStack>
+      </VStack>
     </VStack>
   );
 }
