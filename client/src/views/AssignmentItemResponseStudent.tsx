@@ -38,6 +38,7 @@ export function AssignmentItemResponseStudent({
   responseCounts,
   doenetML,
   doenetmlVersion,
+  requestScrollTo,
 }: {
   assignment: {
     name: string;
@@ -68,6 +69,7 @@ export function AssignmentItemResponseStudent({
   responseCounts: Record<string, number>;
   doenetML: string;
   doenetmlVersion: DoenetmlVersion;
+  requestScrollTo: (_offset: number) => void;
 }) {
   useEffect(() => {
     document.title = `${assignment?.name} - Doenet`;
@@ -174,6 +176,7 @@ export function AssignmentItemResponseStudent({
       doenetViewerUrl={doenetViewerUrl}
       showAnswerResponseButton={true}
       answerResponseCounts={responseCounts}
+      requestScrollTo={requestScrollTo}
     />
   );
 
