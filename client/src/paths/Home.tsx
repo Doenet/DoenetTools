@@ -33,6 +33,7 @@ export function Home() {
 
   // The first string is the video source path,
   // the second string is the link to try the activity.
+  // The number is the time to show the video before transitioning (ms).
   // Ordered from what to show first to last in the carousel.
   const heroVideos: [string, string, number][] = [
     ["/homepage/tangent.mp4", "/activityViewer/hV7Y2RtkeLGN4tQ3VMSEck/", 8000],
@@ -115,6 +116,8 @@ export function Home() {
               >
                 Find, create, and share meaningfully interactive content using a
                 free community-driven tool
+                {/* TODO: Find spot to mention AI, such as:
+                "Human-crafted activities in the age of AI" */}
               </Heading>
 
               {/* Mobile video directly under text */}
@@ -125,12 +128,6 @@ export function Home() {
               >
                 <VideoCarousel videos={heroVideos} />
               </Box>
-
-              {/* <Box>
-              <Text color="white" fontSize={["24px", "1.5vw"]} mb="5px">
-                Human-crafted activities in the age of AI
-              </Text>
-            </Box> */}
             </GridItem>
 
             <GridItem
@@ -185,14 +182,7 @@ export function Home() {
 
         <VStack align="flex-start" fontSize="1.4rem">
           <HStack spacing="20px">
-            {/* <Image
-            src="/instant_feedback4.png"
-            alt="Instant feedback"
-            width="450px"
-            height="200px"
-            border="1px solid gray"
-            // objectFit="cover"
-          /> */}
+            {/* TODO: Instant feedback image */}
 
             <p>
               <strong>Instant feedback for students.</strong> Guide students
@@ -206,17 +196,12 @@ export function Home() {
               graphical applets from points, lines, derivatives, etc.
             </p>
 
-            {/* <Image
-            src="/feature_interactive_graphics.png"
-            alt="Instant feedback"
-            width="300px"
-            height="170px"
-            border="1px solid gray"
-          /> */}
+            {/* TODO: interactive graphics image */}
           </HStack>
 
           <Flex width="100%" alignItems="center">
-            {/* <Flex flex="1 0 25%">{grayBox}</Flex> */}
+            {/* TODO: variant control image */}
+
             <Flex flex="1 0 75%">
               <p>
                 <strong>Variant control.</strong> Generate multiple variants of
@@ -279,20 +264,6 @@ export function Home() {
                   this Zoom link
                 </ChakraLink>
                 .
-              </Text>
-            </CardBody>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <Heading size="sm">
-                Nov 7-8: Doenet Workshop @ Saint Louis University
-              </Heading>
-            </CardHeader>
-            <CardBody mt="0" pt="0">
-              <Text fontSize={"18px"} fontWeight="500">
-                One of our community members is leading a workshop at SLU!
-                Contact <em>info@doenet.org</em> for more info.
               </Text>
             </CardBody>
           </Card>
@@ -478,6 +449,10 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
 
   const currentVideoSrc = videos[index][0];
   const currentTryLink = videos[index][1];
+
+  // Note: There are two versions of the layout: desktop (arrows on sides) and mobile (arrows below)
+  // The desktop version is shown on medium and larger screens, while the mobile version is shown on smaller screens.
+  // We toggle between them using Chakra UI's responsive display properties.
 
   return (
     <VStack align="center" spacing={4}>
