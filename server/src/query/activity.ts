@@ -4,6 +4,7 @@ import { getLibraryAccountId } from "./curate";
 import {
   filterEditableActivity,
   filterEditableContent,
+  filterExcludeAssignments,
   filterViewableContent,
   getEarliestRecoverableDate,
   getIsEditor,
@@ -210,9 +211,16 @@ export async function deleteContent({
  *
  * One use is to avoid deadlocks from recursive update queries that update all the descendants.
  * Instead, one can get all the ids with this function and then run an update query using the ids.
+ *
+ * By default, this query includes assignments in the descendants. To exclude assignments, set `excludeAssignments` to `true`.
  */
-export async function getDescendantIds(contentId: Uint8Array) {
-  const ids = await prisma.$queryRaw<
+export async function getDescendantIds(
+  contentId: Uint8Array,
+  params?: {
+    excludeAssignments?: boolean;
+  },
+) {
+  const idsRaw = await prisma.$queryRaw<
     {
       id: Uint8Array;
     }[]
@@ -229,7 +237,22 @@ export async function getDescendantIds(contentId: Uint8Array) {
     SELECT id from content_tree;
   `);
 
-  return ids.map((x) => x.id);
+  const ids = idsRaw.map((x) => x.id);
+
+  if (params?.excludeAssignments) {
+    // If the exclude assignments flag is enabled,
+    // purge assignments from the list of ids
+    const nonAssignmentIds = await prisma.content.findMany({
+      where: {
+        id: { in: ids },
+        ...filterExcludeAssignments,
+      },
+      select: { id: true },
+    });
+    return nonAssignmentIds.map((x) => x.id);
+  } else {
+    return ids;
+  }
 }
 
 export async function restoreDeletedContent({

@@ -80,6 +80,13 @@ export async function modifyContentSharedWith({
   loggedInUserId: Uint8Array;
   users: Uint8Array[];
 }) {
+  // Check contentId exists and is editable by loggedInUserId
+  await prisma.content.findUniqueOrThrow({
+    where: { id: contentId, ...filterEditableContent(loggedInUserId) },
+    select: { id: true },
+  });
+
+  // If unsharing, make sure content doesn't have a parent shared with any of the users
   if (action === "unshare") {
     const content = await prisma.content.findUniqueOrThrow({
       where: { id: contentId, ...filterEditableContent(loggedInUserId) },
@@ -100,41 +107,43 @@ export async function modifyContentSharedWith({
     }
   }
 
-  const contentIds = (
-    await prisma.$queryRaw<{ id: Uint8Array }[]>(Prisma.sql`
-    WITH RECURSIVE content_tree(id) AS (
-      SELECT id FROM content
-      WHERE id = ${contentId} AND ownerId = ${loggedInUserId} AND isDeletedOn IS NULL
-      UNION ALL
-      SELECT content.id FROM content
-      INNER JOIN content_tree AS ct
-      ON content.parentId = ct.id
-      WHERE content.isDeletedOn IS NULL
-    )
+  const descendantIds = await getDescendantIds(contentId, {
+    excludeAssignments: true,
+  });
+  const contentShareIds = [contentId, ...descendantIds];
 
-    SELECT id from content_tree;
-    `)
-  ).map((obj) => obj.id);
-
-  if (contentIds.length === 0) {
-    throw new InvalidRequestError("Content does not exist or is not editable");
-  }
-
-  const relevantContentShares = users.flatMap((userId) =>
-    contentIds.map((contentId) => ({ userId, contentId })),
+  const contentShares = users.flatMap((userId) =>
+    contentShareIds.map((contentShareId) => ({
+      userId,
+      // the specific content being shared, not the original, named `contentId`
+      contentId: contentShareId,
+      // `rootSharedId` is null if this is the original content being shared
+      rootSharedId: isEqualUUID(contentId, contentShareId) ? null : contentId,
+    })),
   );
 
   if (action === "share") {
     // Share
-    await prisma.contentShares.createMany({
-      data: relevantContentShares,
-      skipDuplicates: true,
-    });
+
+    // Update or create each record
+    // It would be nice if we could do this in bulk, but Prisma doesn't support upsertMany yet
+    for (const contentShare of contentShares) {
+      await prisma.contentShares.upsert({
+        where: {
+          contentId_userId: {
+            userId: contentShare.userId,
+            contentId: contentShare.contentId,
+          },
+        },
+        update: contentShare,
+        create: contentShare,
+      });
+    }
   } else {
     // Unshare
     await prisma.contentShares.deleteMany({
       where: {
-        OR: relevantContentShares,
+        OR: contentShares,
       },
     });
   }

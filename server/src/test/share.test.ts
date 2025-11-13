@@ -6,16 +6,20 @@ import {
   shareContentWithEmail,
 } from "../query/share";
 import { getContent } from "../query/activity_edit_view";
-import { getMyContent } from "../query/content_list";
+import { getMyContent, getSharedContent } from "../query/content_list";
 import { moveContent } from "../query/copy_move";
 import { updateUser } from "../query/user";
-import { createTestUser } from "./utils";
+import { createTestUser, setupTestContent, doc, fold, pset } from "./utils";
 import {
   setContentLicense,
   getLicense,
   getAllLicenses,
 } from "../query/license";
 import { getEditorSettings, getEditorShareStatus } from "../query/editor";
+import { getSharedWithMe } from "../query/content_list";
+import { isEqualUUID } from "../utils/uuid";
+import { createAssignment } from "../query/assign";
+import { DateTime } from "luxon";
 
 describe("Share tests", () => {
   test("content in public folder is created as public", async () => {
@@ -1589,5 +1593,185 @@ describe("Share tests", () => {
     expect(fullLicense.composedOf[1].imageURL).eq(
       "/creative_commons_by_nc_sa.png",
     );
+  });
+
+  test("can see all content shared with me by email", async () => {
+    const owner = await createTestUser();
+    const ownerId = owner.userId;
+
+    const recipient = await createTestUser();
+    const recipientId = recipient.userId;
+
+    // create some content and share with recipient by email
+    const [folder1, _folder2, doc1, _doc2, ps1, _doc3] = await setupTestContent(
+      ownerId,
+      {
+        folder1: fold({
+          folder2: fold({
+            doc1: doc(""),
+          }),
+          doc2: doc(""),
+          ps1: pset({
+            doc3: doc(""),
+          }),
+        }),
+      },
+    );
+
+    // Share folder1, doc1, and ps1
+    // Share the top-level one first,
+    // so that we check to see if the inside ones are tracking the root share correctly
+    await shareContentWithEmail({
+      contentId: folder1,
+      loggedInUserId: ownerId,
+      email: recipient.email,
+    });
+    await shareContentWithEmail({
+      contentId: doc1,
+      loggedInUserId: ownerId,
+      email: recipient.email,
+    });
+    await shareContentWithEmail({
+      contentId: ps1,
+      loggedInUserId: ownerId,
+      email: recipient.email,
+    });
+
+    // get content shared with recipient
+    const shared = await getSharedWithMe({ loggedInUserId: recipientId });
+
+    expect(shared.content.length).toEqual(3);
+
+    function foundWithCorrectFormat(contentId: Uint8Array) {
+      const found = shared.content.find((c) =>
+        isEqualUUID(c.contentId, contentId),
+      );
+      expect(found).toBeDefined();
+      // shared entries should include owner details but not owner's email
+      if (found) {
+        expect(found.owner).toHaveProperty("userId");
+        expect(found.owner).toHaveProperty("firstNames");
+        expect(found.owner).toHaveProperty("lastNames");
+        // owner details returned to viewer should not include email
+        // (the owner object in shared results uses includeOwnerDetails which omits email)
+        expect(found.owner).not.toHaveProperty("email");
+      }
+    }
+
+    foundWithCorrectFormat(folder1);
+    foundWithCorrectFormat(doc1);
+    foundWithCorrectFormat(ps1);
+  });
+
+  test("content shared with me is correctly ordered by share date", async () => {
+    const { userId: ownerId } = await createTestUser();
+    const recipient = await createTestUser();
+    const recipientId = recipient.userId;
+
+    // create three top-level items using setupTestContent helper
+    const [c1, c2, c3] = await setupTestContent(ownerId, {
+      doc1: doc(""),
+      doc2: doc(""),
+      doc3: doc(""),
+    });
+
+    const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+    // share in order c1, c2, c3 with small delays so sharedOn differs
+    await shareContentWithEmail({
+      contentId: c1,
+      loggedInUserId: ownerId,
+      email: recipient.email,
+    });
+    await sleep(25);
+    await shareContentWithEmail({
+      contentId: c2,
+      loggedInUserId: ownerId,
+      email: recipient.email,
+    });
+    await sleep(25);
+    await shareContentWithEmail({
+      contentId: c3,
+      loggedInUserId: ownerId,
+      email: recipient.email,
+    });
+
+    const shared = await getSharedWithMe({ loggedInUserId: recipientId });
+
+    // Extract the contentIds in the order returned and find our three items
+    const returnedIds = shared.content.map((c) => c.contentId);
+
+    const idx1 = returnedIds.findIndex((id) => isEqualUUID(id, c1));
+    const idx2 = returnedIds.findIndex((id) => isEqualUUID(id, c2));
+    const idx3 = returnedIds.findIndex((id) => isEqualUUID(id, c3));
+
+    // All should be present
+    expect(idx1).toBeGreaterThanOrEqual(0);
+    expect(idx2).toBeGreaterThanOrEqual(0);
+    expect(idx3).toBeGreaterThanOrEqual(0);
+
+    // Newest (c3) should appear before c2, which should appear before c1
+    expect(idx3).toBeLessThan(idx2);
+    expect(idx2).toBeLessThan(idx1);
+
+    // Now unshare c2 and then resharing it should make it the newest
+    await modifyContentSharedWith({
+      action: "unshare",
+      contentId: c2,
+      loggedInUserId: ownerId,
+      users: [recipientId],
+    });
+
+    // small pause to ensure timestamp changes
+    await sleep(25);
+
+    await shareContentWithEmail({
+      contentId: c2,
+      loggedInUserId: ownerId,
+      email: recipient.email,
+    });
+
+    const shared2 = await getSharedWithMe({ loggedInUserId: recipientId });
+    const returned2 = shared2.content.map((c) => c.contentId);
+    const newIdx2 = returned2.findIndex((id) => isEqualUUID(id, c2));
+    // c2 should now be at the top (newest)
+    expect(newIdx2).toBe(0);
+  });
+
+  test("sharing a folder excludes assignments", async () => {
+    const { userId: ownerId } = await createTestUser();
+    const recipient = await createTestUser();
+
+    // create assignment and share with recipient
+    const [folderId, docId] = await setupTestContent(ownerId, {
+      folder1: fold({
+        doc1: doc("hi"),
+      }),
+    });
+
+    // create assignment from doc1 and place it in the folder
+    await createAssignment({
+      contentId: docId,
+      closeAt: DateTime.now().plus({ days: 7 }),
+      destinationParentId: folderId,
+      loggedInUserId: ownerId,
+    });
+
+    //share folder with recipient
+    await shareContentWithEmail({
+      contentId: folderId,
+      loggedInUserId: ownerId,
+      email: recipient.email,
+    });
+
+    // getSharedContent of owner's folder as seen by recipient
+    const shared = await getSharedContent({
+      ownerId,
+      loggedInUserId: recipient.userId,
+      parentId: folderId,
+    });
+
+    expect(shared.content.length).toEqual(1);
+    expect(shared.content[0].contentId).toEqual(docId);
   });
 });

@@ -1,4 +1,4 @@
-import { Box, Button, Flex } from "@chakra-ui/react";
+import { Box, Button, Flex, Show } from "@chakra-ui/react";
 import React from "react";
 import { Outlet, useLocation, useOutletContext } from "react-router";
 import { Link as ReactRouterLink } from "react-router";
@@ -14,6 +14,7 @@ export function FolderContext() {
   const activitiesPath = `/activities/${context.user?.userId ?? ""}`;
   const isActivitiesActive = location.pathname === activitiesPath;
   const isTrashActive = location.pathname.startsWith("/trash");
+  const isSharedWithMeActive = location.pathname.startsWith("/sharedWithMe");
 
   const sidePanel = (
     <Flex
@@ -30,7 +31,7 @@ export function FolderContext() {
         to={activitiesPath}
         variant="ghost"
         justifyContent="flex-start"
-        width="100%"
+        width={isActivitiesActive ? "100%" : "calc(100% - 4px)"}
         backgroundColor={
           isActivitiesActive ? "doenet.lightBlue" : "transparent"
         }
@@ -49,10 +50,37 @@ export function FolderContext() {
 
       <Button
         as={ReactRouterLink}
+        to={`/sharedWithMe/${context.user?.userId ?? ""}`}
+        variant="ghost"
+        justifyContent="flex-start"
+        width={isSharedWithMeActive ? "100%" : "calc(100% - 4px)"}
+        backgroundColor={
+          isSharedWithMeActive ? "doenet.lightBlue" : "transparent"
+        }
+        _hover={
+          isSharedWithMeActive
+            ? { backgroundColor: "doenet.lightBlue" }
+            : { backgroundColor: "gray.50" }
+        }
+        borderLeftWidth={isSharedWithMeActive ? "4px" : "0"}
+        marginLeft={isSharedWithMeActive ? "0" : "4px"}
+        borderLeftColor={
+          isSharedWithMeActive ? "doenet.mainBlue" : "transparent"
+        }
+        aria-current={isSharedWithMeActive ? "page" : undefined}
+      >
+        <Text fontSize="large">
+          <Show above="lg">Shared with me</Show>
+          <Show below="lg">Shared</Show>
+        </Text>
+      </Button>
+
+      <Button
+        as={ReactRouterLink}
         to={`/trash`}
         variant="ghost"
         justifyContent="flex-start"
-        width="100%"
+        width={isTrashActive ? "100%" : "calc(100% - 4px)"}
         backgroundColor={isTrashActive ? "doenet.lightBlue" : "transparent"}
         _hover={
           isTrashActive
