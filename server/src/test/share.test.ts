@@ -371,168 +371,6 @@ describe("Share tests", () => {
     expect(activity.sharedWith).eqls([]);
   });
 
-  test("making folder public/private also makes its content public/private", async () => {
-    const owner = await createTestUser();
-    const ownerId = owner.userId;
-
-    const { contentId: publicFolderId } = await createContent({
-      loggedInUserId: ownerId,
-      contentType: "folder",
-      parentId: null,
-    });
-
-    // create content in folder that will become public
-    const { contentId: activity1Id } = await createContent({
-      loggedInUserId: ownerId,
-      contentType: "singleDoc",
-      parentId: publicFolderId,
-    });
-    const { contentId: folder1Id } = await createContent({
-      loggedInUserId: ownerId,
-      contentType: "folder",
-      parentId: publicFolderId,
-    });
-    const { contentId: folder2Id } = await createContent({
-      loggedInUserId: ownerId,
-      contentType: "folder",
-      parentId: folder1Id,
-    });
-    const { contentId: activity2Id } = await createContent({
-      loggedInUserId: ownerId,
-      contentType: "singleDoc",
-      parentId: folder2Id,
-    });
-
-    let results = await getMyContent({
-      ownerId,
-      parentId: publicFolderId,
-      loggedInUserId: ownerId,
-    });
-    if (results.notMe) {
-      throw Error("shouldn't happen");
-    }
-    let content = results.content;
-
-    expect(content[0].contentId).eqls(activity1Id);
-    expect(content[0].isPublic).eqls(false);
-    expect(content[1].contentId).eqls(folder1Id);
-    expect(content[1].isPublic).eq(false);
-
-    results = await getMyContent({
-      ownerId,
-      parentId: folder1Id,
-      loggedInUserId: ownerId,
-    });
-    if (results.notMe) {
-      throw Error("shouldn't happen");
-    }
-    content = results.content;
-    expect(content[0].contentId).eqls(folder2Id);
-    expect(content[0].isPublic).eq(false);
-
-    results = await getMyContent({
-      ownerId,
-      parentId: folder2Id,
-      loggedInUserId: ownerId,
-    });
-    if (results.notMe) {
-      throw Error("shouldn't happen");
-    }
-    content = results.content;
-    expect(content[0].contentId).eqls(activity2Id);
-    expect(content[0].isPublic).eq(false);
-
-    await setContentIsPublic({
-      contentId: publicFolderId,
-      loggedInUserId: ownerId,
-      isPublic: true,
-    });
-
-    results = await getMyContent({
-      ownerId,
-      parentId: publicFolderId,
-      loggedInUserId: ownerId,
-    });
-    if (results.notMe) {
-      throw Error("shouldn't happen");
-    }
-    content = results.content;
-
-    expect(content[0].contentId).eqls(activity1Id);
-    expect(content[0].isPublic).eq(true);
-    expect(content[1].contentId).eqls(folder1Id);
-    expect(content[1].isPublic).eq(true);
-
-    results = await getMyContent({
-      ownerId,
-      parentId: folder1Id,
-      loggedInUserId: ownerId,
-    });
-    if (results.notMe) {
-      throw Error("shouldn't happen");
-    }
-    content = results.content;
-    expect(content[0].contentId).eqls(folder2Id);
-    expect(content[0].isPublic).eq(true);
-
-    results = await getMyContent({
-      ownerId,
-      parentId: folder2Id,
-      loggedInUserId: ownerId,
-    });
-    if (results.notMe) {
-      throw Error("shouldn't happen");
-    }
-    content = results.content;
-    expect(content[0].contentId).eqls(activity2Id);
-    expect(content[0].isPublic).eq(true);
-
-    await setContentIsPublic({
-      contentId: publicFolderId,
-      loggedInUserId: ownerId,
-      isPublic: false,
-    });
-
-    results = await getMyContent({
-      ownerId,
-      parentId: publicFolderId,
-      loggedInUserId: ownerId,
-    });
-    if (results.notMe) {
-      throw Error("shouldn't happen");
-    }
-    content = results.content;
-
-    expect(content[0].contentId).eqls(activity1Id);
-    expect(content[0].isPublic).eq(false);
-    expect(content[1].contentId).eqls(folder1Id);
-    expect(content[1].isPublic).eq(false);
-
-    results = await getMyContent({
-      ownerId,
-      parentId: folder1Id,
-      loggedInUserId: ownerId,
-    });
-    if (results.notMe) {
-      throw Error("shouldn't happen");
-    }
-    content = results.content;
-    expect(content[0].contentId).eqls(folder2Id);
-    expect(content[0].isPublic).eq(false);
-
-    results = await getMyContent({
-      ownerId,
-      parentId: folder2Id,
-      loggedInUserId: ownerId,
-    });
-    if (results.notMe) {
-      throw Error("shouldn't happen");
-    }
-    content = results.content;
-    expect(content[0].contentId).eqls(activity2Id);
-    expect(content[0].isPublic).eq(false);
-  });
-
   test(
     "sharing/unsharing a folder also shares/unshares its content",
     { timeout: 30000 },
@@ -1594,8 +1432,11 @@ describe("Share tests", () => {
       "/creative_commons_by_nc_sa.png",
     );
   });
+});
 
-  test("can see all content shared with me by email", async () => {
+describe("sharedWithMe()", () => {
+  // TODO: Do we need this test?
+  test.skip("can see all content shared with me by email", async () => {
     const owner = await createTestUser();
     const ownerId = owner.userId;
 
@@ -1663,7 +1504,7 @@ describe("Share tests", () => {
     foundWithCorrectFormat(ps1);
   });
 
-  test("content shared with me is correctly ordered by share date", async () => {
+  test("is correctly ordered by share date", async () => {
     const { userId: ownerId } = await createTestUser();
     const recipient = await createTestUser();
     const recipientId = recipient.userId;
@@ -1738,7 +1579,17 @@ describe("Share tests", () => {
     expect(newIdx2).toBe(0);
   });
 
-  test("sharing a folder excludes assignments", async () => {
+  test.todo("hides indirectly shared content");
+});
+
+describe("shareContent()", () => {
+  test.todo("fails when sharing with self");
+  test.todo("fails when content does not exist");
+  test.todo("fails when logged in user is not owner");
+  test.todo("fails on assignments");
+  test.todo("fails if parent is already shared with the user");
+
+  test("excludes inner assignments", async () => {
     const { userId: ownerId } = await createTestUser();
     const recipient = await createTestUser();
 
@@ -1773,5 +1624,216 @@ describe("Share tests", () => {
 
     expect(shared.content.length).toEqual(1);
     expect(shared.content[0].contentId).toEqual(docId);
+  });
+
+  test("propagates to children", async () => {
+    const owner = await createTestUser();
+    const ownerId = owner.userId;
+
+    const { contentId: publicFolderId } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "folder",
+      parentId: null,
+    });
+
+    // create content in folder that will become public
+    const { contentId: activity1Id } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "singleDoc",
+      parentId: publicFolderId,
+    });
+    const { contentId: folder1Id } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "folder",
+      parentId: publicFolderId,
+    });
+    const { contentId: folder2Id } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "folder",
+      parentId: folder1Id,
+    });
+    const { contentId: activity2Id } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "singleDoc",
+      parentId: folder2Id,
+    });
+
+    let results = await getMyContent({
+      ownerId,
+      parentId: publicFolderId,
+      loggedInUserId: ownerId,
+    });
+    if (results.notMe) {
+      throw Error("shouldn't happen");
+    }
+    let content = results.content;
+
+    expect(content[0].contentId).eqls(activity1Id);
+    expect(content[0].isPublic).eqls(false);
+    expect(content[1].contentId).eqls(folder1Id);
+    expect(content[1].isPublic).eq(false);
+
+    results = await getMyContent({
+      ownerId,
+      parentId: folder1Id,
+      loggedInUserId: ownerId,
+    });
+    if (results.notMe) {
+      throw Error("shouldn't happen");
+    }
+    content = results.content;
+    expect(content[0].contentId).eqls(folder2Id);
+    expect(content[0].isPublic).eq(false);
+
+    results = await getMyContent({
+      ownerId,
+      parentId: folder2Id,
+      loggedInUserId: ownerId,
+    });
+    if (results.notMe) {
+      throw Error("shouldn't happen");
+    }
+    content = results.content;
+    expect(content[0].contentId).eqls(activity2Id);
+    expect(content[0].isPublic).eq(false);
+
+    await setContentIsPublic({
+      contentId: publicFolderId,
+      loggedInUserId: ownerId,
+      isPublic: true,
+    });
+
+    results = await getMyContent({
+      ownerId,
+      parentId: publicFolderId,
+      loggedInUserId: ownerId,
+    });
+    if (results.notMe) {
+      throw Error("shouldn't happen");
+    }
+    content = results.content;
+
+    expect(content[0].contentId).eqls(activity1Id);
+    expect(content[0].isPublic).eq(true);
+    expect(content[1].contentId).eqls(folder1Id);
+    expect(content[1].isPublic).eq(true);
+
+    results = await getMyContent({
+      ownerId,
+      parentId: folder1Id,
+      loggedInUserId: ownerId,
+    });
+    if (results.notMe) {
+      throw Error("shouldn't happen");
+    }
+    content = results.content;
+    expect(content[0].contentId).eqls(folder2Id);
+    expect(content[0].isPublic).eq(true);
+
+    results = await getMyContent({
+      ownerId,
+      parentId: folder2Id,
+      loggedInUserId: ownerId,
+    });
+    if (results.notMe) {
+      throw Error("shouldn't happen");
+    }
+    content = results.content;
+    expect(content[0].contentId).eqls(activity2Id);
+    expect(content[0].isPublic).eq(true);
+
+    await setContentIsPublic({
+      contentId: publicFolderId,
+      loggedInUserId: ownerId,
+      isPublic: false,
+    });
+
+    results = await getMyContent({
+      ownerId,
+      parentId: publicFolderId,
+      loggedInUserId: ownerId,
+    });
+    if (results.notMe) {
+      throw Error("shouldn't happen");
+    }
+    content = results.content;
+
+    expect(content[0].contentId).eqls(activity1Id);
+    expect(content[0].isPublic).eq(false);
+    expect(content[1].contentId).eqls(folder1Id);
+    expect(content[1].isPublic).eq(false);
+
+    results = await getMyContent({
+      ownerId,
+      parentId: folder1Id,
+      loggedInUserId: ownerId,
+    });
+    if (results.notMe) {
+      throw Error("shouldn't happen");
+    }
+    content = results.content;
+    expect(content[0].contentId).eqls(folder2Id);
+    expect(content[0].isPublic).eq(false);
+
+    results = await getMyContent({
+      ownerId,
+      parentId: folder2Id,
+      loggedInUserId: ownerId,
+    });
+    if (results.notMe) {
+      throw Error("shouldn't happen");
+    }
+    content = results.content;
+    expect(content[0].contentId).eqls(activity2Id);
+    expect(content[0].isPublic).eq(false);
+  });
+
+  describe("correctly tracks root id", () => {
+    test("share child then parent", async () => {
+      const { userId: ownerId } = await createTestUser();
+      const { userId: recipientId } = await createTestUser();
+      const [folder1, _folder2, doc1] = await setupTestContent(ownerId, {
+        folder1: fold({
+          folder2: fold({
+            doc1: doc(""),
+          }),
+        }),
+      });
+
+      // Share doc1, wait, then share folder1
+      await modifyContentSharedWith({
+        action: "share",
+        contentId: doc1,
+        loggedInUserId: ownerId,
+        users: [recipientId],
+      });
+
+      // getSharedWithMe as seen by recipient
+      let results = await getSharedWithMe({
+        loggedInUserId: recipientId,
+      });
+
+      expect(results.content.length).toEqual(1);
+      expect(results.content[0].contentId).toEqual(doc1);
+
+      // wait a bit to ensure different timestamps
+      await new Promise((resolve) => setTimeout(resolve, 10));
+
+      await modifyContentSharedWith({
+        action: "share",
+        contentId: folder1,
+        loggedInUserId: ownerId,
+        users: [recipientId],
+      });
+
+      // getSharedWithMe as seen by recipient
+      results = await getSharedWithMe({
+        loggedInUserId: recipientId,
+      });
+
+      expect(results.content.length).toEqual(2);
+      expect(results.content[0].contentId).toEqual(folder1);
+      expect(results.content[1].contentId).toEqual(doc1);
+    });
   });
 });

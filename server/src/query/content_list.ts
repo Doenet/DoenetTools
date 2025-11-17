@@ -435,7 +435,7 @@ export async function getSharedWithMe({
   const shares = await prisma.contentShares.findMany({
     where: {
       userId: loggedInUserId,
-      rootSharedId: null,
+      isRootShare: true,
       content: filterViewableContent(loggedInUserId),
     },
     select: {

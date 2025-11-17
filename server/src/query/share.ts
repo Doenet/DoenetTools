@@ -115,10 +115,11 @@ export async function modifyContentSharedWith({
   const contentShares = users.flatMap((userId) =>
     contentShareIds.map((contentShareId) => ({
       userId,
-      // the specific content being shared, not the original, named `contentId`
+      // `contentSharedId` is the specific content being shared, not the original `contentId`
       contentId: contentShareId,
-      // `rootSharedId` is null if this is the original content being shared
-      rootSharedId: isEqualUUID(contentId, contentShareId) ? null : contentId,
+      // `isRootShare` is true if this is the original content being shared
+      // If it's not root, leave it as it is (false will be default if creating new record)
+      isRootShare: isEqualUUID(contentId, contentShareId) ? true : undefined,
     })),
   );
 
