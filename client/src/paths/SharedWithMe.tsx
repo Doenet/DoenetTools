@@ -70,6 +70,7 @@ export function SharedWithMe() {
     <NameBar
       contentId={null}
       contentName={"Shared with me"}
+      isEditable={false}
       leftIcon={titleIcon}
       dataTest="Folder Title"
       fontSizeMode="folder"
