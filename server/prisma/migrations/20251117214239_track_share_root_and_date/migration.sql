@@ -1,3 +1,3 @@
 -- AlterTable
-ALTER TABLE `contentShares` ADD COLUMN `rootSharedId` BINARY(16) NULL,
+ALTER TABLE `contentShares` ADD COLUMN `isRootShare` BOOLEAN NOT NULL DEFAULT false,
     ADD COLUMN `sharedOn` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3);
