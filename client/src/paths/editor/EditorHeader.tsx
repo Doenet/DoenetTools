@@ -164,7 +164,7 @@ export function EditorHeader() {
     });
 
   const notBrowsableMessage = notBrowsable && (
-    <Alert status="warning" borderBottom="1px solid lightGray" height="40px">
+    <Alert status="warning" height="40px">
       <AlertIcon />
       <AlertTitle>Not browsable</AlertTitle>
       <AlertDescription>

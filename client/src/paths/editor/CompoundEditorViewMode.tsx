@@ -1,10 +1,11 @@
 import React from "react";
-import { useLoaderData } from "react-router";
+import { useLoaderData, useOutletContext } from "react-router";
 import { BlueBanner } from "../../widgets/BlueBanner";
 import axios from "axios";
 // @ts-expect-error assignment-viewer doesn't publish types, see https://github.com/Doenet/assignment-viewer/issues/20
 import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";
 import { ActivitySource } from "../../viewerTypes";
+import { EditorContext } from "./EditorHeader";
 
 export async function loader({ params }: { params: any }) {
   const {
@@ -45,11 +46,13 @@ export function CompoundEditorViewMode() {
     maxAttemptsAllowed?: number;
   };
 
+  const { headerHeight } = useOutletContext<EditorContext>();
+
   const baseUrl = window.location.protocol + "//" + window.location.host;
   const doenetViewerUrl = `${baseUrl}/activityViewer`;
 
   return (
-    <BlueBanner>
+    <BlueBanner headerHeight={headerHeight}>
       <DoenetActivityViewer
         source={source}
         requestedVariantIndex={1}
