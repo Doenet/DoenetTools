@@ -48,14 +48,12 @@ export function CompoundActivityEditor({
   inLibrary = false,
   fetcher,
   finalFocusRef,
-  headerHeight,
 }: {
   activity: Content;
   asViewer?: boolean;
   inLibrary?: boolean;
   fetcher: FetcherWithComponents<any>;
   finalFocusRef?: React.RefObject<HTMLElement | null>;
-  headerHeight: string;
 }) {
   const contentTypeName = contentTypeToName[activity.type];
 
@@ -718,7 +716,6 @@ export function CompoundActivityEditor({
         margin="0px"
         width="100%"
         background={numCards > 0 ? "white" : "var(--lightBlue)"}
-        minHeight={`calc(100vh - ${headerHeight} - 40px)`}
         direction="column"
       >
         {cardList}

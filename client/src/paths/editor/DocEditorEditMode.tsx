@@ -59,8 +59,6 @@ function DocumentEditor({
   // const readOnly =
   //   doc.assignmentInfo?.assignmentStatus ?? "Unassigned" !== "Unassigned";
   const readOnlyRef = useRef(readOnly);
-  readOnlyRef.current = readOnly;
-  const headerHeight = `${readOnly ? 120 : 80}px`;
 
   const initialWarnings = doenetmlVersion.deprecated
     ? [
@@ -135,7 +133,7 @@ function DocumentEditor({
 
   return (
     <DoenetEditor
-      height={`calc(100vh - ${headerHeight})`}
+      height="100%"
       width="100%"
       doenetML={textEditorDoenetML.current}
       doenetmlChangeCallback={() => {

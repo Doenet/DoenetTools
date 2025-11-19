@@ -11,17 +11,18 @@ import {
   useSearchParams,
 } from "react-router";
 import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
   Box,
   Button,
   ButtonGroup,
   Flex,
-  Grid,
-  GridItem,
   Icon,
   Link as ChakraLink,
   Show,
   Tooltip,
-  VStack,
   useDisclosure,
   IconButton,
   Hide,
@@ -38,9 +39,14 @@ import { IoGitBranch } from "react-icons/io5";
 import { LuLibraryBig } from "react-icons/lu";
 
 import axios from "axios";
-import { AssignmentStatus, ContentType, ContentDescription } from "../../types";
+import {
+  AssignmentStatus,
+  ContentType,
+  ContentDescription,
+  CategoryGroup,
+  Category,
+} from "../../types";
 import { contentTypeToName, getIconInfo } from "../../utils/activity";
-import { CopyContentAndReportFinish } from "../../popups/CopyContentAndReportFinish";
 import { SiteContext } from "../SiteHeader";
 import { ActivateAuthorMode } from "../../popups/ActivateAuthorMode";
 import { ConfirmAssignModal } from "../../popups/ConfirmAssignModal";
@@ -49,7 +55,9 @@ import { NotificationDot } from "../../widgets/NotificationDot";
 import { LibraryEditorControls } from "../../widgets/editor/LibraryEditorControls";
 import { editorUrl } from "../../utils/url";
 import { NameBar } from "../../widgets/NameBar";
+import { loader as settingsLoader } from "./EditorSettingsMode";
 import "../../utils/editor-header.css";
+import { isActivityFullyCategorized } from "../../utils/classification";
 
 export async function loader({
   params,
@@ -97,6 +105,7 @@ export type EditorContext = SiteContext & {
   isPublic: boolean;
   assignmentStatus: AssignmentStatus;
   inLibrary: boolean;
+  headerHeight: string;
 };
 
 /**
@@ -109,8 +118,6 @@ export function EditorHeader() {
     contentType,
     isPublic,
     assignmentStatus,
-    assignmentClassCode,
-    assignmentHasScoreData,
     remixSourceHasChanged,
     inLibrary,
     contentDescription,
@@ -127,6 +134,58 @@ export function EditorHeader() {
     contentDescription: ContentDescription;
   };
 
+  const location = useLocation();
+  const tab = location.pathname.split("/").pop()?.toLowerCase();
+
+  const [searchParams, _] = useSearchParams();
+  const inCurateMode = searchParams.get("curate") === null ? false : true;
+
+  // Fetcher for settings to check if required categories are filled
+  const settingsFetcher = useFetcher<typeof settingsLoader>();
+
+  useEffect(() => {
+    if (
+      isPublic &&
+      contentType !== "folder" &&
+      settingsFetcher.state === "idle" &&
+      !settingsFetcher.data
+    ) {
+      settingsFetcher.load(editorUrl(contentId, contentType, "settings"));
+    }
+  }, [isPublic, contentType, contentId, settingsFetcher]);
+
+  // Check if required categories are filled out (similar to ShareMyContentModal)
+  const notBrowsable =
+    isPublic &&
+    settingsFetcher.data &&
+    !isActivityFullyCategorized({
+      allCategories: settingsFetcher.data.allCategories as CategoryGroup[],
+      categories: settingsFetcher.data.categories as Category[],
+    });
+
+  const notBrowsableMessage = notBrowsable && (
+    <Alert status="warning" borderBottom="1px solid lightGray" height="40px">
+      <AlertIcon />
+      <AlertTitle>Not browsable</AlertTitle>
+      <AlertDescription>
+        This activity is public but will not be discoverable unless{" "}
+        <ChakraLink
+          as={ReactRouterLink}
+          to={`${editorUrl(contentId, contentType, "settings")}?showRequired`}
+          textDecoration="underline"
+        >
+          required activity categories
+        </ChakraLink>{" "}
+        are filled out.
+      </AlertDescription>
+    </Alert>
+  );
+
+  // Calculate dynamic header height: site header (40px) + editor header (40px) + optional warning banner (40px)
+
+  const editorHeaderHeight = notBrowsable ? `${40 + 40}px` : "40px";
+  const totalHeaderHeight = notBrowsable ? `${40 + 40 + 40}px` : `${40 + 40}px`;
+
   const context = useOutletContext<SiteContext>();
   const editorContext: EditorContext = {
     ...context,
@@ -136,19 +195,8 @@ export function EditorHeader() {
     contentName,
     assignmentStatus,
     inLibrary,
+    headerHeight: totalHeaderHeight,
   };
-
-  const location = useLocation();
-  const tab = location.pathname.split("/").pop()?.toLowerCase();
-
-  const [searchParams, _] = useSearchParams();
-  const inCurateMode = searchParams.get("curate") === null ? false : true;
-
-  const {
-    isOpen: copyDialogIsOpen,
-    onOpen: copyDialogOnOpen,
-    onClose: copyDialogOnClose,
-  } = useDisclosure();
 
   const {
     isOpen: authorModePromptIsOpen,
@@ -206,27 +254,6 @@ export function EditorHeader() {
       editTooltip = "Turn on author mode to see read-only view of source code";
     }
   }
-
-  const copyContentModal = (
-    <CopyContentAndReportFinish
-      isOpen={copyDialogIsOpen}
-      onClose={copyDialogOnClose}
-      contentIds={[contentId]}
-      desiredParent={
-        parent
-          ? {
-              contentId: parent.contentId,
-              name: parent.name!,
-              type: parent.type,
-              parent: null,
-              grandparentId: null,
-            }
-          : null
-      }
-      action="Copy"
-      prependCopy={true}
-    />
-  );
 
   const authorModeModal = (
     <ActivateAuthorMode
@@ -499,7 +526,6 @@ export function EditorHeader() {
 
   return (
     <>
-      {copyContentModal}
       {authorModeModal}
       <ConfirmAssignModal
         contentDescription={contentDescription}
@@ -514,58 +540,57 @@ export function EditorHeader() {
         onClose={shareContentOnClose}
       />
 
-      <Grid
-        background="doenet.lightBlue"
-        minHeight="calc(100vh - 40px)" //40px header height
-        templateAreas={`"header" "centerContent"`}
-        templateRows="40px auto"
-        position="relative"
+      <Box
+        position="fixed"
+        top="40px"
+        height={editorHeaderHeight}
+        background="doenet.canvas"
+        width="100%"
+        zIndex="300"
+        borderBottom="1px solid"
+        borderColor="doenet.mediumGray"
       >
-        <GridItem
-          area="header"
-          position="fixed"
-          height="40px"
-          background="doenet.canvas"
-          width="100%"
-          zIndex="300"
-          borderBottom="1px solid"
-          borderColor="doenet.mediumGray"
-        >
-          <HStack width="100%">
-            {folder}
-            {outerActivity}
-            {editableName}
-            {tabButtons}
-            <Spacer />
-            {otherPages}
-            {/* Only show `Create assignment` and `Share` buttons if this is
+        <HStack width="100%">
+          {folder}
+          {outerActivity}
+          {editableName}
+          {tabButtons}
+          <Spacer />
+          {otherPages}
+          {/* Only show `Create assignment` and `Share` buttons if this is
               not a sub-part of a problem set */}
-            {!isSubActivity ? (
-              actionButtons
-            ) : (
-              // This is a hack to make sure the previous button tooltips
-              // do not go off screen
-              <Box width="2rem" />
-            )}
-          </HStack>
-        </GridItem>
+          {!isSubActivity ? (
+            actionButtons
+          ) : (
+            // This is a hack to make sure the previous button tooltips
+            // do not go off screen
+            <Box width="2rem" />
+          )}
+        </HStack>
+        {notBrowsableMessage}
+      </Box>
 
-        <GridItem area="centerContent">
-          <VStack gap={0}>
-            {inLibrary && inCurateMode ? (
-              <Flex width="100%">
-                <Outlet context={editorContext} />
-                <LibraryEditorControls
-                  contentId={contentId}
-                  contentType={contentType}
-                />
-              </Flex>
-            ) : (
-              <Outlet context={editorContext} />
-            )}
-          </VStack>
-        </GridItem>
-      </Grid>
+      <Box
+        position="absolute"
+        top={totalHeaderHeight}
+        left="0"
+        right="0"
+        bottom="0"
+        background="doenet.lightBlue"
+        overflow="auto"
+      >
+        {inLibrary && inCurateMode ? (
+          <Flex width="100%">
+            <Outlet context={editorContext} />
+            <LibraryEditorControls
+              contentId={contentId}
+              contentType={contentType}
+            />
+          </Flex>
+        ) : (
+          <Outlet context={editorContext} />
+        )}
+      </Box>
     </>
   );
 }
