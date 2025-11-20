@@ -46,9 +46,10 @@ export function NameBar({
   }
   lastBaseDataName.current = contentName;
 
-  // Special case: My Activities root folder or Trash
+  // Special case: root folder or special view of some kind
+  // Ex: My Activities, Shared with me, Trash
   // We can't edit the name of that, so just show read-only text
-  if (isEditable === false) {
+  if (!isEditable || contentId === null) {
     // Read-only header for root folder: icon sits inside the title box (non-editable)
     return (
       <Box position="relative" maxWidth={maxWidth} width={width}>
