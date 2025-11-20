@@ -74,6 +74,7 @@ export function SharedWithMe() {
       leftIcon={titleIcon}
       dataTest="Folder Title"
       fontSizeMode="folder"
+      isEditable={false}
     />
   );
 
