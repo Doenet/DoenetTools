@@ -1788,7 +1788,7 @@ describe("shareContent()", () => {
     expect(content[0].isPublic).eq(false);
   });
 
-  describe("correctly tracks root id", () => {
+  describe("correctly tracks root (isRootShare)", () => {
     test("share child then parent", async () => {
       const { userId: ownerId } = await createTestUser();
       const { userId: recipientId } = await createTestUser();
