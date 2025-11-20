@@ -1835,5 +1835,52 @@ describe("shareContent()", () => {
       expect(results.content[0].contentId).toEqual(folder1);
       expect(results.content[1].contentId).toEqual(doc1);
     });
+
+    test("share parent then child", async () => {
+      const { userId: ownerId } = await createTestUser();
+      const { userId: recipientId } = await createTestUser();
+      const [folder1, _folder2, doc1] = await setupTestContent(ownerId, {
+        folder1: fold({
+          folder2: fold({
+            doc1: doc(""),
+          }),
+        }),
+      });
+
+      // Share folder1, wait, then share doc1
+      await modifyContentSharedWith({
+        action: "share",
+        contentId: folder1,
+        loggedInUserId: ownerId,
+        users: [recipientId],
+      });
+
+      // getSharedWithMe as seen by recipient
+      let results = await getSharedWithMe({
+        loggedInUserId: recipientId,
+      });
+
+      expect(results.content.length).toEqual(1);
+      expect(results.content[0].contentId).toEqual(folder1);
+
+      // wait a bit to ensure different timestamps
+      await new Promise((resolve) => setTimeout(resolve, 10));
+
+      await modifyContentSharedWith({
+        action: "share",
+        contentId: doc1,
+        loggedInUserId: ownerId,
+        users: [recipientId],
+      });
+
+      // getSharedWithMe as seen by recipient
+      results = await getSharedWithMe({
+        loggedInUserId: recipientId,
+      });
+
+      expect(results.content.length).toEqual(2);
+      expect(results.content[0].contentId).toEqual(doc1);
+      expect(results.content[1].contentId).toEqual(folder1);
+    });
   });
 });
