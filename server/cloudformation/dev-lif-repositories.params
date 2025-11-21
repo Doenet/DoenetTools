@@ -1,0 +1,18 @@
+[
+  {
+    "ParameterKey": "EnvironmentName",
+    "ParameterValue": "dev"
+  },
+  {
+    "ParameterKey": "S3Bucket",
+    "ParameterValue": "dev-lif-configs"
+  },
+  {
+    "ParameterKey": "AccessKeySerial",
+    "ParameterValue": "1"
+  },
+  {
+    "ParameterKey": "GitHubRepos",
+    "ParameterValue": "repo:LIF-Initiative/lif-metadata-repository:*,repo:LIF-Initiative/lif-main:*"
+  }
+]
