@@ -4,12 +4,12 @@ name: Connect to an AWS role from a GitHub repository
 # Controls when the action will run. Invokes the workflow on push events but only for the main branch
 on:
   push:
-    branches: [main]
+    branches: [main, cloud-formation-charles, cloudformation]
 
 env:
   AWS_REGION: "us-east-2"
   WORKING_DIR: ./server
-  ECR_REPOSITORY: doenet/dev
+  ECR_REPOSITORY: dev3/doenet
 
 # Permission can be added at job level or workflow level
 permissions:
@@ -41,7 +41,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v5
         with:
           audience: sts.amazonaws.com
-          role-to-assume: "arn:aws:iam::568298704244:role/doenet-github-actions"
+          role-to-assume: "arn:aws:iam::568298704244:role/github-actions-dev3"
           role-skip-session-tagging: true
           # role-session-name: GitHub_to_AWS_via_FederatedOIDC
           aws-region: ${{ env.AWS_REGION }}

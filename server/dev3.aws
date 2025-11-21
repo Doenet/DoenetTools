@@ -7,10 +7,12 @@ SAM_CONFIG_ENV=dev
 
 declare -g -A STACKS
 STACKS['dev3-doenet-networking']='networking'
+STACKS['dev3-doenet-repositories']='repositories'
 
 declare -g -a STACK_ORDER
 STACK_ORDER=(
-  dev3-doenet-networking 
+  dev3-doenet-networking
+  dev3-doenet-repositories
 )
 
 declare -g -a SAM_STACKS

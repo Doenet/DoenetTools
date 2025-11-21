@@ -1,11 +1,11 @@
 [
   {
     "ParameterKey": "EnvironmentName",
-    "ParameterValue": "dev"
+    "ParameterValue": "dev3"
   },
   {
     "ParameterKey": "S3Bucket",
-    "ParameterValue": "dev-lif-configs"
+    "ParameterValue": "dev3-doenet"
   },
   {
     "ParameterKey": "AccessKeySerial",
@@ -13,6 +13,6 @@
   },
   {
     "ParameterKey": "GitHubRepos",
-    "ParameterValue": "repo:LIF-Initiative/lif-metadata-repository:*,repo:LIF-Initiative/lif-main:*"
+    "ParameterValue": "repo:Doenet/DoenetTools:*,repo:cqnykamp/DoenetTools:*"
   }
 ]
