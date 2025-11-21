@@ -1,0 +1,231 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: ECR Repositories
+
+Parameters:
+
+  EnvironmentName:
+    Type: String
+    Description: The environment name (the SSM prefix path name)
+    MaxLength: 10
+
+  AccessKeySerial:
+    Description: Increment this integer in order to rotate access-key credentials
+    Type: Number
+    Default: 1
+
+  S3Bucket:
+    Description: Creates a bucket that will hold application configs and files
+    Type: String
+
+  GitHubRepos:
+    Description: A list of GitHub repositories that have access to GitHub Actions Role in AWS
+    Type: CommaDelimitedList
+
+Resources:
+
+  TranslatorRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Sub lif/${EnvironmentName}/lif_translator_api
+      ImageScanningConfiguration:
+        ScanOnPush: true
+
+  QueryCacheApiRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Sub lif/${EnvironmentName}/lif_query_cache_api
+      ImageScanningConfiguration:
+        ScanOnPush: true
+
+  QueryPlannerRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Sub lif/${EnvironmentName}/lif_query_planner_api
+      ImageScanningConfiguration:
+        ScanOnPush: true
+
+  GraphQLRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Sub lif/${EnvironmentName}/lif_graphql_api
+      ImageScanningConfiguration:
+        ScanOnPush: true
+
+  MongoDBRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Sub lif/${EnvironmentName}/mongodb
+      ImageScanningConfiguration:
+        ScanOnPush: true
+
+  SemanticSearchMCPServerRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Sub lif/${EnvironmentName}/lif_semantic_search_mcp_server
+      ImageScanningConfiguration:
+        ScanOnPush: true
+
+  AdvisorApiRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Sub lif/${EnvironmentName}/lif_advisor_api
+      ImageScanningConfiguration:
+        ScanOnPush: true
+
+  AdvisorAppRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Sub lif/${EnvironmentName}/lif_advisor_app
+      ImageScanningConfiguration:
+        ScanOnPush: true
+
+  MongodbSeedRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Sub lif/${EnvironmentName}/mongodb_seed
+      ImageScanningConfiguration:
+        ScanOnPush: true
+
+  DagsterCloudAgentRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Sub lif/${EnvironmentName}/dagster_cloud_agent
+
+  DagsterCodeLocationRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Sub lif/${EnvironmentName}/dagster_code_location
+
+  DagsterRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Sub lif/${EnvironmentName}/dagster
+
+  OrchestratorRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Sub lif/${EnvironmentName}/lif_orchestrator
+      ImageScanningConfiguration:
+        ScanOnPush: true
+
+  IdentityMapperRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Sub lif/${EnvironmentName}/lif_identity_mapper_api
+      ImageScanningConfiguration:
+        ScanOnPush: true
+
+  IdentityMapperMariaDBRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Sub lif/${EnvironmentName}/lif_identity_mapper_mariadb
+      ImageScanningConfiguration:
+        ScanOnPush: true
+
+  ExampleDataSourceRestApiRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Sub lif/${EnvironmentName}/lif_example_data_source_rest_api
+      ImageScanningConfiguration:
+        ScanOnPush: true
+
+  MdrApiRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Sub lif/${EnvironmentName}/lif_mdr_api
+      ImageScanningConfiguration:
+        ScanOnPush: true
+
+  AppBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketName: !Ref S3Bucket
+
+  AppBucketSSMParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub "/${EnvironmentName}/S3Bucket"
+      Type: String
+      Value: !Ref AppBucket
+
+  GitHubOIDCProvider:
+    Type: AWS::IAM::OIDCProvider
+    Properties:
+      Url: https://token.actions.githubusercontent.com
+      ClientIdList:
+        - sts.amazonaws.com
+      ThumbprintList:
+        - 6938fd4d98bab03faadb97b34396831e3780aea1
+
+  GitHubActionsPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub lif-github-actions-policy-${EnvironmentName}
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Effect: Allow
+          Action:
+            - ecr:GetDownloadUrlForLayer
+            - ecr:CompleteLayerUpload
+            - ecr:UploadLayerPart
+            - ecr:InitiateLayerUpload
+            - ecr:BatchCheckLayerAvailability
+            - ecr:PutImage
+            - ecr:BatchGetImage
+          Resource: !Sub 'arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/lif/${EnvironmentName}/*'
+        - Effect: Allow
+          Action:
+            - 's3:Get*'
+            - 's3:List*'
+            - 's3:PutObject*'
+            - 's3:Delete*'
+            - 's3-object-lambda:Get*'
+            - 's3-object-lambda:List*'
+            - 's3-object-lambda:PutObject*'
+          Resource:
+            - !Sub 'arn:aws:s3:::${S3Bucket}'
+            - !Sub 'arn:aws:s3:::${S3Bucket}/*'
+            - !Sub 'arn:aws:s3:::mdr-${AWS::AccountId}-${AWS::Region}'
+            - !Sub 'arn:aws:s3:::mdr-${AWS::AccountId}-${AWS::Region}/*'
+        - Effect: Allow
+          Action:
+            - 'ssm:GetParameter'
+          Resource:
+            - !Sub 'arn:aws:ssm:*:*:parameter/${EnvironmentName}*'
+        - Effect: Allow
+          Action:
+            - 'ecs:UpdateService'
+          Resource:
+            - !Sub 'arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:service/${EnvironmentName}*'
+        - Effect: Allow
+          Action:
+            - ecr:GetAuthorizationToken
+            - 'ecs:List*'
+            - cloudfront:CreateInvalidation
+          Resource: '*'
+
+  GitHubActionsRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub lif-github-actions-${EnvironmentName}
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Ref GitHubOIDCProvider
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+              StringLike:
+                token.actions.githubusercontent.com:sub: !Ref GitHubRepos
+      ManagedPolicyArns:
+        - !Ref GitHubActionsPolicy
+      Tags:
+        - Key: Name
+          Value: !Sub lif-github-actions-${EnvironmentName}
+

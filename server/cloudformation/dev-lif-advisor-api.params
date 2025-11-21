@@ -1,0 +1,138 @@
+[
+  {
+    "ParameterKey": "RedshiftSecretArn",
+    "ParameterValue": "notapplicable"
+  },
+  {
+    "ParameterKey": "DomainNames",
+    "ParameterValue": "advisor-api.lif.unicon.net"
+  },
+  {
+    "ParameterKey": "EnvironmentName",
+    "ParameterValue": "dev"
+  },
+  {
+    "ParameterKey": "ServiceName",
+    "ParameterValue": "advisor-api"
+  },
+  {
+    "ParameterKey": "S3AppBucket",
+    "ParameterValue": "/dev/S3Bucket"
+  },
+  {
+    "ParameterKey": "CloudMapPrivateNamespace",
+    "ParameterValue": "/dev/CloudMapPrivateNamespace"
+  },
+  {
+    "ParameterKey": "Priority",
+    "ParameterValue": "2"
+  },
+  {
+    "ParameterKey": "EcsLaunchType",
+    "ParameterValue": "FARGATE"
+  },
+  {
+    "ParameterKey": "HealthCheckUrl",
+    "ParameterValue": "/health"
+  },
+  {
+    "ParameterKey": "UseLbForService",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "InstanceType",
+    "ParameterValue": "t3a.small"
+  },
+  {
+    "ParameterKey": "ECSAMI",
+    "ParameterValue": "/aws/service/ecs/optimized-ami/amazon-linux/recommended/image_id"
+  },
+  {
+    "ParameterKey": "ImageUrl",
+    "ParameterValue": "381492161417.dkr.ecr.us-east-1.amazonaws.com/lif/dev/lif_advisor_api:latest"
+  },
+  {
+    "ParameterKey": "TaskDefIncludesFile",
+    "ParameterValue": "s3://clir-cf-templates/dev-lif/lif-advisor-api-taskdef-includes.yml"
+  },
+  {
+    "ParameterKey": "TaskRoleIncludesFile",
+    "ParameterValue": "s3://clir-cf-templates/dev-lif/service-taskrole-includes.yml"
+  },
+  {
+    "ParameterKey": "ContainerPort",
+    "ParameterValue": "8004"
+  },
+  {
+    "ParameterKey": "ContainerMemory",
+    "ParameterValue": "1024"
+  },
+  {
+    "ParameterKey": "ContainerCpu",
+    "ParameterValue": "512"
+  },
+  {
+    "ParameterKey": "HealthCheckGracePeriod",
+    "ParameterValue": "300"
+  },
+  {
+    "ParameterKey": "MaxCount",
+    "ParameterValue": "1"
+  },
+  {
+    "ParameterKey": "MinCount",
+    "ParameterValue": "1"
+  },
+  {
+    "ParameterKey": "SecurityGroup",
+    "ParameterValue": "/dev/EcsInstanceSecurityGroup"
+  },
+  {
+    "ParameterKey": "PrivateSubnets",
+    "ParameterValue": "/dev/PrivateSubnets"
+  },
+  {
+    "ParameterKey": "VPC",
+    "ParameterValue": "/dev/VPC"
+  },
+  {
+    "ParameterKey": "EnvironmentKmsKey",
+    "ParameterValue": "/dev/EnvironmentKmsKey"
+  },
+  {
+    "ParameterKey": "EcsCluster",
+    "ParameterValue": "/dev/EcsCluster"
+  },
+  {
+    "ParameterKey": "LoadBalancerListener",
+    "ParameterValue": "/dev/LoadBalancerHttpsListener"
+  },
+  {
+    "ParameterKey": "EfsFileSystemId",
+    "ParameterValue": "/dev/EfsFileSystemId"
+  },
+  {
+    "ParameterKey": "PublicHostedZoneId",
+    "ParameterValue": "/dev/PublicHostedZoneId"
+  },
+  {
+    "ParameterKey": "PublicHostedZoneName",
+    "ParameterValue": "/dev/PublicHostedZoneName"
+  },
+  {
+    "ParameterKey": "LoadBalancerDnsName",
+    "ParameterValue": "/dev/LoadBalancerDnsName"
+  },
+  {
+    "ParameterKey": "LoadBalancerHostedZoneId",
+    "ParameterValue": "/dev/LoadBalancerHostedZoneId"
+  },
+  {
+    "ParameterKey": "RestrictedCIDRs",
+    "ParameterValue": "notapplicable"
+  },
+  {
+    "ParameterKey": "PathPattern",
+    "ParameterValue": "notapplicable"
+  }
+]

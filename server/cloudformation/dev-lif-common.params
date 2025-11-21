@@ -1,0 +1,58 @@
+[
+  {
+    "ParameterKey": "EnvironmentName",
+    "ParameterValue": "dev"
+  },
+  {
+    "ParameterKey": "Project",
+    "ParameterValue": "lif"
+  },
+  {
+    "ParameterKey": "DnsZone",
+    "ParameterValue": "/dev/VPCHostedZoneName"
+  },
+  {
+    "ParameterKey": "HostedZoneId",
+    "ParameterValue": "/dev/VPCHostedZoneId"
+  },
+  {
+    "ParameterKey": "LoadBalancerScheme",
+    "ParameterValue": "internet-facing"
+  },
+  {
+    "ParameterKey": "EnableSSL",
+    "ParameterValue": "enable"
+  },
+  {
+    "ParameterKey": "PublicHostedZoneName",
+    "ParameterValue": "/dev/PublicHostedZoneName"
+  },
+  {
+    "ParameterKey": "PublicHostedZoneId",
+    "ParameterValue": "/dev/PublicHostedZoneId"
+  },
+  {
+    "ParameterKey": "WebACLArn",
+    "ParameterValue": "not set"
+  },
+  {
+    "ParameterKey": "SecurityGroup",
+    "ParameterValue": "/dev/EcsInstanceSecurityGroup"
+  },
+  {
+    "ParameterKey": "VPC",
+    "ParameterValue": "/dev/VPC"
+  },
+  {
+    "ParameterKey": "PublicSubnets",
+    "ParameterValue": "/dev/PublicSubnets"
+  },
+  {
+    "ParameterKey": "PrivateSubnets",
+    "ParameterValue": "/dev/PrivateSubnets"
+  },
+  {
+    "ParameterKey": "KmsKey",
+    "ParameterValue": "/dev/EnvironmentKmsKey"
+  }
+]
