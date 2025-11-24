@@ -1,10 +1,10 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Description: Navigate services common resources in AWS
 
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
-      - Label: 
+      - Label:
           default: General Environment Configuration
         Parameters:
           - EnvironmentName
@@ -12,7 +12,7 @@ Metadata:
           - WebACLArn
           - LoadBalancerScheme
           - EnableSSL
-      - Label: 
+      - Label:
           default: SSM-sourced parameters
         Parameters:
           - VPC
@@ -26,36 +26,35 @@ Metadata:
           - SecurityGroup
 
 Parameters:
-
   EnvironmentName:
     Type: String
     Description: The environment name (the SSM prefix path name)
-#    MaxLength: 10
+    #    MaxLength: 10
     Default: dev
 
   Project:
     Type: String
     Description: The project name
 
-  KmsKey: 
-    Type: 'AWS::SSM::Parameter::Value<String>'
-    Default: '/demo/EnvironmentKmsKey'
+  KmsKey:
+    Type: "AWS::SSM::Parameter::Value<String>"
+    Default: "/demo/EnvironmentKmsKey"
 
-  SecurityGroup: 
-    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::SecurityGroup::Id>'
-    Default: '/demo/EcsInstanceSecurityGroup'
+  SecurityGroup:
+    Type: "AWS::SSM::Parameter::Value<AWS::EC2::SecurityGroup::Id>"
+    Default: "/demo/EcsInstanceSecurityGroup"
 
-  PublicSubnets: 
-    Type: 'AWS::SSM::Parameter::Value<List<AWS::EC2::Subnet::Id>>'
-    Default: '/demo/PublicSubnets'
+  PublicSubnets:
+    Type: "AWS::SSM::Parameter::Value<List<AWS::EC2::Subnet::Id>>"
+    Default: "/demo/PublicSubnets"
 
-  PrivateSubnets: 
-    Type: 'AWS::SSM::Parameter::Value<List<AWS::EC2::Subnet::Id>>'
-    Default: '/demo/PrivateSubnets'
+  PrivateSubnets:
+    Type: "AWS::SSM::Parameter::Value<List<AWS::EC2::Subnet::Id>>"
+    Default: "/demo/PrivateSubnets"
 
-  VPC: 
-    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::VPC::Id>'
-    Default: '/demo/VPC'
+  VPC:
+    Type: "AWS::SSM::Parameter::Value<AWS::EC2::VPC::Id>"
+    Default: "/demo/VPC"
 
   WebACLArn:
     Type: String
@@ -70,11 +69,11 @@ Parameters:
 
   DnsZone:
     Description: Route53 hosted zone to use for the database's DNS record (<prefix>.<zone>)
-    Type: 'AWS::SSM::Parameter::Value<String>'
+    Type: "AWS::SSM::Parameter::Value<String>"
 
   HostedZoneId:
     Description: Route53 hosted zone id to use for the database's DNS record
-    Type: 'AWS::SSM::Parameter::Value<String>'
+    Type: "AWS::SSM::Parameter::Value<String>"
 
   EnableSSL:
     Description: Enable an HTTPS listener (requires a public hosted zone)
@@ -84,60 +83,59 @@ Parameters:
       - disable
 
   PublicHostedZoneName:
-    Type: 'AWS::SSM::Parameter::Value<String>'
-    Default: '/demo/PublicHostedZoneName'
+    Type: "AWS::SSM::Parameter::Value<String>"
+    Default: "/demo/PublicHostedZoneName"
 
   PublicHostedZoneId:
-    Type: 'AWS::SSM::Parameter::Value<String>'
-    Default: '/demo/PublicHostedZoneId'
+    Type: "AWS::SSM::Parameter::Value<String>"
+    Default: "/demo/PublicHostedZoneId"
 
 Conditions:
   WafIsEnabled: !And
     - !Not
       - !Equals
         - !Ref LoadBalancerScheme
-        - 'disable'
+        - "disable"
     - !Not
       - !Equals
         - !Ref WebACLArn
-        - 'not set'
+        - "not set"
 
   LbIsEnabled: !Not
     - !Equals
       - !Ref LoadBalancerScheme
-      - 'disable'
+      - "disable"
 
   SSLIsEnabled: !And
     - !Equals
       - !Ref EnableSSL
-      - 'enable'
+      - "enable"
     - !Not
       - !Equals
         - !Ref LoadBalancerScheme
-        - 'disable'
+        - "disable"
 
   SSLIsDisabled: !And
     - !Equals
       - !Ref EnableSSL
-      - 'disable'
+      - "disable"
     - !Not
       - !Equals
         - !Ref LoadBalancerScheme
-        - 'disable'
+        - "disable"
 
-Mappings: 
-  RegionMap: 
-    us-east-1: 
+Mappings:
+  RegionMap:
+    us-east-1:
       "ElbLogsAccount": "127311923021"
-    us-east-2: 
+    us-east-2:
       "ElbLogsAccount": "033677994240"
-    us-west-1: 
+    us-west-1:
       "ElbLogsAccount": "027434742980"
-    us-west-2: 
+    us-west-2:
       "ElbLogsAccount": "797873946194"
 
 Resources:
-
   EcsCluster:
     Type: AWS::ECS::Cluster
     Properties:
@@ -247,11 +245,11 @@ Resources:
         rules_to_suppress:
           - id: W47
     Properties:
-      DisplayName: !Sub '${EnvironmentName}-warning-cloudwatch-notifications'
+      DisplayName: !Sub "${EnvironmentName}-warning-cloudwatch-notifications"
       Subscription:
-        - Endpoint: 'abragg@unicon.net'
+        - Endpoint: "devops@doenet.org"
           Protocol: email
-      TopicName: !Sub '${EnvironmentName}-warning-cloudwatch-notifications'
+      TopicName: !Sub "${EnvironmentName}-warning-cloudwatch-notifications"
 
   CloudwatchSNSWarningTopicSSMParameter:
     Type: AWS::SSM::Parameter
@@ -267,11 +265,11 @@ Resources:
         rules_to_suppress:
           - id: W47
     Properties:
-      DisplayName: !Sub '${EnvironmentName}-critical-cloudwatch-notifications'
+      DisplayName: !Sub "${EnvironmentName}-critical-cloudwatch-notifications"
       Subscription:
-        - Endpoint: 'abragg@unicon.net'
+        - Endpoint: "devops@doenet.org"
           Protocol: email
-      TopicName: !Sub '${EnvironmentName}-critical-cloudwatch-notifications'
+      TopicName: !Sub "${EnvironmentName}-critical-cloudwatch-notifications"
 
   CloudwatchSNSCriticalTopicSSMParameter:
     Type: AWS::SSM::Parameter
@@ -291,7 +289,7 @@ Resources:
     DeletionPolicy: Retain
     UpdateReplacePolicy: Retain
     Properties:
-      BucketName: !Sub '${EnvironmentName}-${Project}-access-logs'
+      BucketName: !Sub "${EnvironmentName}-${Project}-access-logs"
       LifecycleConfiguration:
         Rules:
           - Id: RemoveFilesAfter7Days
@@ -308,26 +306,27 @@ Resources:
       PolicyDocument:
         Version: 2012-10-17
         Statement:
-        - Effect: Allow
-          Principal:
-            AWS: !Sub
-              - "arn:aws:iam::${ELB_ACCOUNT_ID}:root"
-              - ELB_ACCOUNT_ID: !FindInMap [RegionMap, !Ref "AWS::Region", "ElbLogsAccount"]
-          Action: "s3:PutObject"
-          Resource: !Sub '${LogsBucket.Arn}/logs/AWSLogs/${AWS::AccountId}/*'
-        - Effect: Allow
-          Principal: 
-            Service: delivery.logs.amazonaws.com
-          Action: "s3:PutObject"
-          Resource: !Sub '${LogsBucket.Arn}/logs/AWSLogs/${AWS::AccountId}/*'
-          Condition:
-            StringEquals:
-              "s3:x-amz-acl": bucket-owner-full-control
-        - Effect: Allow
-          Principal: 
-            Service: delivery.logs.amazonaws.com
-          Action: "s3:GetBucketAcl"
-          Resource: !GetAtt LogsBucket.Arn
+          - Effect: Allow
+            Principal:
+              AWS: !Sub
+                - "arn:aws:iam::${ELB_ACCOUNT_ID}:root"
+                - ELB_ACCOUNT_ID:
+                    !FindInMap [RegionMap, !Ref "AWS::Region", "ElbLogsAccount"]
+            Action: "s3:PutObject"
+            Resource: !Sub "${LogsBucket.Arn}/logs/AWSLogs/${AWS::AccountId}/*"
+          - Effect: Allow
+            Principal:
+              Service: delivery.logs.amazonaws.com
+            Action: "s3:PutObject"
+            Resource: !Sub "${LogsBucket.Arn}/logs/AWSLogs/${AWS::AccountId}/*"
+            Condition:
+              StringEquals:
+                "s3:x-amz-acl": bucket-owner-full-control
+          - Effect: Allow
+            Principal:
+              Service: delivery.logs.amazonaws.com
+            Action: "s3:GetBucketAcl"
+            Resource: !GetAtt LogsBucket.Arn
 
   LoadBalancer:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
@@ -335,18 +334,18 @@ Resources:
     Properties:
       Scheme: !Ref LoadBalancerScheme
       LoadBalancerAttributes:
-      - Key: idle_timeout.timeout_seconds
-        Value: '30'
-      - Key: access_logs.s3.enabled
-        Value: 'true'
-      - Key: access_logs.s3.bucket
-        Value: !Ref LogsBucket
-      - Key: access_logs.s3.prefix
-        Value: logs
-      Subnets: !Ref PublicSubnets 
-      SecurityGroups: 
-        -  !Ref LoadBalancerSG
-        -  !Ref SecurityGroup
+        - Key: idle_timeout.timeout_seconds
+          Value: "30"
+        - Key: access_logs.s3.enabled
+          Value: "true"
+        - Key: access_logs.s3.bucket
+          Value: !Ref LogsBucket
+        - Key: access_logs.s3.prefix
+          Value: logs
+      Subnets: !Ref PublicSubnets
+      SecurityGroups:
+        - !Ref LoadBalancerSG
+        - !Ref SecurityGroup
 
   LoadBalancerSG:
     Type: AWS::EC2::SecurityGroup
@@ -365,20 +364,20 @@ Resources:
       GroupDescription: Access to the public facing load balancer
       VpcId: !Ref VPC
       SecurityGroupIngress:
-          - CidrIp: 0.0.0.0/0
-            IpProtocol: '-1'
-            Description: Permit all inbound traffic
+        - CidrIp: 0.0.0.0/0
+          IpProtocol: "-1"
+          Description: Permit all inbound traffic
       SecurityGroupEgress:
-          - CidrIp: 0.0.0.0/0
-            IpProtocol: '-1'
-            Description: Permit all outboud traffic
+        - CidrIp: 0.0.0.0/0
+          IpProtocol: "-1"
+          Description: Permit all outboud traffic
 
   LoadBalancerDns:
     Type: AWS::Route53::RecordSet
     Condition: LbIsEnabled
     Properties:
-      HostedZoneId: !Ref  PublicHostedZoneId
-      Name: !Sub '${PublicHostedZoneName}.'
+      HostedZoneId: !Ref PublicHostedZoneId
+      Name: !Sub "${PublicHostedZoneName}."
       Type: A
       AliasTarget:
         HostedZoneId: !GetAtt LoadBalancer.CanonicalHostedZoneID
@@ -391,7 +390,8 @@ Resources:
       Description: ECS
       Name: !Sub "/${EnvironmentName}/LoadBalancerFullName"
       Type: String
-      Value: !If [LbIsEnabled, !GetAtt LoadBalancer.LoadBalancerFullName, 'not set']
+      Value:
+        !If [LbIsEnabled, !GetAtt LoadBalancer.LoadBalancerFullName, "not set"]
 
   LoadBalancerDnsNameSSMParameter:
     Type: AWS::SSM::Parameter
@@ -399,7 +399,7 @@ Resources:
       Description: ECS
       Name: !Sub "/${EnvironmentName}/LoadBalancerDnsName"
       Type: String
-      Value: !If [LbIsEnabled, !GetAtt LoadBalancer.DNSName, 'not set']
+      Value: !If [LbIsEnabled, !GetAtt LoadBalancer.DNSName, "not set"]
 
   LoadBalancerHostedZoneIdSSMParameter:
     Type: AWS::SSM::Parameter
@@ -407,7 +407,8 @@ Resources:
       Description: ECS
       Name: !Sub "/${EnvironmentName}/LoadBalancerHostedZoneId"
       Type: String
-      Value: !If [LbIsEnabled, !GetAtt LoadBalancer.CanonicalHostedZoneID, 'not set']
+      Value:
+        !If [LbIsEnabled, !GetAtt LoadBalancer.CanonicalHostedZoneID, "not set"]
 
   LoadBalancerHttpListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
@@ -416,8 +417,8 @@ Resources:
       DefaultActions:
         - Type: fixed-response
           FixedResponseConfig:
-            ContentType: 'text/html'
-            StatusCode: '200'
+            ContentType: "text/html"
+            StatusCode: "200"
             MessageBody: >
               <!doctype html>
               <title>This is not the page you're looking for</title>
@@ -428,7 +429,7 @@ Resources:
                 <a rel="home" title="404 Home" class="active" href="https://www.unicon.net/"><img class="logo" id="logo" alt="Unicon logo" title="Home" src="https://www.unicon.net/hs-fs/hubfs/raw_assets/public/Unicon_October2020/images/logo.png?width=600&name=logo.png"></a>		    
               </div>
       LoadBalancerArn: !Ref LoadBalancer
-      Port: 80 
+      Port: 80
       Protocol: HTTP
 
   LoadBalancerHttpListenerSSMParameter:
@@ -437,7 +438,7 @@ Resources:
       Description: ECS
       Name: !Sub "/${EnvironmentName}/LoadBalancerHttpListener"
       Type: String
-      Value: !If [SSLIsDisabled, !Ref LoadBalancerHttpListener, 'not set']
+      Value: !If [SSLIsDisabled, !Ref LoadBalancerHttpListener, "not set"]
 
   LoadBalancerListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
@@ -467,8 +468,8 @@ Resources:
       DefaultActions:
         - Type: fixed-response
           FixedResponseConfig:
-            ContentType: 'text/html'
-            StatusCode: '200'
+            ContentType: "text/html"
+            StatusCode: "200"
             MessageBody: >
               <!doctype html>
               <title>This is not the page you're looking for</title>
@@ -479,23 +480,22 @@ Resources:
                 <a rel="home" title="404 Home" class="active" href="https://www.unicon.net/"><img class="logo" id="logo" alt="Unicon logo" title="Home" src="https://www.unicon.net/hs-fs/hubfs/raw_assets/public/Unicon_October2020/images/logo.png?width=600&name=logo.png"></a>		    
               </div>
       LoadBalancerArn: !Ref LoadBalancer
-      Port: 443 
+      Port: 443
       Protocol: HTTPS
-      Certificates: 
+      Certificates:
         - CertificateArn: !Ref SSLCertificate
 
   SSLCertificate:
     Type: AWS::CertificateManager::Certificate
     Condition: SSLIsEnabled
-    Properties: 
+    Properties:
       DomainName: !Ref PublicHostedZoneName
       ValidationMethod: DNS
       DomainValidationOptions:
         - DomainName: !Ref PublicHostedZoneName
           HostedZoneId: !Ref PublicHostedZoneId
       SubjectAlternativeNames:
-        - !Sub '*.${PublicHostedZoneName}'
-          
+        - !Sub "*.${PublicHostedZoneName}"
 
   LoadBalancerHttpsListenerSSMParameter:
     Type: AWS::SSM::Parameter
@@ -503,17 +503,17 @@ Resources:
       Description: ECS
       Name: !Sub "/${EnvironmentName}/LoadBalancerHttpsListener"
       Type: String
-      Value: !If [SSLIsEnabled, !Ref LoadBalancerHttpsListener, 'not set']
+      Value: !If [SSLIsEnabled, !Ref LoadBalancerHttpsListener, "not set"]
 
   EfsFileSystem:
     Type: AWS::EFS::FileSystem
-    Properties: 
-      BackupPolicy: 
+    Properties:
+      BackupPolicy:
         Status: ENABLED
       Encrypted: true
       FileSystemTags:
         - Key: Name
-          Value: !Sub '${EnvironmentName}-efs'
+          Value: !Sub "${EnvironmentName}-efs"
       KmsKeyId: !Ref KmsKey
       PerformanceMode: generalPurpose
       ThroughputMode: bursting
@@ -523,7 +523,7 @@ Resources:
     Properties:
       HostedZoneId: !Ref HostedZoneId
       Comment: EFS
-      Name: !Sub '${EnvironmentName}-efs.${DnsZone}'
+      Name: !Sub "${EnvironmentName}-efs.${DnsZone}"
       Type: A
       TTL: 60
       ResourceRecords:
@@ -542,30 +542,30 @@ Resources:
     Type: AWS::EFS::MountTarget
     Properties:
       FileSystemId: !Ref EfsFileSystem
-      SubnetId: !Select [ 0, !Ref PrivateSubnets ]
+      SubnetId: !Select [0, !Ref PrivateSubnets]
       SecurityGroups:
-      - !Ref SecurityGroup
+        - !Ref SecurityGroup
 
   MountTarget2:
     Type: AWS::EFS::MountTarget
     Properties:
       FileSystemId: !Ref EfsFileSystem
-      SubnetId: !Select [ 1, !Ref PrivateSubnets ]
+      SubnetId: !Select [1, !Ref PrivateSubnets]
       SecurityGroups:
-      - !Ref SecurityGroup
+        - !Ref SecurityGroup
 
   WebACLAssociation:
     Type: AWS::WAFv2::WebACLAssociation
     Condition: WafIsEnabled
-    Properties: 
+    Properties:
       ResourceArn: !Ref LoadBalancer
       WebACLArn: !Ref WebACLArn
 
   PrivateNamespace:
     Type: AWS::ServiceDiscovery::PrivateDnsNamespace
     Properties:
-        Name: !Sub lif.${EnvironmentName}.aws
-        Vpc: !Ref VPC
+      Name: !Sub lif.${EnvironmentName}.aws
+      Vpc: !Ref VPC
 
   PrivateNamespaceSSMParameter:
     Type: AWS::SSM::Parameter

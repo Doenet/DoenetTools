@@ -1,19 +1,19 @@
 [
   {
     "ParameterKey": "EnvironmentName",
-    "ParameterValue": "dev"
+    "ParameterValue": "dev3"
   },
   {
     "ParameterKey": "Project",
-    "ParameterValue": "lif"
+    "ParameterValue": "doenet"
   },
   {
     "ParameterKey": "DnsZone",
-    "ParameterValue": "/dev/VPCHostedZoneName"
+    "ParameterValue": "/dev3/VPCHostedZoneName"
   },
   {
     "ParameterKey": "HostedZoneId",
-    "ParameterValue": "/dev/VPCHostedZoneId"
+    "ParameterValue": "/dev3/VPCHostedZoneId"
   },
   {
     "ParameterKey": "LoadBalancerScheme",
@@ -25,11 +25,11 @@
   },
   {
     "ParameterKey": "PublicHostedZoneName",
-    "ParameterValue": "/dev/PublicHostedZoneName"
+    "ParameterValue": "/dev3/PublicHostedZoneName"
   },
   {
     "ParameterKey": "PublicHostedZoneId",
-    "ParameterValue": "/dev/PublicHostedZoneId"
+    "ParameterValue": "/dev3/PublicHostedZoneId"
   },
   {
     "ParameterKey": "WebACLArn",
@@ -37,22 +37,22 @@
   },
   {
     "ParameterKey": "SecurityGroup",
-    "ParameterValue": "/dev/EcsInstanceSecurityGroup"
+    "ParameterValue": "/dev3/EcsInstanceSecurityGroup"
   },
   {
     "ParameterKey": "VPC",
-    "ParameterValue": "/dev/VPC"
+    "ParameterValue": "/dev3/VPC"
   },
   {
     "ParameterKey": "PublicSubnets",
-    "ParameterValue": "/dev/PublicSubnets"
+    "ParameterValue": "/dev3/PublicSubnets"
   },
   {
     "ParameterKey": "PrivateSubnets",
-    "ParameterValue": "/dev/PrivateSubnets"
+    "ParameterValue": "/dev3/PrivateSubnets"
   },
   {
     "ParameterKey": "KmsKey",
-    "ParameterValue": "/dev/EnvironmentKmsKey"
+    "ParameterValue": "/dev3/EnvironmentKmsKey"
   }
 ]

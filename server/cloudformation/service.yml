@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Description: Service in ECS
 
 Metadata:
@@ -25,7 +25,7 @@ Metadata:
           - RestrictedCIDRs
           - RedshiftSecretArn
           - EnableCognitoAuth
-#          - OidcDomain
+      #          - OidcDomain
       - Label:
           default: ECS Configuration
         Parameters:
@@ -61,11 +61,10 @@ Metadata:
 #          - CloudwatchSNSTopic
 
 Parameters:
-
   EnvironmentName:
     Type: String
     Description: The environment name (the SSM prefix path name)
-#    MaxLength: 10
+    #    MaxLength: 10
     Default: webdev
 
   OrganizationName:
@@ -85,9 +84,9 @@ Parameters:
     Type: String
     Description: The S3 url of the task policies includes file
 
-#  OidcDomain:
-#    Type: String
-#    Description: The oidc domain name
+  #  OidcDomain:
+  #    Type: String
+  #    Description: The oidc domain name
 
   ImageUrl:
     Type: String
@@ -111,68 +110,68 @@ Parameters:
     Description: How many seconds to give container for bootstrapping
 
   SecurityGroup:
-    Type : 'AWS::SSM::Parameter::Value<AWS::EC2::SecurityGroup::Id>'
-    Default: '/webdev/EcsInstanceSecurityGroup'
+    Type: "AWS::SSM::Parameter::Value<AWS::EC2::SecurityGroup::Id>"
+    Default: "/webdev/EcsInstanceSecurityGroup"
 
   PrivateSubnets:
-    Type : 'AWS::SSM::Parameter::Value<List<AWS::EC2::Subnet::Id>>'
-    Default: '/webdev/PrivateSubnets'
+    Type: "AWS::SSM::Parameter::Value<List<AWS::EC2::Subnet::Id>>"
+    Default: "/webdev/PrivateSubnets"
 
   VPC:
-    Type : 'AWS::SSM::Parameter::Value<AWS::EC2::VPC::Id>'
-    Default: '/webdev/VPC'
+    Type: "AWS::SSM::Parameter::Value<AWS::EC2::VPC::Id>"
+    Default: "/webdev/VPC"
 
   EnvironmentKmsKey:
-    Type : 'AWS::SSM::Parameter::Value<String>'
-    Default: '/webdev/EnvironmentKmsKey'
+    Type: "AWS::SSM::Parameter::Value<String>"
+    Default: "/webdev/EnvironmentKmsKey"
 
   EcsCluster:
-    Type : 'AWS::SSM::Parameter::Value<String>'
-    Default: '/webdev/EcsCluster'
+    Type: "AWS::SSM::Parameter::Value<String>"
+    Default: "/webdev/EcsCluster"
 
   LoadBalancerListener:
-    Type : 'AWS::SSM::Parameter::Value<String>'
-    Default: '/webdev/LoadBalancerHttpsListener'
+    Type: "AWS::SSM::Parameter::Value<String>"
+    Default: "/webdev/LoadBalancerHttpsListener"
 
   EfsFileSystemId:
-    Type : 'AWS::SSM::Parameter::Value<String>'
+    Type: "AWS::SSM::Parameter::Value<String>"
     Description: The EFS file system id of the shared storage
 
   PublicHostedZoneId:
-    Type : 'AWS::SSM::Parameter::Value<String>'
-    Default: '/demo/PublicHostedZoneId'
+    Type: "AWS::SSM::Parameter::Value<String>"
+    Default: "/demo/PublicHostedZoneId"
 
   PublicHostedZoneName:
-    Type : 'AWS::SSM::Parameter::Value<String>'
-    Default: '/demo/PublicHostedZoneName'
+    Type: "AWS::SSM::Parameter::Value<String>"
+    Default: "/demo/PublicHostedZoneName"
 
   LoadBalancerDnsName:
-    Type : 'AWS::SSM::Parameter::Value<String>'
-    Default: '/demo/LoadBalancerDnsName'
+    Type: "AWS::SSM::Parameter::Value<String>"
+    Default: "/demo/LoadBalancerDnsName"
 
   LoadBalancerHostedZoneId:
-    Type : 'AWS::SSM::Parameter::Value<String>'
-    Default: '/demo/LoadBalancerHostedZoneId'
+    Type: "AWS::SSM::Parameter::Value<String>"
+    Default: "/demo/LoadBalancerHostedZoneId"
 
   CloudMapPrivateNamespace:
-    Type : 'AWS::SSM::Parameter::Value<String>'
+    Type: "AWS::SSM::Parameter::Value<String>"
     Description: The discovery service zone name
 
   S3AppBucket:
-    Type : 'AWS::SSM::Parameter::Value<String>'
+    Type: "AWS::SSM::Parameter::Value<String>"
     Description: The of the application bucket
 
   RedshiftSecretArn:
-    Type : String
+    Type: String
     Description: The of ARN of the REDSHIFT_CONFIG secret
 
-#  LoadBalancerFullName:
-#    Type : 'AWS::SSM::Parameter::Value<String>'
-#    Default: '/webdev/LoadBalancerFullName'
+  #  LoadBalancerFullName:
+  #    Type : 'AWS::SSM::Parameter::Value<String>'
+  #    Default: '/webdev/LoadBalancerFullName'
 
-#  CloudwatchSNSTopic:
-#    Type : 'AWS::SSM::Parameter::Value<String>'
-#    Default: '/webdev/CloudwatchSNSWarningTopic'
+  #  CloudwatchSNSTopic:
+  #    Type : 'AWS::SSM::Parameter::Value<String>'
+  #    Default: '/webdev/CloudwatchSNSWarningTopic'
 
   MinCount:
     Type: Number
@@ -190,7 +189,7 @@ Parameters:
 
   DomainNames:
     Type: CommaDelimitedList
-    Description: A comma delimited list of domain names that should use this target app's target group 
+    Description: A comma delimited list of domain names that should use this target app's target group
 
   Priority:
     Type: Number
@@ -202,10 +201,10 @@ Parameters:
 
   UseLbForService:
     Type: String
-    Default: 'false'
+    Default: "false"
     AllowedValues:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
     Description: Create target groups and routing rules for the load balancer
 
   RestrictedCIDRs:
@@ -214,10 +213,10 @@ Parameters:
 
   EnableCognitoAuth:
     Type: String
-    Default: 'false'
+    Default: "false"
     AllowedValues:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
     Description: Enable Cognito authentication for this service
 
   EcsLaunchType:
@@ -247,17 +246,17 @@ Conditions:
     - EC2
   UseLbForService: !Equals
     - !Ref UseLbForService
-    - 'true'
+    - "true"
   IsDev: !Equals
     - !Ref EnvironmentName
-    - webdev
-  UseDomainNames: !Not 
+    - dev3
+  UseDomainNames: !Not
     - !Equals
       - !Select
         - 0
         - !Ref DomainNames
       - notapplicable
-  UsePathPattern: !Not 
+  UsePathPattern: !Not
     - !Equals
       - !Ref PathPattern
       - notapplicable
@@ -266,10 +265,10 @@ Conditions:
       - !Condition UseDomainNames
       - !Condition UsePathPattern
   DomainNamesMatch: !Equals
-    - !Select [ 0, !Ref DomainNames ]
-    - !Sub '${ServiceName}.${PublicHostedZoneName}'
+    - !Select [0, !Ref DomainNames]
+    - !Sub "${ServiceName}.${PublicHostedZoneName}"
   CreateDnsEntry: !And
-    - !Not 
+    - !Not
       - !Condition DomainNamesMatch
     - !Or
       - !Condition UseDomainNames
@@ -288,10 +287,9 @@ Conditions:
     - !Condition UseDomainNames
     - !Equals
       - !Ref EnableCognitoAuth
-      - 'true'
+      - "true"
 
 Resources:
-
   ECSTaskExecutionRole:
     Type: AWS::IAM::Role
     Metadata:
@@ -305,17 +303,17 @@ Resources:
     Properties:
       AssumeRolePolicyDocument:
         Statement:
-        - Effect: Allow
-          Principal:
-            Service: [ecs-tasks.amazonaws.com]
-          Action: ['sts:AssumeRole']
+          - Effect: Allow
+            Principal:
+              Service: [ecs-tasks.amazonaws.com]
+            Action: ["sts:AssumeRole"]
       Path: /
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
         - arn:aws:iam::aws:policy/service-role/AWSAppSyncPushToCloudWatchLogs
         - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
-      'Fn::Transform':
-        Name: 'AWS::Include'
+      "Fn::Transform":
+        Name: "AWS::Include"
         Parameters:
           Location: !Ref TaskRoleIncludesFile
 
@@ -327,12 +325,12 @@ Resources:
           ignore_checks:
             - E3002
     Properties:
-      Family: !Sub '${ServiceName}-${EnvironmentName}'
+      Family: !Sub "${ServiceName}-${EnvironmentName}"
       Cpu: !If [EcsInFargate, !Ref ContainerCpu, !Ref "AWS::NoValue"]
       Memory: !Ref ContainerMemory
       NetworkMode: awsvpc
-#      RequiresCompatibilities:
-#        - !If [EcsInFargate, 'FARGATE', 'EC2']
+      #      RequiresCompatibilities:
+      #        - !If [EcsInFargate, 'FARGATE', 'EC2']
       ExecutionRoleArn: !GetAtt ECSTaskExecutionRole.Arn
       TaskRoleArn: !Ref ECSTaskExecutionRole
       Volumes:
@@ -343,37 +341,38 @@ Resources:
             AuthorizationConfig:
               AccessPointId: !Ref EfsAccessPoint
       ContainerDefinitions:
-        - Name: !Sub '${ServiceName}'
+        - Name: !Sub "${ServiceName}"
           Image: !Ref ImageUrl
           LogConfiguration:
             LogDriver: awslogs
             Options:
-              awslogs-group: !Sub '${EnvironmentName}'
-              awslogs-create-group: 'true'
+              awslogs-group: !Sub "${EnvironmentName}"
+              awslogs-create-group: "true"
               awslogs-region: !Ref "AWS::Region"
-              awslogs-stream-prefix: !Sub '${ServiceName}'
+              awslogs-stream-prefix: !Sub "${ServiceName}"
           PortMappings:
             - ContainerPort: !Ref ContainerPort
           MountPoints:
             - SourceVolume: efs-share
               ContainerPath: /mnt/efs
-          'Fn::Transform':
-            Name: 'AWS::Include'
+          "Fn::Transform":
+            Name: "AWS::Include"
             Parameters:
               Location: !Ref TaskDefIncludesFile
 
   ServiceHttpsListenerRuleReady:
     Type: AWS::CloudFormation::WaitConditionHandle
     Metadata:
-      SecondaryCIDRready: !If [UseLbForService, !Ref ServiceHttpsListenerRule, ""]
+      SecondaryCIDRready:
+        !If [UseLbForService, !Ref ServiceHttpsListenerRule, ""]
 
   Service:
     Type: AWS::ECS::Service
     DependsOn: ServiceHttpsListenerRuleReady
     Properties:
-      ServiceName: !Sub '${ServiceName}-${EcsLaunchType}'
+      ServiceName: !Sub "${ServiceName}-${EcsLaunchType}"
       Cluster: !Ref EcsCluster
-      LaunchType: !If [EcsInFargate, 'FARGATE', 'EC2']
+      LaunchType: !If [EcsInFargate, "FARGATE", "EC2"]
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 50
@@ -385,12 +384,12 @@ Resources:
           Subnets: !Ref PrivateSubnets
       EnableExecuteCommand: true
       TaskDefinition: !Ref TaskDefinition
-      HealthCheckGracePeriodSeconds: !If [UseLbForService, !Ref HealthCheckGracePeriod, !Ref "AWS::NoValue"]
+      HealthCheckGracePeriodSeconds:
+        !If [UseLbForService, !Ref HealthCheckGracePeriod, !Ref "AWS::NoValue"]
       LoadBalancers:
         - !If
           - UseLbForService
-          -
-            ContainerName: !Sub '${ServiceName}'
+          - ContainerName: !Sub "${ServiceName}"
             ContainerPort: !Ref ContainerPort
             TargetGroupArn: !Ref TargetGroup
           - !Ref "AWS::NoValue"
@@ -451,7 +450,7 @@ Resources:
       ImageId: !Ref ECSAMI
       InstanceType: !Ref InstanceType
       SecurityGroups:
-      - !Ref SecurityGroup
+        - !Ref SecurityGroup
       IamInstanceProfile: !Ref ECSInstanceProfile
       UserData:
         "Fn::Base64": !Sub |
@@ -519,12 +518,12 @@ Resources:
         - PolicyName: EfsPolicy
           PolicyDocument:
             Statement:
-            - Effect: Allow
-              Action:
-                - 'elasticfilesystem:DescribeMountTargets'
-                - 'ec2:DescribeAvailabilityZones'
-                - 'elasticfilesystem:DescribeFileSystems'
-              Resource: "*"
+              - Effect: Allow
+                Action:
+                  - "elasticfilesystem:DescribeMountTargets"
+                  - "ec2:DescribeAvailabilityZones"
+                  - "elasticfilesystem:DescribeFileSystems"
+                Resource: "*"
 
   ECSInstanceProfile:
     Type: AWS::IAM::InstanceProfile
@@ -542,7 +541,7 @@ Resources:
       AutoScalingGroupName: !Ref ECSAutoScalingGroup
       PolicyType: SimpleScaling
       ScalingAdjustment: 1
-      Cooldown: '300'
+      Cooldown: "300"
 
   ScaleECSClusterEC2Down:
     Type: AWS::AutoScaling::ScalingPolicy
@@ -552,43 +551,43 @@ Resources:
       AutoScalingGroupName: !Ref ECSAutoScalingGroup
       PolicyType: SimpleScaling
       ScalingAdjustment: -1
-      Cooldown: '600'
+      Cooldown: "600"
 
   ECSServiceScalableTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
     Properties:
       MinCapacity: !Ref MinCount
       MaxCapacity: !Ref MaxCount
-      ResourceId: !Sub 'service/${EcsCluster}/${Service.Name}'
-      RoleARN: !Sub 'arn:aws:iam::${AWS::AccountId}:role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService'
+      ResourceId: !Sub "service/${EcsCluster}/${Service.Name}"
+      RoleARN: !Sub "arn:aws:iam::${AWS::AccountId}:role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService"
       ScalableDimension: ecs:service:DesiredCount
       ServiceNamespace: ecs
 
   ECSServiceScaleUpPolicy:
     Type: AWS::ApplicationAutoScaling::ScalingPolicy
     Properties:
-      PolicyName: !Sub 'ScaleUp-${ServiceName}-ECSContainers'
+      PolicyName: !Sub "ScaleUp-${ServiceName}-ECSContainers"
       PolicyType: StepScaling
       ScalingTargetId: !Ref ECSServiceScalableTarget
       StepScalingPolicyConfiguration:
         AdjustmentType: ChangeInCapacity
         Cooldown: 300
         StepAdjustments:
-        - MetricIntervalLowerBound: 0
-          ScalingAdjustment: 1
+          - MetricIntervalLowerBound: 0
+            ScalingAdjustment: 1
 
   ECSServiceScaleDownPolicy:
     Type: AWS::ApplicationAutoScaling::ScalingPolicy
     Properties:
-      PolicyName: !Sub 'ScaleDown-${ServiceName}-ECSContainers'
+      PolicyName: !Sub "ScaleDown-${ServiceName}-ECSContainers"
       PolicyType: StepScaling
       ScalingTargetId: !Ref ECSServiceScalableTarget
       StepScalingPolicyConfiguration:
         AdjustmentType: ChangeInCapacity
         Cooldown: 600
         StepAdjustments:
-        - MetricIntervalUpperBound: 0
-          ScalingAdjustment: -1
+          - MetricIntervalUpperBound: 0
+            ScalingAdjustment: -1
 
   ECSClusterCPUHighAlarm:
     Type: AWS::CloudWatch::Alarm
@@ -597,7 +596,7 @@ Resources:
         rules_to_suppress:
           - id: W28
     Properties:
-      AlarmName: !Sub '${EnvironmentName}-${ServiceName}-High-CPU'
+      AlarmName: !Sub "${EnvironmentName}-${ServiceName}-High-CPU"
       ActionsEnabled: true
       ComparisonOperator: GreaterThanOrEqualToThreshold
       EvaluationPeriods: 5
@@ -607,9 +606,9 @@ Resources:
       Statistic: Average
       Threshold: 75.0
       AlarmActions:
-        - !If [EcsInEc2,  !Ref ScaleECSClusterEC2Up, !Ref "AWS::NoValue"]
+        - !If [EcsInEc2, !Ref ScaleECSClusterEC2Up, !Ref "AWS::NoValue"]
         - !Ref ECSServiceScaleUpPolicy
-#        - !Ref CloudwatchSNSWarningTopic
+      #        - !Ref CloudwatchSNSWarningTopic
       Dimensions:
         - Name: ServiceName
           Value: !GetAtt Service.Name
@@ -623,7 +622,7 @@ Resources:
         rules_to_suppress:
           - id: W28
     Properties:
-      AlarmName: !Sub '${EnvironmentName}-${ServiceName}-CPU-Normal'
+      AlarmName: !Sub "${EnvironmentName}-${ServiceName}-CPU-Normal"
       ActionsEnabled: true
       ComparisonOperator: LessThanOrEqualToThreshold
       EvaluationPeriods: 60
@@ -633,9 +632,9 @@ Resources:
       Statistic: Average
       Threshold: 50.0
       AlarmActions:
-        - !If [EcsInEc2,  !Ref ScaleECSClusterEC2Down, !Ref "AWS::NoValue"]
+        - !If [EcsInEc2, !Ref ScaleECSClusterEC2Down, !Ref "AWS::NoValue"]
         - !Ref ECSServiceScaleDownPolicy
-#        - !Ref CloudwatchSNSWarningTopic
+      #        - !Ref CloudwatchSNSWarningTopic
       Dimensions:
         - Name: ServiceName
           Value: !GetAtt Service.Name
@@ -652,16 +651,16 @@ Resources:
       HealthCheckTimeoutSeconds: 5
       HealthyThresholdCount: 2
       TargetType: ip
-      Name: !Sub '${EnvironmentName}-${ServiceName}'
+      Name: !Sub "${EnvironmentName}-${ServiceName}"
       Port: !Ref ContainerPort
       Protocol: HTTP
       UnhealthyThresholdCount: 3
       VpcId: !Ref VPC
       TargetGroupAttributes:
         - Key: "stickiness.enabled"
-          Value: 'true'
+          Value: "true"
         - Key: "deregistration_delay.timeout_seconds"
-          Value: '15'
+          Value: "15"
 
   TargetGroupSSMParameter:
     Type: AWS::SSM::Parameter
@@ -694,31 +693,27 @@ Resources:
       Conditions:
         - !If
           - UsePathPattern
-          -
-            Field: path-pattern
+          - Field: path-pattern
             Values:
               - !Ref PathPattern
-              - !Sub '${PathPattern}/*'
+              - !Sub "${PathPattern}/*"
           - !Ref "AWS::NoValue"
         - !If
           - UseDomainNames
-          -
-            Field: host-header
+          - Field: host-header
             Values: !Ref DomainNames
           - !Ref "AWS::NoValue"
         - !If
           - UseGroupTargeting
-          -
-            Field: http-header
+          - Field: http-header
             HttpHeaderConfig:
-               HttpHeaderName: TargetGroup
-               Values: 
-                 - !GetAtt TargetGroup.TargetGroupName
+              HttpHeaderName: TargetGroup
+              Values:
+                - !GetAtt TargetGroup.TargetGroupName
           - !Ref "AWS::NoValue"
         - !If
           - IsRestrictedService
-          -
-            Field: source-ip
+          - Field: source-ip
             SourceIpConfig:
               Values: !Ref RestrictedCIDRs
           - !Ref "AWS::NoValue"
@@ -730,7 +725,7 @@ Resources:
     Condition: CreateDnsEntry
     Properties:
       HostedZoneId: !Ref PublicHostedZoneId
-      Name: !Sub '${ServiceName}.${PublicHostedZoneName}.'
+      Name: !Sub "${ServiceName}.${PublicHostedZoneName}."
       Type: A
       AliasTarget:
         HostedZoneId: !Ref LoadBalancerHostedZoneId
@@ -741,10 +736,10 @@ Resources:
     Condition: UseDomainNames
     Properties:
       HostedZoneId: !Ref PublicHostedZoneId
-      Name: !Join 
-        - ''
-        - - !Select [ 0, !Ref DomainNames ]
-          - '.'
+      Name: !Join
+        - ""
+        - - !Select [0, !Ref DomainNames]
+          - "."
       Type: A
       AliasTarget:
         HostedZoneId: !Ref LoadBalancerHostedZoneId
@@ -762,64 +757,64 @@ Resources:
           OwnerGid: "0"
           OwnerUid: "0"
           Permissions: "0755"
-        Path: !Sub '/${ServiceName}'
+        Path: !Sub "/${ServiceName}"
 
-#  ServiceHttpsListenerRuleUI:
-#    Type: AWS::ElasticLoadBalancingV2::ListenerRule
-#    Condition: UIAndIsNotDaemon
-#    Properties:
-#      Actions:
-#        - Type: authenticate-oidc
-#          AuthenticateOidcConfig:
-#            Issuer: !Sub 'https://${OidcDomain}'
-#            AuthorizationEndpoint: !Sub 'https://${OidcDomain}/oauth2/authorize'
-#            TokenEndpoint: !Sub 'https://${OidcDomain}/oauth2/token'
-#            UserInfoEndpoint: !Sub 'https://${OidcDomain}/oidc/uinfo'
-#            ClientId: '{{resolve:ssm:ClientIdns:1}}'
-#            ClientSecret: '{{resolve:ssm:ClientSecretns:1}}'
-#            SessionCookieName: oidc-session
-#            SessionTimeout: 3600
-#            Scope: "uid uupid"
-#            AuthenticationRequestExtraParams:
-#              display: page
-#              prompt: login
-#            OnUnauthenticatedRequest: authenticate
-#          Order: 1
-#        - Type: forward
-#          TargetGroupArn: !Ref TargetGroup
-#          Order: 2
-#      Conditions:
-#        - Field: path-pattern
-#          Values:
-#            - !FindInMap [Service, !Ref ServiceName, pathpattern]
-#            - !FindInMap [Service, !Ref ServiceName, pathpatternstar]
-#      ListenerArn: !Ref LoadBalancerListener
-#      Priority: !FindInMap [Service, !Ref ServiceName, priority]
+  #  ServiceHttpsListenerRuleUI:
+  #    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+  #    Condition: UIAndIsNotDaemon
+  #    Properties:
+  #      Actions:
+  #        - Type: authenticate-oidc
+  #          AuthenticateOidcConfig:
+  #            Issuer: !Sub 'https://${OidcDomain}'
+  #            AuthorizationEndpoint: !Sub 'https://${OidcDomain}/oauth2/authorize'
+  #            TokenEndpoint: !Sub 'https://${OidcDomain}/oauth2/token'
+  #            UserInfoEndpoint: !Sub 'https://${OidcDomain}/oidc/uinfo'
+  #            ClientId: '{{resolve:ssm:ClientIdns:1}}'
+  #            ClientSecret: '{{resolve:ssm:ClientSecretns:1}}'
+  #            SessionCookieName: oidc-session
+  #            SessionTimeout: 3600
+  #            Scope: "uid uupid"
+  #            AuthenticationRequestExtraParams:
+  #              display: page
+  #              prompt: login
+  #            OnUnauthenticatedRequest: authenticate
+  #          Order: 1
+  #        - Type: forward
+  #          TargetGroupArn: !Ref TargetGroup
+  #          Order: 2
+  #      Conditions:
+  #        - Field: path-pattern
+  #          Values:
+  #            - !FindInMap [Service, !Ref ServiceName, pathpattern]
+  #            - !FindInMap [Service, !Ref ServiceName, pathpatternstar]
+  #      ListenerArn: !Ref LoadBalancerListener
+  #      Priority: !FindInMap [Service, !Ref ServiceName, priority]
 
-#  ApplicationLBStatusCheckAlarm:
-#    Type: AWS::CloudWatch::Alarm
-#    Condition: UseLbForService
-#    Properties:
-#      AlarmName: !Sub '${EnvironmentName}-${ServiceName}-HealthyHostCheck'
-#      AlarmDescription: 'Application LB Healthy Host Check'
-#      ActionsEnabled: true
-#      ComparisonOperator: LessThanThreshold
-#      MetricName: HealthyHostCount
-#      Namespace: AWS/ApplicationELB
-#      Period: 60
-#      EvaluationPeriods: 2
-#      Statistic: Minimum
-#      Threshold: 1.0
-#      TreatMissingData: breaching
-#      AlarmActions:
-#        - !Ref CloudwatchSNSTopic
-#      OKActions:
-#        - !Ref CloudwatchSNSTopic
-#      Dimensions:
-#        - Name: LoadBalancer
-#          Value: !Ref LoadBalancerFullName
-#        - Name: TargetGroup
-#          Value: !GetAtt TargetGroup.TargetGroupFullName
+  #  ApplicationLBStatusCheckAlarm:
+  #    Type: AWS::CloudWatch::Alarm
+  #    Condition: UseLbForService
+  #    Properties:
+  #      AlarmName: !Sub '${EnvironmentName}-${ServiceName}-HealthyHostCheck'
+  #      AlarmDescription: 'Application LB Healthy Host Check'
+  #      ActionsEnabled: true
+  #      ComparisonOperator: LessThanThreshold
+  #      MetricName: HealthyHostCount
+  #      Namespace: AWS/ApplicationELB
+  #      Period: 60
+  #      EvaluationPeriods: 2
+  #      Statistic: Minimum
+  #      Threshold: 1.0
+  #      TreatMissingData: breaching
+  #      AlarmActions:
+  #        - !Ref CloudwatchSNSTopic
+  #      OKActions:
+  #        - !Ref CloudwatchSNSTopic
+  #      Dimensions:
+  #        - Name: LoadBalancer
+  #          Value: !Ref LoadBalancerFullName
+  #        - Name: TargetGroup
+  #          Value: !GetAtt TargetGroup.TargetGroupFullName
 
   CapacityControlLambdaFunction:
     Type: AWS::Lambda::Function
@@ -1035,7 +1030,7 @@ Resources:
                 }
               ]
             )
-  
+
           def doWaitResponse(event) :
             location = 'https://' + event['headers']['host'] + '?lights-check=true'
             time.sleep(15)  
@@ -1111,7 +1106,7 @@ Resources:
     Condition: CreateLightsOut
     Properties:
       FunctionName: !GetAtt LightsOnLambdaFunction.Arn
-      Action: 'lambda:InvokeFunction'
+      Action: "lambda:InvokeFunction"
       Principal: elasticloadbalancing.amazonaws.com
 
   LightsOnTargetGroup:
@@ -1120,10 +1115,10 @@ Resources:
     DependsOn: LightsOnLambdaInvokePermission
     Properties:
       HealthCheckEnabled: false
-      Name: !Sub '${ServiceName}-lights-on'
+      Name: !Sub "${ServiceName}-lights-on"
       TargetType: lambda
       Targets:
-      - Id: !GetAtt LightsOnLambdaFunction.Arn
+        - Id: !GetAtt LightsOnLambdaFunction.Arn
 
   LambdaExecutionRole:
     Type: AWS::IAM::Role
@@ -1133,28 +1128,28 @@ Resources:
           - id: F38
     Properties:
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Principal:
               Service: lambda.amazonaws.com
-            Action: 'sts:AssumeRole'
+            Action: "sts:AssumeRole"
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
       Policies:
         - PolicyName: RegisterScalableTargets
           PolicyDocument:
             Statement:
-            - Effect: Allow
-              Action:
-                - 'iam:PassRole'
-                - 'application-autoscaling:RegisterScalableTarget'
-                - 'elasticloadbalancing:ModifyRule'
-                - 'application-autoscaling:DescribeScalableTargets'
-                - 'elasticloadbalancing:DescribeTargetHealth'
-                - 'ssm:PutParameter'
-                - 'ssm:GetParameter'
-              Resource: "*"
+              - Effect: Allow
+                Action:
+                  - "iam:PassRole"
+                  - "application-autoscaling:RegisterScalableTarget"
+                  - "elasticloadbalancing:ModifyRule"
+                  - "application-autoscaling:DescribeScalableTargets"
+                  - "elasticloadbalancing:DescribeTargetHealth"
+                  - "ssm:PutParameter"
+                  - "ssm:GetParameter"
+                Resource: "*"
 
   UserPool:
     Type: AWS::Cognito::UserPool
@@ -1164,9 +1159,9 @@ Resources:
       AdminCreateUserConfig:
         AllowAdminCreateUserOnly: true
       AutoVerifiedAttributes:
-      - email
+        - email
       UsernameAttributes:
-      - email
+        - email
       Policies:
         PasswordPolicy:
           MinimumLength: 20

@@ -1,0 +1,21 @@
+MountPoints:
+  - SourceVolume: efs-share
+    ContainerPath: /var/lib/mysql
+Environment:
+  - Name: DATABASE_PORT
+    Value: 3306
+  - Name: SESSION_DATABASE_NAME
+    Value: "doenet_session"
+
+Secrets:
+  - Name: DATABASE_HOST
+    ValueFrom:
+      Fn::Sub: "mysql.${EnvironmentName}.aws"
+  - Name: DATABASE_USER
+    # ValueFrom:
+    # Fn::Sub: "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${EnvironmentName}/DbUser"
+    Value: "root"
+  - Name: DATABASE_PASSWORD
+    # ValueFrom:
+    #   Fn::Sub: "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${EnvironmentName}/DbPassword"
+    Value: "doenet_password"

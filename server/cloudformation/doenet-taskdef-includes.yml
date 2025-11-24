@@ -1,0 +1,31 @@
+Environment:
+  - Name: PORT
+    Value: 3000
+  - Name: CONFIRM_SIGNIN_URL
+    Value: "http://localhost:8000/confirmSignIn"
+  - Name: LOGIN_CALLBACK_ROOT
+    Value: "http://localhost:8000/"
+  - Name: DATABASE_PORT
+    Value: 3306
+  - Name: SESSION_DATABASE_NAME
+    Value: "doenet_session"
+  - Name: SESSION_SECRET
+    Value: "hi"
+  - Name: GOOGLE_CLIENT_ID
+    Value: "hi"
+  - Name: GOOGLE_CLIENT_SECRET
+    Value: "hi"
+  - Name: MAGIC_LINK_SECRET
+    Value: "hi"
+Secrets:
+  - Name: DATABASE_HOST
+    ValueFrom:
+      Fn::Sub: "mysql.${EnvironmentName}.aws"
+  - Name: DATABASE_USER
+    # ValueFrom:
+    # Fn::Sub: "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${EnvironmentName}/DbUser"
+    Value: "root"
+  - Name: DATABASE_PASSWORD
+    # ValueFrom:
+    #   Fn::Sub: "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${EnvironmentName}/DbPassword"
+    Value: "doenet_password"

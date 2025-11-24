@@ -5,27 +5,27 @@
   },
   {
     "ParameterKey": "DomainNames",
-    "ParameterValue": "advisor-api.lif.unicon.net"
+    "ParameterValue": "dev3.doenet.org"
   },
   {
     "ParameterKey": "EnvironmentName",
-    "ParameterValue": "dev"
+    "ParameterValue": "dev3"
   },
   {
     "ParameterKey": "ServiceName",
-    "ParameterValue": "advisor-api"
+    "ParameterValue": "doenet"
   },
   {
     "ParameterKey": "S3AppBucket",
-    "ParameterValue": "/dev/S3Bucket"
+    "ParameterValue": "/dev3/S3Bucket"
   },
   {
     "ParameterKey": "CloudMapPrivateNamespace",
-    "ParameterValue": "/dev/CloudMapPrivateNamespace"
+    "ParameterValue": "/dev3/CloudMapPrivateNamespace"
   },
   {
     "ParameterKey": "Priority",
-    "ParameterValue": "2"
+    "ParameterValue": "1"
   },
   {
     "ParameterKey": "EcsLaunchType",
@@ -49,19 +49,19 @@
   },
   {
     "ParameterKey": "ImageUrl",
-    "ParameterValue": "381492161417.dkr.ecr.us-east-1.amazonaws.com/lif/dev/lif_advisor_api:latest"
+    "ParameterValue": "381492161417.dkr.ecr.us-east-1.amazonaws.com/dev3/doenet:latest"
   },
   {
     "ParameterKey": "TaskDefIncludesFile",
-    "ParameterValue": "s3://clir-cf-templates/dev-lif/lif-advisor-api-taskdef-includes.yml"
+    "ParameterValue": "s3://doenet-cf-dev/dev3-doenet/doenet-taskdef-includes.yml"
   },
   {
     "ParameterKey": "TaskRoleIncludesFile",
-    "ParameterValue": "s3://clir-cf-templates/dev-lif/service-taskrole-includes.yml"
+    "ParameterValue": "s3://doenet-cf-dev/dev3-doenet/service-taskrole-includes.yml"
   },
   {
     "ParameterKey": "ContainerPort",
-    "ParameterValue": "8004"
+    "ParameterValue": "3000"
   },
   {
     "ParameterKey": "ContainerMemory",
@@ -85,47 +85,47 @@
   },
   {
     "ParameterKey": "SecurityGroup",
-    "ParameterValue": "/dev/EcsInstanceSecurityGroup"
+    "ParameterValue": "/dev3/EcsInstanceSecurityGroup"
   },
   {
     "ParameterKey": "PrivateSubnets",
-    "ParameterValue": "/dev/PrivateSubnets"
+    "ParameterValue": "/dev3/PrivateSubnets"
   },
   {
     "ParameterKey": "VPC",
-    "ParameterValue": "/dev/VPC"
+    "ParameterValue": "/dev3/VPC"
   },
   {
     "ParameterKey": "EnvironmentKmsKey",
-    "ParameterValue": "/dev/EnvironmentKmsKey"
+    "ParameterValue": "/dev3/EnvironmentKmsKey"
   },
   {
     "ParameterKey": "EcsCluster",
-    "ParameterValue": "/dev/EcsCluster"
+    "ParameterValue": "/dev3/EcsCluster"
   },
   {
     "ParameterKey": "LoadBalancerListener",
-    "ParameterValue": "/dev/LoadBalancerHttpsListener"
+    "ParameterValue": "/dev3/LoadBalancerHttpsListener"
   },
   {
     "ParameterKey": "EfsFileSystemId",
-    "ParameterValue": "/dev/EfsFileSystemId"
+    "ParameterValue": "/dev3/EfsFileSystemId"
   },
   {
     "ParameterKey": "PublicHostedZoneId",
-    "ParameterValue": "/dev/PublicHostedZoneId"
+    "ParameterValue": "/dev3/PublicHostedZoneId"
   },
   {
     "ParameterKey": "PublicHostedZoneName",
-    "ParameterValue": "/dev/PublicHostedZoneName"
+    "ParameterValue": "/dev3/PublicHostedZoneName"
   },
   {
     "ParameterKey": "LoadBalancerDnsName",
-    "ParameterValue": "/dev/LoadBalancerDnsName"
+    "ParameterValue": "/dev3/LoadBalancerDnsName"
   },
   {
     "ParameterKey": "LoadBalancerHostedZoneId",
-    "ParameterValue": "/dev/LoadBalancerHostedZoneId"
+    "ParameterValue": "/dev3/LoadBalancerHostedZoneId"
   },
   {
     "ParameterKey": "RestrictedCIDRs",
