@@ -28,7 +28,6 @@ import {
   useOutletContext,
 } from "react-router";
 import { MoveCopyContent } from "../popups/MoveCopyContent";
-import { SiteContext } from "../paths/SiteHeader";
 import CardList from "../widgets/CardList";
 import {
   contentTypeToName,
@@ -41,6 +40,7 @@ import { AddContentToMenu } from "../popups/AddContentToMenu";
 import { DeleteContent } from "../popups/DeleteContent";
 import { ActivateAuthorMode } from "../popups/ActivateAuthorMode";
 import { editorUrl } from "../utils/url";
+import { EditorContext } from "../paths/editor/EditorHeader";
 
 export function CompoundActivityEditor({
   activity,
@@ -48,14 +48,12 @@ export function CompoundActivityEditor({
   inLibrary = false,
   fetcher,
   finalFocusRef,
-  headerHeight,
 }: {
   activity: Content;
   asViewer?: boolean;
   inLibrary?: boolean;
   fetcher: FetcherWithComponents<any>;
   finalFocusRef?: React.RefObject<HTMLElement | null>;
-  headerHeight: string;
 }) {
   const contentTypeName = contentTypeToName[activity.type];
 
@@ -69,7 +67,8 @@ export function CompoundActivityEditor({
   const readOnly = asViewer || isAssigned;
   const readOnlyStructure = readOnly || inLibrary;
 
-  const { user, addTo, setAddTo } = useOutletContext<SiteContext>();
+  const { user, addTo, setAddTo, headerHeight } =
+    useOutletContext<EditorContext>();
 
   const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
   const selectedCardsFiltered = selectedCards.filter((c) => c);
@@ -584,11 +583,13 @@ export function CompoundActivityEditor({
     />
   );
 
+  const cardListHeaderHieght = "40px";
+
   const heading = (
     <Flex
       backgroundColor="#fff"
       color="#000"
-      height="40px"
+      height={cardListHeaderHieght}
       width="100%"
       textAlign="center"
       paddingX="10px"
@@ -717,8 +718,8 @@ export function CompoundActivityEditor({
         padding="0 10px"
         margin="0px"
         width="100%"
+        minHeight={`calc(100vh - ${headerHeight} - ${cardListHeaderHieght})`}
         background={numCards > 0 ? "white" : "var(--lightBlue)"}
-        minHeight={`calc(100vh - ${headerHeight} - 40px)`}
         direction="column"
       >
         {cardList}

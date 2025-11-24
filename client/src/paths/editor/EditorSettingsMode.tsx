@@ -116,8 +116,13 @@ export function EditorSettingsMode() {
     contentId: string;
   };
 
-  const { allLicenses, allDoenetmlVersions, inLibrary, contentType } =
-    useOutletContext<EditorContext>();
+  const {
+    allLicenses,
+    allDoenetmlVersions,
+    inLibrary,
+    contentType,
+    headerHeight,
+  } = useOutletContext<EditorContext>();
 
   const [searchParams, _] = useSearchParams();
   const showRequired = searchParams.get("showRequired") === null ? false : true;
@@ -128,7 +133,7 @@ export function EditorSettingsMode() {
   );
 
   return (
-    <BlueBanner>
+    <BlueBanner headerHeight={headerHeight}>
       <VStack ml="10px" spacing="2rem" align="flex-start">
         <Box>
           <Heading size="md" pt="1rem">
@@ -208,8 +213,6 @@ export function EditorSettingsMode() {
             />
           </Box>
         )}
-
-        <Box mt="5rem" />
       </VStack>
     </BlueBanner>
   );

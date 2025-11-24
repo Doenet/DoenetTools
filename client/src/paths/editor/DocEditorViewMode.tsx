@@ -1,10 +1,11 @@
 import React, { useRef } from "react";
-import { useLoaderData } from "react-router";
+import { useLoaderData, useOutletContext } from "react-router";
 import { DoenetmlVersion } from "../../types";
 import { DoenetViewer } from "@doenet/doenetml-iframe";
 import { BlueBanner } from "../../widgets/BlueBanner";
 import axios from "axios";
 import { Box } from "@chakra-ui/react";
+import { EditorContext } from "./EditorHeader";
 
 export async function loader({ params }: { params: any }) {
   const {
@@ -27,9 +28,10 @@ export function DocEditorViewMode() {
     doenetmlVersion: DoenetmlVersion | null;
   };
 
+  const { headerHeight } = useOutletContext<EditorContext>();
+
   const doenetViewerContainer = useRef<HTMLDivElement>(null);
   const scrollingContainer = useRef<HTMLDivElement>(null);
-
   const baseUrl = window.location.protocol + "//" + window.location.host;
   const doenetViewerUrl = `${baseUrl}/activityViewer`;
 
@@ -49,13 +51,13 @@ export function DocEditorViewMode() {
 
   return (
     <Box
-      height="calc(100vh - 80px)" //80px header height
+      height={`calc(100vh - ${headerHeight})`}
       ref={scrollingContainer}
       overflowY="scroll"
       width="100%"
     >
       <Box ref={doenetViewerContainer}>
-        <BlueBanner>
+        <BlueBanner headerHeight={headerHeight}>
           <DoenetViewer
             doenetML={source}
             doenetmlVersion={doenetmlVersion!.fullVersion}
