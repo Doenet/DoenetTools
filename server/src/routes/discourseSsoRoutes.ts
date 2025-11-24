@@ -26,7 +26,7 @@ function buildSsoResponse(
   return { sso, sig };
 }
 
-discourseRouter.get("/discourse/sso", (req: Request, res: Response): void => {
+discourseRouter.get("/sso", (req: Request, res: Response): void => {
   const { sso, sig } = req.query as { sso?: string; sig?: string };
   if (!sso || !sig) {
     res.status(400).send("Missing sso or sig");
