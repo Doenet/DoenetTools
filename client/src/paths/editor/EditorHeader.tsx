@@ -443,7 +443,11 @@ export function EditorHeader() {
   const otherPages = (
     <ButtonGroup mr={{ base: "0rem", lg: "1.5rem" }} spacing="0" mt="2px">
       {contentType === "singleDoc" && (
-        <Tooltip label="View edit history" openDelay={300}>
+        <Tooltip
+          label="View edit history"
+          openDelay={300}
+          placement="bottom-end"
+        >
           <IconButton
             as={ReactRouterLink}
             icon={<FaHistory />}
@@ -463,6 +467,7 @@ export function EditorHeader() {
           label="View library status"
           isDisabled={inLibrary}
           openDelay={300}
+          placement="bottom-end"
         >
           <IconButton
             as={ReactRouterLink}
@@ -480,7 +485,7 @@ export function EditorHeader() {
       )}
 
       <NotificationDot show={remixSourceHasChanged}>
-        <Tooltip label="View remixes" openDelay={300}>
+        <Tooltip label="View remixes" openDelay={300} placement="bottom-end">
           <IconButton
             as={ReactRouterLink}
             icon={<IoGitBranch />}
@@ -559,13 +564,7 @@ export function EditorHeader() {
           {otherPages}
           {/* Only show `Create assignment` and `Share` buttons if this is
               not a sub-part of a problem set */}
-          {!isSubActivity ? (
-            actionButtons
-          ) : (
-            // This is a hack to make sure the previous button tooltips
-            // do not go off screen
-            <Box width="2rem" />
-          )}
+          {!isSubActivity && actionButtons}
         </HStack>
         {notBrowsableMessage}
       </Box>
