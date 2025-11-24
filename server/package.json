@@ -23,7 +23,6 @@
     "@quixo3/prisma-session-store": "^3.1.13",
     "base64url": "^3.0.1",
     "cookie-parser": "^1.4.7",
-    "crypto": "^1.0.1",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-session": "^1.18.1",
@@ -35,7 +34,6 @@
     "passport-google-oauth20": "^2.0.0",
     "passport-magic-link": "^2.1.1",
     "passport-strategy": "^1.0.0",
-    "querystring": "^0.2.1",
     "short-uuid": "^5.2.0",
     "zod": "^4.0.14"
   },

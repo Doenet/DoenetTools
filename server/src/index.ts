@@ -325,7 +325,7 @@ app.use("/api/compare", compareRouter);
 app.use("/api/editor", editorRouter);
 
 // Discourse uses this endpoint to sign on
-app.use("/discourse/sso", discourseRouter);
+app.use("/api/discourse/sso", discourseRouter);
 
 if (
   process.env.ADD_TEST_APIS &&

@@ -1,7 +1,6 @@
 import express, { Request, Response } from "express";
-import crypto from "crypto";
 import base64url from "base64url";
-import querystring from "querystring";
+import crypto from "crypto";
 
 const DISCOURSE_SSO_SECRET = process.env.DISCOURSE_SSO_SECRET!; // Keep this secret!
 
@@ -13,7 +12,7 @@ function hmacSha256Hex(data: string, secret: string) {
 
 // Parse base64url and extract payload
 function parseSsoPayload(sso: string) {
-  return querystring.parse(base64url.decode(sso));
+  return Object.fromEntries(new URLSearchParams(base64url.decode(sso)));
 }
 
 // Build payload and sign
@@ -21,7 +20,7 @@ function buildSsoResponse(
   params: Record<string, string>,
   secret: string,
 ): { sso: string; sig: string } {
-  const payload = querystring.stringify(params);
+  const payload = new URLSearchParams(params).toString();
   const sso = base64url.encode(payload);
   const sig = hmacSha256Hex(sso, secret);
   return { sso, sig };
