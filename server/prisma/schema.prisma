@@ -181,10 +181,14 @@ model contributorHistory {
 }
 
 model contentShares {
-  contentId Bytes   @db.Binary(16)
-  userId    Bytes   @db.Binary(16)
-  content   content @relation(fields: [contentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user      users   @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  contentId   Bytes    @db.Binary(16)
+  // Whether this content was explicitly shared by the owner (true)
+  // or is a share created because it's inside a folder that was shared (false)
+  isRootShare Boolean  @default(false)
+  userId      Bytes    @db.Binary(16)
+  sharedOn    DateTime @default(now())
+  content     content  @relation(fields: [contentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user        users    @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([contentId, userId])
   @@index([userId])

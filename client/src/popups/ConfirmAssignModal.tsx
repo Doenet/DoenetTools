@@ -194,7 +194,7 @@ export function ConfirmAssignModal({
 
           submitFetcher.submit(
             {
-              path: "/assign/createAssignment",
+              path: "assign/createAssignment",
               contentId,
               closeAt,
               destinationParentId: parentId,
