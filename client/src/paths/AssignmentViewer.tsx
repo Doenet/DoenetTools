@@ -427,7 +427,7 @@ export function AssignmentViewer() {
           }
         } else {
           // should be single doc
-          if (data.docId !== assignment.contentId) {
+          if (data.doc_id !== assignment.contentId) {
             return;
           }
 
@@ -442,10 +442,10 @@ export function AssignmentViewer() {
               "/api/score/saveScoreAndState",
               {
                 contentId: assignment.contentId,
-                attemptNumber: data.data.state.attemptNumber,
-                score: data.data.score,
+                attemptNumber: data.state.attemptNumber,
+                score: data.score,
                 code,
-                state: JSON.stringify(data.data.state),
+                state: JSON.stringify(data.state),
               },
             );
 
@@ -512,27 +512,20 @@ export function AssignmentViewer() {
 
             window.postMessage({
               subject: "SPLICE.getState.response",
-              messageId: event.data.messageId,
-              success: true,
-              loadedState: true,
+              message_id: event.data.message_id,
               state,
             });
             setAttemptNumber(data.attemptNumber);
-          } else {
-            window.postMessage({
-              subject: "SPLICE.getState.response",
-              messageId: event.data.messageId,
-              success: true,
-              loadedState: false,
-            });
           }
         } catch (e) {
           console.error("error loading state", e);
           window.postMessage({
             subject: "SPLICE.getState.response",
             messageId: event.data.messageId,
-            success: false,
-            message: "Server error loading page state.",
+            error: {
+              code: 1,
+              message: "Server error loading page state.",
+            },
           });
         }
       }
