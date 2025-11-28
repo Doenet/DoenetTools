@@ -1,0 +1,25 @@
+// This is the base tsconfig file that is extended by both client and server tsconfig files.
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "useDefineForClassFields": true,
+
+    /* Module settings */
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "moduleResolution": "node",
+    "allowJs": false,
+
+    /* Strictness */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+
+    /* Path alias support */
+    "baseUrl": ".",
+    "paths": {
+      "@shared/*": ["shared/*"]
+    }
+  }
+}
