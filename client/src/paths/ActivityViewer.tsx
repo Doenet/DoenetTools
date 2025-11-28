@@ -58,7 +58,7 @@ import {
   getIconInfo,
   menuIcons,
 } from "../utils/activity";
-import { ActivitySource, isActivitySource } from "../viewerTypes";
+import { ActivitySource, isActivitySource } from "@shared/types/activityViewer";
 import { processRemixes } from "../utils/processRemixes";
 import ContributorsMenu from "../dropdowns/ContributorsMenu";
 import { ContentInfoDrawer } from "../drawers/ContentInfoDrawer";

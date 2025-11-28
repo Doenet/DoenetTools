@@ -5,7 +5,7 @@ import {
   filterViewableContent,
   getIsEditor,
 } from "../utils/permissions";
-import { getCidV1FromString } from "../utils/ipfs";
+import { getCidV1FromString } from "@shared/utils/ipfs";
 
 export async function getDoenetMLComparison({
   contentId,

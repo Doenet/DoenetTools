@@ -1,6 +1,6 @@
 import { prisma } from "../model";
 import { ActivityRemixItem, LicenseCode, RemixContent } from "../types";
-import { getCidV1FromString } from "../utils/ipfs";
+import { getCidV1FromString } from "@shared/utils/ipfs";
 import { compileActivityFromContent } from "../utils/contentStructure";
 import { createFullName } from "../utils/names";
 import {

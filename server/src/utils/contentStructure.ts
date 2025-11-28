@@ -14,7 +14,7 @@ import {
 import { sortClassifications } from "./classificationsCategories";
 import { fromUUID, isEqualUUID } from "./uuid";
 import { DateTime } from "luxon";
-import { ActivitySource } from "./viewerTypes";
+import { ActivitySource } from "@shared/types/activityViewer";
 import { InvalidRequestError } from "./error";
 
 /**

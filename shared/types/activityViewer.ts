@@ -267,7 +267,7 @@ export function isSequenceSource(obj: unknown): obj is SequenceSource {
 }
 
 export function isActivityStateNoSource(
-  obj: unknown,
+  obj: unknown
 ): obj is ActivityStateNoSource {
   return (
     isSingleDocStateNoSource(obj) ||
@@ -277,7 +277,7 @@ export function isActivityStateNoSource(
 }
 
 export function isSingleDocStateNoSource(
-  obj: unknown,
+  obj: unknown
 ): obj is SingleDocStateNoSource {
   const typedObj = obj as SingleDocStateNoSource;
   return (
@@ -299,7 +299,7 @@ export function isSingleDocStateNoSource(
 }
 
 export function isSelectStateNoSource(
-  obj: unknown,
+  obj: unknown
 ): obj is SelectStateNoSource {
   const typedObj = obj as SelectStateNoSource;
   return (
@@ -324,7 +324,7 @@ export function isSelectStateNoSource(
 }
 
 export function isSequenceStateNoSource(
-  obj: unknown,
+  obj: unknown
 ): obj is SequenceStateNoSource {
   const typedObj = obj as SequenceStateNoSource;
   return (
@@ -346,7 +346,7 @@ export function isSequenceStateNoSource(
 }
 
 export function isRestrictToVariantSlice(
-  obj: unknown,
+  obj: unknown
 ): obj is RestrictToVariantSlice {
   const typeObj = obj as RestrictToVariantSlice;
 
@@ -359,7 +359,7 @@ export function isRestrictToVariantSlice(
 }
 
 export function isExportedActivityState(
-  obj: unknown,
+  obj: unknown
 ): obj is ExportedActivityState {
   const typedObj = obj as ExportedActivityState;
   return (
@@ -389,7 +389,7 @@ export function isReportStateMessage(obj: unknown): obj is ReportStateMessage {
         typeof item.score === "number" &&
         typeof item.docId === "string" &&
         typeof item.shuffledOrder === "number" &&
-        typeof item.variant === "number",
+        typeof item.variant === "number"
     ) &&
     (typedObj.itemUpdated === undefined ||
       typeof typedObj.itemUpdated === "number") &&

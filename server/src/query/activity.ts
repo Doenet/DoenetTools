@@ -12,7 +12,7 @@ import {
 } from "../utils/permissions";
 import { getNextSortIndexForParent } from "../utils/sort";
 import { DateTime } from "luxon";
-import { getCidV1FromString } from "../utils/ipfs";
+import { getCidV1FromString } from "@shared/utils/ipfs";
 import { getContent } from "./activity_edit_view";
 import { compileActivityFromContent } from "../utils/contentStructure";
 import { InvalidRequestError } from "../utils/error";
