@@ -81,6 +81,8 @@ function NavLinkTab({
   children: React.ReactNode;
   dataTest: string;
 }) {
+  // console.log("process.env.DISCOURSE_URL=", import.meta.env.VITE_DISCOURSE_URL);
+
   // TODO: use end only when path is "/"
   return (
     <NavLink to={to} end data-test={dataTest}>
@@ -261,6 +263,12 @@ export function SiteHeader() {
                       )}
                     </>
                   )}
+                  {/* <NavLinkTab
+                    to={import.meta.env.VITE_DISCOURSE_URL}
+                    dataTest="Discuss"
+                  >
+                    Discuss
+                  </NavLinkTab> */}
                 </HStack>
               </GridItem>
             </Show>

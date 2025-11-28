@@ -68,8 +68,8 @@ discourseRouter.get(
       nonce,
       external_id: req.user.userId.toString(),
       email: email,
-      username: `${firstNames}_${lastNames}`,
-      name: `${firstNames} ${lastNames}`,
+      username: `${firstNames}${lastNames}`, // no space between first and last name
+      name: `${firstNames} ${lastNames}`, // space between first and last name
       // avatar_url: user.avatarUrl || "",
       // Add more fields as needed
     };

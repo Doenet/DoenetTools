@@ -42,7 +42,7 @@ import { testRouter } from "./test/testRoutes";
 import { curateRouter } from "./routes/curateRoutes";
 import { compareRouter } from "./routes/compareRoutes";
 import { editorRouter } from "./routes/editorRoutes";
-import { discourseRouter } from "./routes/discourseSsoRoutes";
+import { discourseRouter } from "./routes/discourseLoginRoutes";
 
 const client = new SESClient({ region: "us-east-2" });
 
