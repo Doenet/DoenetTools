@@ -8,7 +8,6 @@ import { prisma } from "./model";
 import session from "express-session";
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
 
-import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as MagicLinkStrategy } from "passport-magic-link";
 import { Strategy as AnonymIdStrategy } from "../passport-anonymous/lib/strategy";
@@ -42,6 +41,7 @@ import { testRouter } from "./test/testRoutes";
 import { curateRouter } from "./routes/curateRoutes";
 import { compareRouter } from "./routes/compareRoutes";
 import { editorRouter } from "./routes/editorRoutes";
+import passport from "passport";
 
 const client = new SESClient({ region: "us-east-2" });
 
@@ -155,7 +155,7 @@ passport.use(
 
       sendEmail();
     },
-    async (user: { email: string; fromAnonymous: string }) => {
+    (user: { email: string; fromAnonymous: string }) => {
       return {
         provider: "magiclink",
         email: user.email as string,

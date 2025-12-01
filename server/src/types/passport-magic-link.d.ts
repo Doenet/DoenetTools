@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Strategy as PassportStrategy } from "passport";
+import { Request } from "express";
 
 declare module "passport-magic-link" {
-  import { Request } from "express";
-
   // Options interface for the MagicLinkStrategy
   interface MagicLinkStrategyOptions {
     secret: string;
@@ -33,7 +32,12 @@ declare module "passport-magic-link" {
   ) => Promise<void>;
 
   // Callback function type for verifying user
-  type VerifyUserCallback = (req: Request) => Promise<any>;
+  // The callback signature depends on passReqToCallbacks and verifyUserAfterToken options:
+  // - If passReqToCallbacks=false & verifyUserAfterToken=false: (userFields) => any
+  // - If passReqToCallbacks=true & verifyUserAfterToken=false: (req, userFields) => any
+  // - If passReqToCallbacks=false & verifyUserAfterToken=true: (user) => any
+  // - If passReqToCallbacks=true & verifyUserAfterToken=true: (req, user) => any
+  type VerifyUserCallback = (userOrReq: any, userFields?: any) => any;
 
   // The MagicLinkStrategy class
   class Strategy extends PassportStrategy {
@@ -45,14 +49,6 @@ declare module "passport-magic-link" {
 
     authenticate(req: Request, options?: object): void;
   }
-
-  export {
-    Strategy,
-    MagicLinkStrategyOptions,
-    TokenStorage,
-    SendTokenCallback,
-    VerifyUserCallback,
-  };
 }
 
 // allow magiclink-specific options when using "google" strategy
@@ -62,23 +58,16 @@ declare module "passport" {
     userPrimaryKey?: string;
   }
 
-  interface Authenticator<
-    // eslint-disable-next-line unused-imports/no-unused-vars
-    InitializeRet = express.Handler,
-    AuthenticateRet = any,
-    AuthorizeRet = AuthenticateRet,
-    // eslint-disable-next-line unused-imports/no-unused-vars
-    AuthorizeOptions = passport.AuthenticateOptions,
-  > {
+  interface Authenticator {
     authenticate(
       strategy: "magiclink",
       options: { action: string },
       callback?: (...args: any[]) => any,
-    ): AuthenticateRet;
+    ): any;
     authorize(
       strategy: "magiclink",
       options: { action: string },
       callback?: (...args: any[]) => any,
-    ): AuthorizeRet;
+    ): any;
   }
 }

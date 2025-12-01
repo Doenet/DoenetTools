@@ -1,9 +1,10 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
-    "outDir": "dist"
+    "module": "esnext",
+    "allowSyntheticDefaultImports": true,
+    "outDir": "dist",
+    "typeRoots": ["../node_modules/@types", "src/types"]
   },
   "include": ["src", "../shared"]
 }

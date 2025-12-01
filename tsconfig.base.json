@@ -7,7 +7,9 @@
     /* Module settings */
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "moduleResolution": "node",
+    // Not sure why this is Node 10 instead of Node 16 or NodeNext, but using Passport with TS needed it.
+    "moduleResolution": "node10",
+
     "allowJs": false,
 
     /* Strictness */
