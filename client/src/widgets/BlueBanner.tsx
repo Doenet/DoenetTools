@@ -1,16 +1,21 @@
-import { Box, Grid, GridItem } from "@chakra-ui/react";
+import { Grid, GridItem } from "@chakra-ui/react";
 import React from "react";
 
 /**
  * This widget wraps its children with a blue banner on the left and right.
  */
-export function BlueBanner({ children }: { children: React.ReactNode }) {
+export function BlueBanner({
+  headerHeight = "0px",
+  children,
+}: {
+  headerHeight?: string;
+  children: React.ReactNode;
+}) {
   return (
     <Grid
       width="100%"
       templateAreas={`"leftGutter viewer rightGutter"`}
       templateColumns={`1fr minmax(300px,850px) 1fr`}
-      mb="30vh"
     >
       <GridItem
         area="leftGutter"
@@ -30,19 +35,14 @@ export function BlueBanner({ children }: { children: React.ReactNode }) {
         area="viewer"
         width="100%"
         placeSelf="center"
-        minHeight="100%"
+        minHeight={`calc(100vh - ${headerHeight})`}
         maxWidth="850px"
+        background="var(--canvas)"
         overflow="hidden"
+        id="viewer-container"
+        pb="30vh"
       >
-        <Box
-          background="var(--canvas)"
-          padding="0px 0px 20px 0px"
-          flexGrow={1}
-          w="100%"
-          id="viewer-container"
-        >
-          {children}
-        </Box>
+        {children}
       </GridItem>
     </Grid>
   );

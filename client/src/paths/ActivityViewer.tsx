@@ -271,12 +271,13 @@ export function ActivityViewer() {
     }
   }
 
+  const headerHeight = "140px";
+
   if (data.type === "singleDoc") {
     if (mode === "Edit") {
       const initialWarnings = getDoenetMLDeprecationWarnings(
         data.doenetmlVersion,
       );
-      const headerHeight = "140px";
       mainContent = (
         <DoenetEditor
           height={`calc(100vh - ${headerHeight})`}
@@ -292,7 +293,7 @@ export function ActivityViewer() {
     } else {
       mainContent = (
         <Box ref={doenetViewerContainer}>
-          <BlueBanner>
+          <BlueBanner headerHeight={headerHeight}>
             <DoenetViewer
               doenetML={data.doenetML}
               doenetmlVersion={data.doenetmlVersion.fullVersion}
@@ -323,12 +324,11 @@ export function ActivityViewer() {
           activity={activityData}
           asViewer={true}
           fetcher={fetcher}
-          headerHeight="140px"
         />
       );
     } else {
       mainContent = (
-        <BlueBanner>
+        <BlueBanner headerHeight={headerHeight}>
           <DoenetActivityViewer
             source={data.activityJson}
             requestedVariantIndex={1}

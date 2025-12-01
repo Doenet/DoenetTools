@@ -568,6 +568,8 @@ export function AssignmentViewer() {
   const baseUrl = window.location.protocol + "//" + window.location.host;
   const doenetViewerUrl = `${baseUrl}/activityViewer`;
 
+  const headerHeight = "80px";
+
   let viewer: ReactElement<any>;
   if (loaderData.type === "singleDoc") {
     const maxAttempts = assignment.assignmentInfo?.maxAttempts ?? 0;
@@ -669,6 +671,8 @@ export function AssignmentViewer() {
         width="100%"
         zIndex="500"
         alignContent="center"
+        borderBottom="1px solid"
+        borderColor="doenet.mediumGray"
       >
         <Grid
           templateAreas={`"leftControls label rightControls"`}
@@ -699,12 +703,12 @@ export function AssignmentViewer() {
 
       <GridItem
         area="centerContent"
-        height="calc(100vh - 80px)"
+        height={`calc(100vh - ${headerHeight})`}
         overflowY="scroll"
         ref={scrollingContainer}
       >
         <Box ref={viewerContainer}>
-          <BlueBanner>{viewer}</BlueBanner>
+          <BlueBanner headerHeight={headerHeight}>{viewer}</BlueBanner>
         </Box>
       </GridItem>
     </Grid>

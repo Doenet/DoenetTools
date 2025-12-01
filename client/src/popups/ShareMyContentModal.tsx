@@ -15,16 +15,16 @@ import {
   HStack,
   Input,
   VStack,
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+  Link as ChakraLink,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { contentTypeToName } from "../utils/activity";
-import {
-  Category,
-  CategoryGroup,
-  ContentType,
-  UserInfoWithEmail,
-} from "../types";
-import { useFetcher } from "react-router";
+import { ContentType, UserInfoWithEmail } from "../types";
+import { Link as ReactRouterLink, useFetcher } from "react-router";
 import { SpinnerWhileFetching } from "../utils/optimistic_ui";
 import { ShareTable } from "../widgets/editor/ShareTable";
 import axios from "axios";
@@ -32,6 +32,7 @@ import { IoMdLink, IoMdCheckmark } from "react-icons/io";
 
 import { loader as settingsLoader } from "../paths/editor/EditorSettingsMode";
 import { editorUrl } from "../utils/url";
+import { isActivityFullyCategorized } from "../utils/classification";
 
 export async function loadShareStatus({ params }: { params: any }) {
   const { data } = await axios.get(
@@ -231,15 +232,40 @@ function SharePublicly({
 
   const [copiedLink, setCopiedLink] = useState(false);
 
+  const unspecifiedCategories = !isActivityFullyCategorized({
+    allCategories: settings.allCategories,
+    categories: settings.categories,
+  });
+
+  const browseWarning = unspecifiedCategories && (
+    <Alert status="warning">
+      <AlertIcon />
+      <AlertTitle>Not browsable</AlertTitle>
+      <AlertDescription>
+        Fill out{" "}
+        <ChakraLink
+          as={ReactRouterLink}
+          to={`${editorUrl(contentId, contentType, "settings")}?showRequired`}
+          textDecoration="underline"
+          onClick={closeModal}
+        >
+          required settings
+        </ChakraLink>{" "}
+        to make this content discoverable by others.
+      </AlertDescription>
+    </Alert>
+  );
+
   if (parentIsPublic) {
     return <p>Parent is public.</p>;
   } else if (isPublic) {
     return (
-      <VStack justify="flex-start" align="flex-start">
-        <Text mt="1rem">Content is public.</Text>
+      <VStack justify="flex-start" align="flex-start" spacing="1rem" pt="1rem">
+        {browseWarning}
+
+        <Text>Content is public.</Text>
 
         <Button
-          mt="1rem"
           size="sm"
           colorScheme="blue"
           onClick={() => {
@@ -256,7 +282,6 @@ function SharePublicly({
         </Button>
 
         <Button
-          mt="1rem"
           size="sm"
           colorScheme="blue"
           onClick={() => {
@@ -275,68 +300,16 @@ function SharePublicly({
       </VStack>
     );
   } else {
-    // Detect whether or not this activity has the required categories filled
-    // out to share publicly
-    // For each group that is required, make sure this activity has at least 1 category in that group.
-    // If it doesn't, disable sharing publicly.
-    //
-    // TODO: This restriction is ~really~ annoying. Implement a better system,
-    // one where it can be shared but does not show up on Explore
-    // For now, we'll just allow sharing publicly without restrictions.
-
-    let disableSubmit = false;
-    const allCategories = settings.allCategories as CategoryGroup[];
-    const categories = settings.categories as Category[];
-    const existingCodes = categories.map((c) => c.code);
-
-    for (const group of allCategories.filter((g) => g.isRequired)) {
-      const groupCategoryCodes = group.categories.map((c) => c.code);
-
-      // The list of codes that are both in this group and applied to this activity
-      const intersection = existingCodes.filter((code) =>
-        groupCategoryCodes.includes(code),
-      );
-      if (intersection.length === 0) {
-        disableSubmit = true;
-        break;
-      }
-    }
-
     return (
-      <Box>
-        <Text mt="1rem">Allow others to find and use your content.</Text>
+      <VStack justify="flex-start" align="flex-start" spacing="1rem" pt="1rem">
+        {browseWarning}
 
-        {/* See above comment. Removing the restriction for now */}
-        {/* {disableSubmit ? (
-          <Alert status="warning">
-            <AlertIcon />
-            <AlertTitle>Incomplete settings</AlertTitle>
-            <AlertDescription>
-              Cannot be shared publicly until{" "}
-              <ChakraLink
-                as={ReactRouterLink}
-                to={`${editorUrl(contentId, contentType, "settings")}?showRequired`}
-                textDecoration="underline"
-                onClick={closeModal}
-              >
-                settings
-              </ChakraLink>{" "}
-              are filled out.
-            </AlertDescription>
-          </Alert>
-        ) : (
-          <HStack mt="0.5">
-            <IoCheckmark color="green" />
-            <Text>Settings are filled out</Text>
-          </HStack>
-        )} */}
-
+        <Text>
+          Content is not public. Allow others to find and use your content.
+        </Text>
         <Button
-          mt="1rem"
           size="sm"
           colorScheme="blue"
-          // See above comment about removing restriction
-          // isDisabled={disableSubmit}
           onClick={() => {
             fetcher.submit(
               {
@@ -350,7 +323,7 @@ function SharePublicly({
         >
           Share publicly
         </Button>
-      </Box>
+      </VStack>
     );
   }
 }
