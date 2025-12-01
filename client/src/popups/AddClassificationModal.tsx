@@ -20,7 +20,7 @@ import {
   ModalContent,
 } from "@chakra-ui/react";
 import axios from "axios";
-import React, { ReactElement, useEffect, useState } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import { ContentClassification, ClassificationCategoryTree } from "../types";
 import {
   findClassificationDescriptionIndex,

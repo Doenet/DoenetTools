@@ -1,4 +1,3 @@
-import React from "react";
 import { useLoaderData, useOutletContext } from "react-router";
 import { BlueBanner } from "../../widgets/BlueBanner";
 import axios from "axios";

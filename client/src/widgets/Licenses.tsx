@@ -1,4 +1,3 @@
-import React from "react";
 import { License } from "../types";
 import {
   Box,

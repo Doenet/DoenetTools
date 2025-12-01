@@ -15,7 +15,7 @@ import { IconType } from "react-icons/lib";
 import { FaFolder } from "react-icons/fa";
 import { FaListOl } from "react-icons/fa6";
 import { RiArchive2Fill } from "react-icons/ri";
-import React, { ReactElement } from "react";
+import { ReactElement } from "react";
 import { Icon } from "@chakra-ui/react";
 import { IoStatsChart } from "react-icons/io5";
 

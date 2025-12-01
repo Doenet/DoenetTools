@@ -1,4 +1,4 @@
-import React, { ReactElement, RefObject, useEffect, useState } from "react";
+import { ReactElement, RefObject, useEffect, useState } from "react";
 import {
   Text,
   Modal,

@@ -18,6 +18,10 @@ export default tseslint.config(
         version: "detect",
       },
     },
+    rules: {
+      "react/react-in-jsx-scope": "off", // Not needed with new JSX transform
+      "react/jsx-uses-react": "off", // Not needed with new JSX transform
+    },
   },
   //For now, allow explicit anys
   {

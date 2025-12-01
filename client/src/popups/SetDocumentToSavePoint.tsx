@@ -12,7 +12,7 @@ import {
   ModalOverlay,
   Text,
 } from "@chakra-ui/react";
-import React, { RefObject, useEffect, useState } from "react";
+import { RefObject, useEffect, useState } from "react";
 import { useFetcher } from "react-router";
 import { ContentRevision } from "../types";
 import { DateTime } from "luxon";

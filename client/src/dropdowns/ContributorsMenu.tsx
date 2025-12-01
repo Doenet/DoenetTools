@@ -1,4 +1,3 @@
-import React from "react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import {
   Menu,

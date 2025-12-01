@@ -21,7 +21,7 @@ import {
   AlertTitle,
   Link as ChakraLink,
 } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { contentTypeToName } from "../utils/activity";
 import { ContentType, UserInfoWithEmail } from "../types";
 import { Link as ReactRouterLink, useFetcher } from "react-router";

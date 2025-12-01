@@ -1,5 +1,4 @@
 import { Grid, GridItem } from "@chakra-ui/react";
-import React from "react";
 
 /**
  * This widget wraps its children with a blue banner on the left and right.

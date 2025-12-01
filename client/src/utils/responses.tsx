@@ -1,4 +1,3 @@
-import React from "react";
 //@ts-expect-error Math expressions is not typed
 import me from "math-expressions";
 import { MathJax } from "better-react-mathjax";

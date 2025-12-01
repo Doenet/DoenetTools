@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useLoaderData } from "react-router";
 import axios from "axios";
 import {

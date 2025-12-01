@@ -1,4 +1,3 @@
-import React from "react";
 import { Center, Grid, GridItem, useBreakpointValue } from "@chakra-ui/react";
 
 export const PanelPair = ({
