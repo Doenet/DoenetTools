@@ -1,4 +1,4 @@
-import { ReactElement } from "react";
+import { Dispatch, ReactElement, SetStateAction } from "react";
 import { Text, Icon, Box, Flex } from "@chakra-ui/react";
 import Card, { CardContent } from "./Card";
 import { MdInfoOutline } from "react-icons/md";
@@ -37,7 +37,7 @@ export default function CardList({
   showLibraryEditor?: boolean;
   emptyMessage: string;
   selectedCards?: ContentDescription[];
-  setSelectedCards?: React.Dispatch<React.SetStateAction<ContentDescription[]>>;
+  setSelectedCards?: Dispatch<SetStateAction<ContentDescription[]>>;
   disableSelectFor?: string[];
   disableAsSelectedFor?: string[];
   isAuthor?: boolean;

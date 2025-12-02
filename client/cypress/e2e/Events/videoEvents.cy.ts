@@ -8,26 +8,26 @@ describe("video events test", function () {
   const courseId = "courseid1";
   const doenetId = "activity1id";
   const pageDoenetId = "_page1id";
-  const _blankCid =
-    "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku";
+  // const _blankCid =
+  //   "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku";
 
   it.skip("youtube player, play/pause/skip events", () => {
-    const _doenetML = `
-  <video youtube="tJ4ypc5L6uU" name="v" />
+    //   const _doenetML = `
+    // <video youtube="tJ4ypc5L6uU" name="v" />
 
-  <p>State: <copy prop="state" target="v" assignNames="state" /></p>
-  <p>Time: <copy prop="time" target="v" assignNames="time" /></p>
+    // <p>State: <copy prop="state" target="v" assignNames="state" /></p>
+    // <p>Time: <copy prop="time" target="v" assignNames="time" /></p>
 
-  <p>Change time: <mathinput bindValueTo="$(v.time)" name="mi" /></p>
+    // <p>Change time: <mathinput bindValueTo="$(v.time)" name="mi" /></p>
 
-  <p>Control with actions:
-  <callAction target="v" actionName="playVideo" name="play"><label>Play</label></callAction>
-  <callAction target="v" actionName="pauseVideo" name="pause"><label>Pause</label></callAction>
-  </p>
+    // <p>Control with actions:
+    // <callAction target="v" actionName="playVideo" name="play"><label>Play</label></callAction>
+    // <callAction target="v" actionName="pauseVideo" name="pause"><label>Pause</label></callAction>
+    // </p>
 
-  <p>Skip to time 157: <updateValue target="v" prop="time" newValue="157" name="skip1"><label>Skip 1</label></updateValue></p>
-  <p>Skip to time 57: <updateValue target="v" prop="time" newValue="57" name="skip2"><label>Skip 2</label></updateValue></p>
-  `;
+    // <p>Skip to time 157: <updateValue target="v" prop="time" newValue="157" name="skip1"><label>Skip 1</label></updateValue></p>
+    // <p>Skip to time 57: <updateValue target="v" prop="time" newValue="57" name="skip2"><label>Skip 2</label></updateValue></p>
+    // `;
     // cy.saveDoenetML({
     //   doenetML,
     //   pageId: pageDoenetId,

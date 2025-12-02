@@ -1,10 +1,17 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "module": "esnext",
+    // This could possibly be something else if it weren't for Passport
+    "module": "commonjs",
+
     "allowSyntheticDefaultImports": true,
     "outDir": "dist",
-    "typeRoots": ["../node_modules/@types", "src/types"]
+
+    // The following settings are only used because of Passport
+    "esModuleInterop": true,
+    "typeRoots": ["../node_modules/@types", "src/types"],
+    "skipLibCheck": true
   },
-  "include": ["src", "../shared"]
+  "include": ["src", "../shared"],
+  "exclude": ["node_modules/**/*", "dist/**/*"]
 }

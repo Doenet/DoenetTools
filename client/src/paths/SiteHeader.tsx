@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import {
   Button,
   Center,
@@ -78,7 +78,7 @@ function NavLinkTab({
   dataTest,
 }: {
   to: string;
-  children: React.ReactNode;
+  children: ReactNode;
   dataTest: string;
 }) {
   // TODO: use end only when path is "/"
@@ -123,7 +123,7 @@ function NavLinkDropdownTab({
   dataTest,
 }: {
   to: string;
-  children: React.ReactNode;
+  children: ReactNode;
   dataTest: string;
 }) {
   // TODO: use end only when path is "/"

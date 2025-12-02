@@ -20,7 +20,7 @@ import {
   ModalContent,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { ReactElement, useEffect, useState } from "react";
+import { FormEvent, ReactElement, useEffect, useState } from "react";
 import { ContentClassification, ClassificationCategoryTree } from "../types";
 import {
   findClassificationDescriptionIndex,
@@ -78,7 +78,7 @@ export function AddClassificationModal({
   // Function to update search filters
   let searchTermsTimeout: NodeJS.Timeout;
   function updateSearchTerms(
-    e: React.FormEvent<HTMLInputElement>,
+    e: FormEvent<HTMLInputElement>,
     immediate: boolean = false,
   ) {
     clearTimeout(searchTermsTimeout);

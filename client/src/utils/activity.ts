@@ -15,7 +15,7 @@ import { IconType } from "react-icons/lib";
 import { FaFolder } from "react-icons/fa";
 import { FaListOl } from "react-icons/fa6";
 import { RiArchive2Fill } from "react-icons/ri";
-import { ReactElement } from "react";
+import { ReactElement, createElement } from "react";
 import { Icon } from "@chakra-ui/react";
 import { IoStatsChart } from "react-icons/io5";
 
@@ -201,7 +201,7 @@ export const menuIcons: Record<string, ReactElement<any>> = {};
 for (const t of ["folder", "sequence", "select", "singleDoc"]) {
   const ct = t as ContentType;
   const { iconImage, iconColor } = getIconInfo(ct, false);
-  const icon = React.createElement(Icon, {
+  const icon = createElement(Icon, {
     as: iconImage,
     color: iconColor,
     marginRight: "5px",

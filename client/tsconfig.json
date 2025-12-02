@@ -4,9 +4,14 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
+    "types": ["vite/client", "cypress"],
+
+    // We're using Vite to build, therefore we don't need TS to create the files,
+    // we only want TS to type check
     "noEmit": true,
-    "types": ["vite/client", "cypress"]
+
+    // Some dependencies don't pass strict mode
+    "skipLibCheck": true
   },
-  "include": ["src", "cypress", "../shared"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src", "cypress", "../shared"]
 }

@@ -1,6 +1,7 @@
 //@ts-expect-error Math expressions is not typed
 import me from "math-expressions";
 import { MathJax } from "better-react-mathjax";
+import { JSX } from "react";
 
 const nanInfinityReviver = function (_key: any, value: any) {
   if (value && value.objectType === "special-numeric") {
@@ -16,7 +17,7 @@ const nanInfinityReviver = function (_key: any, value: any) {
   return value;
 };
 
-export function parseAndFormatResponse(response: string): React.JSX.Element {
+export function parseAndFormatResponse(response: string): JSX.Element {
   const parsedResp = JSON.parse(response, nanInfinityReviver);
 
   return parsedResp.response.map((v: unknown, i: number) => {

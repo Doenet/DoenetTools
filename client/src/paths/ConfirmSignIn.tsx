@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, JSX } from "react";
 import { useLoaderData } from "react-router";
 import axios from "axios";
 import {
@@ -49,7 +49,7 @@ export function ConfirmSignIn() {
       });
   }, [navigate, token]);
 
-  let content: React.JSX.Element;
+  let content: JSX.Element;
 
   if (errorConfirming) {
     content = (

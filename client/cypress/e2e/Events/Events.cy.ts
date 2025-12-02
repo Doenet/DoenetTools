@@ -3,24 +3,24 @@
 import { cesc2 } from "../../../src/utils/url";
 
 describe("doenet events test", function () {
-  const _userId = "cyuserId";
-  const _studentUserId = "cyStudentUserId";
+  // const _userId = "cyuserId";
+  // const _studentUserId = "cyStudentUserId";
   // const userId = "devuserId";
-  const _courseId = "courseid1";
+  // const _courseId = "courseid1";
   const doenetId = "activity1id";
   const pageDoenetId = "_page1id";
-  const _blankCid =
-    "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku";
+  // const _blankCid =
+  //   "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku";
 
   it.skip("make sure events are recorded in general", () => {
-    const _doenetML = `
-  <p>Enter values that sum to <m>3x</m>: 
-  <answer>
-  <mathinput /> <mathinput/>
-  <award><when>$_mathinput1+$_mathinput2 = 3x</when></award>
-  <award credit="0.5"><when>$_mathinput1+$_mathinput2 = 3</when></award>
-  </answer></p>
-  `;
+    //   const _doenetML = `
+    // <p>Enter values that sum to <m>3x</m>:
+    // <answer>
+    // <mathinput /> <mathinput/>
+    // <award><when>$_mathinput1+$_mathinput2 = 3x</when></award>
+    // <award credit="0.5"><when>$_mathinput1+$_mathinput2 = 3</when></award>
+    // </answer></p>
+    // `;
     // cy.saveDoenetML({
     //   doenetML,
     //   pageId: pageDoenetId,

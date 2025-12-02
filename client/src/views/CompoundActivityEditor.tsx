@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { RefObject, useCallback, useEffect, useMemo, useState } from "react";
 import {
   ContentDescription,
   Content,
@@ -53,7 +53,7 @@ export function CompoundActivityEditor({
   asViewer?: boolean;
   inLibrary?: boolean;
   fetcher: FetcherWithComponents<any>;
-  finalFocusRef?: React.RefObject<HTMLElement | null>;
+  finalFocusRef?: RefObject<HTMLElement | null>;
 }) {
   const contentTypeName = contentTypeToName[activity.type];
 

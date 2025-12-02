@@ -6,6 +6,7 @@ import {
   InputLeftElement,
   InputRightAddon,
 } from "@chakra-ui/react";
+import { FormEventHandler, ChangeEventHandler } from "react";
 import { IoSearchSharp } from "react-icons/io5";
 
 export default function Searchbar({
@@ -18,8 +19,8 @@ export default function Searchbar({
   name?: string;
   value: string;
   dataTest?: string;
-  onInput?: React.FormEventHandler<HTMLInputElement>;
-  onChange?: React.ChangeEventHandler<HTMLInputElement>;
+  onInput?: FormEventHandler<HTMLInputElement>;
+  onChange?: ChangeEventHandler<HTMLInputElement>;
 }) {
   return (
     <>

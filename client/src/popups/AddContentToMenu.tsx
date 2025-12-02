@@ -1,4 +1,9 @@
-import { ReactElement, useEffect, useState } from "react";
+import {
+  JSXElementConstructor,
+  ReactElement,
+  useEffect,
+  useState,
+} from "react";
 import {
   ContentDescription,
   ContentType,
@@ -58,7 +63,7 @@ export function AddContentToMenu({
     | "yellow"
     | "whiteAlpha"
     | "blackAlpha";
-  leftIcon?: React.ReactElement<any, string | React.JSXElementConstructor<any>>;
+  leftIcon?: ReactElement<any, string | JSXElementConstructor<any>>;
   addRightPadding?: boolean;
   toolTip?: string;
   restrictToAllowedParents?: boolean;

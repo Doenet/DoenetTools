@@ -1,4 +1,4 @@
-import { ReactElement, RefObject, useEffect, useState } from "react";
+import { ReactElement, RefObject, useEffect, useRef, useState } from "react";
 import {
   Text,
   Modal,
@@ -136,7 +136,7 @@ export function MoveCopyContent({
     }
   }
 
-  const initialRef = React.useRef<HTMLButtonElement>(null);
+  const initialRef = useRef<HTMLButtonElement>(null);
 
   const navigate = useNavigate();
   const fetcher = useFetcher();

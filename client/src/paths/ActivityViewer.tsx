@@ -187,6 +187,7 @@ export function ActivityViewer() {
         }
       }
     }
+    return undefined;
   }
 
   let contentData: Content | undefined;

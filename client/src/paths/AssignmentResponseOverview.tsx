@@ -191,6 +191,9 @@ export async function loader({ params, request }: ActionFunctionArgs) {
       activityJson,
       itemNames,
     };
+  } else {
+    // Handle folder type
+    throw new Error("Cannot view this page on a folder");
   }
 }
 

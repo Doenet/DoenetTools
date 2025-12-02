@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Strategy as PassportStrategy } from "passport";
-import { Request } from "express";
-
 declare module "passport-magic-link" {
+  import { Strategy as PassportStrategy } from "passport-strategy";
+  import { Request } from "express";
+
   // Options interface for the MagicLinkStrategy
   interface MagicLinkStrategyOptions {
     secret: string;
@@ -32,15 +32,10 @@ declare module "passport-magic-link" {
   ) => Promise<void>;
 
   // Callback function type for verifying user
-  // The callback signature depends on passReqToCallbacks and verifyUserAfterToken options:
-  // - If passReqToCallbacks=false & verifyUserAfterToken=false: (userFields) => any
-  // - If passReqToCallbacks=true & verifyUserAfterToken=false: (req, userFields) => any
-  // - If passReqToCallbacks=false & verifyUserAfterToken=true: (user) => any
-  // - If passReqToCallbacks=true & verifyUserAfterToken=true: (req, user) => any
   type VerifyUserCallback = (userOrReq: any, userFields?: any) => any;
 
   // The MagicLinkStrategy class
-  class Strategy extends PassportStrategy {
+  export class Strategy extends PassportStrategy {
     constructor(
       options: MagicLinkStrategyOptions,
       sendToken: SendTokenCallback,

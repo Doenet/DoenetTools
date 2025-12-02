@@ -19,9 +19,7 @@ export async function getCidV1FromFile(file: File): Promise<string> {
   return getCidV1FromBytes(bytes);
 }
 
-export async function getCidV1FromBytes(
-  bytes: Uint8Array<ArrayBuffer>
-): Promise<string> {
+export async function getCidV1FromBytes(bytes: Uint8Array): Promise<string> {
   const cid = await Hash.of(bytes, {
     cidVersion: 1,
     rawLeaves: true,
