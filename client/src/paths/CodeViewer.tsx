@@ -1,9 +1,5 @@
 import React, { useEffect } from "react";
-import {
-  useLoaderData,
-  useNavigate,
-  useOutletContext,
-} from "react-router";
+import { useLoaderData, useNavigate, useOutletContext } from "react-router";
 
 import { DoenetEditor } from "@doenet/doenetml-iframe";
 
