@@ -273,6 +273,7 @@ test("open and close assignment with code", async () => {
     attemptNumber: 1,
     score: 0.3,
     state: "document state",
+    variant: 1,
   });
 
   // closing assignment doesn't close completely due to the data
@@ -922,6 +923,7 @@ test("get assignment data from anonymous users", async () => {
     attemptNumber: 1,
     score: 0.5,
     state: "document state 1",
+    variant: 1,
   });
 
   await testSingleDocResponses({
@@ -959,6 +961,7 @@ test("get assignment data from anonymous users", async () => {
     attemptNumber: 1,
     score: 0.2,
     state: "document state 2",
+    variant: 1,
   });
 
   await testSingleDocResponses({
@@ -996,6 +999,7 @@ test("get assignment data from anonymous users", async () => {
     attemptNumber: 1,
     score: 0.7,
     state: "document state 3",
+    variant: 1,
   });
 
   await testSingleDocResponses({
@@ -1055,6 +1059,7 @@ test("get assignment data from anonymous users", async () => {
     attemptNumber: 1,
     score: 0.3,
     state: "document state 4",
+    variant: 1,
   });
 
   // second user's score shows up first due to alphabetical sorting
@@ -1144,6 +1149,7 @@ test("can't get assignment data if other user, but student can get their own dat
     attemptNumber: 1,
     score: 0.5,
     state: "document state 1",
+    variant: 1,
   });
 
   // assignment owner can get score data
@@ -1276,6 +1282,7 @@ test("list assigned and get assigned scores get student assignments and scores",
     attemptNumber: 1,
     score: 0.5,
     state: "document state 1",
+    variant: 1,
   });
 
   assignmentList = await listUserAssigned({ loggedInUserId: user1Id });
@@ -1336,6 +1343,7 @@ test("get all assignment data from anonymous user", async () => {
     attemptNumber: 1,
     score: 0.5,
     state: "document state 1",
+    variant: 1,
   });
 
   let userWithScores = convertUUID(
@@ -1366,6 +1374,7 @@ test("get all assignment data from anonymous user", async () => {
     attemptNumber: 1,
     score: 0.2,
     state: "document state 2",
+    variant: 1,
   });
 
   userWithScores = convertUUID(
@@ -1395,6 +1404,7 @@ test("get all assignment data from anonymous user", async () => {
     attemptNumber: 1,
     score: 0.7,
     state: "document state 3",
+    variant: 1,
   });
 
   userWithScores = convertUUID(
@@ -1608,6 +1618,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
     attemptNumber: 1,
     score: 0.11,
     state: "document state 1a",
+    variant: 1,
   });
   await createNewAttempt({
     contentId: assign1c1Id,
@@ -1623,6 +1634,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
     attemptNumber: 1,
     score: 0.131,
     state: "document state 1c1",
+    variant: 1,
   });
   await createNewAttempt({
     contentId: assign1c2aId,
@@ -1638,6 +1650,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
     attemptNumber: 1,
     score: 0.1321,
     state: "document state 1c2a",
+    variant: 1,
   });
   await createNewAttempt({
     contentId: assign1c2bId,
@@ -1653,6 +1666,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
     attemptNumber: 1,
     score: 0.1322,
     state: "document state 1c2b",
+    variant: 1,
   });
   await createNewAttempt({
     contentId: assign1eId,
@@ -1668,6 +1682,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
     attemptNumber: 1,
     score: 0.15,
     state: "document state 1e",
+    variant: 1,
   });
   await createNewAttempt({
     contentId: assign2Id,
@@ -1683,6 +1698,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
     attemptNumber: 1,
     score: 0.2,
     state: "document state 2",
+    variant: 1,
   });
   await createNewAttempt({
     contentId: assign3bId,
@@ -1698,6 +1714,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
     attemptNumber: 1,
     score: 0.32,
     state: "document state 3b",
+    variant: 1,
   });
   await createNewAttempt({
     contentId: assignRootId,
@@ -1713,6 +1730,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
     attemptNumber: 1,
     score: 1.0,
     state: "document state Root",
+    variant: 1,
   });
 
   const desiredFolder3 = [
@@ -2075,6 +2093,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     attemptNumber: 1,
     score: 0.5,
     state: "document state 1",
+    variant: 1,
   });
 
   scoreData = await getAllAssignmentScores({
@@ -2108,6 +2127,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     attemptNumber: 1,
     score: 0.2,
     state: "document state 2",
+    variant: 1,
   });
 
   scoreData = await getAllAssignmentScores({
@@ -2160,6 +2180,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     attemptNumber: 1,
     score: 0.3,
     state: "document state 3",
+    variant: 1,
   });
 
   await saveScoreAndState({
@@ -2169,6 +2190,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     attemptNumber: 1,
     score: 0.7,
     state: "document state 4",
+    variant: 1,
   });
 
   scoreData = await getAllAssignmentScores({
@@ -2247,6 +2269,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     attemptNumber: 1,
     score: 0.9,
     state: "document state 1",
+    variant: 1,
   });
 
   scoreData = await getAllAssignmentScores({
@@ -2612,6 +2635,7 @@ test("only user and assignment owner can load document state", async () => {
     attemptNumber: 1,
     score: 0.5,
     state: "document state 1",
+    variant: 1,
   });
 
   // anonymous user can load state

@@ -85,8 +85,8 @@ export async function saveScoreAndState({
     );
   }
 
-  async function getAssignmentMaxAttemptNumber() {
-    let assignment = await prisma.assignments.findUniqueOrThrow({
+  async function getMaxAttemptNumber() {
+    const assignment = await prisma.assignments.findUniqueOrThrow({
       where: {
         rootContentId: contentId,
         classCode: code,
@@ -101,11 +101,11 @@ export async function saveScoreAndState({
       },
     });
 
-    let maxAttemptNumber = assignment.contentState[0]?.attemptNumber ?? 0;
-    return { maxAttemptNumber, assignment };
+    const maxAttemptNumber = assignment.contentState[0]?.attemptNumber ?? 0;
+    return maxAttemptNumber;
   }
 
-  let { maxAttemptNumber, assignment } = await getAssignmentMaxAttemptNumber();
+  let maxAttemptNumber = await getMaxAttemptNumber();
 
   if (maxAttemptNumber === 0) {
     await createNewAttempt({
@@ -117,7 +117,7 @@ export async function saveScoreAndState({
       shuffledItemOrder,
     });
 
-    ({ maxAttemptNumber, assignment } = await getAssignmentMaxAttemptNumber());
+    maxAttemptNumber = await getMaxAttemptNumber();
   }
 
   if (attemptNumber !== maxAttemptNumber) {
