@@ -2,6 +2,8 @@ import { z } from "zod";
 import { uuidSchema } from "./uuid";
 import { rangedNumber } from "./rangedNumber";
 
+const variantSchema = z.int().gte(0).lte(16777215);
+
 export const scoreAndStateSchema = z.object({
   contentId: uuidSchema,
   code: z.string(),
@@ -13,19 +15,21 @@ export const scoreAndStateSchema = z.object({
       itemNumber: rangedNumber.optional(),
       shuffledItemNumber: rangedNumber.optional(),
       itemAttemptNumber: rangedNumber,
-      shuffledItemOrder: z.array(
-        z.object({
-          shuffledItemNumber: rangedNumber,
-          docId: uuidSchema,
-        }),
-      ),
       score: z.number(),
       state: z.string(),
     })
     .optional(),
+  shuffledItemOrder: z
+    .array(
+      z.object({
+        shuffledItemNumber: rangedNumber,
+        docId: uuidSchema,
+        variant: variantSchema,
+      }),
+    )
+    .optional(),
+  variant: variantSchema,
 });
-
-const variantSchema = z.int().gte(0).lte(16777215);
 
 export const createNewAttemptSchema = z.object({
   contentId: uuidSchema,

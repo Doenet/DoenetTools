@@ -36,6 +36,8 @@ export async function saveScoreAndState({
   score,
   state,
   item,
+  shuffledItemOrder,
+  variant,
 }: {
   contentId: Uint8Array;
   code: string;
@@ -47,20 +49,22 @@ export async function saveScoreAndState({
     itemNumber?: number;
     shuffledItemNumber?: number;
     itemAttemptNumber: number;
-    shuffledItemOrder: {
-      shuffledItemNumber: number;
-      docId: Uint8Array;
-    }[];
     score: number;
     state: string;
   };
+  shuffledItemOrder?: {
+    shuffledItemNumber: number;
+    docId: Uint8Array;
+    variant: number;
+  }[];
+  variant: number;
 }) {
   let itemNumber = 0;
   if (item) {
     // check item number first to throw error before any database changes are made
     itemNumber =
       item.itemNumber ??
-      item.shuffledItemOrder.findIndex(
+      shuffledItemOrder!.findIndex(
         (x) => x.shuffledItemNumber === item.shuffledItemNumber,
       ) + 1;
 
@@ -81,27 +85,39 @@ export async function saveScoreAndState({
     );
   }
 
-  const assignment = await prisma.assignments.findUniqueOrThrow({
-    where: {
-      rootContentId: contentId,
-      classCode: code,
-    },
-    select: {
-      contentState: {
-        distinct: ["contentId", "userId"],
-        where: { userId: loggedInUserId },
-        orderBy: { attemptNumber: "desc" },
-        select: { attemptNumber: true },
+  async function getAssignmentMaxAttemptNumber() {
+    let assignment = await prisma.assignments.findUniqueOrThrow({
+      where: {
+        rootContentId: contentId,
+        classCode: code,
       },
-    },
-  });
+      select: {
+        contentState: {
+          distinct: ["contentId", "userId"],
+          where: { userId: loggedInUserId },
+          orderBy: { attemptNumber: "desc" },
+          select: { attemptNumber: true },
+        },
+      },
+    });
 
-  const maxAttemptNumber = assignment.contentState[0]?.attemptNumber ?? 0;
+    let maxAttemptNumber = assignment.contentState[0]?.attemptNumber ?? 0;
+    return { maxAttemptNumber, assignment };
+  }
+
+  let { maxAttemptNumber, assignment } = await getAssignmentMaxAttemptNumber();
 
   if (maxAttemptNumber === 0) {
-    throw new InvalidRequestError(
-      "Cannot save state before an attempt has begun",
-    );
+    await createNewAttempt({
+      contentId,
+      code,
+      variant,
+      state,
+      loggedInUserId,
+      shuffledItemOrder,
+    });
+
+    ({ maxAttemptNumber, assignment } = await getAssignmentMaxAttemptNumber());
   }
 
   if (attemptNumber !== maxAttemptNumber) {
@@ -154,8 +170,7 @@ export async function saveScoreAndState({
       );
     }
 
-    const { shuffledItemNumber, docId } =
-      item.shuffledItemOrder[itemNumber - 1];
+    const { shuffledItemNumber, docId } = shuffledItemOrder![itemNumber - 1];
 
     // perform all score/state updates for activity and item in a single transaction
     await prisma.contentState.update({

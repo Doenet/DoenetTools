@@ -201,20 +201,21 @@ export type ExportedActivityState = {
 
 export type ReportStateMessage = {
   subject: "SPLICE.reportScoreAndState";
-  activityId: string;
+  message_id: string;
+  activity_id: string;
   score: number;
-  itemScores: {
+  item_scores: {
     id: string;
     score: number;
     docId: string;
     shuffledOrder: number;
     variant: number;
   }[];
-  itemUpdated?: number;
+  item_updated?: number;
   state: ExportedActivityState;
-  newAttempt?: boolean;
-  newAttemptForItem?: number;
-  newDoenetStateIdx?: number;
+  new_attempt?: boolean;
+  new_attempt_for_item?: number;
+  new_doenet_state_idx?: number;
 };
 
 // type guards
@@ -377,13 +378,16 @@ export function isReportStateMessage(obj: unknown): obj is ReportStateMessage {
   const typedObj = obj as ReportStateMessage;
 
   return (
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     typedObj !== null &&
     typeof typedObj === "object" &&
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     typedObj.subject === "SPLICE.reportScoreAndState" &&
-    typeof typedObj.activityId === "string" &&
+    typeof typedObj.message_id === "string" &&
+    typeof typedObj.activity_id === "string" &&
     typeof typedObj.score === "number" &&
-    Array.isArray(typedObj.itemScores) &&
-    typedObj.itemScores.every(
+    Array.isArray(typedObj.item_scores) &&
+    typedObj.item_scores.every(
       (item) =>
         typeof item.id === "string" &&
         typeof item.score === "number" &&
@@ -391,14 +395,14 @@ export function isReportStateMessage(obj: unknown): obj is ReportStateMessage {
         typeof item.shuffledOrder === "number" &&
         typeof item.variant === "number",
     ) &&
-    (typedObj.itemUpdated === undefined ||
-      typeof typedObj.itemUpdated === "number") &&
+    (typedObj.item_updated === undefined ||
+      typeof typedObj.item_updated === "number") &&
     isExportedActivityState(typedObj.state) &&
-    (typedObj.newAttempt === undefined ||
-      typeof typedObj.newAttempt === "boolean") &&
-    (typedObj.newAttemptForItem === undefined ||
-      typeof typedObj.newAttemptForItem === "number") &&
-    (typedObj.newDoenetStateIdx === undefined ||
-      typeof typedObj.newDoenetStateIdx === "number")
+    (typedObj.new_attempt === undefined ||
+      typeof typedObj.new_attempt === "boolean") &&
+    (typedObj.new_attempt_for_item === undefined ||
+      typeof typedObj.new_attempt_for_item === "number") &&
+    (typedObj.new_doenet_state_idx === undefined ||
+      typeof typedObj.new_doenet_state_idx === "number")
   );
 }

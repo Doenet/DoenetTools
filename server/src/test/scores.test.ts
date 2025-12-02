@@ -65,6 +65,7 @@ test("Create and save responses for new attempts, no items", async () => {
     attemptNumber: 1,
     score: 0.5,
     state: "document state 1",
+    variant: 1,
   });
 
   expectedScore = {
@@ -112,6 +113,7 @@ test("Create and save responses for new attempts, no items", async () => {
       attemptNumber: 2,
       score: 0.9,
       state: "document state 2",
+      variant: 1,
     }),
   ).rejects.toThrow("non-maximal attempt number");
 
@@ -195,6 +197,7 @@ test("Create and save responses for new attempts, no items", async () => {
     attemptNumber: 2,
     score: 0.9,
     state: "document state 3",
+    variant: 1,
   });
 
   expectedScore = {
@@ -255,6 +258,7 @@ test("Create and save responses for new attempts, no items", async () => {
     attemptNumber: 2,
     score: 0.2,
     state: "document state 4",
+    variant: 1,
   });
 
   expectedScore = {
@@ -397,12 +401,13 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     score: null,
     item: {
       itemNumber: 1,
-      shuffledItemOrder,
       itemAttemptNumber: 1,
       score: 0.8,
       state: "Item 1 state 1",
     },
     state: "assignment state 1",
+    shuffledItemOrder,
+    variant: 2,
   });
 
   expectedScore = {
@@ -529,11 +534,12 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
       state: "assignment state 2",
       item: {
         itemNumber: 2,
-        shuffledItemOrder,
         itemAttemptNumber: 1,
         score: 0.6,
         state: "Item 2 state 1",
       },
+      shuffledItemOrder,
+      variant: 2,
     }),
   ).rejects.toThrow("non-maximal attempt number");
 
@@ -628,11 +634,12 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     state: "assignment state 3",
     item: {
       itemNumber: 2,
-      shuffledItemOrder,
       itemAttemptNumber: 1,
       score: 0.6,
       state: "Item 2 state 2",
     },
+    shuffledItemOrder,
+    variant: 2,
   });
 
   expectedScore = {
@@ -804,11 +811,12 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     state: "assignment state 4",
     item: {
       itemNumber: 1,
-      shuffledItemOrder,
       itemAttemptNumber: 1,
       score: 0.4,
       state: "Item 1 state 2",
     },
+    shuffledItemOrder,
+    variant: 2,
   });
 
   expectedScore = {
@@ -1013,11 +1021,12 @@ test("Create and save responses for new item attempts, two items", async () => {
     state: "assignment state 1",
     item: {
       itemNumber: 1,
-      shuffledItemOrder,
       itemAttemptNumber: 1,
       score: 0.6,
       state: "Item 1 state 1",
     },
+    shuffledItemOrder,
+    variant: 2,
   });
 
   expectedScore = {
@@ -1142,11 +1151,12 @@ test("Create and save responses for new item attempts, two items", async () => {
       state: "assignment state 1",
       item: {
         itemNumber: 1,
-        shuffledItemOrder,
         itemAttemptNumber: 2,
         score: 0.4,
         state: "Item 1 state 2",
       },
+      shuffledItemOrder,
+      variant: 2,
     }),
   ).rejects.toThrow("non-maximal item attempt number");
 
@@ -1236,11 +1246,12 @@ test("Create and save responses for new item attempts, two items", async () => {
     state: "assignment state 2",
     item: {
       itemNumber: 1,
-      shuffledItemOrder,
       itemAttemptNumber: 2,
       score: 0.4,
       state: "Item 1 state 3",
     },
+    shuffledItemOrder,
+    variant: 2,
   });
 
   // remember previous max score of 0.3 and 0.6 on item 1
@@ -1480,11 +1491,12 @@ test("Create and save responses for new item attempts, two items", async () => {
       state: "assignment state 2",
       item: {
         itemNumber: 2,
-        shuffledItemOrder,
         itemAttemptNumber: 1,
         score: 0.8,
         state: "Item 2 state 2",
       },
+      shuffledItemOrder,
+      variant: 2,
     }),
   ).rejects.toThrow("non-maximal item attempt number");
 
@@ -1498,11 +1510,12 @@ test("Create and save responses for new item attempts, two items", async () => {
     state: "assignment state 3",
     item: {
       itemNumber: 2,
-      shuffledItemOrder,
       itemAttemptNumber: 2,
       score: 0.8,
       state: "Item 2 state 3",
     },
+    shuffledItemOrder,
+    variant: 2,
   });
 
   expectedScore = {
@@ -1742,6 +1755,7 @@ test("Create attempts before responding, no items", async () => {
     attemptNumber: 2,
     score: 0.9,
     state: "document state 1",
+    variant: 2,
   });
 
   expectedScore = {
@@ -1967,11 +1981,12 @@ test("Create item attempts before responding, two items", async () => {
     state: "assignment state 1",
     item: {
       itemNumber: 1,
-      shuffledItemOrder,
       itemAttemptNumber: 2,
       score: 0.4,
       state: "Item 1 state 1",
     },
+    shuffledItemOrder,
+    variant: 1,
   });
 
   expectedScore = {
@@ -2138,11 +2153,12 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
     state: "assignment state 1",
     item: {
       shuffledItemNumber: 1,
-      shuffledItemOrder,
       itemAttemptNumber: 1,
       score: 0.6,
       state: "Item 1 state 1",
     },
+    shuffledItemOrder,
+    variant: 1,
   });
 
   let expectedScore = {
@@ -2267,11 +2283,12 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
       state: "assignment state 1",
       item: {
         shuffledItemNumber: 1,
-        shuffledItemOrder,
         itemAttemptNumber: 2,
         score: 0.4,
         state: "Item 1 state 2",
       },
+      shuffledItemOrder,
+      variant: 1,
     }),
   ).rejects.toThrow("non-maximal item attempt number");
 
@@ -2360,11 +2377,12 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
     state: "assignment state 3",
     item: {
       shuffledItemNumber: 1,
-      shuffledItemOrder,
       itemAttemptNumber: 2,
       score: 0.4,
       state: "Item 1 state 3",
     },
+    shuffledItemOrder,
+    variant: 1,
   });
 
   // remember previous max score of 0.3 and 0.6 on item 2 (shuffledItemNumber 1)
@@ -2533,11 +2551,12 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
       state: "assignment state 5",
       item: {
         shuffledItemNumber: 2,
-        shuffledItemOrder,
         itemAttemptNumber: 1,
         score: 0.8,
         state: "Item 2 state 2",
       },
+      shuffledItemOrder,
+      variant: 1,
     }),
   ).rejects.toThrow("non-maximal item attempt number");
 
@@ -2551,11 +2570,12 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
     state: "assignment state 6",
     item: {
       shuffledItemNumber: 2,
-      shuffledItemOrder,
       itemAttemptNumber: 2,
       score: 0.8,
       state: "Item 2 state 3",
     },
+    shuffledItemOrder,
+    variant: 1,
   });
 
   expectedScore = {
@@ -2700,11 +2720,12 @@ test("New item attempt does not affect other item", async () => {
     state: "assignment state 1",
     item: {
       itemNumber: 1,
-      shuffledItemOrder,
       itemAttemptNumber: 1,
       score: 0.8,
       state: "Item 1 state 1",
     },
+    shuffledItemOrder,
+    variant: 1,
   });
 
   let retrievedScore = await saveScoreAndState({
@@ -2716,11 +2737,12 @@ test("New item attempt does not affect other item", async () => {
     state: "assignment state 1",
     item: {
       itemNumber: 2,
-      shuffledItemOrder,
       itemAttemptNumber: 1,
       score: 1,
       state: "Item 2 state 1",
     },
+    shuffledItemOrder,
+    variant: 1,
   });
 
   let expectedScore = {
@@ -2808,11 +2830,12 @@ test("New item attempt does not affect other item", async () => {
     state: "assignment state 2",
     item: {
       itemNumber: 1,
-      shuffledItemOrder,
       itemAttemptNumber: 1,
       score: 0.4,
       state: "Item 1 state 2",
     },
+    shuffledItemOrder,
+    variant: 1,
   });
 
   retrievedScore = await saveScoreAndState({
@@ -2824,11 +2847,12 @@ test("New item attempt does not affect other item", async () => {
     state: "assignment state 2",
     item: {
       itemNumber: 2,
-      shuffledItemOrder,
       itemAttemptNumber: 2,
       score: 0.2,
       state: "Item 2 state 2",
     },
+    shuffledItemOrder,
+    variant: 1,
   });
 
   expectedScore = {
@@ -3006,11 +3030,12 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
     state: "assignment state 1",
     item: {
       itemNumber: 1,
-      shuffledItemOrder,
       itemAttemptNumber: 1,
       score: 0.6,
       state: "Item 2 state 1",
     },
+    shuffledItemOrder,
+    variant: 1,
   });
 
   // save state for shuffled item number 1 (which is item number 2)
@@ -3023,11 +3048,12 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
     state: "assignment state 1",
     item: {
       shuffledItemNumber: 1,
-      shuffledItemOrder,
       itemAttemptNumber: 1,
       score: 0.8,
       state: "Item 1 state 1",
     },
+    shuffledItemOrder,
+    variant: 1,
   });
 
   const expectedScore = {
@@ -3102,11 +3128,12 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
       score: null,
       state: "assignment state 1",
       item: {
-        shuffledItemOrder,
         itemAttemptNumber: 1,
         score: 1,
         state: "Which item?",
       },
+      shuffledItemOrder,
+      variant: 1,
     }),
   ).rejects.toThrow(
     "A valid itemNumber or shuffledItemNumber must be supplied",
@@ -3395,6 +3422,7 @@ test("Setting maximum number of attempts, no items", async () => {
     attemptNumber: 1,
     score: 0.5,
     state: "document state 2",
+    variant: 1,
   });
 
   // cannot create new attempt
@@ -3434,6 +3462,7 @@ test("Setting maximum number of attempts, no items", async () => {
     attemptNumber: 2,
     score: 0.6,
     state: "document state 5",
+    variant: 2,
   });
 
   // cannot create new attempt
@@ -3480,6 +3509,7 @@ test("Setting maximum number of attempts, no items", async () => {
     attemptNumber: 3,
     score: 0.7,
     state: "document state 8",
+    variant: 3,
   });
 
   // cannot save state to attempt 2
@@ -3491,6 +3521,7 @@ test("Setting maximum number of attempts, no items", async () => {
       attemptNumber: 2,
       score: 0.8,
       state: "document state 9",
+      variant: 2,
     }),
   ).rejects.toThrow(
     "Cannot save score and state to non-maximal attempt number",
@@ -3604,11 +3635,12 @@ test("Setting maximum number of attempts, new item attempts", async () => {
     state: "assignment state 2",
     item: {
       itemNumber: 1,
-      shuffledItemOrder,
       itemAttemptNumber: 1,
       score: 0.6,
       state: "Item 1 state 1",
     },
+    shuffledItemOrder,
+    variant: 1,
   });
 
   // cannot create a new attempt for item 1 or item 2
@@ -3668,11 +3700,12 @@ test("Setting maximum number of attempts, new item attempts", async () => {
     state: "assignment state 6",
     item: {
       itemNumber: 1,
-      shuffledItemOrder,
       itemAttemptNumber: 2,
       score: 0.8,
       state: "Item 1 state 2",
     },
+    shuffledItemOrder,
+    variant: 1,
   });
 
   // cannot create a new attempt for item 1
@@ -3725,11 +3758,12 @@ test("Setting maximum number of attempts, new item attempts", async () => {
     state: "assignment state 9",
     item: {
       itemNumber: 1,
-      shuffledItemOrder,
       itemAttemptNumber: 3,
       score: 1,
       state: "Item 1 state 3",
     },
+    shuffledItemOrder,
+    variant: 1,
   });
 
   // can no longer save state for attempt 2 of item 1
@@ -3743,11 +3777,12 @@ test("Setting maximum number of attempts, new item attempts", async () => {
       state: "assignment state 10",
       item: {
         itemNumber: 1,
-        shuffledItemOrder,
         itemAttemptNumber: 2,
         score: 0.2,
         state: "Item 1 state 4",
       },
+      shuffledItemOrder,
+      variant: 1,
     }),
   ).rejects.toThrow(
     "Cannot save score and state to non-maximal item attempt number",
@@ -3789,11 +3824,12 @@ test("Setting maximum number of attempts, new item attempts", async () => {
     state: "assignment state 13",
     item: {
       itemNumber: 2,
-      shuffledItemOrder,
       itemAttemptNumber: 2,
       score: 0.4,
       state: "Item 2 state 1",
     },
+    shuffledItemOrder,
+    variant: 1,
   });
 
   // retrieved state reflects attempt 3 for item 1 and attempt 2 for item 2
