@@ -1,5 +1,5 @@
 {
-  "name": "server2",
+  "name": "doenet-tools-server",
   "version": "1.0.0",
   "description": "",
   "main": "dist/src/index.js",
