@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import {
-  useFetcher,
   useLoaderData,
   useNavigate,
   useOutletContext,
@@ -80,7 +79,6 @@ export function CodeViewer() {
     activityData?: Content;
   };
 
-  const fetcher = useFetcher();
   const {
     isOpen: copyDialogIsOpen,
     onOpen: copyDialogOnOpen,

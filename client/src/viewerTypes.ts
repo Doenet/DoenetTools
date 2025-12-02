@@ -378,10 +378,8 @@ export function isReportStateMessage(obj: unknown): obj is ReportStateMessage {
   const typedObj = obj as ReportStateMessage;
 
   return (
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     typedObj !== null &&
     typeof typedObj === "object" &&
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     typedObj.subject === "SPLICE.reportScoreAndState" &&
     typeof typedObj.message_id === "string" &&
     typeof typedObj.activity_id === "string" &&
