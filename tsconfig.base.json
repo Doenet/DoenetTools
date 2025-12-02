@@ -18,10 +18,6 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
 
-    /* Path alias support */
-    "baseUrl": ".",
-    "paths": {
-      "@shared/*": ["shared/*"]
-    }
+    "baseUrl": "."
   }
 }

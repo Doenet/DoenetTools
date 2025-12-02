@@ -1,5 +1,5 @@
 {
-  "name": "doenet-tools-client",
+  "name": "@doenet-tools/client",
   "version": "1.0.1",
   "type": "module",
   "scripts": {
