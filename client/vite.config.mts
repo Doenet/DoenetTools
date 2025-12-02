@@ -3,7 +3,6 @@ import { NodeModulesPolyfillPlugin } from "@esbuild-plugins/node-modules-polyfil
 import react from "@vitejs/plugin-react";
 import nodePolyfills from "rollup-plugin-polyfill-node";
 import { defineConfig } from "vite";
-import path from "path";
 
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
@@ -32,13 +31,7 @@ export default defineConfig({
       //"/api": "http://apache",
     },
   },
-  resolve: {
-    alias: [
-      { find: "csv-parse", replacement: "csv-parse/browser/esm" },
-      { find: "@Tool", replacement: "/src/Tools/_framework/Tool" },
-      { find: "@shared", replacement: path.resolve(__dirname, "../shared") },
-    ],
-  },
+  resolve: {},
   worker: {
     format: "iife",
   },

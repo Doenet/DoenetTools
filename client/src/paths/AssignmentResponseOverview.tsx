@@ -54,7 +54,7 @@ import {
   getIconInfo,
 } from "../utils/activity";
 import { BiDownArrowAlt, BiUpArrowAlt } from "react-icons/bi";
-import { ActivitySource } from "@shared/types/activityViewer";
+import { ActivitySource } from "@doenet-tools/shared/types/activityViewer";
 import { EditAssignmentSettings } from "../widgets/editor/EditAssignmentSettings";
 import { DateTime } from "luxon";
 import { NameBar } from "../widgets/NameBar";

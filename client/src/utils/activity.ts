@@ -10,7 +10,7 @@ import {
   ContentType,
   DoenetmlVersion,
 } from "../types";
-import { ActivitySource } from "@shared/types/activityViewer";
+import { ActivitySource } from "@doenet-tools/shared/types/activityViewer";
 import { IconType } from "react-icons/lib";
 import { FaFolder } from "react-icons/fa";
 import { FaListOl } from "react-icons/fa6";

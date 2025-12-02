@@ -13,5 +13,6 @@
     // Some dependencies don't pass strict mode
     "skipLibCheck": true
   },
-  "include": ["src", "cypress", "../shared"]
+  // TODO: Move cypress tests into their own
+  "include": ["src", "cypress"]
 }

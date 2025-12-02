@@ -3,7 +3,7 @@ import { BlueBanner } from "../../widgets/BlueBanner";
 import axios from "axios";
 // @ts-expect-error assignment-viewer doesn't publish types, see https://github.com/Doenet/assignment-viewer/issues/20
 import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";
-import { ActivitySource } from "@shared/types/activityViewer";
+import { ActivitySource } from "@doenet-tools/shared/types/activityViewer";
 import { EditorContext } from "./EditorHeader";
 
 export async function loader({ params }: { params: any }) {

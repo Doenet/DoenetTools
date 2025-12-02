@@ -129,7 +129,7 @@ export function EditorSettingsMode() {
 
   const showUpgradeSyntax = Boolean(
     doenetmlVersionId &&
-      allDoenetmlVersions.find((v) => v.id === doenetmlVersionId)?.deprecated,
+    allDoenetmlVersions.find((v) => v.id === doenetmlVersionId)?.deprecated,
   );
 
   return (

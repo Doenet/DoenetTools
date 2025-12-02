@@ -10,8 +10,9 @@
     // The following settings are only used because of Passport
     "esModuleInterop": true,
     "typeRoots": ["../node_modules/@types", "src/types"],
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    // Only include types that the server actually uses (excludes cypress)
+    "types": ["node", "express", "passport", "chai"]
   },
-  "include": ["src", "../shared"],
-  "exclude": ["node_modules/**/*", "dist/**/*"]
+  "include": ["src"]
 }

@@ -30,7 +30,7 @@ import {
 import { CreateDocumentSavePoint } from "../../popups/CreateDocumentSavePoint";
 import { SavePointInfo } from "../../popups/SavePointInfo";
 import { DateTime } from "luxon";
-import { getCidV1FromString } from "@shared/utils/ipfs";
+import { getCidV1FromString } from "@doenet-tools/shared/utils/ipfs";
 import { SetDocumentToSavePoint } from "../../popups/SetDocumentToSavePoint";
 import { EditorContext } from "./EditorHeader";
 import axios from "axios";
