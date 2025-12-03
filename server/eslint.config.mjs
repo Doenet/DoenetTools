@@ -2,7 +2,7 @@
 
 import rootConfig from "../eslint.config.mjs";
 
-// Override the tsconfigRootDir to point to this directory
+// Override the tsconfigRootDir and project to point to this directory
 export default rootConfig.map((config) => {
   if (config.languageOptions?.parserOptions?.tsconfigRootDir) {
     return {
@@ -12,6 +12,7 @@ export default rootConfig.map((config) => {
         parserOptions: {
           ...config.languageOptions.parserOptions,
           tsconfigRootDir: import.meta.dirname,
+          project: "./tsconfig.json",
         },
       },
     };

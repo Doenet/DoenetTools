@@ -44,7 +44,7 @@ jobs:
         with:
           node-version: 24
 
-      - run: npm build --workspace client
+      - run: npm run --workspace client build
 
   build-server:
     runs-on: ubuntu-latest
@@ -60,7 +60,7 @@ jobs:
         with:
           node-version: 24
 
-      - run: npm build --workspace server
+      - run: npm run --workspace server build
 
   test-server:
     runs-on: ubuntu-latest
