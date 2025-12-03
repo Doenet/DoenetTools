@@ -71,8 +71,8 @@ jobs:
           sudo /etc/init.d/mysql start
           mysql -e "CREATE DATABASE IF NOT EXISTS db;" -uroot -proot
 
-        run: npm run prisma:migrate-dev --workspace server
-        run: npm run prisma:seed --workspace server
+      - run: npm run prisma:migrate-dev --workspace server
+      - run: npm run prisma:seed --workspace server
 
       - name: Test server
         run: npm test --workspace server
