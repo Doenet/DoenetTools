@@ -34,34 +34,34 @@ jobs:
       # Format checks
       # -----------------------------
       - name: Format check (client)
-        run: npm run --workspace client format:check
+        run: npm run format:check --workspace client
 
       - name: Format check (server)
-        run: npm run --workspace server format:check
+        run: npm run format:check --workspace server
 
       - name: Format check (shared)
-        run: npm run --workspace shared format:check
+        run: npm run format:check --workspace shared
 
       # -----------------------------
       # Lint checks
       # -----------------------------
       - name: Lint (client)
-        run: npm run --workspace client lint:check
+        run: npm run lint:check --workspace client
 
       - name: Lint (server)
-        run: npm run --workspace server lint:check
+        run: npm run lint:check --workspace server
 
       - name: Lint (shared)
-        run: npm run --workspace shared lint:check
+        run: npm run lint:check --workspace shared
 
       # -----------------------------
       # Build
       # -----------------------------
       - name: Build client
-        run: npm run --workspace client build
+        run: npm run build --workspace client
 
       - name: Build server
-        run: npm run --workspace server build
+        run: npm run build --workspace server
 
       # -----------------------------
       # Start MySQL + Test server
@@ -70,6 +70,9 @@ jobs:
         run: |
           sudo /etc/init.d/mysql start
           mysql -e "CREATE DATABASE IF NOT EXISTS db;" -uroot -proot
+
+        run: npm run prisma:migrate-dev --workspace server
+        run: npm run prisma:seed --workspace server
 
       - name: Test server
         run: npm test --workspace server
