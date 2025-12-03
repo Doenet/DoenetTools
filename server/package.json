@@ -13,6 +13,7 @@
     "format:check": "prettier . --check",
     "lint": "eslint --fix",
     "lint:check": "eslint",
+    "prisma:generate": "prisma generate",
     "start": "node dist/src/index.js",
     "test": "vitest"
   },
