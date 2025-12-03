@@ -2,20 +2,20 @@
   "name": "@doenet-tools/server",
   "version": "1.0.0",
   "description": "",
+  "keywords": [],
+  "license": "ISC",
+  "author": "",
   "main": "dist/src/index.js",
   "scripts": {
-    "test": "vitest",
-    "dev": "tsx watch src/index.ts",
     "build": "tsc && cp src/signin_email.html dist/src/",
-    "start": "node dist/src/index.js",
+    "dev": "tsx watch src/index.ts",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "lint": "eslint --fix",
-    "lint:check": "eslint"
+    "lint:check": "eslint",
+    "start": "node dist/src/index.js",
+    "test": "vitest"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },

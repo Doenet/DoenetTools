@@ -1,9 +1,9 @@
 {
   "name": "@doenet-tools/shared",
   "version": "1.0.0",
-  "type": "module",
   "private": true,
   "description": "Shared utilities for DoenetTools",
+  "type": "module",
   "scripts": {
     "format": "prettier . --write",
     "format:check": "prettier . --check",
