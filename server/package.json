@@ -5,12 +5,16 @@
   "main": "dist/src/index.js",
   "scripts": {
     "test": "vitest",
-    "dev": "npx tsx watch src/index.ts",
-    "build": "npx tsc && cp src/signin_email.html dist/src/",
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc && cp src/signin_email.html dist/src/",
     "start": "node dist/src/index.js",
-    "format": "npx prettier . --write",
-    "lint": "npx eslint --fix"
+
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "lint": "eslint --fix",
+    "lint:check": "eslint"
   },
+  
   "keywords": [],
   "author": "",
   "license": "ISC",

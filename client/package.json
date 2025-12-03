@@ -5,12 +5,16 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=production vite",
     "build": "tsc && vite build",
+
     "test": "cypress open",
     "test:all": "cypress run -b 'chrome' --config video=false --headless",
     "test:app": "cypress run -b 'electron' --config video=false,excludeSpecPattern=cypress/e2e/DoenetML/** --headless",
     "test:parallel": "cypress-parallel -s test:all -t 4 -d cypress/e2e/DoenetML",
+
     "format": "prettier . --write",
-    "lint": "eslint --fix"
+    "format:check": "prettier . --check",
+    "lint": "eslint --fix",
+    "lint:check": "eslint"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.2.4",

@@ -1,5 +1,6 @@
 {
   "name": "doenet-tools",
+  "type": "module",
   "private": true,
   "workspaces": [
     "client",
