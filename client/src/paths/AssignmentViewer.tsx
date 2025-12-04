@@ -439,6 +439,7 @@ export function AssignmentViewer() {
                 score: data.score,
                 code,
                 state: JSON.stringify(data.state),
+                variant: initialVariant + attemptNumber,
               },
             );
 
