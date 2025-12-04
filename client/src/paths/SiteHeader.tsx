@@ -7,7 +7,7 @@ import {
   GridItem,
   IconButton,
   HStack,
-  Link,
+  Link as ChakraLink,
   Text,
   Menu,
   MenuButton,
@@ -185,6 +185,10 @@ export function SiteHeader() {
     allDoenetmlVersions,
   };
 
+  const discussHref = `${import.meta.env.VITE_DISCOURSE_URL}${
+    user && user?.isAnonymous === false ? "/session/sso" : ""
+  }`;
+
   const helpMenuShouldFocusFirst = useBreakpointValue(
     { base: false, md: true },
     { ssr: false },
@@ -263,12 +267,13 @@ export function SiteHeader() {
                       )}
                     </>
                   )}
-                  {/* <NavLinkTab
-                    to={import.meta.env.VITE_DISCOURSE_URL}
-                    dataTest="Discuss"
+                  <ChakraLink
+                    href={discussHref}
+                    isExternal
+                    data-test="Discourse Link"
                   >
                     Discuss
-                  </NavLinkTab> */}
+                  </ChakraLink>
                 </HStack>
               </GridItem>
             </Show>
@@ -283,24 +288,24 @@ export function SiteHeader() {
                     Help
                   </MenuButton>
                   <MenuList>
-                    <Link href="mailto:info@doenet.org">
+                    <ChakraLink href="mailto:info@doenet.org">
                       <MenuItem>
                         <HStack>
                           <HiOutlineMail fontSize="12pt" />
                           <Text>Email us</Text>
                         </HStack>
                       </MenuItem>
-                    </Link>
-                    <Link href="https://discord.gg/PUduwtKJ5h">
+                    </ChakraLink>
+                    <ChakraLink href="https://discord.gg/PUduwtKJ5h">
                       <MenuItem>
                         <HStack>
                           <BsDiscord fontSize="12pt" />
                           <Text>Join our Discord</Text>
                         </HStack>
                       </MenuItem>
-                    </Link>
+                    </ChakraLink>
 
-                    <Link
+                    <ChakraLink
                       href="https://docs.doenet.org"
                       isExternal
                       data-test="Documentation Link"
@@ -311,7 +316,7 @@ export function SiteHeader() {
                           <Text>Authoring Docs</Text>
                         </HStack>
                       </MenuItem>
-                    </Link>
+                    </ChakraLink>
                   </MenuList>
                 </Menu>
 
@@ -341,7 +346,9 @@ export function SiteHeader() {
                               : user.email}
                           </Text>
                           {user.isAnonymous ? (
-                            <Link href={`/signIn`}>Sign in to save work</Link>
+                            <ChakraLink href={`/signIn`}>
+                              Sign in to save work
+                            </ChakraLink>
                           ) : null}
                           {!user.isAnonymous ? (
                             <Box
@@ -378,7 +385,7 @@ export function SiteHeader() {
                           ) : null}
                         </VStack>
                         <MenuItem
-                          as={Link}
+                          as={ChakraLink}
                           // When name change complete, redirect back to current page
                           href={`/changeName?redirect=${currentPath}`}
                         >

@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import passportLib from "passport";
 import { getUserInfoFromEmail } from "../query/user";
+import axios from "axios";
 
 // Type assertion to work around passport type declaration issues
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -51,11 +52,45 @@ loginRouter.post(
   },
 );
 
-loginRouter.get("/logout", function (req, res, next) {
-  req.logout(function (err) {
-    if (err) {
-      return next(err);
+loginRouter.get(
+  "/logout",
+  async function (req, _res, next) {
+    if (req.user) {
+      try {
+        const { data: discourseUser } = await axios.get(
+          `${process.env.DISCOURSE_URL}/u/by-external/${req.user.userId}.json`,
+          {
+            headers: {
+              "Api-Key": process.env.DISCOURSE_API_KEY || "",
+              "Api-Username": process.env.DISCOURSE_API_USERNAME || "",
+            },
+          },
+        );
+        const discourseUserId = discourseUser.user.id;
+
+        await axios.post(
+          // https://{defaultHost}/admin/users/{id}/log_out.json
+          `${process.env.DISCOURSE_URL}/admin/users/${discourseUserId}/log_out.json`,
+          {},
+          {
+            headers: {
+              "Api-Key": process.env.DISCOURSE_API_KEY || "",
+              "Api-Username": process.env.DISCOURSE_API_USERNAME || "",
+            },
+          },
+        );
+      } catch (error) {
+        console.error(`Error logging out discourse user: ${error}`);
+      }
     }
-    res.redirect("/");
-  });
-});
+    return next();
+  },
+  function (req, res, next) {
+    req.logout(function (err) {
+      if (err) {
+        return next(err);
+      }
+      res.redirect("/");
+    });
+  },
+);
