@@ -153,7 +153,7 @@ export function MoveCopyContent({
     } else if (fetcher.data && fetcher.data.success === false) {
       setErrMsg(fetcher.data.message);
     }
-  }, [fetcher.data]);
+  }, [fetcher.data, action]);
 
   const optionList = (
     <SimpleGrid columns={1} spacing={0}>

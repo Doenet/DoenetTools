@@ -58,7 +58,7 @@ import {
 const currentDoenetmlVersion = {
   id: 2,
   displayedVersion: "0.7",
-  fullVersion: "0.7.0-beta10",
+  fullVersion: "0.7.0-beta-17",
   default: true,
   deprecated: false,
   removed: false,
@@ -1117,6 +1117,7 @@ test.skip("activity editor data and my folder contents before and after assigned
     score: 0.5,
     state: "document state 1",
     code: classCode,
+    variant: 1,
   });
 
   const header5 = await getEditor({
