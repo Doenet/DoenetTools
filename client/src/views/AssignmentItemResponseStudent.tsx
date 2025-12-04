@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { DoenetViewer } from "@doenet/doenetml-iframe";
 
 import {

@@ -1,5 +1,5 @@
 import { LibraryStatus } from "../types";
-import React from "react";
+
 import { Text } from "@chakra-ui/react";
 
 export function getLibraryStatusStylized(status: LibraryStatus) {

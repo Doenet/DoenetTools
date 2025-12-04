@@ -1,4 +1,3 @@
-import React from "react";
 import { useFetcher, useLoaderData } from "react-router";
 import axios from "axios";
 import { Content } from "../../types";

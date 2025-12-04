@@ -1,5 +1,5 @@
 import { Box, Flex, Tooltip, Icon } from "@chakra-ui/react";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLoaderData } from "react-router";
 
 import { CardContent } from "../widgets/Card";

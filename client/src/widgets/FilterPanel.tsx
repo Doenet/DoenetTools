@@ -20,7 +20,7 @@ import {
   AccordionPanel,
   AccordionIcon,
 } from "@chakra-ui/react";
-import React, { ReactElement } from "react";
+import { ReactElement } from "react";
 import { createNameNoTag } from "../utils/names";
 import { CloseIcon } from "@chakra-ui/icons";
 import { activityCategoryIcons } from "../utils/activity";

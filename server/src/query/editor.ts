@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../model";
 import { DoenetmlVersion, UserInfoWithEmail, ContentRevision } from "../types";
-import { getCidV1FromString } from "../utils/ipfs";
+import { getCidV1FromString } from "@doenet-tools/shared/utils/ipfs";
 import {
   compileActivityFromContent,
   returnClassificationListSelect,
@@ -15,7 +15,7 @@ import {
   filterViewableActivity,
   getIsEditor,
 } from "../utils/permissions";
-import { ActivitySource } from "../utils/viewerTypes";
+import { ActivitySource } from "@doenet-tools/shared/types/activityViewer";
 import { getContent } from "./activity_edit_view";
 import { recordRecentContent } from "./recent";
 import { getAllDoenetmlVersions, getContentSource } from "./activity";

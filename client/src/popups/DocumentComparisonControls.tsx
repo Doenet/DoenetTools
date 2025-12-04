@@ -14,13 +14,7 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import React, {
-  ReactElement,
-  RefObject,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { ReactElement, RefObject, useEffect, useRef, useState } from "react";
 import { FetcherWithComponents } from "react-router";
 import { DoenetmlVersion, UserInfo } from "../types";
 import axios from "axios";

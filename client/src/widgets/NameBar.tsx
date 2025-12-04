@@ -1,4 +1,4 @@
-import React, { useState, useRef, ReactElement } from "react";
+import { useState, useRef, ReactElement } from "react";
 import {
   Editable,
   EditablePreview,

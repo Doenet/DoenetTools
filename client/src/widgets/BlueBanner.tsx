@@ -1,5 +1,5 @@
 import { Grid, GridItem } from "@chakra-ui/react";
-import React from "react";
+import { ReactNode } from "react";
 
 /**
  * This widget wraps its children with a blue banner on the left and right.
@@ -9,7 +9,7 @@ export function BlueBanner({
   children,
 }: {
   headerHeight?: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <Grid

@@ -12,7 +12,13 @@ import {
   ModalOverlay,
   Text,
 } from "@chakra-ui/react";
-import React, { RefObject, useEffect, useState } from "react";
+import {
+  Dispatch,
+  RefObject,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import { useFetcher } from "react-router";
 import { ContentRevision } from "../types";
 import { DateTime } from "luxon";
@@ -31,7 +37,7 @@ export function SetDocumentToSavePoint({
   revision: ContentRevision;
   contentId: string;
   finalFocusRef?: RefObject<HTMLElement | null>;
-  setRevNum: React.Dispatch<React.SetStateAction<number>>;
+  setRevNum: Dispatch<SetStateAction<number>>;
 }) {
   const [updated, setUpdated] = useState(false);
   const [encounteredError, setEncounteredError] = useState(false);

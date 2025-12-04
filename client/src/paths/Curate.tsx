@@ -13,7 +13,7 @@ import {
   TabPanels,
   TabPanel,
 } from "@chakra-ui/react";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useLoaderData, Link } from "react-router";
 
 import { CardContent } from "../widgets/Card";
