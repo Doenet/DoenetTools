@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useMemo, useState } from "react";
+import { ReactElement, useEffect, useMemo, useState } from "react";
 import { DoenetEditor } from "@doenet/doenetml-iframe";
 import { PanelPair } from "../../widgets/PanelPair";
 import { ContentRevision, DoenetmlVersion } from "../../types";
@@ -30,7 +30,7 @@ import {
 import { CreateDocumentSavePoint } from "../../popups/CreateDocumentSavePoint";
 import { SavePointInfo } from "../../popups/SavePointInfo";
 import { DateTime } from "luxon";
-import { getCidV1FromString } from "../../utils/ipfs";
+import { getCidV1FromString } from "@doenet-tools/shared/utils/ipfs";
 import { SetDocumentToSavePoint } from "../../popups/SetDocumentToSavePoint";
 import { EditorContext } from "./EditorHeader";
 import axios from "axios";

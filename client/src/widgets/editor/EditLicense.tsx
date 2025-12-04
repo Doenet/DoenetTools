@@ -1,4 +1,3 @@
-import React from "react";
 import { License, LicenseCode } from "../../types";
 import { InfoIcon } from "@chakra-ui/icons";
 import { Box, Wrap, Select, Text } from "@chakra-ui/react";

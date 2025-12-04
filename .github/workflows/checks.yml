@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: main
+  pull_request:
+    branches: ["*"]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    env:
+      PORT: 3306
+      DATABASE_URL: mysql://root:root@localhost:3306/db
+
+    steps:
+      # Checkout repo
+      - uses: actions/checkout@v4
+
+      # Setup Node with caching
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      # Install dependencies once
+      - run: npm ci
+
+      # Generate TS types for Prisma
+      - run: npm run prisma:generate --workspace server
+
+      # -----------------------------
+      # Format check
+      # -----------------------------
+      - name: Format check
+        run: npm run format:check
+
+      # -----------------------------
+      # Lint check
+      # -----------------------------
+      - name: Lint (all)
+        run: npm run lint:check
+
+      # -----------------------------
+      # Build
+      # -----------------------------
+      - name: Build client
+        run: npm run build --workspace client
+
+      - name: Build server
+        run: npm run build --workspace server
+
+      # -----------------------------
+      # Start MySQL + Test server
+      # -----------------------------
+      - name: Start MySQL
+        run: |
+          sudo /etc/init.d/mysql start
+          mysql -e "CREATE DATABASE IF NOT EXISTS db;" -uroot -proot
+
+      - run: npm run prisma:migrate-dev --workspace server
+      - run: npm run prisma:seed --workspace server
+
+      - name: Test server
+        run: npm test --workspace server

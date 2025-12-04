@@ -1,10 +1,4 @@
-import React, {
-  ReactElement,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { ReactElement, useEffect, useMemo, useRef, useState } from "react";
 import {
   ActionFunctionArgs,
   replace,
@@ -26,7 +20,7 @@ import {
   ActivitySource,
   isActivitySource,
   isReportStateMessage,
-} from "../viewerTypes";
+} from "@doenet-tools/shared/types/activityViewer";
 import { compileActivityFromContent } from "../utils/activity";
 // @ts-expect-error assignment-viewer doesn't publish types, see https://github.com/Doenet/assignment-viewer/issues/20
 import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";

@@ -1,4 +1,3 @@
-import React from "react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import {
   Menu,
@@ -16,6 +15,7 @@ import {
 import { Link as ReactRouterLink } from "react-router";
 import { createNameNoTag, createNameCheckCurateTag } from "../utils/names";
 import { Content, ActivityRemixItem } from "../types";
+import { JSX } from "react";
 
 export default function ContributorsMenu({
   contributorHistory,
@@ -48,7 +48,7 @@ export default function ContributorsMenu({
     </>
   );
 
-  let recentByLine: React.JSX.Element | null = null;
+  let recentByLine: JSX.Element | null = null;
   if (contributorHistory.length > 0) {
     recentByLine = (
       <>

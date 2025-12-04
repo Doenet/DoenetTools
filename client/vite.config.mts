@@ -31,12 +31,7 @@ export default defineConfig({
       //"/api": "http://apache",
     },
   },
-  resolve: {
-    alias: [
-      { find: "csv-parse", replacement: "csv-parse/browser/esm" },
-      { find: "@Tool", replacement: "/src/Tools/_framework/Tool" },
-    ],
-  },
+  resolve: {},
   worker: {
     format: "iife",
   },

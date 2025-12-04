@@ -13,7 +13,7 @@ import {
   Text,
   Textarea,
 } from "@chakra-ui/react";
-import React, { RefObject, useEffect, useState } from "react";
+import { RefObject, useEffect, useState } from "react";
 import { ContentRevision } from "../types";
 import { DateTime } from "luxon";
 import { FetcherWithComponents } from "react-router";

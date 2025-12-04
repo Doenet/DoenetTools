@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { HiOutlineMail } from "react-icons/hi";
 import { BsGithub, BsDiscord } from "react-icons/bs";
 import {
@@ -65,8 +65,6 @@ export function Home() {
       8000,
     ],
   ];
-
-  const grayBox = <Box width="200px" bgColor="gray" height="170px" />;
 
   const heroSection = (
     <Box width="100%">
@@ -147,31 +145,31 @@ export function Home() {
     </Box>
   );
 
-  const exploreSection = (
-    <WithSideBanners bgColor="white" padding="50px">
-      <Heading size="lg">Explore community content</Heading>
+  // const exploreSection = (
+  //   <WithSideBanners bgColor="white" padding="50px">
+  //     <Heading size="lg">Explore community content</Heading>
 
-      <Heading size="md" pl="40px" mt="20px">
-        Puzzles and widgets
-      </Heading>
-      <HStack pl="40px" pr="40px">
-        {grayBox} {grayBox} {grayBox} {grayBox} {grayBox}
-      </HStack>
-      <Heading size="md" pl="40px" mt="20px">
-        Explorations
-      </Heading>
-      <HStack pl="40px" pr="40px">
-        {grayBox} {grayBox} {grayBox} {grayBox} {grayBox}
-      </HStack>
+  //     <Heading size="md" pl="40px" mt="20px">
+  //       Puzzles and widgets
+  //     </Heading>
+  //     <HStack pl="40px" pr="40px">
+  //       {grayBox} {grayBox} {grayBox} {grayBox} {grayBox}
+  //     </HStack>
+  //     <Heading size="md" pl="40px" mt="20px">
+  //       Explorations
+  //     </Heading>
+  //     <HStack pl="40px" pr="40px">
+  //       {grayBox} {grayBox} {grayBox} {grayBox} {grayBox}
+  //     </HStack>
 
-      <Heading size="md" pl="40px" mt="20px">
-        Problems
-      </Heading>
-      <HStack pl="40px" pr="40px">
-        {grayBox} {grayBox} {grayBox} {grayBox} {grayBox}
-      </HStack>
-    </WithSideBanners>
-  );
+  //     <Heading size="md" pl="40px" mt="20px">
+  //       Problems
+  //     </Heading>
+  //     <HStack pl="40px" pr="40px">
+  //       {grayBox} {grayBox} {grayBox} {grayBox} {grayBox}
+  //     </HStack>
+  //   </WithSideBanners>
+  // );
 
   const featuresSection = (
     <WithSideBanners bgColor="#d3dff1ff" padding="70px">
@@ -356,16 +354,16 @@ export function Home() {
 }
 
 function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
-  const [index, setIndex] = React.useState(0);
-  // const [isHovered, setIsHovered] = React.useState(false);
+  const [index, setIndex] = useState(0);
+  // const [isHovered, setIsHovered] = useState(false);
 
-  const [overlayShown, setOverlayShown] = React.useState(false);
+  const [overlayShown, setOverlayShown] = useState(false);
 
-  const timeouts = React.useRef<number[]>([]);
-  const isTransitioning = React.useRef(false);
-  const indexRef = React.useRef(index);
-  const overlayTransitionMsRef = React.useRef<number | null>(null);
-  React.useEffect(() => {
+  const timeouts = useRef<number[]>([]);
+  const isTransitioning = useRef(false);
+  const indexRef = useRef(index);
+  const overlayTransitionMsRef = useRef<number | null>(null);
+  useEffect(() => {
     indexRef.current = index;
   }, [index]);
 
@@ -438,7 +436,7 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
   };
 
   // cleanup pending timeouts on unmount
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       timeouts.current.forEach((id) => window.clearTimeout(id));
       timeouts.current = [];
@@ -707,7 +705,7 @@ function WithSideBanners({
   leftGutterColumns,
   rightGutterColumns,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   bgColor?: string;
   padding?: string;
   /**

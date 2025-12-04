@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { Heading, Button, VStack, Text, Flex, Spacer } from "@chakra-ui/react";
 import { DateTime } from "luxon";
 import { useFetcher } from "react-router";
