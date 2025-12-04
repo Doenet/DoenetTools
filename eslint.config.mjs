@@ -29,7 +29,7 @@ export default tseslint.config(
     languageOptions: {
       parserOptions: {
         tsconfigRootDir: import.meta.dirname,
-        project: "./tsconfig.base.json",
+        project: "./tsconfig.json",
       },
     },
     plugins: {

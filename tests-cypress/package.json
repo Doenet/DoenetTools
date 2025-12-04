@@ -1,9 +1,12 @@
 {
-  "name": "@doenet-tools/cypress",
+  "name": "@doenet-tools/tests-cypress",
+  "version": "1.0.0",
   "type": "module",
   "private": true,
   "description": "Cypress end-to-end tests for DoenetTools",
   "scripts": {
+    "lint": "eslint --fix",
+    "lint:check": "eslint",
     "test": "cypress open",
     "test:all": "cypress run -b 'chrome' --config video=false --headless",
     "test:app": "cypress run -b 'electron' --config video=false,excludeSpecPattern=cypress/e2e/DoenetML/** --headless",

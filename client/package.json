@@ -6,8 +6,6 @@
   "scripts": {
     "build": "tsc && vite build",
     "dev": "cross-env NODE_ENV=production vite",
-    "format": "prettier . --write",
-    "format:check": "prettier . --check",
     "lint": "eslint --fix",
     "lint:check": "eslint"
   },

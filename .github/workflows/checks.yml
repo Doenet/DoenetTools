@@ -31,28 +31,16 @@ jobs:
       - run: npm run prisma:generate --workspace server
 
       # -----------------------------
-      # Format checks
+      # Format check
       # -----------------------------
-      - name: Format check (client)
-        run: npm run format:check --workspace client
-
-      - name: Format check (server)
-        run: npm run format:check --workspace server
-
-      - name: Format check (shared)
-        run: npm run format:check --workspace shared
+      - name: Format check
+        run: npm run format:check
 
       # -----------------------------
-      # Lint checks
+      # Lint check
       # -----------------------------
-      - name: Lint (client)
-        run: npm run lint:check --workspace client
-
-      - name: Lint (server)
-        run: npm run lint:check --workspace server
-
-      - name: Lint (shared)
-        run: npm run lint:check --workspace shared
+      - name: Lint (all)
+        run: npm run lint:check
 
       # -----------------------------
       # Build
