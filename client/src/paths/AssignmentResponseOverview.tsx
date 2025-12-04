@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect } from "react";
+import { ReactElement, useEffect } from "react";
 import { ActionFunctionArgs, useFetcher, useLoaderData } from "react-router";
 // @ts-expect-error math-expression doesn't have types
 import me from "math-expressions";
@@ -54,7 +54,7 @@ import {
   getIconInfo,
 } from "../utils/activity";
 import { BiDownArrowAlt, BiUpArrowAlt } from "react-icons/bi";
-import { ActivitySource } from "../viewerTypes";
+import { ActivitySource } from "@doenet-tools/shared/types/activityViewer";
 import { EditAssignmentSettings } from "../widgets/editor/EditAssignmentSettings";
 import { DateTime } from "luxon";
 import { NameBar } from "../widgets/NameBar";
@@ -191,6 +191,9 @@ export async function loader({ params, request }: ActionFunctionArgs) {
       activityJson,
       itemNames,
     };
+  } else {
+    // Handle folder type
+    throw new Error("Cannot view this page on a folder");
   }
 }
 

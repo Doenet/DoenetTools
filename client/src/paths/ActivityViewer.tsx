@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useRef, useState } from "react";
+import { ReactElement, useEffect, useRef, useState } from "react";
 import {
   useLoaderData,
   useNavigate,
@@ -58,7 +58,10 @@ import {
   getIconInfo,
   menuIcons,
 } from "../utils/activity";
-import { ActivitySource, isActivitySource } from "../viewerTypes";
+import {
+  ActivitySource,
+  isActivitySource,
+} from "@doenet-tools/shared/types/activityViewer";
 import { processRemixes } from "../utils/processRemixes";
 import ContributorsMenu from "../dropdowns/ContributorsMenu";
 import { ContentInfoDrawer } from "../drawers/ContentInfoDrawer";
@@ -187,6 +190,7 @@ export function ActivityViewer() {
         }
       }
     }
+    return undefined;
   }
 
   let contentData: Content | undefined;

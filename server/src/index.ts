@@ -8,7 +8,6 @@ import { prisma } from "./model";
 import session from "express-session";
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
 
-import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as MagicLinkStrategy } from "passport-magic-link";
 import { Strategy as AnonymIdStrategy } from "../passport-anonymous/lib/strategy";
@@ -43,6 +42,11 @@ import { curateRouter } from "./routes/curateRoutes";
 import { compareRouter } from "./routes/compareRoutes";
 import { editorRouter } from "./routes/editorRoutes";
 import { discourseRouter } from "./routes/discourseLoginRoutes";
+import passportLib from "passport";
+
+// Type assertion to work around passport type declaration issues
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const passport = passportLib as any;
 
 const client = new SESClient({ region: "us-east-2" });
 
@@ -156,7 +160,7 @@ passport.use(
 
       sendEmail();
     },
-    async (user: { email: string; fromAnonymous: string }) => {
+    (user: { email: string; fromAnonymous: string }) => {
       return {
         provider: "magiclink",
         email: user.email as string,
@@ -169,7 +173,7 @@ passport.use(
 passport.use(new AnonymIdStrategy());
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-passport.serializeUser<any, any>(async (req, user: any, done) => {
+passport.serializeUser(async (req: any, user: any, done: any) => {
   if (user.provider === "magiclink") {
     const email: string = user.email;
     const fromAnonymous: string = user.fromAnonymous;
@@ -271,7 +275,8 @@ passport.serializeUser<any, any>(async (req, user: any, done) => {
   }
 });
 
-passport.deserializeUser(async (userId: string, done) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+passport.deserializeUser(async (userId: string, done: any) => {
   const { user } = await getMyUserInfo({ loggedInUserId: toUUID(userId) });
   done(null, user);
 });

@@ -1,10 +1,4 @@
-import React, {
-  ReactElement,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { ReactElement, useEffect, useMemo, useRef, useState } from "react";
 import {
   ActionFunctionArgs,
   replace,
@@ -26,7 +20,7 @@ import {
   ActivitySource,
   isActivitySource,
   isReportStateMessage,
-} from "../viewerTypes";
+} from "@doenet-tools/shared/types/activityViewer";
 import { compileActivityFromContent } from "../utils/activity";
 // @ts-expect-error assignment-viewer doesn't publish types, see https://github.com/Doenet/assignment-viewer/issues/20
 import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";
@@ -333,10 +327,10 @@ export function AssignmentViewer() {
         const data = event.data;
 
         if (isReportStateMessage(data)) {
-          if (data.activityId !== assignment.contentId) {
+          if (data.activity_id !== assignment.contentId) {
             return;
           }
-          const itemScores = data.itemScores;
+          const itemScores = data.item_scores;
 
           currentItemScores.current = itemScores;
 
@@ -345,16 +339,18 @@ export function AssignmentViewer() {
           const { doenetStates, itemAttemptNumbers, ...otherState } =
             data.state;
 
-          if (data.newAttempt === true) {
+          const shuffledItemOrder = itemScores.map((s) => ({
+            shuffledItemNumber: s.shuffledOrder,
+            docId: s.docId.split("|")[0], // remove any suffix from selecting multiple by variant
+            variant: s.variant,
+          }));
+
+          if (data.new_attempt === true) {
             await createNewAttempt({
               variant: otherState.activityState.initialVariant,
-              newAttemptForItem: data.newAttemptForItem,
+              newAttemptForItem: data.new_attempt_for_item,
               state: JSON.stringify(otherState),
-              shuffledItemOrder: itemScores.map((s) => ({
-                shuffledItemNumber: s.shuffledOrder,
-                docId: s.docId.split("|")[0], // remove any suffix from selecting multiple by variant
-                variant: s.variant,
-              })),
+              shuffledItemOrder,
             });
           } else {
             let item: {
@@ -369,21 +365,16 @@ export function AssignmentViewer() {
               state: any;
             } | null = null;
             if (
-              data.itemUpdated !== undefined &&
-              data.newDoenetStateIdx !== undefined
+              data.item_updated !== undefined &&
+              data.new_doenet_state_idx !== undefined
             ) {
-              const shuffledItemOrder = itemScores.map((s) => ({
-                shuffledItemNumber: s.shuffledOrder,
-                docId: s.docId.split("|")[0], // remove any suffix from selecting multiple by variant,
-                variant: s.variant,
-              }));
-              const shuffledItemNumber = data.itemUpdated;
+              const shuffledItemNumber = data.item_updated;
               const itemAttemptNumber =
-                itemAttemptNumbers[data.itemUpdated - 1];
+                itemAttemptNumbers[data.item_updated - 1];
               const score = itemScores.find(
                 (s) => s.shuffledOrder === shuffledItemNumber,
               )?.score;
-              const state = doenetStates[data.newDoenetStateIdx];
+              const state = doenetStates[data.new_doenet_state_idx];
 
               if (score !== undefined) {
                 item = {
@@ -406,6 +397,8 @@ export function AssignmentViewer() {
                   code,
                   state: JSON.stringify(otherState),
                   item: item ?? undefined,
+                  shuffledItemOrder,
+                  variant: otherState.activityState.initialVariant,
                 },
               );
 
@@ -427,7 +420,7 @@ export function AssignmentViewer() {
           }
         } else {
           // should be single doc
-          if (data.docId !== assignment.contentId) {
+          if (data.doc_id !== assignment.contentId) {
             return;
           }
 
@@ -442,10 +435,11 @@ export function AssignmentViewer() {
               "/api/score/saveScoreAndState",
               {
                 contentId: assignment.contentId,
-                attemptNumber: data.data.state.attemptNumber,
-                score: data.data.score,
+                attemptNumber: data.state.attemptNumber,
+                score: data.score,
                 code,
-                state: JSON.stringify(data.data.state),
+                state: JSON.stringify(data.state),
+                variant: initialVariant + attemptNumber,
               },
             );
 
@@ -453,7 +447,7 @@ export function AssignmentViewer() {
           }
         }
       } else if (event.data.subject == "SPLICE.sendEvent") {
-        const data = event.data;
+        const data = event.data.data;
         if (data.verb === "submitted") {
           recordSubmittedEvent({
             assignment: assignment,
@@ -465,7 +459,7 @@ export function AssignmentViewer() {
           });
         }
       } else if (event.data.subject == "SPLICE.reportScoreByItem") {
-        const itemScores = createItemScores(event.data.itemScores);
+        const itemScores = createItemScores(event.data.item_scores);
 
         currentItemScores.current = itemScores;
 
@@ -512,27 +506,20 @@ export function AssignmentViewer() {
 
             window.postMessage({
               subject: "SPLICE.getState.response",
-              messageId: event.data.messageId,
-              success: true,
-              loadedState: true,
+              message_id: event.data.message_id,
               state,
             });
             setAttemptNumber(data.attemptNumber);
-          } else {
-            window.postMessage({
-              subject: "SPLICE.getState.response",
-              messageId: event.data.messageId,
-              success: true,
-              loadedState: false,
-            });
           }
         } catch (e) {
           console.error("error loading state", e);
           window.postMessage({
             subject: "SPLICE.getState.response",
-            messageId: event.data.messageId,
-            success: false,
-            message: "Server error loading page state.",
+            message_id: event.data.message_id,
+            error: {
+              code: 1,
+              message: "Server error loading page state.",
+            },
           });
         }
       }

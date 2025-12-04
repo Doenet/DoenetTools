@@ -1,4 +1,4 @@
-import React, { ReactElement, RefObject, useEffect, useState } from "react";
+import { ReactElement, RefObject, useEffect, useRef, useState } from "react";
 import {
   Text,
   Modal,
@@ -136,7 +136,7 @@ export function MoveCopyContent({
     }
   }
 
-  const initialRef = React.useRef<HTMLButtonElement>(null);
+  const initialRef = useRef<HTMLButtonElement>(null);
 
   const navigate = useNavigate();
   const fetcher = useFetcher();
@@ -153,7 +153,7 @@ export function MoveCopyContent({
     } else if (fetcher.data && fetcher.data.success === false) {
       setErrMsg(fetcher.data.message);
     }
-  }, [fetcher.data]);
+  }, [fetcher.data, action]);
 
   const optionList = (
     <SimpleGrid columns={1} spacing={0}>

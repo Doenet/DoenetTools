@@ -8,7 +8,7 @@ import {
   ModalOverlay,
   Text,
 } from "@chakra-ui/react";
-import React, { RefObject, useRef } from "react";
+import { RefObject, useRef } from "react";
 import { FetcherWithComponents } from "react-router";
 import { AssignmentStatus, UserInfo } from "../types";
 

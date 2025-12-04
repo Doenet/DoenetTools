@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import { useRef } from "react";
 import { useLoaderData, useOutletContext } from "react-router";
 import { DoenetmlVersion } from "../../types";
 import { DoenetViewer } from "@doenet/doenetml-iframe";
