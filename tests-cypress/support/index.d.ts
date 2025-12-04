@@ -1,4 +1,4 @@
-import { ContentType, UserInfo } from "../../src/types";
+import { ContentType, UserInfo } from "@doenet-tools/client/src/types";
 
 declare global {
   namespace Cypress {

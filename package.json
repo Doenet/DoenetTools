@@ -5,7 +5,8 @@
   "workspaces": [
     "client",
     "server",
-    "shared"
+    "shared",
+    "tests-cypress"
   ],
   "devDependencies": {
     "@eslint/js": "^9.32.0",

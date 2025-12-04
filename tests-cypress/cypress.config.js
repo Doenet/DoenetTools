@@ -38,6 +38,8 @@ export default defineConfig({
       //   },
       // }); //For running sql query
     },
+    supportFile: "support/e2e.ts",
+    specPattern: "e2e/**/*.cy.ts",
 
     baseUrl: "http://localhost:8000",
   },

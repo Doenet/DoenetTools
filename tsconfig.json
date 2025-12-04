@@ -19,5 +19,12 @@
     "noImplicitReturns": true,
 
     "baseUrl": "."
-  }
+  },
+  "files": [],
+  "references": [
+    { "path": "client" },
+    { "path": "server" },
+    { "path": "shared" },
+    { "path": "tests-cypress" }
+  ]
 }

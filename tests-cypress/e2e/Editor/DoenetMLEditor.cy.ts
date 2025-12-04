@@ -1,4 +1,4 @@
-import { cesc2 } from "../../../src/utils/url";
+import { cesc2 } from "@doenet-tools/client/src/utils/url";
 
 describe("Editor Tests", function () {
   it("Update Button", () => {

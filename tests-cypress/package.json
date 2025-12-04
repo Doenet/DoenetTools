@@ -1,0 +1,25 @@
+{
+  "name": "@doenet-tools/cypress",
+  "type": "module",
+  "private": true,
+  "description": "Cypress end-to-end tests for DoenetTools",
+  "scripts": {
+    "test": "cypress open",
+    "test:all": "cypress run -b 'chrome' --config video=false --headless",
+    "test:app": "cypress run -b 'electron' --config video=false,excludeSpecPattern=cypress/e2e/DoenetML/** --headless",
+    "test:parallel": "cypress-parallel -s test:all -t 4 -d cypress/e2e/DoenetML"
+  },
+  "dependencies": {
+    "@doenet-tools/client": "*",
+    "@doenet-tools/server": "*"
+  },
+  "devDependencies": {
+    "cypress": "^14.5.3",
+    "cypress-file-upload": "^5.0.8",
+    "cypress-iframe": "^1.0.1",
+    "cypress-parallel": "^0.15.0",
+    "cypress-plugin-tab": "^1.0.5",
+    "cypress-wait-until": "^3.0.2",
+    "eslint-plugin-cypress": "^5.1.0"
+  }
+}
