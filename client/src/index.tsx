@@ -71,7 +71,11 @@ import {
 } from "./paths/DoenetMLComparison";
 import { CodeViewer, loader as codeViewerLoader } from "./paths/CodeViewer";
 import { mathjaxConfig } from "@doenet/doenetml-iframe";
-import { SignIn, action as signInAction } from "./paths/SignIn";
+import {
+  SignIn,
+  loader as signInLoader,
+  action as signInAction,
+} from "./paths/SignIn";
 import {
   ConfirmSignIn,
   loader as confirmSignInLoader,
@@ -422,6 +426,7 @@ const router = createBrowserRouter([
       },
       {
         path: "signIn",
+        loader: signInLoader,
         action: signInAction,
         errorElement: <ErrorPage />,
         element: <SignIn />,

@@ -12,7 +12,7 @@ import {
   Input,
   Show,
 } from "@chakra-ui/react";
-import { ActionFunctionArgs, Form } from "react-router";
+import { ActionFunctionArgs, Form, useLoaderData } from "react-router";
 import { useNavigate } from "react-router";
 import "../google-signin.css";
 
@@ -22,15 +22,26 @@ export async function action({ request }: ActionFunctionArgs) {
 
   axios.post("/api/auth/magiclink", {
     email: formObj.email,
-    // stay: formObj.stay !== undefined,
+    returnTo: formObj.returnTo,
   });
 
   return null;
 }
 
+export async function loader({ request }: { request: Request }) {
+  const url = new URL(request.url);
+  const returnTo = url.searchParams.get("returnTo");
+
+  return { returnTo };
+}
+
 export function SignIn() {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [email, setEmail] = useState("");
+
+  const { returnTo } = useLoaderData<{ returnTo: string | null }>();
+
+  console.log("return to is ", returnTo);
 
   const navigate = useNavigate();
 
@@ -87,6 +98,11 @@ export function SignIn() {
                   setFormSubmitted(true);
                 }}
               >
+                <input
+                  type="hidden"
+                  name="returnTo"
+                  value={returnTo ?? undefined}
+                />
                 <FormControl>
                   <FormLabel>Email</FormLabel>
                   <Input

@@ -102,8 +102,9 @@ passport.use(
       allowReuse: true,
       userFields: ["email", "fromAnonymous"],
       tokenField: "token",
+      passReqToCallbacks: true,
     },
-    async (user, token) => {
+    async (user, token, req) => {
       const confirmURL = `${process.env.CONFIRM_SIGNIN_URL}?token=${token}`;
 
       if (
