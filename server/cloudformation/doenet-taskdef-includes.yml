@@ -17,9 +17,8 @@ Environment:
     Value: "hi"
   - Name: MAGIC_LINK_SECRET
     Value: "hi"
-Secrets:
   - Name: DATABASE_HOST
-    ValueFrom:
+    Value:
       Fn::Sub: "mysql.${EnvironmentName}.aws"
   - Name: DATABASE_USER
     # ValueFrom:
@@ -29,3 +28,5 @@ Secrets:
     # ValueFrom:
     #   Fn::Sub: "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${EnvironmentName}/DbPassword"
     Value: "doenet_password"
+  - Name: DATABASE_URL
+    Value: "mysql://root:doenet_password@mysql.${EnvironmentName}.aws:3306/doenet"
