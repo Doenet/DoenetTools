@@ -1,5 +1,3 @@
-import React from "react";
-
 import { Text, Tooltip } from "@chakra-ui/react";
 import { intWithCommas } from "./formatting";
 

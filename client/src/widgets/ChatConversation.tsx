@@ -11,7 +11,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { DateTime } from "luxon";
-import React, { useState } from "react";
+import { useState } from "react";
 
 type ChatMessage = {
   user: string;

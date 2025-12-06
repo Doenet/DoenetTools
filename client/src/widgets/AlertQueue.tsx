@@ -5,7 +5,6 @@ import {
   AlertTitle,
   VStack,
 } from "@chakra-ui/react";
-import React from "react";
 
 export type Alert = {
   id: string;

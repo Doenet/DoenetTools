@@ -1,6 +1,10 @@
 import express, { Request, Response } from "express";
-import passport from "passport";
+import passportLib from "passport";
 import { getUserInfoFromEmail } from "../query/user";
+
+// Type assertion to work around passport type declaration issues
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const passport = passportLib as any;
 
 export const loginRouter = express.Router();
 

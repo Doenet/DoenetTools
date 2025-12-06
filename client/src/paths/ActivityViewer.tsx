@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useRef, useState } from "react";
+import { ReactElement, useEffect, useRef, useState } from "react";
 import {
   useLoaderData,
   useNavigate,
@@ -58,7 +58,10 @@ import {
   getIconInfo,
   menuIcons,
 } from "../utils/activity";
-import { ActivitySource, isActivitySource } from "../viewerTypes";
+import {
+  ActivitySource,
+  isActivitySource,
+} from "@doenet-tools/shared/types/activityViewer";
 import { processRemixes } from "../utils/processRemixes";
 import ContributorsMenu from "../dropdowns/ContributorsMenu";
 import { ContentInfoDrawer } from "../drawers/ContentInfoDrawer";
@@ -187,6 +190,7 @@ export function ActivityViewer() {
         }
       }
     }
+    return undefined;
   }
 
   let contentData: Content | undefined;
@@ -271,12 +275,13 @@ export function ActivityViewer() {
     }
   }
 
+  const headerHeight = "140px";
+
   if (data.type === "singleDoc") {
     if (mode === "Edit") {
       const initialWarnings = getDoenetMLDeprecationWarnings(
         data.doenetmlVersion,
       );
-      const headerHeight = "140px";
       mainContent = (
         <DoenetEditor
           height={`calc(100vh - ${headerHeight})`}
@@ -292,7 +297,7 @@ export function ActivityViewer() {
     } else {
       mainContent = (
         <Box ref={doenetViewerContainer}>
-          <BlueBanner>
+          <BlueBanner headerHeight={headerHeight}>
             <DoenetViewer
               doenetML={data.doenetML}
               doenetmlVersion={data.doenetmlVersion.fullVersion}
@@ -323,12 +328,11 @@ export function ActivityViewer() {
           activity={activityData}
           asViewer={true}
           fetcher={fetcher}
-          headerHeight="140px"
         />
       );
     } else {
       mainContent = (
-        <BlueBanner>
+        <BlueBanner headerHeight={headerHeight}>
           <DoenetActivityViewer
             source={data.activityJson}
             requestedVariantIndex={1}

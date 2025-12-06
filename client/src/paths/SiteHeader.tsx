@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { ReactNode, useState } from "react";
 import {
   Button,
   Center,
@@ -78,7 +78,7 @@ function NavLinkTab({
   dataTest,
 }: {
   to: string;
-  children: React.ReactNode;
+  children: ReactNode;
   dataTest: string;
 }) {
   // TODO: use end only when path is "/"
@@ -123,7 +123,7 @@ function NavLinkDropdownTab({
   dataTest,
 }: {
   to: string;
-  children: React.ReactNode;
+  children: ReactNode;
   dataTest: string;
 }) {
   // TODO: use end only when path is "/"
@@ -205,8 +205,6 @@ export function SiteHeader() {
           as="header"
           width="100vw"
           m="0"
-          backgroundColor="#fff"
-          color="#000"
           height="40px"
         >
           <Grid
@@ -214,8 +212,7 @@ export function SiteHeader() {
             position="fixed"
             top="0"
             zIndex="1000"
-            borderBottom="1px solid var(--mainGray)"
-            // paddingBottom="2px"
+            backgroundColor="#ffffff"
             width="100%"
             margin="0"
             display="flex"

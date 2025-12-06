@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { DoenetViewer } from "@doenet/doenetml-iframe";
 
 import {
@@ -93,17 +93,17 @@ export function AssignmentItemResponseStudent({
           const state = JSON.parse(itemAttemptState.state);
           window.postMessage({
             subject: "SPLICE.getState.response",
-            messageId: event.data.messageId,
-            success: true,
-            loadedState: true,
+            message_id: event.data.message_id,
             state,
           });
         } else {
           window.postMessage({
             subject: "SPLICE.getState.response",
-            messageId: event.data.messageId,
-            success: true,
-            loadedState: false,
+            message_id: event.data.message_id,
+            error: {
+              code: 1,
+              message: "Server error loading page state.",
+            },
           });
         }
       } else if (event.data.subject === "requestAnswerResponses") {

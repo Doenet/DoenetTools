@@ -1,4 +1,3 @@
-import React from "react";
 import { Spinner } from "@chakra-ui/react";
 import { FetcherWithComponents } from "react-router";
 

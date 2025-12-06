@@ -1,5 +1,5 @@
 import { Container, Button, Heading, Text } from "@chakra-ui/react";
-import React from "react";
+
 import { useNavigate, useRouteError } from "react-router";
 
 const mouths = [

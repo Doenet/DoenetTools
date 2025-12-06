@@ -1,10 +1,5 @@
-import React, { useEffect } from "react";
-import {
-  useFetcher,
-  useLoaderData,
-  useNavigate,
-  useOutletContext,
-} from "react-router";
+import { useEffect } from "react";
+import { useLoaderData, useNavigate, useOutletContext } from "react-router";
 
 import { DoenetEditor } from "@doenet/doenetml-iframe";
 
@@ -80,7 +75,6 @@ export function CodeViewer() {
     activityData?: Content;
   };
 
-  const fetcher = useFetcher();
   const {
     isOpen: copyDialogIsOpen,
     onOpen: copyDialogOnOpen,

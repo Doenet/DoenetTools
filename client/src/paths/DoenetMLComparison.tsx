@@ -1,4 +1,3 @@
-import React from "react";
 import { DoenetEditor } from "@doenet/doenetml-iframe";
 import { PanelPair } from "../widgets/PanelPair";
 import {

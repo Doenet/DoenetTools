@@ -18,7 +18,7 @@ import {
   ModalFooter,
   useDisclosure,
 } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { contentTypeToName } from "../utils/activity";
 import { EditAssignmentSettings } from "../widgets/editor/EditAssignmentSettings";
 import { ContentDescription } from "../types";
@@ -194,7 +194,7 @@ export function ConfirmAssignModal({
 
           submitFetcher.submit(
             {
-              path: "/assign/createAssignment",
+              path: "assign/createAssignment",
               contentId,
               closeAt,
               destinationParentId: parentId,

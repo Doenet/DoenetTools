@@ -1,8 +1,8 @@
-import React, { ReactElement, useState } from "react";
+import { ReactElement, useState } from "react";
 import { Box } from "@chakra-ui/react";
 import { DoenetViewer } from "@doenet/doenetml-iframe";
 import { DoenetmlVersion } from "../types";
-import { ActivitySource } from "../viewerTypes";
+import { ActivitySource } from "@doenet-tools/shared/types/activityViewer";
 // @ts-expect-error assignment-viewer doesn't publish types, see https://github.com/Doenet/assignment-viewer/issues/20
 import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";
 

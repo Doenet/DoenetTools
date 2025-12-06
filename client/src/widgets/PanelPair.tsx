@@ -1,5 +1,5 @@
-import React from "react";
 import { Center, Grid, GridItem, useBreakpointValue } from "@chakra-ui/react";
+import { JSX } from "react";
 
 export const PanelPair = ({
   panelA,
@@ -10,8 +10,8 @@ export const PanelPair = ({
   height = "100%",
   border = "1px solid",
 }: {
-  panelA: React.JSX.Element;
-  panelB: React.JSX.Element;
+  panelA: JSX.Element;
+  panelB: JSX.Element;
   preferredDirection?: "horizontal" | "vertical";
   centerWidth?: string;
   width?: string;

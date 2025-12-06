@@ -1,4 +1,3 @@
-import React from "react";
 import { License } from "../types";
 import {
   Box,
@@ -10,6 +9,7 @@ import {
   Text,
   Tooltip,
 } from "@chakra-ui/react";
+import { JSX } from "react";
 import { Link } from "react-router";
 
 export function SmallLicenseBadges({
@@ -62,7 +62,7 @@ function DisplaySmallLicenseBadge({
   };
   suppressLink: boolean;
 }) {
-  let badge: React.JSX.Element | null = null;
+  let badge: JSX.Element | null = null;
   const imageURL = licenseItem.smallImageURL ?? licenseItem.imageURL;
   if (imageURL) {
     badge = (
@@ -100,7 +100,7 @@ export function DisplayLicenseItem({
     licenseURL: string | null;
   };
 }) {
-  let image: React.JSX.Element | null = null;
+  let image: JSX.Element | null = null;
   if (licenseItem.imageURL) {
     image = (
       <Image

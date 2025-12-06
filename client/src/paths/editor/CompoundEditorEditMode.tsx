@@ -1,4 +1,3 @@
-import React from "react";
 import { useFetcher, useLoaderData } from "react-router";
 import axios from "axios";
 import { Content } from "../../types";
@@ -19,15 +18,5 @@ export function CompoundEditorEditMode() {
   const { content: activity } = useLoaderData() as { content: Content };
   const fetcher = useFetcher();
 
-  const readOnly =
-    (activity.assignmentInfo?.assignmentStatus ?? "Unassigned") !==
-    "Unassigned";
-
-  return (
-    <CompoundActivityEditor
-      activity={activity}
-      fetcher={fetcher}
-      headerHeight={`${readOnly ? 120 : 80}px`}
-    />
-  );
+  return <CompoundActivityEditor activity={activity} fetcher={fetcher} />;
 }

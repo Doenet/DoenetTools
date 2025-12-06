@@ -1,4 +1,3 @@
-import React from "react";
 import axios from "axios";
 import { PanelPair } from "../../widgets/PanelPair";
 import { Remixes } from "../../drawerTabs/Remixes";

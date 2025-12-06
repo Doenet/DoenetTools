@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   FetcherWithComponents,
   useFetcher,
@@ -116,19 +116,24 @@ export function EditorSettingsMode() {
     contentId: string;
   };
 
-  const { allLicenses, allDoenetmlVersions, inLibrary, contentType } =
-    useOutletContext<EditorContext>();
+  const {
+    allLicenses,
+    allDoenetmlVersions,
+    inLibrary,
+    contentType,
+    headerHeight,
+  } = useOutletContext<EditorContext>();
 
   const [searchParams, _] = useSearchParams();
   const showRequired = searchParams.get("showRequired") === null ? false : true;
 
   const showUpgradeSyntax = Boolean(
     doenetmlVersionId &&
-      allDoenetmlVersions.find((v) => v.id === doenetmlVersionId)?.deprecated,
+    allDoenetmlVersions.find((v) => v.id === doenetmlVersionId)?.deprecated,
   );
 
   return (
-    <BlueBanner>
+    <BlueBanner headerHeight={headerHeight}>
       <VStack ml="10px" spacing="2rem" align="flex-start">
         <Box>
           <Heading size="md" pt="1rem">
@@ -208,8 +213,6 @@ export function EditorSettingsMode() {
             />
           </Box>
         )}
-
-        <Box mt="5rem" />
       </VStack>
     </BlueBanner>
   );

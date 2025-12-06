@@ -1,5 +1,5 @@
 import { Button, Box, Flex, Heading, VStack, HStack } from "@chakra-ui/react";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useLoaderData, useNavigate } from "react-router";
 
 import { CardContent } from "../widgets/Card";

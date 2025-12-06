@@ -1,0 +1,30 @@
+// This is the base tsconfig file that is extended by both client and server tsconfig files.
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "useDefineForClassFields": true,
+
+    /* Module settings */
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    // The only reason this is node10 instead of nodenext is that Passport doesn't work with nodenext.
+    "moduleResolution": "node10",
+
+    "allowJs": false,
+
+    /* Strictness */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+
+    "baseUrl": "."
+  },
+  "files": [],
+  "references": [
+    { "path": "client" },
+    { "path": "server" },
+    { "path": "shared" },
+    { "path": "tests-cypress" }
+  ]
+}
