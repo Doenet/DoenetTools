@@ -3,8 +3,6 @@ import base64url from "base64url";
 import crypto from "crypto";
 import { prisma } from "../model";
 
-const DISCOURSE_SSO_SECRET = process.env.DISCOURSE_SSO_SECRET!; // Keep this secret!
-
 export const discourseRouter = express.Router();
 
 function hmacSha256Hex(data: string, secret: string) {
@@ -30,65 +28,76 @@ function buildSsoResponse(
 discourseRouter.get(
   "/sso",
   async (req: Request, res: Response): Promise<void> => {
-    const { sso, sig } = req.query as { sso?: string; sig?: string };
-    if (!sso || !sig) {
-      res.status(400).send("Missing sso or sig");
+    if (!process.env.DISCOURSE_SSO_SECRET) {
+      console.log("DISCOURSE_SSO_SECRET not configured");
+      res.status(500).send("SSO secret not configured");
       return;
     }
 
-    // 1. Verify signature
-    const expectedSig = hmacSha256Hex(sso, DISCOURSE_SSO_SECRET);
-    if (expectedSig !== sig) {
-      res.status(400).send("Bad sig");
-      return;
+    try {
+      const { sso, sig } = req.query as { sso?: string; sig?: string };
+      if (!sso || !sig) {
+        res.status(400).send("Missing sso or sig");
+        return;
+      }
+
+      // 1. Verify signature
+      const expectedSig = hmacSha256Hex(sso, process.env.DISCOURSE_SSO_SECRET);
+      if (expectedSig !== sig) {
+        res.status(400).send("Bad sig");
+        return;
+      }
+
+      // 2. Check authentication
+      if (!req.isAuthenticated?.() || !req.user) {
+        // Not logged in, redirect to login (with returnTo to get back here)
+        res.redirect("/signIn?returnTo=" + encodeURIComponent(req.originalUrl));
+        return;
+      }
+
+      // 3. Prepare response payload per Discourse requirements
+      const decoded = parseSsoPayload(sso);
+      const nonce = decoded.nonce as string;
+      if (!nonce) {
+        res.status(400).send("Missing nonce");
+        return;
+      }
+
+      const { email, firstNames, lastNames } =
+        await prisma.users.findUniqueOrThrow({
+          where: { userId: req.user.userId },
+          select: { email: true, firstNames: true, lastNames: true },
+        });
+
+      const payload: Record<string, string> = {
+        nonce,
+        external_id: req.user.userId.toString(),
+        email: email,
+        username: `${firstNames}${lastNames}`, // no space between first and last name
+        name: `${firstNames} ${lastNames}`, // space between first and last name
+        // avatar_url: user.avatarUrl || "",
+        // Add more fields as needed
+      };
+
+      // 4. Encode and sign
+      const { sso: ssoResp, sig: respSig } = buildSsoResponse(
+        payload,
+        process.env.DISCOURSE_SSO_SECRET!,
+      );
+
+      // 5. Redirect back to Discourse
+      const returnUrl = decoded.return_sso_url as string;
+      if (!returnUrl) {
+        res.status(400).send("Missing return_sso_url");
+        return;
+      }
+
+      res.redirect(
+        `${returnUrl}?sso=${encodeURIComponent(ssoResp)}&sig=${respSig}`,
+      );
+    } catch (error) {
+      console.error("Error in Discourse SSO:", error);
+      res.redirect("/");
     }
-
-    // 2. Check authentication
-    if (!req.isAuthenticated?.() || !req.user) {
-      // Not logged in, redirect to login (with returnTo to get back here)
-      res.redirect("/signIn?returnTo=" + encodeURIComponent(req.originalUrl));
-      return;
-    }
-
-    // 3. Prepare response payload per Discourse requirements
-    const decoded = parseSsoPayload(sso);
-    const nonce = decoded.nonce as string;
-    if (!nonce) {
-      res.status(400).send("Missing nonce");
-      return;
-    }
-
-    const { email, firstNames, lastNames } =
-      await prisma.users.findUniqueOrThrow({
-        where: { userId: req.user.userId },
-        select: { email: true, firstNames: true, lastNames: true },
-      });
-
-    const payload: Record<string, string> = {
-      nonce,
-      external_id: req.user.userId.toString(),
-      email: email,
-      username: `${firstNames}${lastNames}`, // no space between first and last name
-      name: `${firstNames} ${lastNames}`, // space between first and last name
-      // avatar_url: user.avatarUrl || "",
-      // Add more fields as needed
-    };
-
-    // 4. Encode and sign
-    const { sso: ssoResp, sig: respSig } = buildSsoResponse(
-      payload,
-      DISCOURSE_SSO_SECRET,
-    );
-
-    // 5. Redirect back to Discourse
-    const returnUrl = decoded.return_sso_url as string;
-    if (!returnUrl) {
-      res.status(400).send("Missing return_sso_url");
-      return;
-    }
-
-    res.redirect(
-      `${returnUrl}?sso=${encodeURIComponent(ssoResp)}&sig=${respSig}`,
-    );
   },
 );
