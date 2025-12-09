@@ -265,13 +265,9 @@ export function SiteHeader() {
                       )}
                     </>
                   )}
-                  <ChakraLink
-                    href={discussHref}
-                    isExternal
-                    data-test="Discourse Link"
-                  >
+                  <NavLinkTab to={discussHref} dataTest="Discourse Link">
                     Discuss
-                  </ChakraLink>
+                  </NavLinkTab>
                 </HStack>
               </GridItem>
             </Show>
@@ -443,6 +439,12 @@ export function SiteHeader() {
                                 Curate
                               </NavLinkDropdownTab>
                             )}
+                            <NavLinkDropdownTab
+                              to={discussHref}
+                              dataTest="Discourse Link"
+                            >
+                              Discuss
+                            </NavLinkDropdownTab>
                           </>
                         )}
                       </MenuList>
