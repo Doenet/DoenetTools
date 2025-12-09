@@ -41,6 +41,7 @@ import { testRouter } from "./test/testRoutes";
 import { curateRouter } from "./routes/curateRoutes";
 import { compareRouter } from "./routes/compareRoutes";
 import { editorRouter } from "./routes/editorRoutes";
+import { discourseRouter } from "./routes/discourseLoginRoutes";
 import passportLib from "passport";
 
 // Type assertion to work around passport type declaration issues
@@ -327,6 +328,9 @@ app.use("/api/copyMove", copyMoveRouter);
 app.use("/api/curate", curateRouter);
 app.use("/api/compare", compareRouter);
 app.use("/api/editor", editorRouter);
+
+// Discourse uses this endpoint to sign on
+app.use("/api/discourse", discourseRouter);
 
 if (
   process.env.ADD_TEST_APIS &&
