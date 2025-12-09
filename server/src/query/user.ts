@@ -118,6 +118,14 @@ export async function updateUser({
   firstNames: string;
   lastNames: string;
 }) {
+  const { isAnonymous } = await prisma.users.findUniqueOrThrow({
+    where: { userId: loggedInUserId },
+    select: { isAnonymous: true },
+  });
+  if (isAnonymous && (firstNames !== "" || lastNames !== "")) {
+    throw new Error("Anonymous users cannot set name.");
+  }
+
   const user = await prisma.users.update({
     where: { userId: loggedInUserId },
     data: { firstNames, lastNames },

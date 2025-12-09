@@ -42,6 +42,7 @@ import { curateRouter } from "./routes/curateRoutes";
 import { compareRouter } from "./routes/compareRoutes";
 import { editorRouter } from "./routes/editorRoutes";
 import passportLib from "passport";
+import { generateUsername } from "friendly-username-generator";
 
 // Type assertion to work around passport type declaration issues
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -239,8 +240,17 @@ passport.serializeUser(async (req: any, user: any, done: any) => {
     return done(undefined, fromUUID(u.userId));
   } else if (user.anonymous) {
     let email = nanoid() + "@anonymous.doenet.org";
-    let lastNames = "";
-    let firstNames: string | null = null;
+
+    const randomName = generateUsername({
+      useHyphen: true,
+      useRandomNumber: false,
+    });
+
+    function capitalizeFirstLetter(string: string) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+    let firstNames = capitalizeFirstLetter(randomName.split("-")[0]);
+    let lastNames = capitalizeFirstLetter(randomName.split("-")[1]);
     let isAnonymous = true;
     let isEditor = false;
 

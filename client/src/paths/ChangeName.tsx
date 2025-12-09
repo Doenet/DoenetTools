@@ -27,10 +27,12 @@ export async function action({
   const formObj = Object.fromEntries(formData);
 
   if (formObj._action === "change user name") {
-    await axios.post(`/api/user/updateUser`, {
-      firstNames: formObj.firstNames,
-      lastNames: formObj.lastNames,
-    });
+    if (formObj._isEditable === "true") {
+      await axios.post(`/api/user/updateUser`, {
+        firstNames: formObj.firstNames,
+        lastNames: formObj.lastNames,
+      });
+    }
     return replace(formObj.redirectTo);
   }
 
@@ -59,6 +61,8 @@ export function ChangeName() {
     throw Error("No user logged in.");
   }
 
+  const isEditable = !user.isAnonymous;
+
   const [firstNames, setFirstNames] = useState(user?.firstNames ?? "");
   const [lastNames, setLastNames] = useState(user?.lastNames ?? "");
   const [submitted, setSubmitted] = useState(false);
@@ -75,6 +79,11 @@ export function ChangeName() {
       >
         <input type="hidden" name="_action" value="change user name" />
         <input type="hidden" name="redirectTo" value={redirectTo ?? "/"} />
+        <input
+          type="hidden"
+          name="_isEditable"
+          value={isEditable ? "true" : "false"}
+        />
 
         <Flex wrap="wrap">
           <FormControl width="13rem">
@@ -86,6 +95,7 @@ export function ChangeName() {
               width="11rem"
               marginRight="5px"
               value={firstNames ?? ""}
+              isDisabled={!isEditable}
               onChange={(e) => {
                 setFirstNames(e.target.value);
               }}
@@ -99,6 +109,7 @@ export function ChangeName() {
               size="sm"
               width="11rem"
               value={lastNames}
+              isDisabled={!isEditable}
               onChange={(e) => {
                 setLastNames(e.target.value);
               }}
