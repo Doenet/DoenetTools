@@ -80,7 +80,7 @@ loginRouter.get(
           },
         );
       } catch (error) {
-        console.error(`Error logging out discourse user: ${error}`);
+        console.error(`Failed to logout of Discourse: ${error}`);
       }
     }
     return next();

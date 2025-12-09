@@ -69,6 +69,8 @@ discourseRouter.get(
           select: { email: true, firstNames: true, lastNames: true },
         });
 
+      // TODO: Does Discourse allow duplicate usernames? If not, need to ensure uniqueness,
+      // possibly by adding random digits at the end
       const payload: Record<string, string> = {
         nonce,
         external_id: req.user.userId.toString(),
