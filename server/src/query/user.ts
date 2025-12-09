@@ -115,8 +115,8 @@ export async function updateUser({
   lastNames,
 }: {
   loggedInUserId: Uint8Array;
-  firstNames: string;
-  lastNames: string;
+  firstNames?: string;
+  lastNames?: string;
 }) {
   const { isAnonymous } = await prisma.users.findUniqueOrThrow({
     where: { userId: loggedInUserId },

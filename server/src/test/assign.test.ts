@@ -37,7 +37,6 @@ import {
   loadState,
   saveScoreAndState,
 } from "../query/scores";
-import { updateUser } from "../query/user";
 import { moveContent } from "../query/copy_move";
 import { getContent } from "../query/activity_edit_view";
 import { AssignmentMode } from "@prisma/client";
@@ -895,12 +894,7 @@ test("get assignment data from anonymous users", async () => {
     destinationParentId: null,
   });
 
-  let newUser1 = await createTestAnonymousUser();
-  newUser1 = await updateUser({
-    loggedInUserId: newUser1.userId,
-    firstNames: "Zoe",
-    lastNames: "Zaborowski",
-  });
+  const newUser1 = await createTestAnonymousUser();
   const userData1 = {
     userId: newUser1.userId,
     email: "",
@@ -1030,12 +1024,7 @@ test("get assignment data from anonymous users", async () => {
   });
 
   // second user opens assignment
-  let newUser2 = await createTestAnonymousUser();
-  newUser2 = await updateUser({
-    loggedInUserId: newUser2.userId,
-    firstNames: "Arya",
-    lastNames: "Abbas",
-  });
+  const newUser2 = await createTestAnonymousUser();
   const userData2 = {
     userId: newUser2.userId,
     email: "",
@@ -1062,41 +1051,45 @@ test("get assignment data from anonymous users", async () => {
     variant: 1,
   });
 
-  // second user's score shows up first due to alphabetical sorting
+  const dataByStudent2 = {
+    user: userData2,
+    attempts: [
+      {
+        attemptNumber: 1,
+        score: 0.3,
+        itemScores: [],
+      },
+    ],
+    lastState: {
+      state: "document state 4",
+      variant: 1,
+    },
+  };
+
+  const dataByStudent1 = {
+    user: userData1,
+    attempts: [
+      {
+        attemptNumber: 1,
+        score: 0.7,
+        itemScores: [],
+      },
+    ],
+    lastState: {
+      state: "document state 3",
+      variant: 1,
+    },
+  };
+
+  // User data is sorted alphabetically by last name, then first name
+  const dataByStudent = [dataByStudent1, dataByStudent2].sort((a, b) => {
+    return a.user.lastNames.localeCompare(b.user.lastNames);
+  });
 
   await testSingleDocResponses({
     contentId: assignmentId,
     ownerId,
-    dataByStudent: [
-      {
-        user: userData2,
-        attempts: [
-          {
-            attemptNumber: 1,
-            score: 0.3,
-            itemScores: [],
-          },
-        ],
-        lastState: {
-          state: "document state 4",
-          variant: 1,
-        },
-      },
-      {
-        user: userData1,
-        attempts: [
-          {
-            attemptNumber: 1,
-            score: 0.7,
-            itemScores: [],
-          },
-        ],
-        lastState: {
-          state: "document state 3",
-          variant: 1,
-        },
-      },
-    ],
+    dataByStudent,
     classCode,
     source: {
       name: "Activity 1",
@@ -1127,12 +1120,7 @@ test("can't get assignment data if other user, but student can get their own dat
     destinationParentId: null,
   });
 
-  let newUser1 = await createTestAnonymousUser();
-  newUser1 = await updateUser({
-    loggedInUserId: newUser1.userId,
-    firstNames: "Zoe",
-    lastNames: "Zaborowski",
-  });
+  const newUser1 = await createTestAnonymousUser();
 
   await createNewAttempt({
     contentId: assignmentId,
@@ -1315,12 +1303,7 @@ test("get all assignment data from anonymous user", async () => {
     destinationParentId: null,
   });
 
-  let newUser1 = await createTestAnonymousUser();
-  newUser1 = await updateUser({
-    loggedInUserId: newUser1.userId,
-    firstNames: "Zoe",
-    lastNames: "Zaborowski",
-  });
+  const newUser1 = await createTestAnonymousUser();
   const newUser1Info = convertUUID({
     userId: newUser1.userId,
     email: newUser1.email,
@@ -1590,12 +1573,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   const [assign3bId, classCode3b] = await create(activity3b, folder3);
   const [assignRootId, classCodeRoot] = await create(activityRoot, null);
 
-  let newUser = await createTestAnonymousUser();
-  newUser = await updateUser({
-    loggedInUserId: newUser.userId,
-    firstNames: "Arya",
-    lastNames: "Abbas",
-  });
+  const newUser = await createTestAnonymousUser();
   const newUserId = newUser.userId;
   const userInfo = convertUUID({
     userId: newUserId,
@@ -2066,12 +2044,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     { contentId: assignmentId, userScores: [] },
   ]);
 
-  let newUser1 = await createTestAnonymousUser();
-  newUser1 = await updateUser({
-    loggedInUserId: newUser1.userId,
-    firstNames: "Zoe",
-    lastNames: "Zaborowski",
-  });
+  const newUser1 = await createTestAnonymousUser();
   const newUser1Info = {
     userId: newUser1.userId,
     email: "",
@@ -2153,12 +2126,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     },
   ]);
 
-  let newUser2 = await createTestAnonymousUser();
-  newUser2 = await updateUser({
-    loggedInUserId: newUser2.userId,
-    firstNames: "Arya",
-    lastNames: "Abbas",
-  });
+  const newUser2 = await createTestAnonymousUser();
   const newUser2Info = {
     userId: newUser2.userId,
     email: "",
@@ -2204,19 +2172,22 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
       name: "Activity 1",
     },
   ]);
+
+  let expectedUserScores = [
+    {
+      score: 0.3,
+      user: newUser2Info,
+    },
+    {
+      score: 0.7,
+      user: newUser1Info,
+    },
+  ].sort((a, b) => a.user.lastNames.localeCompare(b.user.lastNames));
+
   expect(scoreData.assignmentScores).eqls([
     {
       contentId: assignmentId,
-      userScores: [
-        {
-          score: 0.3,
-          user: newUser2Info,
-        },
-        {
-          score: 0.7,
-          user: newUser1Info,
-        },
-      ],
+      userScores: expectedUserScores,
     },
   ]);
 
@@ -2242,12 +2213,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
 
   // identical name to user 2
 
-  let newUser3 = await createTestAnonymousUser();
-  newUser3 = await updateUser({
-    loggedInUserId: newUser3.userId,
-    firstNames: "Nyla",
-    lastNames: "Nyquist",
-  });
+  const newUser3 = await createTestAnonymousUser();
   const newUser3Info = {
     userId: newUser3.userId,
     email: "",
@@ -2287,19 +2253,24 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
       name: "Activity 2",
     },
   ]);
+
+  expectedUserScores = [
+    {
+      score: 0.3,
+      user: newUser2Info,
+    },
+    {
+      score: 0.7,
+      user: newUser1Info,
+    },
+  ].sort((a, b) => {
+    return a.user.lastNames.localeCompare(b.user.lastNames);
+  });
+
   expect(scoreData.assignmentScores).eqls([
     {
       contentId: assignmentId,
-      userScores: [
-        {
-          score: 0.3,
-          user: newUser2Info,
-        },
-        {
-          score: 0.7,
-          user: newUser1Info,
-        },
-      ],
+      userScores: expectedUserScores,
     },
     {
       contentId: assignmentId2,

@@ -66,12 +66,7 @@ test("findOrCreateUser finds an existing user or creates a new one", async () =>
 });
 
 test("upgrade anonymous user", async () => {
-  let anonUser = await createTestAnonymousUser();
-  anonUser = await updateUser({
-    loggedInUserId: anonUser.userId,
-    firstNames: "Zoe",
-    lastNames: "Zaborowski",
-  });
+  const anonUser = await createTestAnonymousUser();
 
   expect(anonUser.isAnonymous).eq(true);
 
