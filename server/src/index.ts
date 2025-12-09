@@ -243,14 +243,17 @@ passport.serializeUser(async (req: any, user: any, done: any) => {
 
     const randomName = generateUsername({
       useHyphen: true,
-      useRandomNumber: false,
-    });
+      useRandomNumber: true,
+    }).split("-");
 
     function capitalizeFirstLetter(string: string) {
       return string.charAt(0).toUpperCase() + string.slice(1);
     }
-    let firstNames = capitalizeFirstLetter(randomName.split("-")[0]);
-    let lastNames = capitalizeFirstLetter(randomName.split("-")[1]);
+
+    let firstNames = "";
+    let lastNames =
+      capitalizeFirstLetter(randomName[0]) +
+      capitalizeFirstLetter(randomName[1]);
     let isAnonymous = true;
     let isEditor = false;
 
