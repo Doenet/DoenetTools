@@ -4,10 +4,28 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "tsc && vite build",
+    "build": "wireit",
     "dev": "cross-env NODE_ENV=production vite",
     "lint": "eslint --fix",
     "lint:check": "eslint"
+  },
+  "wireit": {
+    "build": {
+      "command": "tsc && vite build",
+      "files": [
+        "src/**/*.ts",
+        "src/**/*.js",
+        "vite.config.ts",
+        "tsconfig.json"
+      ],
+      "output": [
+        "dist/**/*.js",
+        "dist/**/*.d.ts"
+      ],
+      "dependencies": [
+        "../shared:build"
+      ]
+    }
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.2.4",
