@@ -81,7 +81,15 @@ describe("Share tests", () => {
     const ownerId = owner.userId;
     const user = await createTestUser();
     const userId = user.userId;
-    const { isEditor, isAnonymous, isAuthor, ...userFields } = user;
+    const {
+      isEditor,
+      isAnonymous,
+      isAuthor,
+      passwordHash: _passwordHash,
+      scopedToClassId: _scopedToClassId,
+      username: _username,
+      ...userFields
+    } = user;
 
     const { contentId: publicFolderId } = await createContent({
       loggedInUserId: ownerId,
@@ -388,6 +396,9 @@ describe("Share tests", () => {
         isEditor: _isEditor1,
         isAnonymous: _isAnonymous1,
         isAuthor: _isAuthor1,
+        passwordHash: _passwordHash,
+        scopedToClassId: _scopedToClassId,
+        username: _username,
         ...userFields1
       } = user1;
       let user2 = await createTestUser();
@@ -401,6 +412,9 @@ describe("Share tests", () => {
         isEditor: _isEditor2,
         isAnonymous: _isAnonymous2,
         isAuthor: _isAuthor2,
+        passwordHash: _passwordHash2,
+        scopedToClassId: _scopedToClassId2,
+        username: _username2,
         ...userFields2
       } = user2;
       let user3 = await createTestUser();
@@ -414,8 +428,19 @@ describe("Share tests", () => {
         isEditor: _isEditor3,
         isAnonymous: _isAnonymous3,
         isAuthor: _isAuthor3,
+        passwordHash: _passwordHash3,
+        scopedToClassId: _scopedToClassId3,
+        username: _username3,
         ...userFields3
       } = user3;
+
+      if (
+        user1.email === null ||
+        user2.email === null ||
+        user3.email === null
+      ) {
+        throw new Error("User should have email");
+      }
 
       const sharedUserFields = [userFields2, userFields1];
       const sharedUserFields23 = [userFields2, userFields3];
@@ -912,6 +937,9 @@ describe("Share tests", () => {
       isEditor: _isEditor,
       isAnonymous: _isAnonymous,
       isAuthor: _isAuthor,
+      passwordHash: _passwordHash,
+      scopedToClassId: _scopedToClassId,
+      username: _username,
       ...userFields
     } = user;
 
@@ -1132,6 +1160,9 @@ describe("Share tests", () => {
     const ownerId = owner.userId;
 
     const user = await createTestUser();
+    if (user.email === null) {
+      throw new Error("User should have email");
+    }
 
     const otherEmail = `unique-${Date.now()}@example.com`;
 
@@ -1196,8 +1227,14 @@ describe("Share tests", () => {
   test("share with email throws error when share with self", async () => {
     const owner = await createTestUser();
     const ownerId = owner.userId;
+    if (owner.email === null) {
+      throw new Error("User should have email");
+    }
 
     const user = await createTestUser();
+    if (user.email === null) {
+      throw new Error("User should have email");
+    }
 
     const { contentId: folderId } = await createContent({
       loggedInUserId: ownerId,
@@ -1442,6 +1479,9 @@ describe("sharedWithMe()", () => {
 
     const recipient = await createTestUser();
     const recipientId = recipient.userId;
+    if (recipient.email === null) {
+      throw new Error("User should have email");
+    }
 
     // create some content and share with recipient by email
     const [folder1, _folder2, doc1, _doc2, ps1, _doc3] = await setupTestContent(
@@ -1508,6 +1548,9 @@ describe("sharedWithMe()", () => {
     const { userId: ownerId } = await createTestUser();
     const recipient = await createTestUser();
     const recipientId = recipient.userId;
+    if (recipient.email === null) {
+      throw new Error("User should have email");
+    }
 
     // create three top-level items using setupTestContent helper
     const [c1, c2, c3] = await setupTestContent(ownerId, {
@@ -1592,6 +1635,9 @@ describe("shareContent()", () => {
   test("excludes inner assignments", async () => {
     const { userId: ownerId } = await createTestUser();
     const recipient = await createTestUser();
+    if (recipient.email === null) {
+      throw new Error("User should have email");
+    }
 
     // create assignment and share with recipient
     const [folderId, docId] = await setupTestContent(ownerId, {

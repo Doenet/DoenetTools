@@ -54,7 +54,7 @@ export const recordSubmittedEventSchema = z.object({
   itemCreditAchieved: z.number(),
 });
 
-export const codeSchema = z.object({ code: z.string() });
+export const codeSchema = z.object({ code: z.number() });
 
 export const getAssignmentResponseStudentSchema = z.object({
   contentId: uuidSchema,

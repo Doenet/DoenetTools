@@ -98,7 +98,7 @@ test("New activity starts out private, then delete it", async () => {
     inLibrary: false,
     remixSourceHasChanged: false,
     assignmentStatus: "Unassigned",
-    assignmentClassCode: "",
+    assignmentClassCode: null,
     assignmentHasScoreData: false,
   });
   //TODO: include assignment settings when they are part of `content` table
@@ -1104,7 +1104,6 @@ test.skip("activity editor data and my folder contents before and after assigned
   await createNewAttempt({
     contentId: assignmentId,
     loggedInUserId: ownerId,
-    code: classCode,
     variant: 1,
     state: null,
   });
@@ -1116,7 +1115,6 @@ test.skip("activity editor data and my folder contents before and after assigned
     attemptNumber: 1,
     score: 0.5,
     state: "document state 1",
-    code: classCode,
     variant: 1,
   });
 

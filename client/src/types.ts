@@ -91,7 +91,7 @@ export function isUserInfo(obj: unknown): obj is UserInfo {
 }
 
 export type UserInfoWithEmail = UserInfo & {
-  email: string;
+  email: string | null;
 };
 
 export type CategoryGroup = {
@@ -243,13 +243,64 @@ export type Content = Doc | QuestionBank | ProblemSet | Folder;
 
 export type AssignmentInfo = {
   assignmentStatus: AssignmentStatus;
-  classCode: string;
+  classCode: number | null;
   codeValidUntil: DoenetDateTime;
   hasScoreData: boolean;
   mode: AssignmentMode;
   individualizeByStudent: boolean;
   maxAttempts: number;
 };
+
+export type ItemScores = {
+  score: number;
+  itemNumber: number;
+  itemAttemptNumber: number;
+}[];
+
+export type LatestAttempt = {
+  attemptNumber: number;
+  score: number;
+  itemScores: ItemScores;
+};
+
+export function isItemScores(obj: unknown): obj is ItemScores {
+  const typedObj = obj as ItemScores;
+  return (
+    Array.isArray(typedObj) &&
+    typedObj.every((item) => {
+      return (
+        item !== null &&
+        typeof item === "object" &&
+        typeof item.score === "number" &&
+        typeof item.itemNumber === "number" &&
+        typeof item.itemAttemptNumber === "number"
+      );
+    })
+  );
+}
+
+export function isCachedLatestAttempt(obj: unknown): obj is LatestAttempt {
+  const typedObj = obj as LatestAttempt;
+  return (
+    typedObj !== null &&
+    typeof typedObj === "object" &&
+    typeof typedObj.attemptNumber === "number" &&
+    typeof typedObj.score === "number" &&
+    isItemScores(typedObj.itemScores)
+  );
+}
+
+export type ScoreData =
+  | {
+      calculatedScore: false;
+    }
+  | {
+      calculatedScore: true;
+      score: number;
+      bestAttemptNumber: number;
+      itemScores: ItemScores;
+      latestAttempt: LatestAttempt;
+    };
 
 export type LicenseCode = "CCDUAL" | "CCBYSA" | "CCBYNCSA";
 

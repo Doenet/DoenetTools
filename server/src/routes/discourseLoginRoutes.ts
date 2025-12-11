@@ -69,6 +69,11 @@ discourseRouter.get(
           select: { email: true, firstNames: true, lastNames: true },
         });
 
+      if (!email) {
+        res.status(400).send("Invalid account type");
+        return;
+      }
+
       // TODO: Does Discourse allow duplicate usernames? If not, need to ensure uniqueness,
       // possibly by adding random digits at the end
       const payload: Record<string, string> = {

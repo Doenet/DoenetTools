@@ -65,6 +65,7 @@ export async function getEditor({
       name,
       type,
       owner,
+      classCode,
       rootAssignment,
       nonRootAssignment,
       ...other
@@ -83,10 +84,10 @@ export async function getEditor({
             isLibrary: true,
           },
         },
+        classCode: true,
         rootAssignment: {
           select: {
             codeValidUntil: true,
-            classCode: true,
             _count: {
               select: {
                 assignmentScores: true,
@@ -97,7 +98,11 @@ export async function getEditor({
         nonRootAssignment: {
           select: {
             codeValidUntil: true,
-            classCode: true,
+            rootContent: {
+              select: {
+                classCode: true,
+              },
+            },
           },
         },
       },
@@ -107,19 +112,19 @@ export async function getEditor({
     if (rootAssignment) {
       assignment = {
         assignmentStatus: processAssignmentStatus(rootAssignment),
-        assignmentClassCode: rootAssignment.classCode,
+        assignmentClassCode: classCode,
         assignmentHasScoreData: rootAssignment._count.assignmentScores > 0,
       };
     } else if (nonRootAssignment) {
       assignment = {
         assignmentStatus: processAssignmentStatus(nonRootAssignment),
-        assignmentClassCode: nonRootAssignment.classCode,
+        assignmentClassCode: nonRootAssignment.rootContent.classCode,
         assignmentHasScoreData: false,
       };
     } else {
       assignment = {
         assignmentStatus: "Unassigned",
-        assignmentClassCode: "",
+        assignmentClassCode: null,
         assignmentHasScoreData: false,
       };
     }

@@ -60,7 +60,8 @@ export function processSharedWith(
         (a, b) =>
           a.lastNames.localeCompare(b.lastNames) ||
           a.firstNames?.localeCompare(b.firstNames || "") ||
-          a.email.localeCompare(b.email),
+          a.email?.localeCompare(b.email || "") ||
+          0,
       );
 
     return { isShared, sharedWith };
@@ -198,6 +199,7 @@ export function returnContentSelect({
     mode: true,
     individualizeByStudent: true,
     maxAttempts: true,
+    classCode: true,
     sharedWith,
     licenseCode: true,
     parent: {
@@ -215,7 +217,6 @@ export function returnContentSelect({
   const rootAssignment = includeAssignInfo
     ? {
         select: {
-          classCode: true,
           codeValidUntil: true,
           _count: { select: { contentState: true } },
         },
@@ -225,13 +226,13 @@ export function returnContentSelect({
   const nonRootAssignment = includeAssignInfo
     ? {
         select: {
-          classCode: true,
           codeValidUntil: true,
           rootContent: {
             select: {
               name: true,
               id: true,
               type: true,
+              classCode: true,
               mode: true,
               individualizeByStudent: true,
               maxAttempts: true,
@@ -315,6 +316,7 @@ type PreliminaryContent = {
   mode: AssignmentMode;
   individualizeByStudent: boolean;
   maxAttempts: number;
+  classCode: number | null;
   categories: {
     id: number;
     code: string;
@@ -340,19 +342,18 @@ type PreliminaryContent = {
 
   // if `includeAssignInfo` is specified
   rootAssignment?: {
-    classCode: string;
     codeValidUntil: Date;
     _count?: {
       contentState: number;
     };
   } | null;
   nonRootAssignment?: {
-    classCode: string;
     codeValidUntil: Date;
     rootContent: {
       name: string;
       id: Uint8Array;
       type: ContentType;
+      classCode: number | null;
     };
   } | null;
 
@@ -423,6 +424,7 @@ export function processContent(
     individualizeByStudent,
     maxAttempts,
     mode,
+    classCode,
 
     rootAssignment,
     nonRootAssignment,
@@ -453,6 +455,7 @@ export function processContent(
 
     assignmentInfoObj.assignmentInfo = {
       ...other,
+      classCode,
       assignmentStatus: processAssignmentStatus({ codeValidUntil }),
       codeValidUntil,
       hasScoreData: _count ? _count.contentState > 0 : false,
@@ -464,6 +467,7 @@ export function processContent(
     const { codeValidUntil, rootContent, ...other } = nonRootAssignment;
     assignmentInfoObj.assignmentInfo = {
       ...other,
+      classCode: rootContent.classCode,
       assignmentStatus: processAssignmentStatus({ codeValidUntil }),
       codeValidUntil,
       hasScoreData: false,

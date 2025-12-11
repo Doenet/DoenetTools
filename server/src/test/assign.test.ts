@@ -33,14 +33,13 @@ import { modifyContentSharedWith, setContentIsPublic } from "../query/share";
 import {
   createNewAttempt,
   getScoresOfAllStudents,
-  ItemScores,
   loadState,
   saveScoreAndState,
 } from "../query/scores";
 import { moveContent } from "../query/copy_move";
 import { getContent } from "../query/activity_edit_view";
 import { AssignmentMode } from "@prisma/client";
-import { UserInfo } from "../types";
+import { ItemScores, UserInfo } from "../types";
 import { getAssignmentNonRootIds } from "./testQueries";
 
 test("assign an activity", async () => {
@@ -175,8 +174,11 @@ test("open and close assignment with code", async () => {
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
+  if (classCode === null) {
+    throw new Error("Class code shouldn't be null");
+  }
   let assignment = await getTestAssignment(assignmentId, ownerId);
-  expect(assignment.rootAssignment!.classCode).eq(classCode);
+  expect(assignment.classCode).eq(classCode);
   expect(assignment.rootAssignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
   let assignmentData = await getAssignmentViewerDataFromCode({
@@ -207,9 +209,9 @@ test("open and close assignment with code", async () => {
     code: classCode,
     loggedInUserId: fakeId,
   });
-  expect(assignmentData.assignmentFound).eq(true);
+  expect(assignmentData.assignmentFound).eq(false);
   expect(assignmentData.assignmentOpen).eq(false);
-  // expect(assignmentData.assignment).eq(null);
+  expect(assignmentData.assignment).eq(null);
 
   // get same code back if reopen
   closeAt = DateTime.now().plus({ weeks: 3 });
@@ -219,7 +221,7 @@ test("open and close assignment with code", async () => {
     loggedInUserId: ownerId,
   });
   assignment = await getTestAssignment(assignmentId, ownerId);
-  expect(assignment.rootAssignment!.classCode).eq(classCode);
+  expect(assignment.classCode).eq(classCode);
   expect(assignment.rootAssignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
   assignmentData = await getAssignmentViewerDataFromCode({
@@ -243,7 +245,7 @@ test("open and close assignment with code", async () => {
     code: classCode,
     loggedInUserId: fakeId,
   });
-  expect(assignmentData.assignmentFound).eq(true);
+  expect(assignmentData.assignmentFound).eq(false);
 
   // reopen with future date
   closeAt = DateTime.now().plus({ years: 1 });
@@ -253,21 +255,19 @@ test("open and close assignment with code", async () => {
     loggedInUserId: ownerId,
   });
   assignment = await getTestAssignment(assignmentId, ownerId);
-  expect(assignment.rootAssignment!.classCode).eq(classCode);
+  expect(assignment.classCode).eq(classCode);
   expect(assignment.rootAssignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
   await createNewAttempt({
     contentId: assignmentId,
     loggedInUserId: ownerId,
     variant: 1,
-    code: classCode,
     state: null,
   });
 
   // add some data
   await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: ownerId,
     attemptNumber: 1,
     score: 0.3,
@@ -282,7 +282,7 @@ test("open and close assignment with code", async () => {
     loggedInUserId: ownerId,
   });
   assignment = await getTestAssignment(assignmentId, ownerId);
-  expect(assignment.rootAssignment!.classCode).eq(classCode);
+  expect(assignment.classCode).eq(classCode);
   expect(assignment.rootAssignment!.codeValidUntil.getTime()).gte(
     closeDate.getTime(),
   );
@@ -379,8 +379,11 @@ test("open compound assignment with code", async () => {
       loggedInUserId: ownerId,
       destinationParentId: null,
     });
+  if (classCode === null) {
+    throw new Error("Class code shouldn't be null");
+  }
   const assignment = await getTestAssignment(sequenceAssignmentId, ownerId);
-  expect(assignment.rootAssignment!.classCode).eq(classCode);
+  expect(assignment.classCode).eq(classCode);
   expect(assignment.rootAssignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
   const assignmentData = await getAssignmentViewerDataFromCode({
@@ -773,7 +776,7 @@ async function testSingleDocResponses({
       variant: number;
     };
   }[];
-  classCode: string;
+  classCode: number;
   source: {
     doenetML: string;
     name: string;
@@ -893,26 +896,27 @@ test("get assignment data from anonymous users", async () => {
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
+  if (classCode === null) {
+    throw new Error("Class code shouldn't be null");
+  }
 
   const newUser1 = await createTestAnonymousUser();
   const userData1 = {
     userId: newUser1.userId,
-    email: "",
     firstNames: newUser1.firstNames,
     lastNames: newUser1.lastNames,
+    username: newUser1.username,
   };
 
   await createNewAttempt({
     contentId: assignmentId,
     loggedInUserId: newUser1.userId,
     variant: 1,
-    code: classCode,
     state: null,
   });
 
   await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: newUser1.userId,
     attemptNumber: 1,
     score: 0.5,
@@ -950,7 +954,6 @@ test("get assignment data from anonymous users", async () => {
   // new lower score decreases score
   await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: newUser1.userId,
     attemptNumber: 1,
     score: 0.2,
@@ -988,7 +991,6 @@ test("get assignment data from anonymous users", async () => {
   // new higher score used
   await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: newUser1.userId,
     attemptNumber: 1,
     score: 0.7,
@@ -1027,9 +1029,9 @@ test("get assignment data from anonymous users", async () => {
   const newUser2 = await createTestAnonymousUser();
   const userData2 = {
     userId: newUser2.userId,
-    email: "",
     firstNames: newUser2.firstNames,
     lastNames: newUser2.lastNames,
+    username: newUser2.username,
   };
 
   // save state for second user
@@ -1037,13 +1039,11 @@ test("get assignment data from anonymous users", async () => {
     contentId: assignmentId,
     loggedInUserId: newUser2.userId,
     variant: 1,
-    code: classCode,
     state: null,
   });
 
   await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: newUser2.userId,
     attemptNumber: 1,
     score: 0.3,
@@ -1113,7 +1113,7 @@ test("can't get assignment data if other user, but student can get their own dat
   });
 
   const closeAt = DateTime.now().plus({ days: 1 });
-  const { assignmentId, classCode } = await createAssignment({
+  const { assignmentId } = await createAssignment({
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
@@ -1126,13 +1126,11 @@ test("can't get assignment data if other user, but student can get their own dat
     contentId: assignmentId,
     loggedInUserId: newUser1.userId,
     variant: 1,
-    code: classCode,
     state: null,
   });
 
   await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: newUser1.userId,
     attemptNumber: 1,
     score: 0.5,
@@ -1241,13 +1239,12 @@ test("list assigned and get assigned scores get student assignments and scores",
     name: "Activity 2",
     loggedInUserId: user2Id,
   });
-  const { assignmentId: assignmentId2, classCode: classCode2 } =
-    await createAssignment({
-      contentId: contentId2,
-      loggedInUserId: user2Id,
-      closeAt: DateTime.now().plus({ days: 1 }),
-      destinationParentId: null,
-    });
+  const { assignmentId: assignmentId2 } = await createAssignment({
+    contentId: contentId2,
+    loggedInUserId: user2Id,
+    closeAt: DateTime.now().plus({ days: 1 }),
+    destinationParentId: null,
+  });
 
   assignmentList = await listUserAssigned({ loggedInUserId: user1Id });
   expect(assignmentList.assignments).eqls([]);
@@ -1256,7 +1253,6 @@ test("list assigned and get assigned scores get student assignments and scores",
 
   await createNewAttempt({
     contentId: assignmentId2,
-    code: classCode2,
     variant: 1,
     state: "document state 1",
     loggedInUserId: user1Id,
@@ -1265,7 +1261,6 @@ test("list assigned and get assigned scores get student assignments and scores",
   // recording score for user1 on assignment2 adds it to user1's assignment list
   await saveScoreAndState({
     contentId: assignmentId2,
-    code: classCode2,
     loggedInUserId: user1Id,
     attemptNumber: 1,
     score: 0.5,
@@ -1296,7 +1291,7 @@ test("get all assignment data from anonymous user", async () => {
 
   // open assignment generates code
   const closeAt = DateTime.now().plus({ days: 1 });
-  const { assignmentId, classCode } = await createAssignment({
+  const { assignmentId } = await createAssignment({
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
@@ -1313,7 +1308,6 @@ test("get all assignment data from anonymous user", async () => {
 
   await createNewAttempt({
     contentId: assignmentId,
-    code: classCode,
     variant: 1,
     state: "document state 1",
     loggedInUserId: newUser1.userId,
@@ -1321,7 +1315,6 @@ test("get all assignment data from anonymous user", async () => {
 
   await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: newUser1.userId,
     attemptNumber: 1,
     score: 0.5,
@@ -1352,7 +1345,6 @@ test("get all assignment data from anonymous user", async () => {
   // new lower score used
   await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: newUser1.userId,
     attemptNumber: 1,
     score: 0.2,
@@ -1382,7 +1374,6 @@ test("get all assignment data from anonymous user", async () => {
 
   await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: newUser1.userId,
     attemptNumber: 1,
     score: 0.7,
@@ -1554,44 +1545,42 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   async function create(
     contentId: Uint8Array,
     parentId: Uint8Array | null,
-  ): Promise<[Uint8Array, string]> {
-    const { assignmentId, classCode } = await createAssignment({
+  ): Promise<Uint8Array> {
+    const { assignmentId } = await createAssignment({
       contentId,
       closeAt: closeAt,
       loggedInUserId: ownerId,
       destinationParentId: parentId,
     });
-    return [assignmentId, classCode];
+    return assignmentId;
   }
 
-  const [assign1aId, classCode1a] = await create(activity1a, folder1);
-  const [assign1c1Id, classCode1c1] = await create(activity1c1, folder1c);
-  const [assign1c2aId, classCode1c2a] = await create(activity1c2a, folder1c2);
-  const [assign1c2bId, classCode1c2b] = await create(activity1c2b, folder1c2);
-  const [assign1eId, classCode1e] = await create(activity1e, folder1);
-  const [assign2Id, classCode2] = await create(activity2, baseFolder);
-  const [assign3bId, classCode3b] = await create(activity3b, folder3);
-  const [assignRootId, classCodeRoot] = await create(activityRoot, null);
+  const assign1aId = await create(activity1a, folder1);
+  const assign1c1Id = await create(activity1c1, folder1c);
+  const assign1c2aId = await create(activity1c2a, folder1c2);
+  const assign1c2bId = await create(activity1c2b, folder1c2);
+  const assign1eId = await create(activity1e, folder1);
+  const assign2Id = await create(activity2, baseFolder);
+  const assign3bId = await create(activity3b, folder3);
+  const assignRootId = await create(activityRoot, null);
 
   const newUser = await createTestAnonymousUser();
   const newUserId = newUser.userId;
   const userInfo = convertUUID({
     userId: newUserId,
-    email: "",
     firstNames: newUser.firstNames,
     lastNames: newUser.lastNames,
+    username: newUser.username,
   });
 
   await createNewAttempt({
     contentId: assign1aId,
-    code: classCode1a,
     loggedInUserId: newUserId,
     state: "document state 1a",
     variant: 1,
   });
   await saveScoreAndState({
     contentId: assign1aId,
-    code: classCode1a,
     loggedInUserId: newUserId,
     attemptNumber: 1,
     score: 0.11,
@@ -1600,14 +1589,12 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   });
   await createNewAttempt({
     contentId: assign1c1Id,
-    code: classCode1c1,
     loggedInUserId: newUserId,
     state: "document state 1c1",
     variant: 1,
   });
   await saveScoreAndState({
     contentId: assign1c1Id,
-    code: classCode1c1,
     loggedInUserId: newUserId,
     attemptNumber: 1,
     score: 0.131,
@@ -1616,14 +1603,12 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   });
   await createNewAttempt({
     contentId: assign1c2aId,
-    code: classCode1c2a,
     loggedInUserId: newUserId,
     state: "document state 1c2a",
     variant: 1,
   });
   await saveScoreAndState({
     contentId: assign1c2aId,
-    code: classCode1c2a,
     loggedInUserId: newUserId,
     attemptNumber: 1,
     score: 0.1321,
@@ -1632,14 +1617,12 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   });
   await createNewAttempt({
     contentId: assign1c2bId,
-    code: classCode1c2b,
     loggedInUserId: newUserId,
     state: "document state 1c2b",
     variant: 1,
   });
   await saveScoreAndState({
     contentId: assign1c2bId,
-    code: classCode1c2b,
     loggedInUserId: newUserId,
     attemptNumber: 1,
     score: 0.1322,
@@ -1648,14 +1631,12 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   });
   await createNewAttempt({
     contentId: assign1eId,
-    code: classCode1e,
     loggedInUserId: newUserId,
     state: "document state 1e",
     variant: 1,
   });
   await saveScoreAndState({
     contentId: assign1eId,
-    code: classCode1e,
     loggedInUserId: newUserId,
     attemptNumber: 1,
     score: 0.15,
@@ -1664,14 +1645,12 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   });
   await createNewAttempt({
     contentId: assign2Id,
-    code: classCode2,
     loggedInUserId: newUserId,
     state: "document state 2",
     variant: 1,
   });
   await saveScoreAndState({
     contentId: assign2Id,
-    code: classCode2,
     loggedInUserId: newUserId,
     attemptNumber: 1,
     score: 0.2,
@@ -1680,14 +1659,12 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   });
   await createNewAttempt({
     contentId: assign3bId,
-    code: classCode3b,
     loggedInUserId: newUserId,
     state: "document state 3b",
     variant: 1,
   });
   await saveScoreAndState({
     contentId: assign3bId,
-    code: classCode3b,
     loggedInUserId: newUserId,
     attemptNumber: 1,
     score: 0.32,
@@ -1696,14 +1673,12 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   });
   await createNewAttempt({
     contentId: assignRootId,
-    code: classCodeRoot,
     loggedInUserId: newUserId,
     state: "document state Root",
     variant: 1,
   });
   await saveScoreAndState({
     contentId: assignRootId,
-    code: classCodeRoot,
     loggedInUserId: newUserId,
     attemptNumber: 1,
     score: 1.0,
@@ -2021,7 +1996,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
 
   // open assignment generates code
   const closeAt = DateTime.now().plus({ days: 1 });
-  const { assignmentId, classCode } = await createAssignment({
+  const { assignmentId } = await createAssignment({
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
@@ -2047,21 +2022,19 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   const newUser1 = await createTestAnonymousUser();
   const newUser1Info = {
     userId: newUser1.userId,
-    email: "",
     firstNames: newUser1.firstNames,
     lastNames: newUser1.lastNames,
+    username: newUser1.username,
   };
 
   await createNewAttempt({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: newUser1.userId,
     state: "document state 1",
     variant: 1,
   });
   await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: newUser1.userId,
     attemptNumber: 1,
     score: 0.5,
@@ -2095,7 +2068,6 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   // new lower score does lower the resulting score
   await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: newUser1.userId,
     attemptNumber: 1,
     score: 0.2,
@@ -2129,21 +2101,19 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   const newUser2 = await createTestAnonymousUser();
   const newUser2Info = {
     userId: newUser2.userId,
-    email: "",
     firstNames: newUser2.firstNames,
     lastNames: newUser2.lastNames,
+    username: newUser2.username,
   };
 
   await createNewAttempt({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: newUser2.userId,
     state: "document state 3",
     variant: 1,
   });
   await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: newUser2.userId,
     attemptNumber: 1,
     score: 0.3,
@@ -2153,7 +2123,6 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
 
   await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: newUser1.userId,
     attemptNumber: 1,
     score: 0.7,
@@ -2203,34 +2172,31 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     loggedInUserId: ownerId,
   });
 
-  const { assignmentId: assignmentId2, classCode: classCode2 } =
-    await createAssignment({
-      contentId: activity2Id,
-      closeAt: closeAt,
-      loggedInUserId: ownerId,
-      destinationParentId: null,
-    });
+  const { assignmentId: assignmentId2 } = await createAssignment({
+    contentId: activity2Id,
+    closeAt: closeAt,
+    loggedInUserId: ownerId,
+    destinationParentId: null,
+  });
 
   // identical name to user 2
 
   const newUser3 = await createTestAnonymousUser();
   const newUser3Info = {
     userId: newUser3.userId,
-    email: "",
     firstNames: newUser3.firstNames,
     lastNames: newUser3.lastNames,
+    username: newUser3.username,
   };
 
   await createNewAttempt({
     contentId: assignmentId2,
-    code: classCode2,
     loggedInUserId: newUser3.userId,
     state: "document state 1",
     variant: 1,
   });
   await saveScoreAndState({
     contentId: assignmentId2,
-    code: classCode2,
     loggedInUserId: newUser3.userId,
     attemptNumber: 1,
     score: 0.9,
@@ -2582,7 +2548,7 @@ test("only user and assignment owner can load document state", async () => {
 
   // open assignment generates code
   const closeAt = DateTime.now().plus({ days: 1 });
-  const { assignmentId, classCode } = await createAssignment({
+  const { assignmentId } = await createAssignment({
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
@@ -2594,14 +2560,12 @@ test("only user and assignment owner can load document state", async () => {
 
   await createNewAttempt({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: newUser.userId,
     state: "document state 1",
     variant: 1,
   });
   await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: newUser.userId,
     attemptNumber: 1,
     score: 0.5,

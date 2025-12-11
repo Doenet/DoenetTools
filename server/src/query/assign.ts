@@ -9,7 +9,7 @@ import {
 } from "../utils/permissions";
 import { getRandomValues } from "crypto";
 import { AssignmentMode, ContentType, Prisma } from "@prisma/client";
-import { Content, UserInfo } from "../types";
+import { Content, ItemScores, ScoreData, UserInfo } from "../types";
 import { isEqualUUID } from "../utils/uuid";
 import { processContent, returnContentSelect } from "../utils/contentStructure";
 import { InvalidRequestError } from "../utils/error";
@@ -18,7 +18,6 @@ import {
   calculateScoreAndCacheResults,
   getScore,
   getScoresOfAllStudents,
-  ItemScores,
 } from "./scores";
 import { getMyUserInfo } from "./user";
 import { StatusCodes } from "http-status-codes";
@@ -27,12 +26,12 @@ import { recordContentView } from "./popularity";
 import { copyContent } from "./copy_move";
 
 /**
- * Randomly generate a 6 digit number. Return as a string.
+ * Randomly generate a 6 digit number.
  */
 function generateClassCode() {
   const array = new Uint32Array(1);
   getRandomValues(array);
-  return array[0].toString().slice(-6);
+  return Number(array[0].toString().slice(-6));
 }
 
 /**
@@ -104,15 +103,22 @@ export async function createAssignment({
 
   // Create the assignment linking it to the root
   // Point the copied descendants to the new assignment
-  const { classCode } = await prisma.assignments.create({
+  await prisma.assignments.create({
     data: {
       rootContentId: assignmentId,
       codeValidStarting: new Date(),
       codeValidUntil,
-      classCode: generateClassCode(),
       nonRootContent: {
         connect: newDescendantIds.map((id) => ({ id })),
       },
+    },
+  });
+  const { classCode } = await prisma.content.update({
+    where: {
+      id: assignmentId,
+    },
+    data: {
+      classCode: generateClassCode(),
     },
   });
 
@@ -332,8 +338,7 @@ export async function getAllAssignmentScores({
               firstNames: true,
               lastNames: true,
               userId: true,
-              email: true,
-              isAnonymous: true,
+              username: true,
             },
           },
         },
@@ -347,7 +352,7 @@ export async function getAllAssignmentScores({
       score: number;
       user: {
         userId: Uint8Array<ArrayBufferLike>;
-        email: string;
+        username: string;
         firstNames: string | null;
         lastNames: string;
       };
@@ -359,7 +364,7 @@ export async function getAllAssignmentScores({
       score: number;
       user: {
         userId: Uint8Array<ArrayBufferLike>;
-        email: string;
+        username: string;
         firstNames: string | null;
         lastNames: string;
       };
@@ -379,14 +384,9 @@ export async function getAllAssignmentScores({
           throw Error("Invalid data. Could not calculate score for student");
         }
       }
-      const { isAnonymous, email, ...userOther } = scoreObj.user;
-      const user = {
-        ...userOther,
-        email: isAnonymous ? "" : email,
-      };
       userScores.push({
         score,
-        user,
+        user: scoreObj.user,
       });
     }
     assignmentScores.push({
@@ -638,19 +638,22 @@ export async function getAssignmentViewerDataFromCode({
   code,
   loggedInUserId,
 }: {
-  code: string;
+  code: number;
   loggedInUserId: Uint8Array;
-}) {
+}): Promise<{
+  assignmentFound: boolean;
+  assignmentOpen: boolean;
+  assignment: Content | null;
+  scoreData?: ScoreData;
+}> {
   let preliminaryAssignment;
 
   // make sure that content is assigned and is either open or has data from `loggedInUserId`
   try {
     preliminaryAssignment = await prisma.content.findFirstOrThrow({
       where: {
+        classCode: code,
         ...filterViewableRootAssignment(loggedInUserId),
-        rootAssignment: {
-          classCode: code,
-        },
       },
       select: {
         id: true,
@@ -665,6 +668,7 @@ export async function getAssignmentViewerDataFromCode({
     ) {
       return {
         assignmentFound: false,
+        assignmentOpen: false,
         assignment: null,
       };
     } else {

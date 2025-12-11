@@ -6,7 +6,14 @@ import {
   filterEditableRootAssignment,
   filterViewableRootAssignment,
 } from "../utils/permissions";
-import { UserInfoWithEmail } from "../types";
+import {
+  isCachedLatestAttempt,
+  isItemScores,
+  ItemScores,
+  LatestAttempt,
+  ScoreData,
+  UserInfo,
+} from "../types";
 
 // TODO: do we still save score and state if assignment isn't open?
 // If not, how do we communicate that fact
@@ -30,7 +37,6 @@ import { UserInfoWithEmail } from "../types";
  */
 export async function saveScoreAndState({
   contentId,
-  code,
   loggedInUserId,
   attemptNumber,
   score,
@@ -40,7 +46,6 @@ export async function saveScoreAndState({
   variant,
 }: {
   contentId: Uint8Array;
-  code: string;
   loggedInUserId: Uint8Array;
   attemptNumber: number;
   score: number | null;
@@ -89,7 +94,6 @@ export async function saveScoreAndState({
     const assignment = await prisma.assignments.findUniqueOrThrow({
       where: {
         rootContentId: contentId,
-        classCode: code,
       },
       select: {
         contentState: {
@@ -110,7 +114,6 @@ export async function saveScoreAndState({
   if (maxAttemptNumber === 0) {
     await createNewAttempt({
       contentId,
-      code,
       variant,
       state,
       loggedInUserId,
@@ -255,7 +258,6 @@ export async function saveScoreAndState({
  */
 export async function createNewAttempt({
   contentId,
-  code,
   variant,
   state,
   loggedInUserId,
@@ -264,7 +266,6 @@ export async function createNewAttempt({
   shuffledItemOrder,
 }: {
   contentId: Uint8Array;
-  code: string;
   variant: number;
   state: string | null;
   loggedInUserId: Uint8Array;
@@ -280,9 +281,6 @@ export async function createNewAttempt({
     where: {
       id: contentId,
       ...filterViewableRootAssignment(loggedInUserId),
-      rootAssignment: {
-        classCode: code,
-      },
     },
     select: {
       mode: true,
@@ -962,45 +960,6 @@ export async function calculateScoreAndCacheResults({
   };
 }
 
-export type ItemScores = {
-  score: number;
-  itemNumber: number;
-  itemAttemptNumber: number;
-}[];
-
-type LatestAttempt = {
-  attemptNumber: number;
-  score: number;
-  itemScores: ItemScores;
-};
-
-function isItemScores(obj: unknown): obj is ItemScores {
-  const typedObj = obj as ItemScores;
-  return (
-    Array.isArray(typedObj) &&
-    typedObj.every((item) => {
-      return (
-        item !== null &&
-        typeof item === "object" &&
-        typeof item.score === "number" &&
-        typeof item.itemNumber === "number" &&
-        typeof item.itemAttemptNumber === "number"
-      );
-    })
-  );
-}
-
-function isCachedLatestAttempt(obj: unknown): obj is LatestAttempt {
-  const typedObj = obj as LatestAttempt;
-  return (
-    typedObj !== null &&
-    typeof typedObj === "object" &&
-    typeof typedObj.attemptNumber === "number" &&
-    typeof typedObj.score === "number" &&
-    isItemScores(typedObj.itemScores)
-  );
-}
-
 /**
  * Get the overall score, item scores if they exist, and latest scores of `requestedUserId` for assignment `contentId`.
  * If `requestedUserId` is not specified, default to `loggedInUserId`.
@@ -1020,7 +979,7 @@ export async function getScore({
   contentId: Uint8Array;
   requestedUserId?: Uint8Array;
   loggedInUserId: Uint8Array;
-}) {
+}): Promise<ScoreData> {
   const scoreUserId = requestedUserId ?? loggedInUserId;
 
   // verify have access
@@ -1125,9 +1084,7 @@ export async function getScoresOfAllStudents({
           firstNames: true,
           lastNames: true,
           userId: true,
-          // NOTE: we're including the email here because instructors want to know
-          // the emails of the people who have taken their assignment
-          email: true,
+          username: true,
           isAnonymous: true,
         },
       },
@@ -1143,7 +1100,7 @@ export async function getScoresOfAllStudents({
     bestAttemptNumber: number;
     itemScores: ItemScores | null;
     latestAttempt: LatestAttempt | null;
-    user: UserInfoWithEmail;
+    user: UserInfo;
   }[] = [];
 
   for (const scoreObj of cachedScores) {
@@ -1183,8 +1140,7 @@ export async function getScoresOfAllStudents({
         }
       }
 
-      const { email, isAnonymous, ...userOther } = scoreObj.user;
-      const user = { ...userOther, email: isAnonymous ? "" : email };
+      const { isAnonymous, ...user } = scoreObj.user;
 
       scores.push({
         score: scoreObj.cachedScore,
