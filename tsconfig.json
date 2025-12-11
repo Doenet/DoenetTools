@@ -7,10 +7,12 @@
     /* Module settings */
     "resolveJsonModule": true,
     "isolatedModules": true,
-    // The only reason this is node10 instead of nodenext is that Passport doesn't work with nodenext.
-    "moduleResolution": "node10",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
 
     "allowJs": false,
+
+    "sourceMap": true,
 
     /* Strictness */
     "strict": true,
