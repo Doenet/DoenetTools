@@ -42,6 +42,10 @@ model content {
   selectByVariant        Boolean                  @default(false)
   // Specific to documents inside problem sets
   repeatInProblemSet     Int                      @default(1)
+  // Course or assignment code
+  // This becomes assigned when you add scoped users to a folder or the content is a one-off assignment
+  // This is removed when either 1) all scoped users are removed or 2) scoped user is added to ancestor
+  classCode              Int?                     @unique @db.UnsignedInt
   // Assignments
   nonRootAssignmentId    Bytes?                   @db.Binary(16)
   mode                   AssignmentMode           @default(formative)
@@ -66,9 +70,12 @@ model content {
   submittedResponses     submittedResponses[]
   deletionRoot           content?                 @relation("deletionRoot", fields: [deletionRootId], references: [id])
   isDeletionRootFor      content[]                @relation("deletionRoot")
+  // Scoped users cannot be nested. If a folder has scoped users, its ancestors and descendants cannot.
+  scopedUsers            users[]                  @relation(name: "scopedToClass")
 
   @@index([ownerId, parentId, sortIndex])
   @@index([parentId, type])
+  @@index([classCode])
   @@fulltext([name])
   @@fulltext([source])
 }
@@ -208,15 +215,12 @@ model doenetmlVersions {
 
 model assignments {
   rootContentId     Bytes              @id @db.Binary(16)
-  classCode         String             @db.VarChar(45)
   codeValidStarting DateTime
   codeValidUntil    DateTime
   rootContent       content            @relation("rootAssignment", fields: [rootContentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   nonRootContent    content[]          @relation("nonRootAssignment")
   contentState      contentState[]
   assignmentScores  assignmentScores[]
-
-  @@index([classCode])
 }
 
 enum AssignmentMode {
@@ -307,10 +311,16 @@ model users {
   email              String                 @unique
   firstNames         String?
   lastNames          String
-  isEditor           Boolean                @default(false)
   isLibrary          Boolean                @default(false)
-  isAnonymous        Boolean                @default(false)
+  isEditor           Boolean                @default(false)
   isAuthor           Boolean                @default(false)
+  // There are two ways that an account is locked to not be able to explore or create content:
+  // 1. Account has scopedToClassId. This means that the account is a student rostered to a folder.
+  // 2. Account isAnonymous. We don't know what class they are in, but they're not going to author.
+  //
+  // This field should be true for any account that is scoped to an instructor's folder
+  scopedToClassId    Bytes?                 @db.Binary(16)
+  isAnonymous        Boolean                @default(false)
   content            content[]
   contentState       contentState[]
   submittedResponses submittedResponses[]
@@ -319,6 +329,7 @@ model users {
   assignmentScores   assignmentScores[]
   libraryEvents      libraryEvents[]
   libraryEditorInfos libraryActivityInfos[]
+  scopedToClass      content?               @relation(name: "scopedToClass", fields: [scopedToClassId], references: [id])
 
   @@fulltext([firstNames, lastNames])
 }
