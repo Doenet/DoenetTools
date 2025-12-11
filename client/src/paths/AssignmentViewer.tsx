@@ -20,7 +20,7 @@ import {
   ActivitySource,
   isActivitySource,
   isReportStateMessage,
-} from "@doenet-tools/shared/types/activityViewer";
+} from "@doenet-tools/shared";
 import { compileActivityFromContent } from "../utils/activity";
 // @ts-expect-error assignment-viewer doesn't publish types, see https://github.com/Doenet/assignment-viewer/issues/20
 import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";
