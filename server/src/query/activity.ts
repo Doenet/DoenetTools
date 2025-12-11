@@ -203,6 +203,7 @@ export async function deleteContent({
   await prisma.$transaction([deleteDescendants, deleteRoot]);
 }
 
+// TODO: Test this function
 /**
  * Return the content ids of the descendants on `contentId`. (No permission checks are performed.)
  *
@@ -253,6 +254,38 @@ export async function getDescendantIds(
   } else {
     return ids;
   }
+}
+
+// TODO: Test this function
+/**
+ * Return the content ids of the ancestors of `contentId`. (No permission checks are performed.)
+ *
+ * Returns a promise resulting to an array of content ids,
+ * or an empty array if `contentId` doesn't exist or isn't owned by `loggedInUserId`.
+ *
+ * One use is to avoid deadlocks from recursive update queries that update all the ancestors.
+ * Instead, one can get all the ids with this function and then run an update query using the ids.
+ */
+export async function getAncestorIds(contentId: Uint8Array) {
+  const idsRaw = await prisma.$queryRaw<
+    {
+      parentId: Uint8Array;
+    }[]
+  >(Prisma.sql`
+    WITH RECURSIVE content_tree(parentId) AS (
+      SELECT parentId FROM content
+      WHERE id = ${contentId} AND isDeletedOn IS NULL AND parentId IS NOT NULL
+      UNION ALL
+      SELECT content.parentId FROM content
+      INNER JOIN content_tree AS ct
+      ON content.id = ct.parentId
+      WHERE content.isDeletedOn IS NULL AND content.parentId IS NOT NULL
+    )
+    SELECT parentId from content_tree;
+  `);
+
+  const ids = idsRaw.map((x) => x.parentId);
+  return ids;
 }
 
 export async function restoreDeletedContent({

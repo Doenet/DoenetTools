@@ -1,5 +1,11 @@
 import { prisma } from "../model";
 import { UserInfo, UserInfoWithEmail } from "../types";
+import { InvalidRequestError } from "../utils/error";
+import { generateHandle } from "../utils/names";
+import { filterEditableContent } from "../utils/permissions";
+import { getDescendantIds, getAncestorIds } from "./activity";
+import { fromUUID } from "../utils/uuid";
+import bcrypt from "bcryptjs";
 
 export async function findOrCreateUser({
   email,
@@ -17,7 +23,14 @@ export async function findOrCreateUser({
   let user = await prisma.users.upsert({
     where: { email },
     update: {},
-    create: { email, firstNames, lastNames, isEditor, isAnonymous },
+    create: {
+      email,
+      firstNames,
+      lastNames,
+      username: email,
+      isEditor,
+      isAnonymous,
+    },
   });
 
   if (lastNames !== "" && user.lastNames == "") {
@@ -145,4 +158,100 @@ export async function setIsAuthor({
     where: { userId: loggedInUserId },
     data: { isAuthor },
   });
+}
+
+export async function createStudentHandleAccounts({
+  loggedInUserId,
+  folderId,
+  numAccounts,
+}: {
+  loggedInUserId: Uint8Array;
+  folderId: Uint8Array;
+  numAccounts: number;
+}) {
+  // Make sure 1) content is owned by user and 2) content is a folder
+  await prisma.content.findUniqueOrThrow({
+    where: {
+      id: folderId,
+      ...filterEditableContent(loggedInUserId),
+      type: "folder",
+    },
+    select: { id: true },
+  });
+
+  const ancestorIds = await getAncestorIds(folderId);
+  let conflictingStudentHandles = await prisma.content.findMany({
+    where: {
+      id: { in: ancestorIds },
+    },
+    select: {
+      _count: {
+        select: {
+          scopedUsers: true,
+        },
+      },
+    },
+  });
+
+  if (conflictingStudentHandles.some((c) => c._count.scopedUsers > 0)) {
+    throw new InvalidRequestError(
+      "Parent folder already contains student handle accounts.",
+    );
+  }
+
+  const descendantIds = await getDescendantIds(folderId);
+  conflictingStudentHandles = await prisma.content.findMany({
+    where: {
+      id: { in: descendantIds },
+    },
+    select: {
+      _count: {
+        select: {
+          scopedUsers: true,
+        },
+      },
+    },
+  });
+
+  if (conflictingStudentHandles.some((c) => c._count.scopedUsers > 0)) {
+    throw new InvalidRequestError(
+      "Subfolder already contains student handle accounts.",
+    );
+  }
+
+  // Create the student handle accounts
+  const accounts: { handle: string; password: string }[] = [];
+
+  for (let i = 0; i < numAccounts; i++) {
+    const password = generateHandle(true);
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(password, salt);
+
+    let success = false;
+    while (success === false) {
+      const handle = generateHandle();
+      const username = `${fromUUID(folderId)}:${handle}`;
+
+      try {
+        await prisma.users.create({
+          data: {
+            username,
+            firstNames: "",
+            lastNames: handle,
+            scopedToClassId: folderId,
+            passwordHash,
+          },
+        });
+
+        accounts.push({ handle, password });
+        success = true;
+      } catch (_e) {
+        continue;
+      }
+    }
+  }
+
+  accounts.sort((a, b) => (a.handle < b.handle ? -1 : 1));
+
+  return { accounts };
 }

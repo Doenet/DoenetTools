@@ -11,6 +11,7 @@ import { PrismaSessionStore } from "@quixo3/prisma-session-store";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as MagicLinkStrategy } from "passport-magic-link";
 import { Strategy as AnonymIdStrategy } from "../passport-anonymous/lib/strategy";
+import { Strategy as LocalStrategy } from "passport-local";
 
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 
@@ -43,7 +44,8 @@ import { compareRouter } from "./routes/compareRoutes";
 import { editorRouter } from "./routes/editorRoutes";
 import { discourseRouter } from "./routes/discourseLoginRoutes";
 import passportLib from "passport";
-import { generateUsername } from "friendly-username-generator";
+import bcrypt from "bcryptjs";
+import { generateHandle } from "./utils/names";
 
 // Type assertion to work around passport type declaration issues
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -171,10 +173,47 @@ passport.use(
   ),
 );
 
+passport.use(
+  new LocalStrategy(async function (username, password, done) {
+    try {
+      // 1. Find the user by the unique ID/username in your database.
+      const { userId, passwordHash } = await prisma.users.findUniqueOrThrow({
+        where: { username: username },
+        select: {
+          passwordHash: true,
+          userId: true,
+        },
+      });
+
+      // 2. Compare the provided password with the stored, hashed password.
+      const isMatch = await bcrypt.compare(
+        password,
+        passwordHash ?? "no password, fail",
+      );
+
+      if (!isMatch) {
+        // Password mismatch
+        return done(null, false, { message: "Incorrect password." });
+      }
+
+      // 3. Success! Pass the authenticated user object.
+      const payload = {
+        userId,
+        provider: "local",
+      };
+      return done(null, payload);
+    } catch (err) {
+      // Handle server/database error
+      return done(err);
+    }
+  }),
+);
+
 passport.use(new AnonymIdStrategy());
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 passport.serializeUser(async (req: any, user: any, done: any) => {
+  console.log(user);
   if (user.provider === "magiclink") {
     const email: string = user.email;
     const fromAnonymous: string = user.fromAnonymous;
@@ -239,22 +278,14 @@ passport.serializeUser(async (req: any, user: any, done: any) => {
     }
 
     return done(undefined, fromUUID(u.userId));
+    // TODO: upgrade from anonymous user?
+  } else if (user.provider === "local") {
+    return done(undefined, fromUUID(user.userId));
   } else if (user.anonymous) {
     let email = nanoid() + "@anonymous.doenet.org";
 
-    const randomName = generateUsername({
-      useHyphen: true,
-      useRandomNumber: true,
-    }).split("-");
-
-    function capitalizeFirstLetter(string: string) {
-      return string.charAt(0).toUpperCase() + string.slice(1);
-    }
-
     let firstNames = "";
-    let lastNames =
-      capitalizeFirstLetter(randomName[0]) +
-      capitalizeFirstLetter(randomName[1]);
+    let lastNames = generateHandle();
     let isAnonymous = true;
     let isEditor = false;
 

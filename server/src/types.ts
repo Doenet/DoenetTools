@@ -91,7 +91,7 @@ export function isUserInfo(obj: unknown): obj is UserInfo {
 }
 
 export type UserInfoWithEmail = UserInfo & {
-  email: string;
+  email: string | null;
 };
 
 export type CategoryGroup = {

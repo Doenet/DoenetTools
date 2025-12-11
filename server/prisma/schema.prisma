@@ -308,7 +308,9 @@ model contentViews {
 
 model users {
   userId             Bytes                  @id @default(dbgenerated("(uuid_to_bin(uuid(),1))")) @db.Binary(16)
-  email              String                 @unique
+  username           String                 @unique
+  email              String?                @unique
+  passwordHash       String?                @db.Char(60)
   firstNames         String?
   lastNames          String
   isLibrary          Boolean                @default(false)

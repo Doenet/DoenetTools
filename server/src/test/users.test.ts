@@ -1,7 +1,8 @@
-import { expect, test } from "vitest";
+import { describe, expect, test } from "vitest";
 import { createTestAnonymousUser, createTestUser } from "./utils";
 import { fromUUID } from "../utils/uuid";
 import {
+  createStudentHandleAccounts,
   findOrCreateUser,
   getAuthorInfo,
   getMyUserInfo,
@@ -11,6 +12,8 @@ import {
   upgradeAnonymousUser,
 } from "../query/user";
 import { getMyContent } from "../query/content_list";
+import { createContent } from "../query/activity";
+import { prisma } from "../model";
 
 test("New user has no content", async () => {
   const user = await createTestUser();
@@ -107,4 +110,52 @@ test("user apis do not provide email", async () => {
 
   const results3 = await getUserInfoIfLoggedIn({ loggedInUserId });
   expect(results3!.user).not.toHaveProperty("email");
+});
+
+describe("student handles", () => {
+  describe("create", () => {
+    test("instructor creates accounts", async () => {
+      const { userId } = await createTestUser();
+
+      // create folder
+      const { contentId } = await createContent({
+        loggedInUserId: userId,
+        contentType: "folder",
+        parentId: null,
+      });
+
+      const { accounts } = await createStudentHandleAccounts({
+        loggedInUserId: userId,
+        folderId: contentId,
+        numAccounts: 3,
+      });
+
+      const dbAccounts = await prisma.users.findMany({
+        where: { scopedToClassId: contentId },
+        select: { username: true },
+        orderBy: { username: "asc" },
+      });
+
+      expect(accounts).toHaveLength(3);
+      expect(dbAccounts).toHaveLength(3);
+
+      for (const [i, account] of accounts.entries()) {
+        expect(typeof account.handle).toBe("string");
+        expect(typeof account.password).toBe("string");
+        // Expect there not to be an number symbols
+        expect(account.handle.split("").every((c) => isNaN(Number(c)))).toBe(
+          true,
+        );
+
+        expect(dbAccounts[i].username).toEqual(
+          `${fromUUID(contentId)}:${account.handle}`,
+        );
+      }
+    });
+
+    test.todo("handles are unique inside the folder");
+
+    test.todo("instructor cannot create nested accounts");
+  });
+  test.todo("only instructor can change student password");
 });

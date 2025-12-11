@@ -45,6 +45,18 @@ loginRouter.get(
 );
 
 loginRouter.post(
+  "/handle",
+  passport.authenticate("local", {
+    failureRedirect: "/login", // Redirect on failed login
+  }),
+  function (req, res) {
+    console.log("req body");
+    console.log(req.body);
+    res.redirect("/");
+  },
+);
+
+loginRouter.post(
   "/anonymous",
   passport.authenticate("anonymous"),
   (req: Request, res: Response) => {
