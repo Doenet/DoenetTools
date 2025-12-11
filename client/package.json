@@ -16,7 +16,8 @@
         "src/**/*.ts",
         "src/**/*.js",
         "vite.config.ts",
-        "tsconfig.json"
+        "tsconfig.json",
+        ".env.production"
       ],
       "output": [
         "dist/**/*.js",
