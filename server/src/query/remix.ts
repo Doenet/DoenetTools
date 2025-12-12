@@ -1,6 +1,6 @@
 import { prisma } from "../model";
 import { ActivityRemixItem, LicenseCode, RemixContent } from "../types";
-import { getCidV1FromString } from "@doenet-tools/shared/utils/ipfs";
+import { getCidV1FromString } from "@doenet-tools/shared";
 import { compileActivityFromContent } from "../utils/contentStructure";
 import { createFullName } from "../utils/names";
 import {

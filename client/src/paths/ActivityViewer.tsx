@@ -58,10 +58,7 @@ import {
   getIconInfo,
   menuIcons,
 } from "../utils/activity";
-import {
-  ActivitySource,
-  isActivitySource,
-} from "@doenet-tools/shared/types/activityViewer";
+import { ActivitySource, isActivitySource } from "@doenet-tools/shared";
 import { processRemixes } from "../utils/processRemixes";
 import ContributorsMenu from "../dropdowns/ContributorsMenu";
 import { ContentInfoDrawer } from "../drawers/ContentInfoDrawer";

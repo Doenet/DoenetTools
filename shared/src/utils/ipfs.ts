@@ -1,9 +1,18 @@
-//@ts-expect-error no declaration file
+// @ts-expect-error - no declaration file
 import Hash from "ipfs-only-hash";
+
+async function getTextEncoder() {
+  if (typeof TextEncoder !== "undefined") {
+    return TextEncoder;
+  }
+  const { TextEncoder: NodeTextEncoder } = await import("util");
+  return NodeTextEncoder;
+}
 
 export async function getCidV1FromString(text: string): Promise<string> {
   // Convert the string to a Uint8Array using TextEncoder
-  const encoder = new TextEncoder();
+  const TextEncoderLib = await getTextEncoder();
+  const encoder = new TextEncoderLib();
   const bytes = encoder.encode(text);
 
   return getCidV1FromBytes(bytes);

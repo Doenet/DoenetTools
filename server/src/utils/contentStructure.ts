@@ -14,7 +14,7 @@ import {
 import { sortClassifications } from "./classificationsCategories";
 import { fromUUID, isEqualUUID } from "./uuid";
 import { DateTime } from "luxon";
-import { ActivitySource } from "@doenet-tools/shared/types/activityViewer";
+import { ActivitySource } from "@doenet-tools/shared";
 import { InvalidRequestError } from "./error";
 
 /**
