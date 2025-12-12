@@ -213,7 +213,6 @@ passport.use(new AnonymIdStrategy());
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 passport.serializeUser(async (req: any, user: any, done: any) => {
-  console.log(user);
   if (user.provider === "magiclink") {
     const email: string = user.email;
     const fromAnonymous: string = user.fromAnonymous;
@@ -280,6 +279,7 @@ passport.serializeUser(async (req: any, user: any, done: any) => {
     return done(undefined, fromUUID(u.userId));
     // TODO: upgrade from anonymous user?
   } else if (user.provider === "local") {
+    console.log("local", user);
     return done(undefined, fromUUID(user.userId));
   } else if (user.anonymous) {
     let email = nanoid() + "@anonymous.doenet.org";
