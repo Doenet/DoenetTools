@@ -20,10 +20,18 @@ export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
 
-  axios.post("/api/auth/magiclink", {
-    email: formObj.email,
-    // stay: formObj.stay !== undefined,
-  });
+  if (formObj._action === "login email") {
+    axios.post("/api/auth/magiclink", {
+      email: formObj.email,
+    });
+  } else if (formObj._action === "login handle") {
+    axios.post("/api/login/handle", {
+      username: formObj.username,
+      password: formObj.password,
+    });
+  } else {
+    throw new Error("Invalid action");
+  }
 
   return null;
 }
@@ -31,6 +39,8 @@ export async function action({ request }: ActionFunctionArgs) {
 export function SignIn() {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
 
@@ -87,6 +97,7 @@ export function SignIn() {
                   setFormSubmitted(true);
                 }}
               >
+                <input type="hidden" name="_action" value="login email" />
                 <FormControl>
                   <FormLabel>Email</FormLabel>
                   <Input
@@ -167,6 +178,53 @@ export function SignIn() {
               </button>
             </>
           )}
+          <Heading>TEST: student login</Heading>
+          <Form
+            method="post"
+            onSubmit={() => {
+              setFormSubmitted(true);
+            }}
+          >
+            <FormControl>
+              <input type="hidden" name="_action" value="login handle" />
+              <FormLabel>Username</FormLabel>
+              <Input
+                data-test="username input"
+                placeholder="Username"
+                width="300px"
+                isRequired={true}
+                type="text"
+                name="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              ></Input>
+            </FormControl>
+            <FormControl>
+              <FormLabel>Password</FormLabel>
+              <Input
+                data-test="password input"
+                placeholder="Password"
+                width="300px"
+                isRequired={true}
+                type="password"
+                name="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              ></Input>
+            </FormControl>
+            {/* <FormControl marginTop="10px">
+                  <Checkbox name="stay">Stay logged in</Checkbox>
+                </FormControl> */}
+            <Button
+              type="submit"
+              data-test="sendEmailButton"
+              marginTop="10px"
+              colorScheme="blue"
+              width="300px"
+            >
+              Sign up/Log in
+            </Button>
+          </Form>
         </Box>
       </HStack>
     </Flex>

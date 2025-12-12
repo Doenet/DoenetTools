@@ -771,6 +771,22 @@ export function Activities() {
       {heading}
       {searchResultsHeading}
       {selectedItemsActions}
+      {parentId !== null && (
+        <Button
+          onClick={() => {
+            fetcher.submit(
+              {
+                path: "user/handles",
+                numAccounts: 3,
+                folderId: parentId,
+              },
+              { method: "post", encType: "application/json" },
+            );
+          }}
+        >
+          Generate some student handles
+        </Button>
+      )}
       {mainPanel}
     </Box>
   );
