@@ -16,13 +16,5 @@
     "@doenet-tools/client": "*",
     "@doenet-tools/server": "*"
   },
-  "devDependencies": {
-    "cypress": "^14.5.3",
-    "cypress-file-upload": "^5.0.8",
-    "cypress-iframe": "^1.0.1",
-    "cypress-parallel": "^0.15.0",
-    "cypress-plugin-tab": "^1.0.5",
-    "cypress-wait-until": "^3.0.2",
-    "eslint-plugin-cypress": "^5.1.0"
-  }
+  "devDependencies": {}
 }

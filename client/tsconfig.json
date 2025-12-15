@@ -13,6 +13,10 @@
     // Some dependencies don't pass strict mode
     "skipLibCheck": true
   },
-  // TODO: Move cypress tests into their own
-  "include": ["src"]
+  "include": [
+    "src/**/.*ts",
+    "src/**/*.tsx",
+    "cypress/**/*.ts",
+    "cypress/**/*.tsx"
+  ]
 }

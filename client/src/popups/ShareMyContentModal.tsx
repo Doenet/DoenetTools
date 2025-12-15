@@ -80,7 +80,7 @@ export function ShareMyContentModal({
             Share {contentTypeToName[contentType].toLocaleLowerCase()}
           </Heading>
         </ModalHeader>
-        <ModalCloseButton />
+        <ModalCloseButton data-test="Share Close Button" />
         <ModalBody m="1rem">
           <VStack spacing="3rem" align="flex-start">
             <Box>
@@ -320,6 +320,7 @@ function SharePublicly({
               { method: "post", encType: "application/json" },
             );
           }}
+          data-test="Share Publicly Button"
         >
           Share publicly
         </Button>
