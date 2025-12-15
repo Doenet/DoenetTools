@@ -19,7 +19,7 @@ Environment:
     Value: "hi"
   - Name: DATABASE_HOST
     Value:
-      Fn::Sub: "mysql.${EnvironmentName}.aws"
+      Fn::Sub: "mysql.${EnvironmentName}.doenet.internal"
   - Name: DATABASE_USER
     # ValueFrom:
     # Fn::Sub: "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${EnvironmentName}/DbUser"
@@ -29,4 +29,5 @@ Environment:
     #   Fn::Sub: "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${EnvironmentName}/DbPassword"
     Value: "doenet_password"
   - Name: DATABASE_URL
-    Value: "mysql://root:doenet_password@mysql.${EnvironmentName}.aws:3306/doenet"
+    Value:
+      Fn::Sub: "mysql://root:doenet_password@mysql.${EnvironmentName}.doenet.internal:3306/doenet"
