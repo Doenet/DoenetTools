@@ -280,6 +280,14 @@ passport.serializeUser(async (req: any, user: any, done: any) => {
     // TODO: upgrade from anonymous user?
   } else if (user.provider === "local") {
     console.log("local", user);
+
+    const pause1000 = function () {
+      return new Promise((resolve, _reject) => {
+        setTimeout(resolve, 1000);
+      });
+    };
+    await pause1000();
+
     return done(undefined, fromUUID(user.userId));
   } else if (user.anonymous) {
     let email = nanoid() + "@anonymous.doenet.org";
@@ -406,8 +414,6 @@ app.post(
   },
   // 2) hand off to passport‑magic‑link
   passport.authenticate("magiclink", { action: "requestToken" }),
-  // 3) redirect back home once the link has been sent
-  (_req, res) => res.redirect("/"),
 );
 
 // app.get(

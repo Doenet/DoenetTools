@@ -12,7 +12,7 @@ import {
   Input,
   Show,
 } from "@chakra-ui/react";
-import { ActionFunctionArgs, Form } from "react-router";
+import { ActionFunctionArgs, Form, redirect } from "react-router";
 import { useNavigate } from "react-router";
 import "../google-signin.css";
 
@@ -25,10 +25,17 @@ export async function action({ request }: ActionFunctionArgs) {
       email: formObj.email,
     });
   } else if (formObj._action === "login handle") {
-    axios.post("/api/login/handle", {
-      username: formObj.username,
-      password: formObj.password,
-    });
+    try {
+      const { data } = await axios.post("/api/login/handle", {
+        username: formObj.username,
+        password: formObj.password,
+      });
+      console.log(data);
+      return redirect(`/`);
+    } catch (_e) {
+      alert("Could not log in with provided username and password");
+      console.log("error logging in", _e);
+    }
   } else {
     throw new Error("Invalid action");
   }

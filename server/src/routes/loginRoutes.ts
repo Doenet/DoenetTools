@@ -1,7 +1,8 @@
 import express, { Request, Response } from "express";
 import passportLib from "passport";
-import { getUserInfoFromEmail } from "../query/user";
+import { getUser, getUserInfoFromEmail } from "../query/user";
 import axios from "axios";
+import { convertUUID } from "../utils/uuid";
 
 // Type assertion to work around passport type declaration issues
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -46,11 +47,11 @@ loginRouter.get(
 
 loginRouter.post(
   "/handle",
-  passport.authenticate("local", {
-    // failureRedirect: "/login", // Redirect on failed login
-    failureMessage: "Invalid username or password", // Message on failed login
-    // successRedirect: "/", // Redirect on successful login
-  }),
+  passport.authenticate("local", {}),
+  async (req: Request, res: Response) => {
+    const user = await getUser(req.user as { userId: Uint8Array });
+    res.send({ user: convertUUID(user) });
+  },
 );
 
 loginRouter.post(
