@@ -4,7 +4,7 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
-    "types": ["vite/client", "cypress"],
+    "types": ["vite/client", "cypress", "node"],
 
     // We're using Vite to build, therefore we don't need TS to create the files,
     // we only want TS to type check

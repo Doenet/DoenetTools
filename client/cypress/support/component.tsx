@@ -1,3 +1,5 @@
+/// <reference path="./component.d.ts" />
+
 // ***********************************************************
 // This example support/component.ts is processed and
 // loaded automatically before your test files.
@@ -18,9 +20,6 @@ import { ChakraProvider } from "@chakra-ui/react";
 import "./commands";
 
 import { mount } from "cypress/react";
-// import { MemoryRouter } from "react-router-dom";
-import { MountOptions, MountReturn } from "cypress/react";
-import { MemoryRouterProps } from "react-router-dom";
 
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import { MathJaxContext } from "better-react-mathjax";
@@ -31,22 +30,6 @@ import { theme } from "../../src/theme";
 // your custom command.
 // Alternatively, can be defined in cypress/support/component.d.ts
 // with a <reference path="./component" /> at the top of your spec.
-
-declare global {
-  namespace Cypress {
-    interface Chainable {
-      /**
-       * Mounts a React node
-       * @param component React Node to mount
-       * @param options Additional options to pass into mount
-       */
-      mount(
-        component: React.ReactNode,
-        options?: MountOptions & { routerProps?: MemoryRouterProps },
-      ): Cypress.Chainable<MountReturn>;
-    }
-  }
-}
 
 // Cypress.Commands.add('mount', mount)
 
