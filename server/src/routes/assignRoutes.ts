@@ -73,11 +73,6 @@ assignRouter.get(
 );
 
 assignRouter.get(
-  "/getAllAssignmentScores",
-  queryLoggedIn(getAllAssignmentScores, assignmentParentSchema),
-);
-
-assignRouter.get(
   "/getAllAssignmentScores/:parentId",
   queryLoggedIn(getAllAssignmentScores, assignmentParentSchema),
 );

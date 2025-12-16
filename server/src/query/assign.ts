@@ -272,9 +272,19 @@ export async function getAllAssignmentScores({
   parentId,
 }: {
   loggedInUserId: Uint8Array;
-  parentId: Uint8Array | null;
+  parentId: Uint8Array;
 }) {
-  const orderedActivities = await prisma.$queryRaw<
+  // Make sure parentId is owned by loggedInUser and get name
+  const { name: folderName } = await prisma.content.findUniqueOrThrow({
+    where: {
+      id: parentId,
+      type: "folder",
+      ...filterEditableContent(loggedInUserId),
+    },
+    select: { name: true },
+  });
+
+  const orderedAssignments = await prisma.$queryRaw<
     {
       contentId: Uint8Array;
       name: string;
@@ -301,101 +311,86 @@ export async function getAllAssignmentScores({
     WHERE ct.type != "folder" ORDER BY path
   `);
 
-  let folder: {
-    contentId: Uint8Array;
-    name: string;
-  } | null = null;
-
-  if (parentId !== null) {
-    const folderPrelim = await prisma.content.findUniqueOrThrow({
-      where: {
-        id: parentId,
-        type: "folder",
-        ...filterEditableContent(loggedInUserId),
-      },
-      select: { id: true, name: true },
-    });
-    folder = folderPrelim
-      ? { contentId: folderPrelim.id, name: folderPrelim.name }
-      : null;
+  // The index of where this activity's scores will be placed
+  // Converting from contentId to index in orderedActivities
+  const indexOfAssignment = new Map<string, number>();
+  for (const [i, activity] of orderedAssignments.entries()) {
+    indexOfAssignment.set(activity.contentId.toString(), i);
   }
 
-  const assignmentScoresPrelim = await prisma.assignments.findMany({
+  const orderedStudentsWithScores = await prisma.users.findMany({
     where: {
-      rootContentId: { in: orderedActivities.map((a) => a.contentId) },
-    },
-    select: {
-      rootContentId: true,
-      assignmentScores: {
-        orderBy: [
-          { user: { lastNames: "asc" } },
-          { user: { firstNames: "asc" } },
-        ],
-        select: {
-          cachedScore: true,
-          user: {
-            select: {
-              firstNames: true,
-              lastNames: true,
-              userId: true,
-              username: true,
+      OR: [
+        { scopedToClassId: parentId },
+        {
+          assignmentScores: {
+            some: {
+              contentId: { in: orderedAssignments.map((a) => a.contentId) },
             },
           },
         },
+      ],
+    },
+    select: {
+      userId: true,
+      username: true,
+      firstNames: true,
+      lastNames: true,
+      assignmentScores: {
+        where: {
+          contentId: { in: orderedAssignments.map((a) => a.contentId) },
+        },
+        select: {
+          contentId: true,
+          cachedScore: true,
+        },
       },
     },
+    orderBy: [{ lastNames: "asc" }, { firstNames: "asc" }],
   });
 
-  const assignmentScores: {
-    contentId: Uint8Array;
-    userScores: {
-      score: number;
-      user: {
-        userId: Uint8Array<ArrayBufferLike>;
-        username: string;
-        firstNames: string | null;
-        lastNames: string;
-      };
-    }[];
-  }[] = [];
+  const orderedStudents = orderedStudentsWithScores.map(
+    ({ assignmentScores, ...studentData }) => studentData,
+  );
 
-  for (const assignment of assignmentScoresPrelim) {
-    const userScores: {
-      score: number;
-      user: {
-        userId: Uint8Array<ArrayBufferLike>;
-        username: string;
-        firstNames: string | null;
-        lastNames: string;
-      };
-    }[] = [];
-    for (const scoreObj of assignment.assignmentScores) {
-      let score = scoreObj.cachedScore;
+  const scores: (number | null)[][] = Array.from(
+    { length: orderedStudentsWithScores.length },
+    () => Array.from({ length: orderedAssignments.length }, () => null),
+  );
+
+  for (const [studentIndex, student] of orderedStudentsWithScores.entries()) {
+    for (const assignmentScore of student.assignmentScores) {
+      const assignmentIndex = indexOfAssignment.get(
+        assignmentScore.contentId.toString(),
+      )!;
+
+      let score = assignmentScore.cachedScore;
+      // A null `cachedScore` means that there is some score but we've delayed calculating it.
+      // Not to be confused with null in `scores` which represents no attempt at all.
+      // If we've deferred calculating a score, we calculate it now.
       if (score === null) {
         const calcResults = await calculateScoreAndCacheResults({
-          contentId: assignment.rootContentId,
-          requestedUserId: scoreObj.user.userId,
+          contentId: assignmentScore.contentId,
+          requestedUserId: student.userId,
           loggedInUserId,
         });
-
         if (calcResults.calculatedScore) {
           score = calcResults.score;
         } else {
           throw Error("Invalid data. Could not calculate score for student");
         }
       }
-      userScores.push({
-        score,
-        user: scoreObj.user,
-      });
+
+      scores[studentIndex][assignmentIndex] = score;
     }
-    assignmentScores.push({
-      contentId: assignment.rootContentId,
-      userScores,
-    });
   }
 
-  return { orderedActivities, assignmentScores, folder };
+  return {
+    orderedStudents,
+    orderedAssignments,
+    scores,
+    folder: { contentId: parentId, name: folderName },
+  };
 }
 
 /**

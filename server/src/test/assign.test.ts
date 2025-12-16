@@ -36,7 +36,6 @@ import {
   loadState,
   saveScoreAndState,
 } from "../query/scores";
-import { moveContent } from "../query/copy_move";
 import { getContent } from "../query/activity_edit_view";
 import { AssignmentMode } from "@prisma/client";
 import { ItemScores, UserInfo } from "../types";
@@ -1402,631 +1401,130 @@ test("get all assignment data from anonymous user", async () => {
   });
 });
 
-test("get assignments folder structure", { timeout: 100000 }, async () => {
-  const owner = await createTestUser();
-  const ownerId = owner.userId;
+test(
+  "assignment list is correctly ordered depth-first and by sortIndex",
+  { timeout: 100000 },
+  async () => {
+    const owner = await createTestUser();
+    const ownerId = owner.userId;
 
-  // Folder structure
-  // Base folder
-  // - Folder 1
-  //   - Activity 1a
-  //   - Activity 1b (unassigned)
-  //   - Folder 1c
-  //     - Activity 1c1
-  //     - Folder 1c2
-  //       - Activity 1c2a
-  //       - Activity 1c2b
-  //     - Activity 1c3 (unassigned)
-  //   - Folder 1d
-  //   - Activity 1e
-  // - Activity 2
-  // - Folder 3
-  //   - Activity 3a (unassigned)
-  //   - Activity 3b
-  //   - Activity 3c (deleted)
-  // - Activity 4 (deleted)
-  // Activity null (unassigned)
-  // Activity gone (deleted)
-  // Activity root
-
-  const [
-    baseFolder,
-    folder3,
-    activity1a,
-    _activity3a,
-    activity3b,
-    activity3c,
-    folder1,
-    folder1c,
-    activity1c1,
-    _activity1c3,
-    folder1d,
-    activity1e,
-    activity2,
-    activity4,
-    _activityNull,
-    activityGone,
-    activityRoot,
-    folder1c2,
-    activity1c2a,
-    activity1c2b,
-    activity1b,
-  ] = await setupTestContent(ownerId, {
-    "Base folder": fold({
-      // Moved to be in order
-      "Folder 3": fold({
-        // Will move to Folder 1
-        "Activity 1a": doc(""),
-
-        "Activity 3a": doc("unassigned"),
-        "Activity 3b": doc(""),
-        "Activity 3c": doc("deleted"),
-      }),
-      // Moved to be in order
+    const [docId, folder1] = await setupTestContent(ownerId, {
+      "my doc": doc("<answer>1</answer>"),
       "Folder 1": fold({
-        "Folder 1c": fold({
-          "Activity 1c1": doc(""),
-          "Activity 1c3": doc("unassigned"),
-        }),
-        "Folder 1d": fold({}),
-        "Activity 1e": doc(""),
+        // These folders and assignments will be created:
+        // beforeFolder 2 (assignment)
+        // Folder 2
+        //  |--> beforeFolder 3 (assignment)
+        //  |--> Folder 3
+        //  |--> afterFolder 3 (assignment)
+        // afterFolder 2 (assignment)
       }),
-      "Activity 2": doc(""),
-      "Activity 4": doc("deleted"),
-    }),
-    "Activity null": doc("unassigned"),
-    "Activity gone": doc("deleted"),
-    "Activity root": doc(""),
-
-    // Will be moved inside folder 1c
-    "Folder 1c2": fold({
-      "Activity 1c2a": doc(""),
-      "Activity 1c2b": doc(""),
-
-      // Will be moved inside folder 1
-      "Activity 1b": doc("unassigned"),
-    }),
-  });
-
-  // create folder 1 after folder 3 and move to make sure it is using sortIndex
-  // and not the order content was created
-  await moveContent({
-    contentId: folder1,
-    parentId: baseFolder,
-    desiredPosition: 0,
-    loggedInUserId: ownerId,
-  });
-  await moveContent({
-    contentId: activity2,
-    parentId: baseFolder,
-    desiredPosition: 1,
-    loggedInUserId: ownerId,
-  });
-
-  // move activity 1a to right places
-  await moveContent({
-    contentId: activity1a,
-    parentId: folder1,
-    desiredPosition: 0,
-    loggedInUserId: ownerId,
-  });
-
-  // create folder 1c2 in wrong folder initially
-  // after creating its content move folder 1c2 into the right place
-  await moveContent({
-    contentId: folder1c2,
-    parentId: folder1c,
-    desiredPosition: 1,
-    loggedInUserId: ownerId,
-  });
-
-  // create activity 1b in wrong place then move it
-  await moveContent({
-    contentId: activity1b,
-    parentId: folder1,
-    desiredPosition: 1,
-    loggedInUserId: ownerId,
-  });
-
-  // move activity 1e to end of folder 1
-  await moveContent({
-    contentId: activity1e,
-    parentId: folder1,
-    desiredPosition: 100,
-    loggedInUserId: ownerId,
-  });
-
-  await deleteContent({ contentId: activityGone, loggedInUserId: ownerId });
-  await deleteContent({ contentId: activity4, loggedInUserId: ownerId });
-  await deleteContent({ contentId: activity3c, loggedInUserId: ownerId });
-
-  const closeAt = DateTime.now().plus({ day: 1 });
-
-  async function create(
-    contentId: Uint8Array,
-    parentId: Uint8Array | null,
-  ): Promise<Uint8Array> {
-    const { assignmentId } = await createAssignment({
-      contentId,
-      closeAt: closeAt,
-      loggedInUserId: ownerId,
-      destinationParentId: parentId,
+      // Created on the root level and should NOT be listed:
+      // Root assignment
     });
-    return assignmentId;
-  }
 
-  const assign1aId = await create(activity1a, folder1);
-  const assign1c1Id = await create(activity1c1, folder1c);
-  const assign1c2aId = await create(activity1c2a, folder1c2);
-  const assign1c2bId = await create(activity1c2b, folder1c2);
-  const assign1eId = await create(activity1e, folder1);
-  const assign2Id = await create(activity2, baseFolder);
-  const assign3bId = await create(activity3b, folder3);
-  const assignRootId = await create(activityRoot, null);
+    const closeAt = DateTime.now().plus({ days: 1 });
 
-  const newUser = await createTestAnonymousUser();
-  const newUserId = newUser.userId;
-  const userInfo = convertUUID({
-    userId: newUserId,
-    firstNames: newUser.firstNames,
-    lastNames: newUser.lastNames,
-    username: newUser.username,
-  });
+    async function setupAssignment(
+      parentId: Uint8Array | null,
+    ): Promise<Uint8Array> {
+      const { assignmentId } = await createAssignment({
+        contentId: docId,
+        closeAt: closeAt,
+        loggedInUserId: ownerId,
+        destinationParentId: parentId,
+      });
+      return assignmentId;
+    }
 
-  await createNewAttempt({
-    contentId: assign1aId,
-    loggedInUserId: newUserId,
-    state: "document state 1a",
-    variant: 1,
-  });
-  await saveScoreAndState({
-    contentId: assign1aId,
-    loggedInUserId: newUserId,
-    attemptNumber: 1,
-    score: 0.11,
-    state: "document state 1a",
-    variant: 1,
-  });
-  await createNewAttempt({
-    contentId: assign1c1Id,
-    loggedInUserId: newUserId,
-    state: "document state 1c1",
-    variant: 1,
-  });
-  await saveScoreAndState({
-    contentId: assign1c1Id,
-    loggedInUserId: newUserId,
-    attemptNumber: 1,
-    score: 0.131,
-    state: "document state 1c1",
-    variant: 1,
-  });
-  await createNewAttempt({
-    contentId: assign1c2aId,
-    loggedInUserId: newUserId,
-    state: "document state 1c2a",
-    variant: 1,
-  });
-  await saveScoreAndState({
-    contentId: assign1c2aId,
-    loggedInUserId: newUserId,
-    attemptNumber: 1,
-    score: 0.1321,
-    state: "document state 1c2a",
-    variant: 1,
-  });
-  await createNewAttempt({
-    contentId: assign1c2bId,
-    loggedInUserId: newUserId,
-    state: "document state 1c2b",
-    variant: 1,
-  });
-  await saveScoreAndState({
-    contentId: assign1c2bId,
-    loggedInUserId: newUserId,
-    attemptNumber: 1,
-    score: 0.1322,
-    state: "document state 1c2b",
-    variant: 1,
-  });
-  await createNewAttempt({
-    contentId: assign1eId,
-    loggedInUserId: newUserId,
-    state: "document state 1e",
-    variant: 1,
-  });
-  await saveScoreAndState({
-    contentId: assign1eId,
-    loggedInUserId: newUserId,
-    attemptNumber: 1,
-    score: 0.15,
-    state: "document state 1e",
-    variant: 1,
-  });
-  await createNewAttempt({
-    contentId: assign2Id,
-    loggedInUserId: newUserId,
-    state: "document state 2",
-    variant: 1,
-  });
-  await saveScoreAndState({
-    contentId: assign2Id,
-    loggedInUserId: newUserId,
-    attemptNumber: 1,
-    score: 0.2,
-    state: "document state 2",
-    variant: 1,
-  });
-  await createNewAttempt({
-    contentId: assign3bId,
-    loggedInUserId: newUserId,
-    state: "document state 3b",
-    variant: 1,
-  });
-  await saveScoreAndState({
-    contentId: assign3bId,
-    loggedInUserId: newUserId,
-    attemptNumber: 1,
-    score: 0.32,
-    state: "document state 3b",
-    variant: 1,
-  });
-  await createNewAttempt({
-    contentId: assignRootId,
-    loggedInUserId: newUserId,
-    state: "document state Root",
-    variant: 1,
-  });
-  await saveScoreAndState({
-    contentId: assignRootId,
-    loggedInUserId: newUserId,
-    attemptNumber: 1,
-    score: 1.0,
-    state: "document state Root",
-    variant: 1,
-  });
+    // Root assignment, not listed
+    await setupAssignment(null);
 
-  const desiredFolder3 = [
-    { contentId: fromUUID(assign3bId), name: "Activity 3b" },
-  ];
-  const desiredFolder3Scores = [
-    {
-      contentId: fromUUID(assign3bId),
-      score: 0.32,
-      user: userInfo,
-    },
-  ];
-  const desiredFolder1c2 = [
-    { contentId: fromUUID(assign1c2aId), name: "Activity 1c2a" },
-    { contentId: fromUUID(assign1c2bId), name: "Activity 1c2b" },
-  ];
-  const desiredFolder1c2Scores = [
-    {
-      contentId: fromUUID(assign1c2aId),
-      score: 0.1321,
-      user: userInfo,
-    },
-    {
-      contentId: fromUUID(assign1c2bId),
-      score: 0.1322,
-      user: userInfo,
-    },
-  ];
+    // Inside Folder 1
+    const beforeFolder2 = await setupAssignment(folder1);
+    const { contentId: folder2 } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "folder",
+      parentId: folder1,
+    });
+    const afterFolder2 = await setupAssignment(folder1);
 
-  const desiredFolder1c = [
-    ...desiredFolder1c2,
-    { contentId: fromUUID(assign1c1Id), name: "Activity 1c1" },
-  ];
-  const desiredFolder1cScores = [
-    ...desiredFolder1c2Scores,
-    {
-      contentId: fromUUID(assign1c1Id),
-      score: 0.131,
-      user: userInfo,
-    },
-  ];
+    // Inside Folder 2
+    const beforeFolder3 = await setupAssignment(folder2);
+    const { contentId: _folder3 } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "folder",
+      parentId: folder2,
+    });
+    const afterFolder3 = await setupAssignment(folder2);
 
-  const desiredFolder1 = [
-    ...desiredFolder1c,
-    { contentId: fromUUID(assign1aId), name: "Activity 1a" },
-    { contentId: fromUUID(assign1eId), name: "Activity 1e" },
-  ];
-  const desiredFolder1Scores = [
-    ...desiredFolder1cScores,
-    {
-      contentId: fromUUID(assign1aId),
-      score: 0.11,
-      user: userInfo,
-    },
-    {
-      contentId: fromUUID(assign1eId),
-      score: 0.15,
-      user: userInfo,
-    },
-  ];
+    const expectedOrderedAssignments = [
+      { contentId: beforeFolder2, name: "my doc" },
+      { contentId: beforeFolder3, name: "my doc" },
+      { contentId: afterFolder3, name: "my doc" },
+      { contentId: afterFolder2, name: "my doc" },
+    ];
 
-  const desiredBaseFolder = [
-    ...desiredFolder1,
-    ...desiredFolder3,
-    { contentId: fromUUID(assign2Id), name: "Activity 2" },
-  ];
-  const desiredBaseFolderScores = [
-    ...desiredFolder1Scores,
-    ...desiredFolder3Scores,
-    {
-      contentId: fromUUID(assign2Id),
-      score: 0.2,
-      user: userInfo,
-    },
-  ];
+    const scoreData = await getAllAssignmentScores({
+      loggedInUserId: ownerId,
+      parentId: folder1,
+    });
+    expect(scoreData.orderedAssignments).eqls(expectedOrderedAssignments);
+  },
+);
 
-  const desiredNullFolder = [
-    ...desiredBaseFolder,
-    { contentId: fromUUID(assignRootId), name: "Activity root" },
-  ];
-  const desiredNullFolderScores = [
-    ...desiredBaseFolderScores,
-    {
-      contentId: fromUUID(assignRootId),
-      score: 1.0,
-      user: userInfo,
-    },
-  ];
-
-  function sortedByScore(array: { score: number }[]) {
-    const copy = array.slice();
-    copy.sort((a, b) => a.score - b.score);
-    return copy;
-  }
-
-  let scoreData = await getAllAssignmentScores({
-    loggedInUserId: ownerId,
-    parentId: null,
-  });
-  expect(convertUUID(scoreData.orderedActivities)).eqls(desiredNullFolder);
-
-  expect(
-    convertUUID(
-      scoreData.assignmentScores
-        .flatMap((a) =>
-          a.userScores.map((us) => ({
-            contentId: a.contentId,
-            score: us.score,
-            user: us.user,
-          })),
-        )
-        .sort((a, b) => a.score - b.score),
-    ),
-  ).eqls(sortedByScore(desiredNullFolderScores));
-  expect(scoreData.folder).eqls(null);
-
-  let studentData = await getStudentAssignmentScores({
-    studentUserId: newUserId,
-    loggedInUserId: ownerId,
-    parentId: null,
-  });
-  expect(
-    convertUUID(
-      studentData.orderedActivityScores.map((a) => ({
-        contentId: a.contentId,
-        score: a.score,
-        user: userInfo,
-      })),
-    ),
-  ).eqls(desiredNullFolderScores);
-  expect(studentData.folder).eqls(null);
-
-  scoreData = await getAllAssignmentScores({
-    loggedInUserId: ownerId,
-    parentId: baseFolder,
-  });
-
-  expect(convertUUID(scoreData.orderedActivities)).eqls(desiredBaseFolder);
-  expect(
-    convertUUID(
-      scoreData.assignmentScores
-        .flatMap((a) =>
-          a.userScores.map((us) => ({
-            contentId: a.contentId,
-            score: us.score,
-            user: us.user,
-          })),
-        )
-        .sort((a, b) => a.score - b.score),
-    ),
-  ).eqls(sortedByScore(desiredBaseFolderScores));
-  expect(convertUUID(scoreData.folder?.contentId)).eqls(fromUUID(baseFolder));
-
-  studentData = await getStudentAssignmentScores({
-    studentUserId: newUserId,
-    loggedInUserId: ownerId,
-    parentId: baseFolder,
-  });
-  expect(
-    convertUUID(
-      studentData.orderedActivityScores.map((a) => ({
-        contentId: a.contentId,
-        score: a.score,
-        user: userInfo,
-      })),
-    ),
-  ).eqls(desiredBaseFolderScores);
-  expect(convertUUID(studentData.folder?.contentId)).eqls(fromUUID(baseFolder));
-
-  scoreData = await getAllAssignmentScores({
-    loggedInUserId: ownerId,
-    parentId: folder1,
-  });
-  expect(convertUUID(scoreData.orderedActivities)).eqls(desiredFolder1);
-  expect(
-    convertUUID(
-      scoreData.assignmentScores
-        .flatMap((a) =>
-          a.userScores.map((us) => ({
-            contentId: a.contentId,
-            score: us.score,
-            user: us.user,
-          })),
-        )
-        .sort((a, b) => a.score - b.score),
-    ),
-  ).eqls(sortedByScore(desiredFolder1Scores));
-  expect(convertUUID(scoreData.folder?.contentId)).eqls(fromUUID(folder1));
-
-  studentData = await getStudentAssignmentScores({
-    studentUserId: newUserId,
-    loggedInUserId: ownerId,
-    parentId: folder1,
-  });
-  expect(
-    convertUUID(
-      studentData.orderedActivityScores.map((a) => ({
-        contentId: a.contentId,
-        score: a.score,
-        user: userInfo,
-      })),
-    ),
-  ).eqls(desiredFolder1Scores);
-  expect(convertUUID(studentData.folder?.contentId)).eqls(fromUUID(folder1));
-
-  scoreData = await getAllAssignmentScores({
-    loggedInUserId: ownerId,
-    parentId: folder3,
-  });
-  expect(convertUUID(scoreData.orderedActivities)).eqls(desiredFolder3);
-  expect(
-    convertUUID(
-      scoreData.assignmentScores
-        .flatMap((a) =>
-          a.userScores.map((us) => ({
-            contentId: a.contentId,
-            score: us.score,
-            user: us.user,
-          })),
-        )
-        .sort((a, b) => a.score - b.score),
-    ),
-  ).eqls(desiredFolder3Scores);
-  expect(convertUUID(scoreData.folder?.contentId)).eqls(fromUUID(folder3));
-
-  studentData = await getStudentAssignmentScores({
-    studentUserId: newUserId,
-    loggedInUserId: ownerId,
-    parentId: folder3,
-  });
-  expect(
-    convertUUID(
-      studentData.orderedActivityScores.map((a) => ({
-        contentId: a.contentId,
-        score: a.score,
-        user: userInfo,
-      })),
-    ),
-  ).eqls(desiredFolder3Scores);
-  expect(convertUUID(studentData.folder?.contentId)).eqls(fromUUID(folder3));
-
-  scoreData = await getAllAssignmentScores({
-    loggedInUserId: ownerId,
-    parentId: folder1c,
-  });
-  expect(convertUUID(scoreData.orderedActivities)).eqls(desiredFolder1c);
-  expect(
-    convertUUID(
-      scoreData.assignmentScores
-        .flatMap((a) =>
-          a.userScores.map((us) => ({
-            contentId: a.contentId,
-            score: us.score,
-            user: us.user,
-          })),
-        )
-        .sort((a, b) => a.score - b.score),
-    ),
-  ).eqls(sortedByScore(desiredFolder1cScores));
-  expect(convertUUID(scoreData.folder?.contentId)).eqls(fromUUID(folder1c));
-
-  studentData = await getStudentAssignmentScores({
-    studentUserId: newUserId,
-    loggedInUserId: ownerId,
-    parentId: folder1c,
-  });
-  expect(
-    convertUUID(
-      studentData.orderedActivityScores.map((a) => ({
-        contentId: a.contentId,
-        score: a.score,
-        user: userInfo,
-      })),
-    ),
-  ).eqls(desiredFolder1cScores);
-  expect(convertUUID(studentData.folder?.contentId)).eqls(fromUUID(folder1c));
-
-  scoreData = await getAllAssignmentScores({
-    loggedInUserId: ownerId,
-    parentId: folder1d,
-  });
-  expect(scoreData.orderedActivities).eqls([]);
-  expect(scoreData.assignmentScores).eqls([]);
-  expect(convertUUID(scoreData.folder?.contentId)).eqls(fromUUID(folder1d));
-
-  studentData = await getStudentAssignmentScores({
-    studentUserId: newUserId,
-    loggedInUserId: ownerId,
-    parentId: folder1d,
-  });
-  expect(studentData.orderedActivityScores).eqls([]);
-  expect(convertUUID(studentData.folder?.contentId)).eqls(fromUUID(folder1d));
-});
-
-test("get data for user's assignments", { timeout: 30000 }, async () => {
+test("getAllAssignmentScores retrieves ordered assignments, ordered students, and scores", async () => {
+  // --- Setup ---
   const owner = await createTestUser();
   const ownerId = owner.userId;
-
-  const { contentId: contentId } = await createContent({
-    loggedInUserId: ownerId,
-    contentType: "singleDoc",
-    parentId: null,
+  const [folderId, contentId] = await setupTestContent(ownerId, {
+    "Folder 1": fold({
+      "Activity 1": doc("Some content"),
+    }),
   });
-  await updateContent({
-    contentId: contentId,
-    name: "Activity 1",
-    source: "Some content",
-    loggedInUserId: ownerId,
-  });
-
-  // open assignment generates code
   const closeAt = DateTime.now().plus({ days: 1 });
   const { assignmentId } = await createAssignment({
-    contentId: contentId,
-    closeAt: closeAt,
+    contentId,
+    closeAt,
     loggedInUserId: ownerId,
-    destinationParentId: null,
+    destinationParentId: folderId,
   });
 
+  // --- Test: one assignment, no scores ---
   let scoreData = await getAllAssignmentScores({
     loggedInUserId: ownerId,
-    parentId: null,
+    parentId: folderId,
   });
-
-  // no one has done the assignment yet
-  expect(scoreData.orderedActivities).eqls([
-    {
-      contentId: assignmentId,
-      name: "Activity 1",
+  const expectedScoreData: {
+    orderedAssignments: { contentId: Uint8Array; name: string }[];
+    scores: (number | null)[][];
+    orderedStudents: UserInfo[];
+    folder: { contentId: Uint8Array; name: string };
+  } = {
+    orderedAssignments: [
+      {
+        contentId: assignmentId,
+        name: "Activity 1",
+      },
+    ],
+    scores: [],
+    orderedStudents: [],
+    folder: {
+      contentId: folderId,
+      name: "Folder 1",
     },
-  ]);
-  expect(scoreData.assignmentScores).eqls([
-    { contentId: assignmentId, userScores: [] },
-  ]);
+  };
 
-  const newUser1 = await createTestAnonymousUser();
+  expect(scoreData).eqls(expectedScoreData);
+
+  // --- Test: one assignment, one student, one score ---
+  const newUser1 = await createTestAnonymousUser("B is after A");
   const newUser1Info = {
     userId: newUser1.userId,
     firstNames: newUser1.firstNames,
     lastNames: newUser1.lastNames,
     username: newUser1.username,
   };
-
   await createNewAttempt({
     contentId: assignmentId,
     loggedInUserId: newUser1.userId,
@@ -2044,61 +1542,15 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
 
   scoreData = await getAllAssignmentScores({
     loggedInUserId: ownerId,
-    parentId: null,
+    parentId: folderId,
   });
 
-  expect(scoreData.orderedActivities).eqls([
-    {
-      contentId: assignmentId,
-      name: "Activity 1",
-    },
-  ]);
-  expect(scoreData.assignmentScores).eqls([
-    {
-      contentId: assignmentId,
-      userScores: [
-        {
-          score: 0.5,
-          user: newUser1Info,
-        },
-      ],
-    },
-  ]);
+  expectedScoreData.orderedStudents = [newUser1Info];
+  expectedScoreData.scores = [[0.5]];
+  expect(scoreData).eqls(expectedScoreData);
 
-  // new lower score does lower the resulting score
-  await saveScoreAndState({
-    contentId: assignmentId,
-    loggedInUserId: newUser1.userId,
-    attemptNumber: 1,
-    score: 0.2,
-    state: "document state 2",
-    variant: 1,
-  });
-
-  scoreData = await getAllAssignmentScores({
-    loggedInUserId: ownerId,
-    parentId: null,
-  });
-
-  expect(scoreData.orderedActivities).eqls([
-    {
-      contentId: assignmentId,
-      name: "Activity 1",
-    },
-  ]);
-  expect(scoreData.assignmentScores).eqls([
-    {
-      contentId: assignmentId,
-      userScores: [
-        {
-          score: 0.2,
-          user: newUser1Info,
-        },
-      ],
-    },
-  ]);
-
-  const newUser2 = await createTestAnonymousUser();
+  // --- Test: one assignment, two students, two scores ---
+  const newUser2 = await createTestAnonymousUser("A is before B");
   const newUser2Info = {
     userId: newUser2.userId,
     firstNames: newUser2.firstNames,
@@ -2121,49 +1573,24 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     variant: 1,
   });
 
-  await saveScoreAndState({
-    contentId: assignmentId,
-    loggedInUserId: newUser1.userId,
-    attemptNumber: 1,
-    score: 0.7,
-    state: "document state 4",
-    variant: 1,
-  });
+  expectedScoreData.orderedStudents = [newUser2Info, newUser1Info];
+  // New student comes first alphabetically
+  // New student (user 2) scored 0.3
+  // Old student (user 1) scored 0.5 previously
+  expectedScoreData.scores = [[0.3], [0.5]];
 
   scoreData = await getAllAssignmentScores({
     loggedInUserId: ownerId,
-    parentId: null,
+    parentId: folderId,
   });
 
-  expect(scoreData.orderedActivities).eqls([
-    {
-      contentId: assignmentId,
-      name: "Activity 1",
-    },
-  ]);
+  expect(scoreData).eqls(expectedScoreData);
 
-  let expectedUserScores = [
-    {
-      score: 0.3,
-      user: newUser2Info,
-    },
-    {
-      score: 0.7,
-      user: newUser1Info,
-    },
-  ].sort((a, b) => a.user.lastNames.localeCompare(b.user.lastNames));
-
-  expect(scoreData.assignmentScores).eqls([
-    {
-      contentId: assignmentId,
-      userScores: expectedUserScores,
-    },
-  ]);
-
+  // --- Test: two assignments, two students, 2nd assignment score mssing for first student ---
   const { contentId: activity2Id } = await createContent({
     loggedInUserId: ownerId,
     contentType: "singleDoc",
-    parentId: null,
+    parentId: folderId,
   });
   await updateContent({
     contentId: activity2Id,
@@ -2176,79 +1603,87 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     contentId: activity2Id,
     closeAt: closeAt,
     loggedInUserId: ownerId,
-    destinationParentId: null,
+    destinationParentId: folderId,
   });
-
-  // identical name to user 2
-
-  const newUser3 = await createTestAnonymousUser();
-  const newUser3Info = {
-    userId: newUser3.userId,
-    firstNames: newUser3.firstNames,
-    lastNames: newUser3.lastNames,
-    username: newUser3.username,
-  };
 
   await createNewAttempt({
     contentId: assignmentId2,
-    loggedInUserId: newUser3.userId,
+    loggedInUserId: newUser1.userId,
     state: "document state 1",
     variant: 1,
   });
   await saveScoreAndState({
     contentId: assignmentId2,
-    loggedInUserId: newUser3.userId,
+    loggedInUserId: newUser1.userId,
     attemptNumber: 1,
     score: 0.9,
     state: "document state 1",
     variant: 1,
   });
 
+  expectedScoreData.orderedAssignments.push({
+    contentId: assignmentId2,
+    name: "Activity 2",
+  });
+  expectedScoreData.scores = [
+    [0.3, null],
+    [0.5, 0.9],
+  ];
+
   scoreData = await getAllAssignmentScores({
     loggedInUserId: ownerId,
-    parentId: null,
+    parentId: folderId,
   });
 
-  expect(scoreData.orderedActivities).eqls([
-    {
-      contentId: assignmentId,
-      name: "Activity 1",
-    },
-    {
-      contentId: assignmentId2,
-      name: "Activity 2",
-    },
-  ]);
-
-  expectedUserScores = [
-    {
-      score: 0.3,
-      user: newUser2Info,
-    },
-    {
-      score: 0.7,
-      user: newUser1Info,
-    },
-  ].sort((a, b) => {
-    return a.user.lastNames.localeCompare(b.user.lastNames);
-  });
-
-  expect(scoreData.assignmentScores).eqls([
-    {
-      contentId: assignmentId,
-      userScores: expectedUserScores,
-    },
-    {
-      contentId: assignmentId2,
-      userScores: [
-        {
-          score: 0.9,
-          user: newUser3Info,
-        },
-      ],
-    },
-  ]);
+  expect(scoreData).eqls(expectedScoreData);
 });
+
+test("score for one attempt uses most recent save", async () => {
+  const { userId } = await createTestUser();
+  const [folderId, contentId] = await setupTestContent(userId, {
+    "Folder 1": fold({
+      "Activity 1": doc("Some content"),
+    }),
+  });
+  const { assignmentId } = await createAssignment({
+    contentId,
+    closeAt: DateTime.now().plus({ days: 1 }),
+    loggedInUserId: userId,
+    destinationParentId: folderId,
+  });
+
+  await createNewAttempt({
+    contentId: assignmentId,
+    loggedInUserId: userId,
+    state: "document state 1",
+    variant: 1,
+  });
+  await saveScoreAndState({
+    contentId: assignmentId,
+    loggedInUserId: userId,
+    attemptNumber: 1,
+    score: 0.8,
+    state: "document state 2",
+    variant: 1,
+  });
+  await saveScoreAndState({
+    contentId: assignmentId,
+    loggedInUserId: userId,
+    attemptNumber: 1,
+    score: 0.2,
+    state: "document state 3",
+    variant: 1,
+  });
+
+  const scoreData = await getAllAssignmentScores({
+    loggedInUserId: userId,
+    parentId: folderId,
+  });
+  expect(scoreData.scores).eqls([[0.2]]);
+});
+
+// Are we allowing this?
+test.todo("get student data where two students share the same name");
 
 test("record submitted events and get responses", async () => {
   const owner = await createTestUser();

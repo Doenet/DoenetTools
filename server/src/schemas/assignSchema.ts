@@ -31,7 +31,7 @@ export const assignmentSettingsSchema = z.object({
 });
 
 export const assignmentParentSchema = z.object({
-  parentId: optionalUuidSchema,
+  parentId: uuidSchema,
 });
 
 export const getStudentAssignmentScoresSchema = z.object({

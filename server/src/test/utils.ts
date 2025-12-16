@@ -6,13 +6,16 @@ import { ContentType } from "@prisma/client";
 import { createContent, updateContent } from "../query/activity";
 
 // create an isolated user for each test, will allow tests to be run in parallel
-export async function createTestUser(isEditor = false, isAnonymous = false) {
+export async function createTestUser(
+  isEditor = false,
+  isAnonymous = false,
+  lastNamePrefix = "",
+) {
   const id =
     Date.now().toString() + Math.round(Math.random() * 100000).toString();
   const email = `vitest${id}@vitest.test`;
   const firstNames = `vitest`;
-  const lastNames = `user${id}`;
-
+  const lastNames = `${lastNamePrefix}user${id}`;
   let user;
 
   try {
@@ -40,8 +43,8 @@ export async function createTestEditorUser() {
   return await createTestUser(true);
 }
 
-export async function createTestAnonymousUser() {
-  return await createTestUser(false, true);
+export async function createTestAnonymousUser(lastNamePrefix = "") {
+  return await createTestUser(false, true, lastNamePrefix);
 }
 
 export async function getTestAssignment(
