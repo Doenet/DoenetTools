@@ -58,11 +58,7 @@ loginRouter.get(
   async function (req, _res, next) {
     if (req.user) {
       // Try to log the user out of Discourse, but don't block logout if it fails
-      try {
-        logoutFromDiscourse(req.user);
-      } catch (error) {
-        console.error(`Failed to logout of Discourse: ${error}`);
-      }
+      logoutFromDiscourse(req.user);
     }
     return next();
   },
@@ -77,25 +73,29 @@ loginRouter.get(
 );
 
 async function logoutFromDiscourse(user: UserInfoWithEmail) {
-  const { data: discourseUser } = await axios.get(
-    `${process.env.DISCOURSE_URL}/u/by-external/${user.userId}.json`,
-    {
-      headers: {
-        "Api-Key": process.env.DISCOURSE_API_KEY || "",
-        "Api-Username": process.env.DISCOURSE_API_USERNAME || "",
+  try {
+    const { data: discourseUser } = await axios.get(
+      `${process.env.DISCOURSE_URL}/u/by-external/${user.userId}.json`,
+      {
+        headers: {
+          "Api-Key": process.env.DISCOURSE_API_KEY || "",
+          "Api-Username": process.env.DISCOURSE_API_USERNAME || "",
+        },
       },
-    },
-  );
-  const discourseUserId = discourseUser.user.id;
+    );
+    const discourseUserId = discourseUser.user.id;
 
-  await axios.post(
-    `${process.env.DISCOURSE_URL}/admin/users/${discourseUserId}/log_out.json`,
-    {},
-    {
-      headers: {
-        "Api-Key": process.env.DISCOURSE_API_KEY || "",
-        "Api-Username": process.env.DISCOURSE_API_USERNAME || "",
+    await axios.post(
+      `${process.env.DISCOURSE_URL}/admin/users/${discourseUserId}/log_out.json`,
+      {},
+      {
+        headers: {
+          "Api-Key": process.env.DISCOURSE_API_KEY || "",
+          "Api-Username": process.env.DISCOURSE_API_USERNAME || "",
+        },
       },
-    },
-  );
+    );
+  } catch (error) {
+    console.error(`Failed to logout of Discourse: ${error}`);
+  }
 }
