@@ -20,7 +20,8 @@ import {
   Stack,
   VStack,
 } from "@chakra-ui/react";
-import { Link as ReactRouterLink } from "react-router";
+import { Link as ReactRouterLink, useOutletContext } from "react-router";
+import { SiteContext } from "./SiteHeader";
 
 export async function loader() {
   return {};
@@ -30,6 +31,8 @@ export function Home() {
   useEffect(() => {
     document.title = `Doenet - Richly interactive classroom activities`;
   }, []);
+
+  const { user } = useOutletContext<SiteContext>();
 
   // The first string is the video source path,
   // the second string is the link to try the activity.
@@ -212,6 +215,8 @@ export function Home() {
     </WithSideBanners>
   );
 
+  const discussHref = `${import.meta.env.VITE_DISCOURSE_URL}${user && user?.isAnonymous === false ? "/session/sso" : ""}`;
+
   const communitySection = (
     <WithSideBanners bgColor="white" padding="70px">
       <Box px={{ base: "16px", md: "0px" }}>
@@ -224,10 +229,7 @@ export function Home() {
         </Box>
         <Box marginTop="10px" fontSize="1.4rem">
           To get support, check out our{" "}
-          <ChakraLink
-            href="https://community.doenet.org"
-            textDecoration="underline"
-          >
+          <ChakraLink href={discussHref} textDecoration="underline">
             community discussions
           </ChakraLink>{" "}
           or our{" "}
