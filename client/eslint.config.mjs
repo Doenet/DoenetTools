@@ -36,6 +36,7 @@ export default tseslint.config(
     rules: {
       "react/react-in-jsx-scope": "off", // Not needed with new JSX transform
       "react/jsx-uses-react": "off", // Not needed with new JSX transform
+      "@typescript-eslint/triple-slash-reference": "off",
     },
   },
 
