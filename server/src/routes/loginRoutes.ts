@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import passportLib from "passport";
 import { getUserInfoFromEmail } from "../query/user";
 import axios from "axios";
+import { UserInfoWithEmail } from "../types";
 
 // Type assertion to work around passport type declaration issues
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -56,29 +57,9 @@ loginRouter.get(
   "/logout",
   async function (req, _res, next) {
     if (req.user) {
+      // Try to log the user out of Discourse, but don't block logout if it fails
       try {
-        const { data: discourseUser } = await axios.get(
-          `${process.env.DISCOURSE_URL}/u/by-external/${req.user.userId}.json`,
-          {
-            headers: {
-              "Api-Key": process.env.DISCOURSE_API_KEY || "",
-              "Api-Username": process.env.DISCOURSE_API_USERNAME || "",
-            },
-          },
-        );
-        const discourseUserId = discourseUser.user.id;
-
-        axios.post(
-          // https://{defaultHost}/admin/users/{id}/log_out.json
-          `${process.env.DISCOURSE_URL}/admin/users/${discourseUserId}/log_out.json`,
-          {},
-          {
-            headers: {
-              "Api-Key": process.env.DISCOURSE_API_KEY || "",
-              "Api-Username": process.env.DISCOURSE_API_USERNAME || "",
-            },
-          },
-        );
+        logoutFromDiscourse(req.user);
       } catch (error) {
         console.error(`Failed to logout of Discourse: ${error}`);
       }
@@ -94,3 +75,27 @@ loginRouter.get(
     });
   },
 );
+
+async function logoutFromDiscourse(user: UserInfoWithEmail) {
+  const { data: discourseUser } = await axios.get(
+    `${process.env.DISCOURSE_URL}/u/by-external/${user.userId}.json`,
+    {
+      headers: {
+        "Api-Key": process.env.DISCOURSE_API_KEY || "",
+        "Api-Username": process.env.DISCOURSE_API_USERNAME || "",
+      },
+    },
+  );
+  const discourseUserId = discourseUser.user.id;
+
+  await axios.post(
+    `${process.env.DISCOURSE_URL}/admin/users/${discourseUserId}/log_out.json`,
+    {},
+    {
+      headers: {
+        "Api-Key": process.env.DISCOURSE_API_KEY || "",
+        "Api-Username": process.env.DISCOURSE_API_USERNAME || "",
+      },
+    },
+  );
+}
