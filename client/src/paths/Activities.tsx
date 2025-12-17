@@ -19,11 +19,12 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import {
+  Form,
+  Link as ReactRouterLink,
   redirect,
   useLoaderData,
   useNavigate,
   useFetcher,
-  Form,
   useOutletContext,
 } from "react-router";
 
@@ -580,23 +581,23 @@ export function Activities() {
           </HStack>
         </Form>
 
-        <HStack gap="5px">
-          {parent && (
-            <Button size="sm" colorScheme="blue" onClick={shareFolderOnOpen}>
-              Share
-            </Button>
-          )}
-          <Button
-            colorScheme="blue"
-            size="sm"
-            onClick={() =>
-              navigate(`/allAssignmentScores${parentId ? "/" + parentId : ""}`)
-            }
-          >
-            Scores
-          </Button>
-
+        <HStack gap="7px">
           {createNewButton}
+          {parent && (
+            <>
+              <Button size="sm" colorScheme="blue" onClick={shareFolderOnOpen}>
+                Share
+              </Button>
+              <Button
+                as={ReactRouterLink}
+                to={`/students/${parentId}`}
+                colorScheme="blue"
+                size="sm"
+              >
+                Students
+              </Button>
+            </>
+          )}
         </HStack>
       </HStack>
     </Flex>
@@ -771,22 +772,7 @@ export function Activities() {
       {heading}
       {searchResultsHeading}
       {selectedItemsActions}
-      {parentId !== null && (
-        <Button
-          onClick={() => {
-            fetcher.submit(
-              {
-                path: "user/handles",
-                numAccounts: 3,
-                folderId: parentId,
-              },
-              { method: "post", encType: "application/json" },
-            );
-          }}
-        >
-          Generate some student handles
-        </Button>
-      )}
+
       {mainPanel}
     </Box>
   );

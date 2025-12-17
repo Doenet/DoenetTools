@@ -29,7 +29,7 @@ export function AssignmentInvitation({
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement | null>;
-  classCode: string;
+  classCode: number;
   assignmentName: string;
   assignmentStatus: AssignmentStatus;
 }) {

@@ -59,7 +59,7 @@ import { EditAssignmentSettings } from "../widgets/editor/EditAssignmentSettings
 import { DateTime } from "luxon";
 import { NameBar } from "../widgets/NameBar";
 import { AssignmentInvitation } from "../views/AssignmentInvitation";
-import { downloadScoresToCsv } from "../utils/scores";
+import { downloadScoresToCsv } from "../utils/csv";
 
 type ScoreItem = {
   score: number;
@@ -603,21 +603,13 @@ export function AssignmentData() {
   })!;
 
   const downloadScores = () => {
-    downloadScoresToCsv(
-      `Scores for ${assignment.name}`,
-      scores.map((score) => {
-        const assignmentScores: Record<string, number> = {};
-        assignmentScores[assignment.name] = score.score;
-
-        return {
-          firstNames: score.user.firstNames,
-          lastNames: score.user.lastNames,
-          email: score.user.email,
-          studentId: score.user.userId,
-          assignmentScores,
-        };
-      }),
-    );
+    downloadScoresToCsv({
+      title: `Scores for ${assignment.name}`,
+      orderedStudents: scores.map((s) => s.user),
+      // [s.score] indicates we only have one assignment here
+      scores: scores.map((s) => [s.score]),
+      orderedAssignments: [assignment.name],
+    });
   };
 
   return (
@@ -625,7 +617,7 @@ export function AssignmentData() {
       <AssignmentInvitation
         isOpen={inviteIsOpen}
         onClose={inviteOnClose}
-        classCode={info.classCode}
+        classCode={info.classCode!}
         assignmentStatus={info.assignmentStatus}
         assignmentName={assignment.name}
       />
