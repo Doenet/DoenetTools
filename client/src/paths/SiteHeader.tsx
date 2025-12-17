@@ -265,9 +265,23 @@ export function SiteHeader() {
                       )}
                     </>
                   )}
-                  <NavLinkTab to={discussHref} dataTest="Discourse Link">
-                    Discuss
-                  </NavLinkTab>
+                  <ChakraLink
+                    href={discussHref}
+                    isExternal
+                    data-test="Discourse Link"
+                    _hover={{ textDecoration: "none" }}
+                  >
+                    <Center
+                      h="40px"
+                      borderBottomStyle="none"
+                      borderBottomWidth="0px"
+                      p="4px"
+                    >
+                      <Text fontSize="md" color="doenet.canvastext">
+                        Discuss
+                      </Text>
+                    </Center>
+                  </ChakraLink>
                 </HStack>
               </GridItem>
             </Show>
@@ -439,12 +453,26 @@ export function SiteHeader() {
                                 Curate
                               </NavLinkDropdownTab>
                             )}
-                            <NavLinkDropdownTab
-                              to={discussHref}
-                              dataTest="Discourse Link"
-                            >
-                              Discuss
-                            </NavLinkDropdownTab>
+                            <MenuItem>
+                              <ChakraLink
+                                href={discussHref}
+                                isExternal
+                                data-test="Discourse Link"
+                                _hover={{ textDecoration: "none" }}
+                                w="100%"
+                              >
+                                <Center
+                                  h="40px"
+                                  borderBottomStyle="none"
+                                  borderBottomWidth="0px"
+                                  p="4px"
+                                >
+                                  <Text fontSize="md" color="doenet.canvastext">
+                                    Discuss
+                                  </Text>
+                                </Center>
+                              </ChakraLink>
+                            </MenuItem>
                           </>
                         )}
                       </MenuList>
