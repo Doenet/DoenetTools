@@ -68,7 +68,7 @@ loginRouter.get(
         );
         const discourseUserId = discourseUser.user.id;
 
-        await axios.post(
+        axios.post(
           // https://{defaultHost}/admin/users/{id}/log_out.json
           `${process.env.DISCOURSE_URL}/admin/users/${discourseUserId}/log_out.json`,
           {},
