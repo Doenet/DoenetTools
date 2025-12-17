@@ -19,9 +19,6 @@ import {
   Button,
   Stack,
   VStack,
-  List,
-  OrderedList,
-  ListItem,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router";
 
