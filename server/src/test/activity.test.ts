@@ -23,11 +23,7 @@ import {
   getContentSource,
   getDescendantIds,
 } from "../query/activity";
-import {
-  getActivityViewerData,
-  getContent,
-  getSharedEditorData,
-} from "../query/activity_edit_view";
+import { getActivityViewerData, getContent } from "../query/activity_edit_view";
 import { getMyContent, getMyTrash } from "../query/content_list";
 import { modifyContentSharedWith, setContentIsPublic } from "../query/share";
 import {
@@ -58,7 +54,7 @@ import {
 const currentDoenetmlVersion = {
   id: 2,
   displayedVersion: "0.7",
-  fullVersion: "0.7.0-beta-17",
+  fullVersion: "0.7.0-rc-5",
   default: true,
   deprecated: false,
   removed: false,
@@ -825,7 +821,7 @@ test("get public activity editor data only if public or shared", async () => {
   });
 
   await expect(
-    getSharedEditorData({ contentId: contentId, loggedInUserId: user1Id }),
+    getContent({ contentId: contentId, loggedInUserId: user1Id }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
 
   await updateContent({
@@ -839,7 +835,7 @@ test("get public activity editor data only if public or shared", async () => {
     isPublic: true,
   });
 
-  let sharedData = await getSharedEditorData({
+  let sharedData = await getContent({
     contentId: contentId,
     loggedInUserId: user1Id,
   });
@@ -856,7 +852,7 @@ test("get public activity editor data only if public or shared", async () => {
   });
 
   await expect(
-    getSharedEditorData({ contentId: contentId, loggedInUserId: user1Id }),
+    getContent({ contentId: contentId, loggedInUserId: user1Id }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
 
   await modifyContentSharedWith({
@@ -866,7 +862,7 @@ test("get public activity editor data only if public or shared", async () => {
     users: [user1Id],
   });
 
-  sharedData = await getSharedEditorData({
+  sharedData = await getContent({
     contentId: contentId,
     loggedInUserId: user1Id,
   });
@@ -877,7 +873,7 @@ test("get public activity editor data only if public or shared", async () => {
   expect(sharedData.doenetML).eqls(doenetML);
 
   await expect(
-    getSharedEditorData({ contentId: contentId, loggedInUserId: user2Id }),
+    getContent({ contentId: contentId, loggedInUserId: user2Id }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
 });
 
