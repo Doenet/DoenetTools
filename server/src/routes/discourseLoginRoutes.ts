@@ -30,20 +30,25 @@ discourseRouter.get("/sso", async (req: Request, res: Response) => {
     res.status(500).send("SSO secret not configured");
     return;
   }
- 
+
   try {
     // 1. Extract raw sso and sig from the query string WITHOUT decoding
     const { sso: rawSso, sig } = extractRawParams(req.originalUrl);
 
-    // 2. Verify HMAC signature on raw string
-    const expectedSig = hmacSha256Hex(rawSso, process.env.DISCOURSE_SSO_SECRET);
+    // 2. URL-decode the SSO parameter
+    // Discourse signs the Base64 payload, not the URL encoding of it — so you must URL-decode exactly once, then verify the HMAC.
+
+    const sso = decodeURIComponent(rawSso);
+
+    // 3. Verify HMAC signature on URL-decoded SSO
+    const expectedSig = hmacSha256Hex(sso, process.env.DISCOURSE_SSO_SECRET);
     if (expectedSig !== sig) {
       res.status(400).send("Bad sig");
       return;
     }
 
-    // 3. Decode the Base64 payload
-    const decodedPayload = base64url.decode(rawSso);
+    // 4. Decode the Base64 payload
+    const decodedPayload = base64url.decode(sso);
     const payloadParams = new URLSearchParams(decodedPayload);
     const nonce = payloadParams.get("nonce");
     const returnUrl = payloadParams.get("return_sso_url");
@@ -52,14 +57,14 @@ discourseRouter.get("/sso", async (req: Request, res: Response) => {
       return res.status(400).send("Missing nonce or return_sso_url");
     }
 
-    // 4. Check if user is logged in
+    // 5. Check if user is logged in
     if (!req.isAuthenticated?.() || !req.user) {
       return res.redirect(
         "/signIn?returnTo=" + encodeURIComponent(req.originalUrl),
       );
     }
 
-    // 5. Fetch user info
+    // 6. Fetch user info
     const { email, firstNames, lastNames } =
       await prisma.users.findUniqueOrThrow({
         where: { userId: req.user.userId },
@@ -70,7 +75,7 @@ discourseRouter.get("/sso", async (req: Request, res: Response) => {
       return res.status(400).send("Invalid account type");
     }
 
-    // 6. Build response paylod in a format Discourse expects
+    // 7. Build response paylod in a format Discourse expects
     // TODO: Does Discourse allow duplicate usernames? If not, need to ensure uniqueness,
     // possibly by adding random digits at the end
     const username = `${firstNames}_${lastNames}`;
@@ -85,14 +90,14 @@ discourseRouter.get("/sso", async (req: Request, res: Response) => {
       // Optionally add avatar_url
     }).toString();
 
-    // 7. Encode and sign response
+    // 8. Encode and sign response
     const ssoResponse = base64url.encode(responsePayload);
     const responseSig = hmacSha256Hex(
       ssoResponse,
       process.env.DISCOURSE_SSO_SECRET,
     );
 
-    // 8. Redirect back to Discourse
+    // 9. Redirect back to Discourse
     res.redirect(
       `${returnUrl}?sso=${encodeURIComponent(ssoResponse)}&sig=${responseSig}`,
     );
