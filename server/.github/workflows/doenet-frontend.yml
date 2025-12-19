@@ -1,0 +1,59 @@
+name: Deploy LIF Metadata Repository Frontend to Amazon S3
+
+env:
+  AWS_REGION: us-east-1
+  GHA_ROLE: "arn:aws:iam::381492161417:role/lif-github-actions-dev"
+  AWS_ACCOUNT_ID: 381492161417
+  DOMAIN: lif.unicon.net
+  ENV_NAME: dev
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+    paths:
+      - .github/workflows/lif_mdr_frontend.yml
+      - frontends/mdr-frontend/**
+      - cloudformation/dev-lif-mdr-frontend.params
+
+permissions:
+      id-token: write
+      contents: read
+
+jobs:
+
+  mdr-frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    env:
+      WORKING_DIR: ./frontends/mdr-frontend
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v5
+      with:
+        audience: sts.amazonaws.com
+        role-to-assume: ${{ env.GHA_ROLE }}
+        role-session-name: mdr-frontend
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Build the project
+      shell: bash
+      working-directory: ${{ env.WORKING_DIR }}
+      run: |
+        npm ci
+        echo "VITE_API_URL=https://mdr-api.${{ env.DOMAIN }}" > .env
+        npm run build
+
+    - name: Sync to S3
+      shell: bash
+      working-directory: ${{ env.WORKING_DIR }}
+      run: |
+        aws s3 sync --delete dist s3://mdr-${{ env.AWS_ACCOUNT_ID }}-${{ env.AWS_REGION }}
+        id=$(aws ssm get-parameter --name "/${{ env.ENV_NAME }}/mdr/DistributionId" --query "Parameter.Value" --output text)
+        aws cloudfront create-invalidation --distribution-id $id --paths "/"
+
