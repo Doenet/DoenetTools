@@ -31,6 +31,7 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+    healthcheck: "/"
 
 volumes:
   mysql_data:

@@ -33,7 +33,7 @@
   },
   {
     "ParameterKey": "HealthCheckUrl",
-    "ParameterValue": "/health"
+    "ParameterValue": "/"
   },
   {
     "ParameterKey": "UseLbForService",

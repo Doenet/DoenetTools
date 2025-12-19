@@ -1,18 +1,18 @@
 [
   {
     "ParameterKey": "EnvironmentName",
-    "ParameterValue": "dev"
+    "ParameterValue": "dev3"
   },
   {
     "ParameterKey": "HostedZoneName",
-    "ParameterValue": "lif.unicon.net"
+    "ParameterValue": "dev3.doenet.org"
   },
   {
     "ParameterKey": "HostedZoneId",
-    "ParameterValue": "Z07340063BIENXXID41T8"
+    "ParameterValue": "Z0066937J8QHRAL9H84P"
   },
   {
     "ParameterKey": "ServiceName",
-    "ParameterValue": "mdr"
+    "ParameterValue": "frontend"
   }
 ]

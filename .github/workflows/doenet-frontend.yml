@@ -1,0 +1,56 @@
+name: Deploy Doenet Frontend to Amazon S3
+
+env:
+  AWS_REGION: us-east-2
+  GHA_ROLE: "arn:aws:iam::568298704244:role/github-actions-dev3"
+  AWS_ACCOUNT_ID: 568298704244
+  DOMAIN: dev3.doenet.org
+  ENV_NAME: dev3
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+    paths:
+      - .github/workflows/doenet-frontend.yml
+      - client/**
+      - server/cloudformation/dev3-doenet-frontend.params
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  doenet-frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    env:
+      WORKING_DIR: ./client
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          audience: sts.amazonaws.com
+          role-to-assume: ${{ env.GHA_ROLE }}
+          role-session-name: frontend
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Build the project
+        shell: bash
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          npm ci
+          npm run build
+
+      - name: Sync to S3
+        shell: bash
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          aws s3 sync --delete dist s3://frontend-${{ env.AWS_ACCOUNT_ID }}-${{ env.AWS_REGION }}
+          id=$(aws ssm get-parameter --name "/${{ env.ENV_NAME }}/frontend/DistributionId" --query "Parameter.Value" --output text)
+          aws cloudfront create-invalidation --distribution-id $id --paths "/"
