@@ -1,0 +1,18 @@
+[
+  {
+    "ParameterKey": "EnvironmentName",
+    "ParameterValue": "dev"
+  },
+  {
+    "ParameterKey": "HostedZoneName",
+    "ParameterValue": "lif.unicon.net"
+  },
+  {
+    "ParameterKey": "HostedZoneId",
+    "ParameterValue": "Z07340063BIENXXID41T8"
+  },
+  {
+    "ParameterKey": "ServiceName",
+    "ParameterValue": "mdr"
+  }
+]
