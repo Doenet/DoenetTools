@@ -69,7 +69,6 @@ import {
   loader as doenetMLComparisonLoader,
   action as doenetMLComparisonAction,
 } from "./paths/DoenetMLComparison";
-import { CodeViewer, loader as codeViewerLoader } from "./paths/CodeViewer";
 import { mathjaxConfig } from "@doenet/doenetml-iframe";
 import { SignIn, action as signInAction } from "./paths/SignIn";
 import {
@@ -362,12 +361,6 @@ const router = createBrowserRouter([
         action: doenetMLComparisonAction,
         element: <DoenetMLComparison />,
         errorElement: <ErrorPage />,
-      },
-      {
-        path: "codeViewer/:contentId?",
-        loader: codeViewerLoader,
-        errorElement: <ErrorPage />,
-        element: <CodeViewer />,
       },
       {
         path: "assigned",
