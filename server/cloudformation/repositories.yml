@@ -79,8 +79,8 @@ Resources:
             Resource:
               - !Sub "arn:aws:s3:::${S3Bucket}"
               - !Sub "arn:aws:s3:::${S3Bucket}/*"
-              - !Sub "arn:aws:s3:::mdr-${AWS::AccountId}-${AWS::Region}"
-              - !Sub "arn:aws:s3:::mdr-${AWS::AccountId}-${AWS::Region}/*"
+              - !Sub "arn:aws:s3:::frontend-${AWS::AccountId}-${AWS::Region}"
+              - !Sub "arn:aws:s3:::frontend-${AWS::AccountId}-${AWS::Region}/*"
           - Effect: Allow
             Action:
               - "ssm:GetParameter"
