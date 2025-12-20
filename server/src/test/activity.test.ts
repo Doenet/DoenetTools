@@ -22,6 +22,7 @@ import {
   restoreDeletedContent,
   getContentSource,
   getDescendantIds,
+  getDefaultDoenetmlVersion,
 } from "../query/activity";
 import { getActivityViewerData, getContent } from "../query/activity_edit_view";
 import { getMyContent, getMyTrash } from "../query/content_list";
@@ -60,6 +61,12 @@ const currentDoenetmlVersion = {
   removed: false,
   deprecationMessage: "",
 };
+
+test("Get default DoenetML version", async () => {
+  const { defaultDoenetmlVersion } = await getDefaultDoenetmlVersion();
+
+  expect(defaultDoenetmlVersion).eqls(currentDoenetmlVersion);
+});
 
 test("New activity starts out private, then delete it", async () => {
   const user = await createTestUser();

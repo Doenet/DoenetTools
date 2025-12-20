@@ -54,11 +54,7 @@ export async function createContent({
 
   const sortIndex = await getNextSortIndexForParent(ownerId, parentId);
 
-  const defaultDoenetmlVersion = await prisma.doenetmlVersions.findFirstOrThrow(
-    {
-      where: { default: true },
-    },
-  );
+  const { defaultDoenetmlVersion } = await getDefaultDoenetmlVersion();
 
   let isPublic = false;
   let licenseCode = undefined;
@@ -615,6 +611,16 @@ export async function getAllDoenetmlVersions() {
     },
   });
   return { allDoenetmlVersions };
+}
+
+export async function getDefaultDoenetmlVersion() {
+  const defaultDoenetmlVersion = await prisma.doenetmlVersions.findFirstOrThrow(
+    {
+      where: { default: true },
+    },
+  );
+
+  return { defaultDoenetmlVersion };
 }
 
 /**
