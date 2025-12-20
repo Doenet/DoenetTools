@@ -20,7 +20,9 @@ export async function loader() {
   let source = "";
   try {
     source = localStorage.getItem("scratchPad") || defaultSource;
-  } catch (e) {}
+  } catch (_e) {
+    // Ignoring errors
+  }
 
   return {
     doenetmlVersion: defaultDoenetmlVersion,
@@ -99,7 +101,9 @@ function DocumentEditor({
       localStorage.setItem("scratchPad", newDoenetML);
 
       savedDoenetML.current = newDoenetML;
-    } catch (error) {}
+    } catch (_e) {
+      // ignoring errors
+    }
   }, []);
 
   // save draft when leave page
