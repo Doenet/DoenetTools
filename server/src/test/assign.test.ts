@@ -1,4 +1,4 @@
-import { expect, test } from "vitest";
+import { describe, expect, test } from "vitest";
 import {
   createTestAnonymousUser,
   createTestUser,
@@ -19,7 +19,7 @@ import {
   getAssignedScores,
   getAssignmentResponseOverview,
   getAssignmentResponseStudent,
-  getAssignmentViewerDataFromCode,
+  getAssignmentData,
   getStudentAssignmentScores,
   getStudentSubmittedResponses,
   listUserAssigned,
@@ -40,6 +40,7 @@ import { getContent } from "../query/activity_edit_view";
 import { AssignmentMode } from "@prisma/client";
 import { ItemScores, UserInfo } from "../types";
 import { getAssignmentNonRootIds } from "./testQueries";
+import { createStudentHandleAccounts } from "../query/user";
 
 test("assign an activity", async () => {
   const owner = await createTestUser();
@@ -180,7 +181,7 @@ test("open and close assignment with code", async () => {
   expect(assignment.classCode).eq(classCode);
   expect(assignment.rootAssignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
-  let assignmentData = await getAssignmentViewerDataFromCode({
+  let assignmentData = await getAssignmentData({
     code: classCode,
     loggedInUserId: fakeId,
   });
@@ -204,7 +205,7 @@ test("open and close assignment with code", async () => {
     closeDate.getTime() + 30 * 1000,
   );
 
-  assignmentData = await getAssignmentViewerDataFromCode({
+  assignmentData = await getAssignmentData({
     code: classCode,
     loggedInUserId: fakeId,
   });
@@ -223,7 +224,7 @@ test("open and close assignment with code", async () => {
   expect(assignment.classCode).eq(classCode);
   expect(assignment.rootAssignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
-  assignmentData = await getAssignmentViewerDataFromCode({
+  assignmentData = await getAssignmentData({
     code: classCode,
     loggedInUserId: fakeId,
   });
@@ -240,7 +241,7 @@ test("open and close assignment with code", async () => {
     closeAt: closeAt,
     loggedInUserId: ownerId,
   });
-  assignmentData = await getAssignmentViewerDataFromCode({
+  assignmentData = await getAssignmentData({
     code: classCode,
     loggedInUserId: fakeId,
   });
@@ -385,7 +386,7 @@ test("open compound assignment with code", async () => {
   expect(assignment.classCode).eq(classCode);
   expect(assignment.rootAssignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
-  const assignmentData = await getAssignmentViewerDataFromCode({
+  const assignmentData = await getAssignmentData({
     code: classCode,
     loggedInUserId: fakeId,
   });
@@ -806,7 +807,7 @@ async function testSingleDocResponses({
   for (const studentData of dataByStudent) {
     const scoreFromAttempts = scoreFromStudentAttempts(studentData.attempts);
 
-    const dataFromCode = await getAssignmentViewerDataFromCode({
+    const dataFromCode = await getAssignmentData({
       code: classCode,
       loggedInUserId: studentData.user.userId,
     });
@@ -2053,4 +2054,113 @@ test("only user and assignment owner can load document state", async () => {
   });
 
   expect(retrievedState3).eqls({ loadedState: false });
+});
+
+describe("student handles", () => {
+  test("outside account cannot be used to take course assignment", async () => {
+    const { userId: instructorId } = await createTestUser();
+
+    const [folderId, docId] = await setupTestContent(instructorId, {
+      "folder 1": fold({
+        "doc 1": doc("hi"),
+      }),
+    });
+    const { assignmentId } = await createAssignment({
+      contentId: docId,
+      closeAt: DateTime.now().plus({ days: 1 }),
+      loggedInUserId: instructorId,
+      destinationParentId: folderId,
+    });
+
+    // This marks the folder as a class
+    await createStudentHandleAccounts({
+      loggedInUserId: instructorId,
+      folderId,
+      numAccounts: 1,
+    });
+
+    const { userId: outsideUserId } = await createTestUser();
+
+    await expect(
+      createNewAttempt({
+        contentId: assignmentId,
+        loggedInUserId: outsideUserId,
+        variant: 1,
+        state: null,
+      }),
+    ).rejects.toThrow("");
+  });
+
+  test("outside account cannot be used to take course assignment, in sub folder", async () => {
+    const { userId: instructorId } = await createTestUser();
+
+    const [folderId, subFolderId, docId] = await setupTestContent(
+      instructorId,
+      {
+        "folder 1": fold({
+          "folder 2": fold({
+            "doc 1": doc("hi"),
+          }),
+        }),
+      },
+    );
+    const { assignmentId } = await createAssignment({
+      contentId: docId,
+      closeAt: DateTime.now().plus({ days: 1 }),
+      loggedInUserId: instructorId,
+      destinationParentId: subFolderId,
+    });
+
+    // This marks the folder as a class
+    await createStudentHandleAccounts({
+      loggedInUserId: instructorId,
+      folderId,
+      numAccounts: 1,
+    });
+
+    const { userId: outsideUserId } = await createTestUser();
+
+    await expect(
+      createNewAttempt({
+        contentId: assignmentId,
+        loggedInUserId: outsideUserId,
+        variant: 1,
+        state: null,
+      }),
+    ).rejects.toThrow("");
+  });
+
+  test("anonymous account cannot be used to take course assignment", async () => {
+    const { userId: instructorId } = await createTestUser();
+
+    const [folderId, docId] = await setupTestContent(instructorId, {
+      "folder 1": fold({
+        "doc 1": doc("hi"),
+      }),
+    });
+    const { assignmentId } = await createAssignment({
+      contentId: docId,
+      closeAt: DateTime.now().plus({ days: 1 }),
+      loggedInUserId: instructorId,
+      destinationParentId: folderId,
+    });
+
+    // This marks the folder as a class
+    await createStudentHandleAccounts({
+      loggedInUserId: instructorId,
+      folderId,
+      numAccounts: 1,
+    });
+
+    const { userId: anonUserId } = await createTestAnonymousUser();
+
+    await expect(
+      createNewAttempt({
+        contentId: assignmentId,
+        loggedInUserId: anonUserId,
+        variant: 1,
+        state: null,
+      }),
+    ).rejects.toThrow("");
+  });
 });

@@ -30,6 +30,10 @@ model content {
   sortIndex              BigInt
   licenseCode            String?                  @default("CCDUAL") @db.VarChar(10)
   lastEdited             DateTime                 @default(now())
+  // Some settings for assignments
+  mode                   AssignmentMode           @default(formative)
+  maxAttempts            Int                      @default(1) @db.UnsignedSmallInt
+  individualizeByStudent Boolean                  @default(false)
   // Specific to document type
   source                 String?                  @db.MediumText
   doenetmlVersionId      Int?
@@ -46,14 +50,12 @@ model content {
   // This becomes assigned when you add scoped users to a folder or the content is a one-off assignment
   // This is removed when either 1) all scoped users are removed or 2) scoped user is added to ancestor
   classCode              Int?                     @unique @db.UnsignedInt
-  // Assignments
-  nonRootAssignmentId    Bytes?                   @db.Binary(16)
-  mode                   AssignmentMode           @default(formative)
-  maxAttempts            Int                      @default(1) @db.UnsignedSmallInt
-  individualizeByStudent Boolean                  @default(false)
+  //  Assignment
+  // `isAssignmentRoot` is true if both: 1) this content is an assignment 2) this content is the root of that assignment
+  isAssignmentRoot  Boolean                  @default(false)
+  assignmentOpenOn DateTime?
+  assignmentClosedOn    DateTime?
   // Relations
-  nonRootAssignment      assignments?             @relation("nonRootAssignment", fields: [nonRootAssignmentId], references: [rootContentId], onDelete: SetNull, onUpdate: NoAction)
-  rootAssignment         assignments?             @relation("rootAssignment")
   owner                  users                    @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
   parent                 content?                 @relation("childParent", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   children               content[]                @relation("childParent")
@@ -70,6 +72,8 @@ model content {
   submittedResponses     submittedResponses[]
   deletionRoot           content?                 @relation("deletionRoot", fields: [deletionRootId], references: [id])
   isDeletionRootFor      content[]                @relation("deletionRoot")
+  contentState      contentState[]
+  assignmentScores  assignmentScores[]
   // Scoped users cannot be nested. If a folder has scoped users, its ancestors and descendants cannot.
   scopedUsers            users[]                  @relation(name: "scopedToClass")
 
@@ -213,16 +217,6 @@ model doenetmlVersions {
   contentRevisions   contentRevisions[]
 }
 
-model assignments {
-  rootContentId     Bytes              @id @db.Binary(16)
-  codeValidStarting DateTime
-  codeValidUntil    DateTime
-  rootContent       content            @relation("rootAssignment", fields: [rootContentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  nonRootContent    content[]          @relation("nonRootAssignment")
-  contentState      contentState[]
-  assignmentScores  assignmentScores[]
-}
-
 enum AssignmentMode {
   formative
   summative
@@ -235,7 +229,7 @@ model assignmentScores {
   cachedBestAttemptNumber Int         @db.UnsignedSmallInt
   cachedItemScores        String?     @db.Text
   cachedLatestAttempt     String?     @db.Text
-  assignment              assignments @relation(fields: [contentId], references: [rootContentId], onDelete: NoAction, onUpdate: NoAction)
+  assignment              content     @relation(fields: [contentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   user                    users       @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([contentId, userId])
@@ -249,7 +243,7 @@ model contentState {
   attemptNumber     Int                @db.UnsignedSmallInt
   score             Float?
   state             String?            @db.MediumText
-  assignment        assignments        @relation(fields: [contentId], references: [rootContentId], onDelete: NoAction, onUpdate: NoAction)
+  assignment       content        @relation(fields: [contentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   user              users              @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
   contentItemStates contentItemState[]
 

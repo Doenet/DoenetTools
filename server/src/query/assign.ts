@@ -34,6 +34,14 @@ function generateClassCode() {
   return Number(array[0].toString().slice(-6));
 }
 
+export async function getContentFromCode({
+  code,
+}: {
+  code: number;
+}): Promise<{ contentId: Uint8Array; contentType: ContentType }> {
+  throw new Error("unimplemented");
+}
+
 /**
  * Create an assignment from an activity
  * Remixes activity to destination parent and automatically opens the assignment.
@@ -72,22 +80,17 @@ export async function createAssignment({
     select: { id: true },
   });
 
-  // Verify that no descendants of `contentId` are already assigned as a root.
-  // Note: we don't have to check for non-root assignment, as either the root is a descendant of `contentId`
-  // or `contentId` itself would have been assigned
-  const descendantIds = await getDescendantIds(contentId);
-  const descendantAssigned = await prisma.assignments.findFirst({
+  // Verify that no children of `contentId` are already assigned as a root.
+  const childrenAreAssignments = await prisma.content.findFirst({
     where: {
-      rootContentId: {
-        in: descendantIds,
-      },
+      parentId: contentId,
+      isAssignmentRoot: true,
     },
-    select: { rootContentId: true },
+    select: { id: true },
   });
-
-  if (descendantAssigned) {
+  if (childrenAreAssignments) {
     throw new InvalidRequestError(
-      "Cannot assign content with a descendant that is already assigned",
+      "Cannot assign content with a child that is already assigned",
     );
   }
 
@@ -98,21 +101,19 @@ export async function createAssignment({
     loggedInUserId,
   });
   const assignmentId = newContentIds[0];
-  const newDescendantIds = await getDescendantIds(assignmentId);
-  const codeValidUntil = closeAt.toJSDate();
+  // const newDescendantIds = await getDescendantIds(assignmentId);
+  const assignmentClosedOn = closeAt.toJSDate();
 
-  // Create the assignment linking it to the root
-  // Point the copied descendants to the new assignment
-  await prisma.assignments.create({
+  await prisma.content.update({
+    where: { id: assignmentId },
     data: {
-      rootContentId: assignmentId,
-      codeValidStarting: new Date(),
-      codeValidUntil,
-      nonRootContent: {
-        connect: newDescendantIds.map((id) => ({ id })),
-      },
+      isAssignmentRoot: true,
+      assignmentClosedOn,
+      assignmentOpenOn: new Date(),
     },
   });
+
+  // Check whether we're in a course or not. If we're not, generate code.
   const { classCode } = await prisma.content.update({
     where: {
       id: assignmentId,
@@ -629,11 +630,11 @@ export async function recordSubmittedEvent({
  * - scoreData: the scores that `loggedInUserId` has achieved so far on the assignment.
  *   See {@link getScore}.
  */
-export async function getAssignmentViewerDataFromCode({
-  code,
+export async function getAssignmentData({
+  assignmentId,
   loggedInUserId,
 }: {
-  code: number;
+  assignmentId: Uint8Array;
   loggedInUserId: Uint8Array;
 }): Promise<{
   assignmentFound: boolean;
@@ -647,7 +648,7 @@ export async function getAssignmentViewerDataFromCode({
   try {
     preliminaryAssignment = await prisma.content.findFirstOrThrow({
       where: {
-        classCode: code,
+        id: assignmentId,
         ...filterViewableRootAssignment(loggedInUserId),
       },
       select: {

@@ -53,34 +53,34 @@ export async function isInLibrary(contentId: Uint8Array) {
 }
 
 /**
+ * Use this in Prisma's `where` clause to filter for only root assignments.
+ * Use on table `contents`.
+ */
+const filterRootAssignment = {
+  isAssignmentRoot: true,
+  isDeletedOn: null,
+};
+
+/**
+ * Filter Prisma's `where` clause to exclude both root and non-root assignments.
+ * Use on table `contents`.
+ */
+export const filterExcludeAssignments = {
+  isAssignmentRoot: false,
+  parent: {
+    isAssignmentRoot: false,
+  },
+  isDeletedOn: null,
+};
+
+/**
  * Use this in Prisma's `where` clause to filter for only activities (exclude folders and assignments).
  * Use on table `contents`.
  */
 const filterActivity = {
   type: { not: "folder" as const },
-  nonRootAssignmentId: null,
-  rootAssignment: {
-    is: null,
-  },
-};
-
-/**
- * Use this in Prisma's `where` clause to filter for only root assignments.
- * Use on table `contents`.
- */
-const filterRootAssignment = {
-  rootAssignment: {
-    isNot: null,
-  },
-  nonRootAssignmentId: null,
-};
-
-/**
- * Filter Prisma's `where` clause to exclude both root and non-root assignments.
- */
-export const filterExcludeAssignments = {
-  rootAssignment: null,
-  nonRootAssignmentId: null,
+  ...filterExcludeAssignments,
+  isDeletedOn: null,
 };
 
 /**
@@ -112,31 +112,34 @@ export function filterViewableActivity(
  * For an assignment to be viewable, one of these conditions must be true:
  * 1. The assignment is open
  * 2. `loggedInUserId` has score data for this assignment
+ * 3. `loggedInUserId` is the owner
  *
  * For content to be a root assignment, it must be attached to an entry in the assignments table.
  */
 export function filterViewableRootAssignment(loggedInUserId: Uint8Array) {
   return {
     ...filterRootAssignment,
-    rootAssignment: {
-      OR: [
-        {
-          codeValidStarting: {
-            lte: DateTime.now().toISO(), // TODO - confirm this works with timezone stuff
-          },
-          codeValidUntil: {
-            gte: DateTime.now().toISO(), // TODO - confirm this works with timezone stuff
+    OR: [
+      {
+        // TODO - confirm this works with timezone stuff
+        assignmentOpenOn: {
+          lte: DateTime.now().toISO(),
+        },
+        assignmentCloseOn: {
+          gte: DateTime.now().toISO(),
+        },
+      },
+      {
+        assignmentScores: {
+          some: {
+            userId: loggedInUserId,
           },
         },
-        {
-          assignmentScores: {
-            some: {
-              userId: loggedInUserId,
-            },
-          },
-        },
-      ],
-    },
+      },
+      {
+        ownerId: loggedInUserId,
+      },
+    ],
     isDeletedOn: null,
   };
 }

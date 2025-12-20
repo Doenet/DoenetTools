@@ -13,7 +13,7 @@ import {
   updateAssignmentCloseAt,
   updateAssignmentMaxAttempts,
   updateAssignmentSettings,
-  getAssignmentViewerDataFromCode,
+  getAssignmentData,
 } from "../query/assign";
 import { contentIdSchema } from "../schemas/contentSchema";
 import {
@@ -64,7 +64,7 @@ assignRouter.get("/getAssigned", queryLoggedInNoArguments(listUserAssigned));
 
 assignRouter.get(
   "/getAssignmentViewerDataFromCode/:code",
-  queryLoggedIn(getAssignmentViewerDataFromCode, codeSchema),
+  queryLoggedIn(getAssignmentData, codeSchema),
 );
 
 assignRouter.get(

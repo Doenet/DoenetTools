@@ -19,7 +19,7 @@ import {
 // If not, how do we communicate that fact
 
 /**
- * Save the `score` and `state` of assignment `contentId` for `loggedInUserId`, assuming `code` matches.
+ * Save the `score` and `state` of assignment `contentId` for `loggedInUserId`.
  * The specified `attemptNumber` must be the latest attempt of `loggedInUserId`
  * (otherwise an `InvalidRequestError` is thrown).
  *
