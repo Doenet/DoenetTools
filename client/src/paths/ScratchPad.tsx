@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useLoaderData, useOutletContext } from "react-router";
+import { redirect, useLoaderData, useOutletContext } from "react-router";
 import { DoenetmlVersion } from "../types";
 import { DoenetEditor } from "@doenet/doenetml-iframe";
 import axios from "axios";
@@ -24,7 +24,22 @@ import {
 } from "@chakra-ui/react";
 import { SiteContext } from "./SiteHeader";
 
-export async function loader() {
+export async function loader({ request }: { request: Request }) {
+  const url = new URL(request.url);
+
+  const doenetML = url.searchParams.get("doenetml");
+  if (doenetML) {
+    try {
+      //Save requested DoenetML in localStorage
+      // and then reload page without doenetml param
+      // so that reloading the page won't reset to the original DoenetML
+      localStorage.setItem("scratchPad", doenetML);
+      return redirect(`/scratchPad`);
+    } catch (_e) {
+      // ignoring errors
+    }
+  }
+
   const {
     data: { defaultDoenetmlVersion },
   } = await axios.get(`/api/info/getDefaultDoenetMLVersion`);
