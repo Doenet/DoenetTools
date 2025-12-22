@@ -1,16 +1,28 @@
-import { useCallback, useEffect, useRef } from "react";
-import { useLoaderData } from "react-router";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useLoaderData, useOutletContext } from "react-router";
 import { DoenetmlVersion } from "../types";
 import { DoenetEditor } from "@doenet/doenetml-iframe";
 import axios from "axios";
 import defaultSource from "../assets/scratchPadDefault.doenet?raw";
+import multipleChoice from "../assets/multipleChoiceExamples.doenet?raw";
+import mathAnswers from "../assets/mathAnswerExamples.doenet?raw";
+import graphicalAnswers from "../assets/graphicalAnswerExamples.doenet?raw";
+
 import {
   Alert,
   AlertIcon,
   AlertTitle,
   AlertDescription,
   Box,
+  Flex,
+  Button,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Text,
 } from "@chakra-ui/react";
+import { SiteContext } from "./SiteHeader";
 
 export async function loader() {
   const {
@@ -39,13 +51,89 @@ export function ScratchPad() {
     source: string;
   };
 
+  const [initialSource, setInitialSource] = useState(source);
+  const [resetNum, setResetNum] = useState(0);
+
+  const { user } = useOutletContext<SiteContext>();
+
+  const loadButton = (
+    <Menu>
+      <MenuButton
+        as={Button}
+        size="sm"
+        colorScheme="blue"
+        data-test="Load Button"
+      >
+        <Text>Load</Text>
+      </MenuButton>
+      <MenuList>
+        <MenuItem
+          data-test="Add Default Button"
+          onClick={() => {
+            localStorage.removeItem("scratchPad");
+            setInitialSource(defaultSource);
+            // We update reset num to make sure editor updates.
+            // If started with defaultSource and then we try to reset it back to defaultSource
+            // no change is detected in initialSource even though we want to reset
+            setResetNum((was) => was + 1);
+          }}
+        >
+          Scratch Pad Welcome
+        </MenuItem>
+        <MenuItem
+          data-test="Add Multiple Choice Examples Button"
+          onClick={() => {
+            setInitialSource(multipleChoice);
+            // We update reset num to make sure editor updates.
+            setResetNum((was) => was + 1);
+          }}
+        >
+          Multiple Choice Examples
+        </MenuItem>
+        <MenuItem
+          data-test="Add Math Answer Examples Button"
+          onClick={() => {
+            setInitialSource(mathAnswers);
+            // We update reset num to make sure editor updates.
+            setResetNum((was) => was + 1);
+          }}
+        >
+          Math Answer Examples
+        </MenuItem>
+        <MenuItem
+          data-test="Add Graphical Answer Examples Button"
+          onClick={() => {
+            setInitialSource(graphicalAnswers);
+            // We update reset num to make sure editor updates.
+            setResetNum((was) => was + 1);
+          }}
+        >
+          Graphical Answer Examples
+        </MenuItem>
+      </MenuList>
+    </Menu>
+  );
+
+  const saveScratchPad = user && (
+    <Button
+      data-test="Save to Document"
+      colorScheme="blue"
+      size="sm"
+      marginLeft="10px"
+      onClick={() => {}}
+    >
+      Save to Document
+    </Button>
+  );
+
   const scratchPadMessage = (
     <Alert status="warning" height="40px">
       <AlertIcon />
-      <AlertTitle>Scratch Pad</AlertTitle>
+      <AlertTitle lineHeight="1em">Scratch Pad</AlertTitle>
       <AlertDescription>
-        Contents of the scratch pad are not permanently saved. Save to a
-        document anything you want to keep.
+        <Flex alignItems="center" lineHeight="1em">
+          <Box>Note: scratch pad is not permanently saved.</Box>
+        </Flex>
       </AlertDescription>
     </Alert>
   );
@@ -62,7 +150,16 @@ export function ScratchPad() {
         borderBottom="1px solid"
         borderColor="doenet.mediumGray"
       >
-        {scratchPadMessage}
+        <Flex
+          backgroundColor="var(--chakra-colors-orange-100);"
+          alignItems="center"
+          paddingRight="15px"
+        >
+          {scratchPadMessage}
+
+          {loadButton}
+          {saveScratchPad}
+        </Flex>
       </Box>
       <Box
         position="absolute"
@@ -73,7 +170,11 @@ export function ScratchPad() {
         background="doenet.lightBlue"
         overflow="auto"
       >
-        <DocumentEditor source={source} doenetmlVersion={doenetmlVersion} />
+        <DocumentEditor
+          source={initialSource}
+          doenetmlVersion={doenetmlVersion}
+          key={resetNum}
+        />
       </Box>
     </>
   );
