@@ -51,6 +51,10 @@ export function ScratchPad() {
     source: string;
   };
 
+  useEffect(() => {
+    document.title = `Scratch pad - Doenet`;
+  }, []);
+
   const [initialSource, setInitialSource] = useState(source);
   const [resetNum, setResetNum] = useState(0);
 
