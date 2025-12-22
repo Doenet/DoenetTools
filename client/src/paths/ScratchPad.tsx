@@ -30,12 +30,30 @@ export async function loader({ request }: { request: Request }) {
   const doenetML = url.searchParams.get("doenetml");
   if (doenetML) {
     try {
-      //Save requested DoenetML in localStorage
+      // Save requested DoenetML in localStorage
       // and then reload page without doenetml param
       // so that reloading the page won't reset to the original DoenetML
       localStorage.setItem("scratchPad", doenetML);
       return redirect(`/scratchPad`);
     } catch (_e) {
+      // ignoring errors
+    }
+  }
+
+  const contentId = url.searchParams.get("contentId");
+  if (contentId) {
+    try {
+      const { data } = await axios.get(
+        `/api/activityEditView/getContentSource/${contentId}`,
+      );
+
+      // Save DoenetML source from the contentId in localStorage
+      // and then reload page without contentId param
+      // so that reloading the page won't reset to the original DoenetML
+      localStorage.setItem("scratchPad", data.source);
+      return redirect(`/scratchPad`);
+    } catch (e) {
+      console.error(e);
       // ignoring errors
     }
   }
