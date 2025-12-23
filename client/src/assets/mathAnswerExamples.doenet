@@ -146,7 +146,7 @@
   <part>
     <title>Dynamic number of answers</title>
 
-    <p>Let <m>f(x) = (x-2)(x+5)</m>. Solve <math>f(x) = 0</math>. If more than one solution, separate by commas.</p>
+    <p>Let <m>f(x) = (x-2)(x+5)</m>. Solve <math>f(x) = 0</math>.</p>
 
     <p>How many solutions are there? 
       <mathInput name="n">
