@@ -52,8 +52,7 @@ export async function loader({ request }: { request: Request }) {
       // so that reloading the page won't reset to the original DoenetML
       localStorage.setItem("scratchPad", data.source);
       return redirect(`/scratchPad`);
-    } catch (e) {
-      console.error(e);
+    } catch (_e) {
       // ignoring errors
     }
   }
