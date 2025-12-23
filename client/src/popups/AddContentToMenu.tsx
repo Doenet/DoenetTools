@@ -181,15 +181,25 @@ export function AddContentToMenu({
     );
   }
 
-  const addToScratchPad = sourceContent.length === 1 && (
-    <MenuItem
-      data-test="Load into Scratch Pad"
-      onClick={() => {
-        navigate(`/scratchPad?contentId=${sourceContent[0].contentId}`);
-      }}
+  const loadIntoScratchPad = sourceContent.length === 1 && (
+    <Tooltip
+      openDelay={500}
+      label={
+        !sourceContent[0].doenetmlVersion?.default
+          ? "Scratch Pad can only load documents that use the default DoenetML version"
+          : null
+      }
     >
-      Load into Scratch Pad
-    </MenuItem>
+      <MenuItem
+        data-test="Load into Scratch Pad"
+        isDisabled={!sourceContent[0].doenetmlVersion?.default}
+        onClick={() => {
+          navigate(`/scratchPad?contentId=${sourceContent[0].contentId}`);
+        }}
+      >
+        Load into Scratch Pad
+      </MenuItem>
+    </Tooltip>
   );
 
   return (
@@ -307,7 +317,7 @@ export function AddContentToMenu({
           >
             My Activities
           </MenuItem>
-          {addToScratchPad}
+          {loadIntoScratchPad}
           {recentContent.length > 0 ? (
             <MenuGroup title="Recent">
               {recentContent.map((rc) => {
