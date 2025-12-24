@@ -441,6 +441,7 @@ const router = createBrowserRouter([
       {
         path: "scratchPad",
         loader: scratchPadLoader,
+        action: genericAction,
         errorElement: <ErrorPage />,
         element: <ScratchPad />,
       },

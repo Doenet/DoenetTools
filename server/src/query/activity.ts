@@ -30,12 +30,14 @@ export async function createContent({
   parentId,
   inLibrary = false,
   name,
+  doenetml = "",
 }: {
   loggedInUserId: Uint8Array;
   contentType: ContentType;
   parentId: Uint8Array | null;
   inLibrary?: boolean;
   name?: string;
+  doenetml?: string;
 }) {
   // TODO: Eventually, when we are sure we do not want question banks,
   // we will remove them entirely from the codebase. For now, just
@@ -130,7 +132,7 @@ export async function createContent({
       isPublic,
       licenseCode,
       sortIndex,
-      source: contentType === "singleDoc" ? "" : null,
+      source: contentType === "singleDoc" ? doenetml : null,
       doenetmlVersionId:
         contentType === "singleDoc" ? defaultDoenetmlVersion.id : null,
       sharedWith: {

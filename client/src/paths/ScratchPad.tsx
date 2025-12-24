@@ -21,8 +21,10 @@ import {
   MenuItem,
   MenuList,
   Text,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { SiteContext } from "./SiteHeader";
+import { SaveDoenetmlAndReportFinish } from "../popups/SaveDoenetmlAndReportFinish";
 
 export async function loader({ request }: { request: Request }) {
   const url = new URL(request.url);
@@ -92,6 +94,21 @@ export function ScratchPad() {
 
   const { user } = useOutletContext<SiteContext>();
 
+  const {
+    isOpen: saveDialogIsOpen,
+    onOpen: saveDialogOnOpen,
+    onClose: saveDialogOnClose,
+  } = useDisclosure();
+
+  const saveDocumentDialog = (
+    <SaveDoenetmlAndReportFinish
+      isOpen={saveDialogIsOpen}
+      onClose={saveDialogOnClose}
+      DoenetML={initialSource}
+      documentName={"Scratch Pad Document"}
+    />
+  );
+
   const loadButton = (
     <Menu>
       <MenuButton
@@ -156,7 +173,9 @@ export function ScratchPad() {
       colorScheme="blue"
       size="sm"
       marginLeft="10px"
-      onClick={() => {}}
+      onClick={() => {
+        saveDialogOnOpen();
+      }}
     >
       Save to Document
     </Button>
@@ -176,6 +195,7 @@ export function ScratchPad() {
 
   return (
     <>
+      {saveDocumentDialog}
       <Box
         position="fixed"
         top="40px"
