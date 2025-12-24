@@ -136,6 +136,11 @@ export function ScratchPad() {
         <MenuItem
           data-test="Add Multiple Choice Examples Button"
           onClick={() => {
+            try {
+              localStorage.setItem("scratchPad", multipleChoice);
+            } catch (e) {
+              console.error(e);
+            }
             setInitialSource(multipleChoice);
             // We update reset num to make sure editor updates.
             setResetNum((was) => was + 1);
@@ -146,6 +151,11 @@ export function ScratchPad() {
         <MenuItem
           data-test="Add Math Answer Examples Button"
           onClick={() => {
+            try {
+              localStorage.setItem("scratchPad", mathAnswers);
+            } catch (e) {
+              console.error(e);
+            }
             setInitialSource(mathAnswers);
             // We update reset num to make sure editor updates.
             setResetNum((was) => was + 1);
@@ -156,6 +166,11 @@ export function ScratchPad() {
         <MenuItem
           data-test="Add Graphical Answer Examples Button"
           onClick={() => {
+            try {
+              localStorage.setItem("scratchPad", graphicalAnswers);
+            } catch (e) {
+              console.error(e);
+            }
             setInitialSource(graphicalAnswers);
             // We update reset num to make sure editor updates.
             setResetNum((was) => was + 1);
