@@ -35,8 +35,8 @@ export async function loader({ request }: { request: Request }) {
       // so that reloading the page won't reset to the original DoenetML
       localStorage.setItem("scratchPad", doenetML);
       return redirect(`/scratchPad`);
-    } catch (_e) {
-      // ignoring errors
+    } catch (e) {
+      console.error(e);
     }
   }
 
@@ -52,20 +52,20 @@ export async function loader({ request }: { request: Request }) {
       // so that reloading the page won't reset to the original DoenetML
       localStorage.setItem("scratchPad", data.source);
       return redirect(`/scratchPad`);
-    } catch (_e) {
-      // ignoring errors
+    } catch (e) {
+      console.error(e);
     }
   }
 
   const {
     data: { defaultDoenetmlVersion },
-  } = await axios.get(`/api/info/getDefaultDoenetMLVersion`);
+  } = await axios.get(`/api/info/getDefaultDoenetmlVersion`);
 
   let source = "";
   try {
     source = localStorage.getItem("scratchPad") || defaultSource;
-  } catch (_e) {
-    // Ignoring errors
+  } catch (e) {
+    console.error(e);
   }
 
   return {
@@ -238,8 +238,8 @@ function DocumentEditor({
       localStorage.setItem("scratchPad", newDoenetML);
 
       savedDoenetML.current = newDoenetML;
-    } catch (_e) {
-      // ignoring errors
+    } catch (e) {
+      console.error(e);
     }
   }, []);
 
