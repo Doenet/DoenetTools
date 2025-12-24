@@ -1,0 +1,120 @@
+
+<section>
+  <title>Illustrations of multiple-choice answers</title>
+
+  <introduction>
+    Examples showing different types of multiple choice <tag>answer</tag> tags
+    available in Doenet
+  </introduction>
+
+  <part>
+    <title>Basic example</title>
+
+    <p>What's the heaviest dog breed?</p>
+    <answer>
+      <shortDescription>heaviest dog breed</shortDescription>
+      <choice credit="1">English Mastiff</choice>
+      <choice>Irish Wolfhound</choice>
+      <choice>Great Dane</choice>
+      <choice>Saint Bernard</choice>
+    </answer>
+  </part>
+
+  <part>
+    <title>Shuffle order</title>
+
+    <p>What's the heaviest dog breed?</p>
+    <answer shuffleOrder>
+      <shortDescription>heaviest dog breed</shortDescription>
+      <choice credit="1">English Mastiff</choice>
+      <choice>Irish Wolfhound</choice>
+      <choice>Great Dane</choice>
+      <choice>Saint Bernard</choice>
+    </answer>
+    
+  </part>
+
+  <part>
+    <title>Inline</title>
+
+    <p>
+      A mammal is a
+    <answer inline>
+      <shortDescription>Describe a mammal</shortDescription>
+      <choice credit="1">warm-blooded</choice>
+      <choice>cold-blooded</choice>
+    </answer>
+      animal.
+    </p>
+      
+  </part>
+
+  <part>
+    <title>Select multiple</title>
+
+    <answer selectMultiple shuffleOrder>
+      <label>Select all positive integers</label>
+      <choice credit="1">10</choice>
+      <choice credit="1">92</choice>
+      <choice>0</choice>
+      <choice>-29</choice>
+      <choice>5.6</choice>
+    </answer>
+      
+  </part>
+
+  <part>
+    <title>Select multiple with partial credit</title>
+
+    <answer selectMultiple shuffleOrder matchPartial>
+      <label>Select all positive integers</label>
+      <choice credit="1">10</choice>
+      <choice credit="1">92</choice>
+      <choice>0</choice>
+      <choice>-29</choice>
+      <choice>5.6</choice>
+    </answer>
+      
+  </part>
+
+
+  <part>
+    <title>Limit number of attempts</title>
+
+    <answer shuffleOrder maxNumAttempts="2">
+      <label>Who composed The Marriage of Figaro?</label>
+      <choice credit="1">Mozart</choice>
+      <choice>Verdi</choice>
+      <choice>Puccini</choice>
+      <choice>Wagner</choice>
+    </answer>
+
+  </part>
+
+    <part>
+    <title>Disable wrong choices, reduce credit with wrong choices</title>
+
+    <answer shuffleOrder disableWrongChoices creditByAttempt="1 0.7 0.5">
+      <label>Whose death triggered World War I?</label>
+      <choice credit="1">Archduke Franz Ferdinand</choice>
+      <choice>Gavrilo Princip</choice>
+      <choice>Danilo Ilić</choice>
+      <choice>Nedeljko Čabrinović</choice>
+    </answer>
+
+  </part>
+
+    <part>
+    <title>Disable after correct</title>
+
+    <answer shuffleOrder disableAfterCorrect>
+      <label>What do you get if you mix Hydrochloric acid and Sodium hydroxide?</label>
+      <choice credit="1">table salt</choice>
+      <choice>Sodium acetate</choice>
+      <choice>sugar</choice>
+      <choice>vinegar</choice>
+    </answer>
+
+  </part>
+  
+</section>

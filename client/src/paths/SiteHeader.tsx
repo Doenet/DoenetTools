@@ -399,7 +399,13 @@ export function SiteHeader() {
                         >
                           Update {user.isAnonymous ? "pseudonym" : "name"}
                         </MenuItem>
-                        <MenuItem as="a" href="/api/login/logout">
+                        <MenuItem
+                          as="a"
+                          href="/api/login/logout"
+                          onClick={() => {
+                            localStorage.removeItem("scratchPad");
+                          }}
+                        >
                           {user.isAnonymous
                             ? "Clear anonymous data"
                             : "Log Out"}

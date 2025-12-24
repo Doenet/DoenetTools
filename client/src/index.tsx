@@ -123,6 +123,7 @@ import {
   loader as sharedWithMeLoader,
 } from "./paths/SharedWithMe";
 import { editorUrl } from "./utils/url";
+import { ScratchPad, loader as scratchPadLoader } from "./paths/ScratchPad";
 
 const theme = extendTheme({
   fonts: {
@@ -436,6 +437,13 @@ const router = createBrowserRouter([
       {
         path: "loadShareStatus/:contentId",
         loader: loadShareStatus,
+      },
+      {
+        path: "scratchPad",
+        loader: scratchPadLoader,
+        action: genericAction,
+        errorElement: <ErrorPage />,
+        element: <ScratchPad />,
       },
     ],
   },

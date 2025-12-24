@@ -319,6 +319,7 @@ export type ContentDescription = {
 
   grandparentId?: Uuid | null;
   grandparentName?: string | null;
+  doenetmlVersion?: DoenetmlVersion;
   // TODO: remove this when fix bad assignment versions
   hasBadVersion?: boolean;
 };

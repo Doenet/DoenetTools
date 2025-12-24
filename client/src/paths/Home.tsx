@@ -249,6 +249,14 @@ export function Home() {
           >
             How to get involved with Doenet
           </ChakraLink>
+          .
+        </Box>
+        <Box marginTop="10px" fontSize="1.4rem">
+          To experiment with writing Doenet activities, visit the{" "}
+          <ChakraLink href="/scratchPad" textDecoration="underline">
+            Scratch Pad
+          </ChakraLink>
+          .
         </Box>
         <Heading size="lg" marginTop="40px">
           Events

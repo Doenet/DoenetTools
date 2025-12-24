@@ -16,6 +16,7 @@ export const createContentSchema = z.object({
   contentType: contentTypeSchema,
   name: z.string().optional(),
   parentId: uuidOrNullSchema,
+  doenetml: z.string().optional(),
 });
 
 export const updateContentSettingsSchema = z.object({
