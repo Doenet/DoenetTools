@@ -112,8 +112,8 @@ export function SaveDoenetmlAndReportFinish({
               </HStack>
             ) : (
               <>
-                Successfully saved to new document "{documentName}" in My
-                Activities
+                Successfully saved to new document &ldquo;{documentName}&rdquo;
+                in My Activities
               </>
             )
           ) : (
