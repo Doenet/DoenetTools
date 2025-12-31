@@ -52,9 +52,9 @@ model content {
   classCode              Int?                     @unique @db.UnsignedInt
   //  Assignment
   // `isAssignmentRoot` is true if both: 1) this content is an assignment 2) this content is the root of that assignment
-  isAssignmentRoot  Boolean                  @default(false)
-  assignmentOpenOn DateTime?
-  assignmentClosedOn    DateTime?
+  isAssignmentRoot       Boolean                  @default(false)
+  assignmentOpenOn       DateTime?
+  assignmentClosedOn     DateTime?
   // Relations
   owner                  users                    @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
   parent                 content?                 @relation("childParent", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -72,8 +72,8 @@ model content {
   submittedResponses     submittedResponses[]
   deletionRoot           content?                 @relation("deletionRoot", fields: [deletionRootId], references: [id])
   isDeletionRootFor      content[]                @relation("deletionRoot")
-  contentState      contentState[]
-  assignmentScores  assignmentScores[]
+  contentState           contentState[]
+  assignmentScores       assignmentScores[]
   // Scoped users cannot be nested. If a folder has scoped users, its ancestors and descendants cannot.
   scopedUsers            users[]                  @relation(name: "scopedToClass")
 
@@ -223,14 +223,14 @@ enum AssignmentMode {
 }
 
 model assignmentScores {
-  contentId               Bytes       @db.Binary(16)
-  userId                  Bytes       @db.Binary(16)
+  contentId               Bytes   @db.Binary(16)
+  userId                  Bytes   @db.Binary(16)
   cachedScore             Float?
-  cachedBestAttemptNumber Int         @db.UnsignedSmallInt
-  cachedItemScores        String?     @db.Text
-  cachedLatestAttempt     String?     @db.Text
-  assignment              content     @relation(fields: [contentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user                    users       @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  cachedBestAttemptNumber Int     @db.UnsignedSmallInt
+  cachedItemScores        String? @db.Text
+  cachedLatestAttempt     String? @db.Text
+  assignment              content @relation(fields: [contentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user                    users   @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([contentId, userId])
   @@index([userId])
@@ -243,7 +243,7 @@ model contentState {
   attemptNumber     Int                @db.UnsignedSmallInt
   score             Float?
   state             String?            @db.MediumText
-  assignment       content        @relation(fields: [contentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  assignment        content            @relation(fields: [contentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   user              users              @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
   contentItemStates contentItemState[]
 

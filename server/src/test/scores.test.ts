@@ -25,10 +25,10 @@ test("Create and save responses for new attempts, no items", async () => {
   });
 
   // open assignment generates code
-  const closeAt = DateTime.now().plus({ days: 1 });
+  const closedOn = DateTime.now().plus({ days: 1 });
   const { assignmentId } = await createAssignment({
     contentId: contentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
@@ -338,10 +338,10 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
   });
 
   // open assignment generates code
-  const closeAt = DateTime.now().plus({ days: 1 });
+  const closedOn = DateTime.now().plus({ days: 1 });
   const { assignmentId } = await createAssignment({
     contentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
@@ -952,10 +952,10 @@ test("Create and save responses for new item attempts, two items", async () => {
   });
 
   // open assignment generates code
-  const closeAt = DateTime.now().plus({ days: 1 });
+  const closedOn = DateTime.now().plus({ days: 1 });
   const { assignmentId } = await createAssignment({
     contentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
@@ -1641,10 +1641,10 @@ test("Create attempts before responding, no items", async () => {
   });
 
   // open assignment generates code
-  const closeAt = DateTime.now().plus({ days: 1 });
+  const closedOn = DateTime.now().plus({ days: 1 });
   const { assignmentId } = await createAssignment({
     contentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
@@ -1827,10 +1827,10 @@ test("Create item attempts before responding, two items", async () => {
   });
 
   // open assignment generates code
-  const closeAt = DateTime.now().plus({ days: 1 });
+  const closedOn = DateTime.now().plus({ days: 1 });
   const { assignmentId } = await createAssignment({
     contentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
@@ -2093,10 +2093,10 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
   });
 
   // open assignment generates code
-  const closeAt = DateTime.now().plus({ days: 1 });
+  const closedOn = DateTime.now().plus({ days: 1 });
   const { assignmentId } = await createAssignment({
     contentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
@@ -2652,10 +2652,10 @@ test("New item attempt does not affect other item", async () => {
   });
 
   // open assignment generates code
-  const closeAt = DateTime.now().plus({ days: 1 });
+  const closedOn = DateTime.now().plus({ days: 1 });
   const { assignmentId } = await createAssignment({
     contentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
@@ -2956,10 +2956,10 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
   });
 
   // open assignment generates code
-  const closeAt = DateTime.now().plus({ days: 1 });
+  const closedOn = DateTime.now().plus({ days: 1 });
   const { assignmentId } = await createAssignment({
     contentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
@@ -3204,10 +3204,10 @@ test("Cannot create activity-wide attempt on formative assessment", async () => 
   });
 
   // open assignment generates code
-  const closeAt = DateTime.now().plus({ days: 1 });
+  const closedOn = DateTime.now().plus({ days: 1 });
   const { assignmentId } = await createAssignment({
     contentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
@@ -3294,10 +3294,10 @@ test("Cannot create item attempt on summative assessment", async () => {
   });
 
   // open assignment generates code
-  const closeAt = DateTime.now().plus({ days: 1 });
+  const closedOn = DateTime.now().plus({ days: 1 });
   const { assignmentId } = await createAssignment({
     contentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
@@ -3338,10 +3338,10 @@ test("Setting maximum number of attempts, no items", async () => {
   });
 
   // open assignment generates code
-  const closeAt = DateTime.now().plus({ days: 1 });
+  const closedOn = DateTime.now().plus({ days: 1 });
   const { assignmentId } = await createAssignment({
     contentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
@@ -3539,10 +3539,10 @@ test("Setting maximum number of attempts, new item attempts", async () => {
   });
 
   // open assignment generates code
-  const closeAt = DateTime.now().plus({ days: 1 });
+  const closedOn = DateTime.now().plus({ days: 1 });
   const { assignmentId } = await createAssignment({
     contentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
@@ -3823,10 +3823,10 @@ test("getScoresOfAllStudents should not provide emails", async () => {
     contentType: "singleDoc",
     parentId: null,
   });
-  const closeAt = DateTime.now().plus({ days: 1 });
+  const closedOn = DateTime.now().plus({ days: 1 });
   const { assignmentId } = await createAssignment({
     contentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
   });

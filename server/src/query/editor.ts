@@ -65,10 +65,10 @@ export async function getEditor({
       name,
       type,
       owner,
-      classCode,
-      rootAssignment,
-      nonRootAssignment,
-      ...other
+      isAssignmentRoot,
+      assignmentClosedOn,
+      parent,
+      isPublic,
     } = await prisma.content.findUniqueOrThrow({
       where: {
         id: contentId,
@@ -84,48 +84,33 @@ export async function getEditor({
             isLibrary: true,
           },
         },
+        isAssignmentRoot: true,
         classCode: true,
-        rootAssignment: {
+        assignmentClosedOn: true,
+        parent: {
           select: {
-            codeValidUntil: true,
-            _count: {
-              select: {
-                assignmentScores: true,
-              },
-            },
-          },
-        },
-        nonRootAssignment: {
-          select: {
-            codeValidUntil: true,
-            rootContent: {
-              select: {
-                classCode: true,
-              },
-            },
+            isAssignmentRoot: true,
+            classCode: true,
+            assignmentClosedOn: true,
           },
         },
       },
     });
 
     let assignment;
-    if (rootAssignment) {
+    if (isAssignmentRoot && assignmentClosedOn !== null) {
       assignment = {
-        assignmentStatus: processAssignmentStatus(rootAssignment),
-        assignmentClassCode: classCode,
-        assignmentHasScoreData: rootAssignment._count.assignmentScores > 0,
+        assignmentStatus: processAssignmentStatus({ assignmentClosedOn }),
       };
-    } else if (nonRootAssignment) {
+    } else if (parent?.isAssignmentRoot && parent.assignmentClosedOn !== null) {
       assignment = {
-        assignmentStatus: processAssignmentStatus(nonRootAssignment),
-        assignmentClassCode: nonRootAssignment.rootContent.classCode,
-        assignmentHasScoreData: false,
+        assignmentStatus: processAssignmentStatus({
+          assignmentClosedOn: parent.assignmentClosedOn,
+        }),
       };
     } else {
       assignment = {
         assignmentStatus: "Unassigned",
-        assignmentClassCode: null,
-        assignmentHasScoreData: false,
       };
     }
 
@@ -141,7 +126,7 @@ export async function getEditor({
       contentId: id,
       contentName: name,
       contentType: type,
-      ...other,
+      isPublic,
       ...assignment,
       remixSourceHasChanged,
       inLibrary: owner.isLibrary,

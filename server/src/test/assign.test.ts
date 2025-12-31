@@ -6,15 +6,14 @@ import {
   fold,
   getTestAssignment,
   pset,
-  qbank,
   setupTestContent,
 } from "./utils";
 import { DateTime } from "luxon";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { convertUUID, fromUUID } from "../utils/uuid";
-import { createContent, deleteContent, updateContent } from "../query/activity";
+import { createContent, updateContent } from "../query/activity";
 import {
-  closeAssignmentWithCode,
+  closeAssignment,
   getAllAssignmentScores,
   getAssignedScores,
   getAssignmentResponseOverview,
@@ -25,7 +24,7 @@ import {
   listUserAssigned,
   createAssignment,
   recordSubmittedEvent,
-  updateAssignmentCloseAt,
+  updateAssignmentClosedOn,
   updateAssignmentMaxAttempts,
   updateAssignmentSettings,
 } from "../query/assign";
@@ -60,7 +59,7 @@ test("assign an activity", async () => {
   const { assignmentId } = await createAssignment({
     contentId,
     loggedInUserId: ownerId,
-    closeAt: DateTime.now().plus({ days: 1 }),
+    closedOn: DateTime.now().plus({ days: 1 }),
     destinationParentId: null,
   });
   const assignment = await getTestAssignment(assignmentId, ownerId);
@@ -110,7 +109,7 @@ test("cannot assign other user's activity", async () => {
     createAssignment({
       contentId: contentId,
       loggedInUserId: ownerId2,
-      closeAt: DateTime.now().plus({ days: 1 }),
+      closedOn: DateTime.now().plus({ days: 1 }),
       destinationParentId: null,
     }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
@@ -126,7 +125,7 @@ test("cannot assign other user's activity", async () => {
     createAssignment({
       contentId: contentId,
       loggedInUserId: ownerId2,
-      closeAt: DateTime.now().plus({ days: 1 }),
+      closedOn: DateTime.now().plus({ days: 1 }),
       destinationParentId: null,
     }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
@@ -143,13 +142,13 @@ test("cannot assign other user's activity", async () => {
     createAssignment({
       contentId: contentId,
       loggedInUserId: ownerId2,
-      closeAt: DateTime.now().plus({ days: 1 }),
+      closedOn: DateTime.now().plus({ days: 1 }),
       destinationParentId: null,
     }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
 });
 
-test("open and close assignment with code", async () => {
+test("open and close one-off assignment", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
   const fakeId = new Uint8Array(16);
@@ -167,10 +166,10 @@ test("open and close assignment with code", async () => {
   });
 
   // open assignment assigns activity and generates code
-  let closeAt = DateTime.now().plus({ days: 1 });
+  let closedOn = DateTime.now().plus({ days: 1 });
   const { assignmentId, classCode } = await createAssignment({
     contentId: contentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
@@ -179,13 +178,12 @@ test("open and close assignment with code", async () => {
   }
   let assignment = await getTestAssignment(assignmentId, ownerId);
   expect(assignment.classCode).eq(classCode);
-  expect(assignment.rootAssignment!.codeValidUntil).eqls(closeAt.toJSDate());
+  expect(assignment.assignmentClosedOn).eqls(closedOn.toJSDate());
 
   let assignmentData = await getAssignmentData({
-    code: classCode,
+    assignmentId: assignmentId,
     loggedInUserId: fakeId,
   });
-  expect(assignmentData.assignmentFound).eq(true);
   if (assignmentData.assignment?.type !== "singleDoc") {
     throw Error("Shouldn't happen");
   }
@@ -193,70 +191,67 @@ test("open and close assignment with code", async () => {
   expect(assignmentData.assignment.doenetML).eq("Some content");
 
   let closeDate = new Date();
-  await closeAssignmentWithCode({
+  await closeAssignment({
     contentId: assignmentId,
     loggedInUserId: ownerId,
   });
   assignment = await getTestAssignment(assignmentId, ownerId);
-  expect(assignment.rootAssignment?.codeValidUntil.getTime()).gte(
-    closeDate.getTime(),
-  );
-  expect(assignment.rootAssignment?.codeValidUntil.getTime()).lte(
+  expect(assignment.assignmentClosedOn!.getTime()).gte(closeDate.getTime());
+  expect(assignment.assignmentClosedOn!.getTime()).lte(
     closeDate.getTime() + 30 * 1000,
   );
 
-  assignmentData = await getAssignmentData({
-    code: classCode,
-    loggedInUserId: fakeId,
-  });
-  expect(assignmentData.assignmentFound).eq(false);
-  expect(assignmentData.assignmentOpen).eq(false);
-  expect(assignmentData.assignment).eq(null);
+  await expect(
+    getAssignmentData({
+      assignmentId: assignmentId,
+      loggedInUserId: fakeId,
+    }),
+  ).rejects.toThrow();
 
   // get same code back if reopen
-  closeAt = DateTime.now().plus({ weeks: 3 });
-  await updateAssignmentCloseAt({
+  closedOn = DateTime.now().plus({ weeks: 3 });
+  await updateAssignmentClosedOn({
     contentId: assignmentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
   });
   assignment = await getTestAssignment(assignmentId, ownerId);
   expect(assignment.classCode).eq(classCode);
-  expect(assignment.rootAssignment!.codeValidUntil).eqls(closeAt.toJSDate());
+  expect(assignment.assignmentClosedOn).eqls(closedOn.toJSDate());
 
   assignmentData = await getAssignmentData({
-    code: classCode,
+    assignmentId: assignmentId,
     loggedInUserId: fakeId,
   });
-  expect(assignmentData.assignmentFound).eq(true);
   expect(assignmentData.assignment!.contentId).eqls(assignmentId);
 
   // Change opening date to the past.
   // Currently, says assignment is not found
   // TODO: if we want students who have previously joined the assignment to be able to reload the page,
   // then this should still retrieve data for those students.
-  closeAt = DateTime.now().plus({ seconds: -7 });
-  await updateAssignmentCloseAt({
+  closedOn = DateTime.now().plus({ seconds: -7 });
+  await updateAssignmentClosedOn({
     contentId: assignmentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
   });
-  assignmentData = await getAssignmentData({
-    code: classCode,
-    loggedInUserId: fakeId,
-  });
-  expect(assignmentData.assignmentFound).eq(false);
+  await expect(
+    getAssignmentData({
+      assignmentId: assignmentId,
+      loggedInUserId: fakeId,
+    }),
+  ).rejects.toThrow();
 
   // reopen with future date
-  closeAt = DateTime.now().plus({ years: 1 });
-  await updateAssignmentCloseAt({
+  closedOn = DateTime.now().plus({ years: 1 });
+  await updateAssignmentClosedOn({
     contentId: assignmentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
   });
   assignment = await getTestAssignment(assignmentId, ownerId);
   expect(assignment.classCode).eq(classCode);
-  expect(assignment.rootAssignment!.codeValidUntil).eqls(closeAt.toJSDate());
+  expect(assignment.assignmentClosedOn).eqls(closedOn.toJSDate());
 
   await createNewAttempt({
     contentId: assignmentId,
@@ -277,105 +272,61 @@ test("open and close assignment with code", async () => {
 
   // closing assignment doesn't close completely due to the data
   closeDate = new Date();
-  await closeAssignmentWithCode({
+  await closeAssignment({
     contentId: assignmentId,
     loggedInUserId: ownerId,
   });
   assignment = await getTestAssignment(assignmentId, ownerId);
   expect(assignment.classCode).eq(classCode);
-  expect(assignment.rootAssignment!.codeValidUntil.getTime()).gte(
-    closeDate.getTime(),
-  );
-  expect(assignment.rootAssignment!.codeValidUntil.getTime()).lte(
+  expect(assignment.assignmentClosedOn!.getTime()).gte(closeDate.getTime());
+  expect(assignment.assignmentClosedOn!.getTime()).lte(
     closeDate.getTime() + 30 * 1000,
   );
 });
 
-test("open compound assignment with code", async () => {
+test("assignment document in problem set gets status from parent", async () => {
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+
+  const [sequenceId] = await setupTestContent(ownerId, {
+    "A problem set": pset({
+      "doc 1": doc("Some content 1"),
+    }),
+  });
+  const closedOn = DateTime.now().plus({ days: 1 });
+  const { assignmentId } = await createAssignment({
+    contentId: sequenceId,
+    closedOn,
+    loggedInUserId: ownerId,
+    destinationParentId: null,
+  });
+  const nonRootId = (await getAssignmentNonRootIds(assignmentId))[0];
+  const doc1 = await getContent({
+    contentId: nonRootId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(doc1.assignmentInfo?.assignmentStatus).eq("Open");
+});
+
+test("open one-off compound assignment", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
   const fakeId = new Uint8Array(16);
 
-  const { contentId: sequenceId } = await createContent({
-    loggedInUserId: ownerId,
-    contentType: "sequence",
-    parentId: null,
+  const [sequenceId] = await setupTestContent(ownerId, {
+    "A problem set": pset({
+      "doc 1": doc("Some content 1"),
+      "doc 2": doc("Some content 2"),
+    }),
   });
-  await updateContent({
-    contentId: sequenceId,
-    name: "A problem set",
-    loggedInUserId: ownerId,
-  });
-
-  const { contentId: doc1Id } = await createContent({
-    loggedInUserId: ownerId,
-    contentType: "singleDoc",
-    parentId: sequenceId,
-  });
-  await updateContent({
-    contentId: doc1Id,
-    name: "Question 1",
-    source: "Some content 1",
-    loggedInUserId: ownerId,
-  });
-
-  const { contentId: deleteSelectId } = await createContent({
-    loggedInUserId: ownerId,
-    contentType: "select",
-    parentId: sequenceId,
-  });
-
-  await deleteContent({ contentId: deleteSelectId, loggedInUserId: ownerId });
-
-  const { contentId: selectId } = await createContent({
-    loggedInUserId: ownerId,
-    contentType: "select",
-    parentId: sequenceId,
-  });
-  await updateContent({
-    contentId: selectId,
-    name: "Question Bank",
-    loggedInUserId: ownerId,
-  });
-
-  const { contentId: doc2Id } = await createContent({
-    loggedInUserId: ownerId,
-    contentType: "singleDoc",
-    parentId: selectId,
-  });
-  await updateContent({
-    contentId: doc2Id,
-    name: "Question 2",
-    source: "Some content 2",
-    loggedInUserId: ownerId,
-  });
-
-  const { contentId: doc3Id } = await createContent({
-    loggedInUserId: ownerId,
-    contentType: "singleDoc",
-    parentId: selectId,
-  });
-  await updateContent({
-    contentId: doc3Id,
-    name: "Question 3",
-    source: "Some content 3",
-    loggedInUserId: ownerId,
-  });
-
-  // check content structure beforehand
-  let content = await getContent({
-    contentId: sequenceId,
-    loggedInUserId: ownerId,
-    includeAssignInfo: true,
-  });
-  expect(content.assignmentInfo).eq(undefined);
 
   // open assignment assigns activity and generates code
-  const closeAt = DateTime.now().plus({ days: 1 });
+  const closedOn = DateTime.now().plus({ days: 1 });
   const { assignmentId: sequenceAssignmentId, classCode } =
     await createAssignment({
       contentId: sequenceId,
-      closeAt: closeAt,
+      closedOn: closedOn,
       loggedInUserId: ownerId,
       destinationParentId: null,
     });
@@ -384,54 +335,46 @@ test("open compound assignment with code", async () => {
   }
   const assignment = await getTestAssignment(sequenceAssignmentId, ownerId);
   expect(assignment.classCode).eq(classCode);
-  expect(assignment.rootAssignment!.codeValidUntil).eqls(closeAt.toJSDate());
+  expect(assignment.assignmentClosedOn).eqls(closedOn.toJSDate());
 
   const assignmentData = await getAssignmentData({
-    code: classCode,
+    assignmentId: sequenceAssignmentId,
     loggedInUserId: fakeId,
   });
-  expect(assignmentData.assignmentFound).eq(true);
   if (assignmentData.assignment?.type !== "sequence") {
     throw Error("Shouldn't happen");
   }
 
   expect(assignmentData.assignment.contentId).eqls(sequenceAssignmentId);
-
   expect(assignmentData.assignment.name).eq("A problem set");
   expect(assignmentData.assignment.children.length).eq(2);
+
   const question1 = assignmentData.assignment.children[0];
   if (question1.type !== "singleDoc") {
     throw Error("Shouldn't happen");
   }
   expect(question1.doenetML).eq("Some content 1");
 
-  const questionBank = assignmentData.assignment.children[1];
-  if (questionBank.type !== "select") {
+  const question2 = assignmentData.assignment.children[1];
+  if (question2.type !== "singleDoc") {
     throw Error("Shouldn't happen");
   }
-  expect(questionBank.children.length).eq(2);
-  for (let i = 0; i < 2; i++) {
-    const question = questionBank.children[i];
-    if (question.type !== "singleDoc") {
-      throw Error("Shouldn't happen");
-    }
-    expect(question.doenetML).eq(`Some content ${i + 2}`);
-  }
+  expect(question2.doenetML).eq("Some content 2");
 
   // check content info from root and a descendant
-  content = await getContent({
+  let content = await getContent({
     contentId: sequenceAssignmentId,
     loggedInUserId: ownerId,
     includeAssignInfo: true,
   });
   expect(content.assignmentInfo?.assignmentStatus).eq("Open");
-  expect(content.assignmentInfo?.codeValidUntil).eqls(closeAt.toJSDate());
+  expect(content.assignmentInfo?.assignmentClosedOn).eqls(closedOn.toJSDate());
   expect(content.assignmentInfo?.classCode).eq(classCode);
   expect(content.assignmentInfo?.maxAttempts).eq(1);
   expect(content.assignmentInfo?.mode).eq("formative");
 
   const nonRootIds = await getAssignmentNonRootIds(sequenceAssignmentId);
-  expect(nonRootIds.length).eqls(4);
+  expect(nonRootIds.length).eqls(2);
 
   content = await getContent({
     contentId: nonRootIds[0],
@@ -439,7 +382,7 @@ test("open compound assignment with code", async () => {
     includeAssignInfo: true,
   });
   expect(content.assignmentInfo?.assignmentStatus).eq("Open");
-  expect(content.assignmentInfo?.codeValidUntil).eqls(closeAt.toJSDate());
+  expect(content.assignmentInfo?.assignmentClosedOn).eqls(closedOn.toJSDate());
   expect(content.assignmentInfo?.classCode).eq(classCode);
   expect(content.assignmentInfo?.maxAttempts).eq(1);
   expect(content.assignmentInfo?.mode).eq("formative");
@@ -472,14 +415,14 @@ test("only owner can open, close, modify, or unassign assignment", async () => {
     }),
   ).rejects.toThrow("not found");
 
-  const closeAt = DateTime.now().plus({ days: 1 });
+  const closedOn = DateTime.now().plus({ days: 1 });
 
   // Only owner can create assignment
   await expect(
     createAssignment({
       contentId: contentId,
       loggedInUserId: userId2,
-      closeAt,
+      closedOn: closedOn,
       destinationParentId: null,
     }),
   ).rejects.toThrow("not found");
@@ -487,7 +430,7 @@ test("only owner can open, close, modify, or unassign assignment", async () => {
   const { assignmentId } = await createAssignment({
     contentId: contentId,
     loggedInUserId: ownerId,
-    closeAt,
+    closedOn: closedOn,
     destinationParentId: null,
   });
 
@@ -515,35 +458,35 @@ test("only owner can open, close, modify, or unassign assignment", async () => {
   expect(assignment.name).eq("New Activity");
 
   // Only owner can edit close datetime
-  const newCloseAt = DateTime.now().plus({ days: 2 });
+  const newClosedOn = DateTime.now().plus({ days: 2 });
 
   await expect(
-    updateAssignmentCloseAt({
+    updateAssignmentClosedOn({
       contentId: assignmentId,
-      closeAt: newCloseAt,
+      closedOn: newClosedOn,
       loggedInUserId: userId2,
     }),
   ).rejects.toThrow("Record to update not found");
   assignment = await getTestAssignment(assignmentId, ownerId);
-  expect(assignment.rootAssignment!.codeValidUntil).eqls(closeAt.toJSDate());
+  expect(assignment.assignmentClosedOn).eqls(closedOn.toJSDate());
 
-  await updateAssignmentCloseAt({
+  await updateAssignmentClosedOn({
     contentId: assignmentId,
-    closeAt: newCloseAt,
+    closedOn: newClosedOn,
     loggedInUserId: ownerId,
   });
   assignment = await getTestAssignment(assignmentId, ownerId);
-  expect(assignment.rootAssignment!.codeValidUntil).eqls(newCloseAt.toJSDate());
+  expect(assignment.assignmentClosedOn).eqls(newClosedOn.toJSDate());
 
   // Only owner can manually close the assignment
   await expect(
-    closeAssignmentWithCode({
+    closeAssignment({
       contentId: assignmentId,
       loggedInUserId: userId2,
     }),
   ).rejects.toThrow("Record to update not found");
 
-  await closeAssignmentWithCode({
+  await closeAssignment({
     contentId: assignmentId,
     loggedInUserId: ownerId,
   });
@@ -554,77 +497,69 @@ test("cannot assign a descendant of an assignment", async () => {
 
   const [sequenceId, ..._] = await setupTestContent(ownerId, {
     "A problem set": pset({
-      "A question bank": qbank({
-        "A question": doc("Some content"),
-      }),
+      "A question": doc("Some content"),
     }),
   });
 
   const { assignmentId } = await createAssignment({
     contentId: sequenceId,
     loggedInUserId: ownerId,
-    closeAt: DateTime.now().plus({ days: 1 }),
+    closedOn: DateTime.now().plus({ days: 1 }),
     destinationParentId: null,
   });
 
   const nonRootIds = await getAssignmentNonRootIds(assignmentId);
-  expect(nonRootIds.length).eqls(2);
+  expect(nonRootIds.length).eqls(1);
 
   // cannot assign the descendants of the assignment sequenceId
   await expect(
     createAssignment({
       contentId: nonRootIds[0],
       loggedInUserId: ownerId,
-      closeAt: DateTime.now().plus({ days: 1 }),
+      closedOn: DateTime.now().plus({ days: 1 }),
       destinationParentId: null,
     }),
-  ).rejects.toThrow();
-
-  await expect(
-    createAssignment({
-      contentId: nonRootIds[1],
-      loggedInUserId: ownerId,
-      closeAt: DateTime.now().plus({ days: 1 }),
-      destinationParentId: null,
-    }),
-  ).rejects.toThrow();
+  ).rejects.toThrow("not found");
 });
 
 test("cannot assign an ancestor of an assignment", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
 
-  const [sequenceId, selectId, docId] = await setupTestContent(ownerId, {
-    "A problem set": pset({
-      "A question bank": qbank({
-        "Some question": doc("some content"),
+  const [outerFolderId, innerFolderId, docId] = await setupTestContent(
+    ownerId,
+    {
+      "Outer Folder": fold({
+        "Inner Folder": fold({
+          "Some question": doc("some content"),
+        }),
       }),
-    }),
-  });
+    },
+  );
 
-  // Create an assignment and put it next to the document
+  // Create an assignment and put it inside the inner folder
   await createAssignment({
     contentId: docId,
     loggedInUserId: ownerId,
-    closeAt: DateTime.now().plus({ days: 1 }),
-    destinationParentId: selectId,
+    closedOn: DateTime.now().plus({ days: 1 }),
+    destinationParentId: innerFolderId,
   });
 
-  // cannot assign the descendants of the assignment sequenceId
+  // cannot assign the ancestors of the assignment: outer folder, inner folder
   await expect(
     createAssignment({
-      contentId: sequenceId,
+      contentId: outerFolderId,
       loggedInUserId: ownerId,
-      closeAt: DateTime.now().plus({ days: 1 }),
+      closedOn: DateTime.now().plus({ days: 1 }),
       destinationParentId: null,
     }),
   ).rejects.toThrow();
 
   await expect(
     createAssignment({
-      contentId: selectId,
+      contentId: innerFolderId,
       loggedInUserId: ownerId,
-      closeAt: DateTime.now().plus({ days: 1 }),
+      closedOn: DateTime.now().plus({ days: 1 }),
       destinationParentId: null,
     }),
   ).rejects.toThrow();
@@ -645,45 +580,43 @@ test("cannot assign sub-part of problem set", async () => {
     createAssignment({
       contentId: docId,
       loggedInUserId: ownerId,
-      closeAt: DateTime.now().plus({ days: 1 }),
+      closedOn: DateTime.now().plus({ days: 1 }),
       destinationParentId: null,
     }),
   ).rejects.toThrow();
 });
 
-test("cannot change closeAt, maxAttempts, mode, individualizeByStudent of a non-root assignment activity", async () => {
+test("cannot change closedOn, maxAttempts, mode, individualizeByStudent of a non-root assignment activity", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
 
   const [sequenceId, ..._] = await setupTestContent(ownerId, {
     "A problem set": pset({
-      "A question bank": qbank({
-        "Some question": doc("some content"),
-      }),
+      "Some question": doc("some content"),
     }),
   });
 
   const { assignmentId } = await createAssignment({
     contentId: sequenceId,
     loggedInUserId: ownerId,
-    closeAt: DateTime.now().plus({ days: 1 }),
+    closedOn: DateTime.now().plus({ days: 1 }),
     destinationParentId: null,
   });
 
   const nonRootIds = await getAssignmentNonRootIds(assignmentId);
-  expect(nonRootIds.length).eqls(2);
+  expect(nonRootIds.length).eqls(1);
 
-  const closeAt = DateTime.now().plus({ days: 1 });
+  const closedOn = DateTime.now().plus({ days: 1 });
   const maxAttempts = 2;
   const mode: AssignmentMode = "summative";
   const individualizeByStudent = true;
 
   for (const nonRootId of nonRootIds) {
     await expect(
-      updateAssignmentCloseAt({
+      updateAssignmentClosedOn({
         contentId: nonRootId,
         loggedInUserId: ownerId,
-        closeAt,
+        closedOn: closedOn,
       }),
     ).rejects.toThrow("not found");
 
@@ -712,10 +645,10 @@ test("cannot change closeAt, maxAttempts, mode, individualizeByStudent of a non-
     ).rejects.toThrow();
   }
 
-  await updateAssignmentCloseAt({
+  await updateAssignmentClosedOn({
     contentId: assignmentId,
     loggedInUserId: ownerId,
-    closeAt,
+    closedOn: closedOn,
   });
 
   await updateAssignmentMaxAttempts({
@@ -731,7 +664,7 @@ test("cannot change closeAt, maxAttempts, mode, individualizeByStudent of a non-
   });
 
   expect(content.assignmentInfo?.assignmentStatus).eq("Open");
-  expect(content.assignmentInfo?.codeValidUntil).eqls(closeAt.toJSDate());
+  expect(content.assignmentInfo?.assignmentClosedOn).eqls(closedOn.toJSDate());
   expect(content.assignmentInfo?.maxAttempts).eq(2);
   expect(content.assignmentInfo?.mode).eq("formative");
   expect(content.assignmentInfo?.individualizeByStudent).eq(false);
@@ -759,7 +692,6 @@ async function testSingleDocResponses({
   contentId,
   ownerId,
   dataByStudent,
-  classCode,
   source,
 }: {
   contentId: Uint8Array;
@@ -808,10 +740,9 @@ async function testSingleDocResponses({
     const scoreFromAttempts = scoreFromStudentAttempts(studentData.attempts);
 
     const dataFromCode = await getAssignmentData({
-      code: classCode,
+      assignmentId: contentId,
       loggedInUserId: studentData.user.userId,
     });
-    expect(dataFromCode.assignmentFound).eq(true);
     expect(dataFromCode.scoreData).eqls({
       calculatedScore: true,
       ...scoreFromAttempts,
@@ -889,10 +820,10 @@ test("get assignment data from anonymous users", async () => {
   });
 
   // open assignment generates code
-  const closeAt = DateTime.now().plus({ days: 1 });
+  const closedOn = DateTime.now().plus({ days: 1 });
   const { assignmentId, classCode } = await createAssignment({
     contentId: contentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
@@ -1112,10 +1043,10 @@ test("can't get assignment data if other user, but student can get their own dat
     parentId: null,
   });
 
-  const closeAt = DateTime.now().plus({ days: 1 });
+  const closedOn = DateTime.now().plus({ days: 1 });
   const { assignmentId } = await createAssignment({
     contentId: contentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
@@ -1220,7 +1151,7 @@ test("list assigned and get assigned scores get student assignments and scores",
   await createAssignment({
     contentId: contentId1,
     loggedInUserId: user1Id,
-    closeAt: DateTime.now().plus({ days: 1 }),
+    closedOn: DateTime.now().plus({ days: 1 }),
     destinationParentId: null,
   });
 
@@ -1242,7 +1173,7 @@ test("list assigned and get assigned scores get student assignments and scores",
   const { assignmentId: assignmentId2 } = await createAssignment({
     contentId: contentId2,
     loggedInUserId: user2Id,
-    closeAt: DateTime.now().plus({ days: 1 }),
+    closedOn: DateTime.now().plus({ days: 1 }),
     destinationParentId: null,
   });
 
@@ -1290,10 +1221,10 @@ test("get all assignment data from anonymous user", async () => {
   });
 
   // open assignment generates code
-  const closeAt = DateTime.now().plus({ days: 1 });
+  const closedOn = DateTime.now().plus({ days: 1 });
   const { assignmentId } = await createAssignment({
     contentId: contentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
@@ -1424,14 +1355,14 @@ test(
       // Root assignment
     });
 
-    const closeAt = DateTime.now().plus({ days: 1 });
+    const closedOn = DateTime.now().plus({ days: 1 });
 
     async function setupAssignment(
       parentId: Uint8Array | null,
     ): Promise<Uint8Array> {
       const { assignmentId } = await createAssignment({
         contentId: docId,
-        closeAt: closeAt,
+        closedOn: closedOn,
         loggedInUserId: ownerId,
         destinationParentId: parentId,
       });
@@ -1483,10 +1414,10 @@ test("getAllAssignmentScores retrieves ordered assignments, ordered students, an
       "Activity 1": doc("Some content"),
     }),
   });
-  const closeAt = DateTime.now().plus({ days: 1 });
+  const closedOn = DateTime.now().plus({ days: 1 });
   const { assignmentId } = await createAssignment({
     contentId,
-    closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: folderId,
   });
@@ -1602,7 +1533,7 @@ test("getAllAssignmentScores retrieves ordered assignments, ordered students, an
 
   const { assignmentId: assignmentId2 } = await createAssignment({
     contentId: activity2Id,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: folderId,
   });
@@ -1648,7 +1579,7 @@ test("score for one attempt uses most recent save", async () => {
   });
   const { assignmentId } = await createAssignment({
     contentId,
-    closeAt: DateTime.now().plus({ days: 1 }),
+    closedOn: DateTime.now().plus({ days: 1 }),
     loggedInUserId: userId,
     destinationParentId: folderId,
   });
@@ -1701,10 +1632,10 @@ test("record submitted events and get responses", async () => {
   });
 
   // open assignment generates code
-  const closeAt = DateTime.now().plus({ days: 1 });
+  const closedOn = DateTime.now().plus({ days: 1 });
   await createAssignment({
     contentId: contentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
@@ -1917,10 +1848,10 @@ test("only owner can get submitted responses", async () => {
   const userId2 = user2.userId;
 
   // open assignment generates code
-  const closeAt = DateTime.now().plus({ days: 1 });
+  const closedOn = DateTime.now().plus({ days: 1 });
   await createAssignment({
     contentId: contentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
@@ -1983,10 +1914,10 @@ test("only user and assignment owner can load document state", async () => {
   });
 
   // open assignment generates code
-  const closeAt = DateTime.now().plus({ days: 1 });
+  const closedOn = DateTime.now().plus({ days: 1 });
   const { assignmentId } = await createAssignment({
     contentId: contentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
@@ -2067,7 +1998,7 @@ describe("student handles", () => {
     });
     const { assignmentId } = await createAssignment({
       contentId: docId,
-      closeAt: DateTime.now().plus({ days: 1 }),
+      closedOn: DateTime.now().plus({ days: 1 }),
       loggedInUserId: instructorId,
       destinationParentId: folderId,
     });
@@ -2088,7 +2019,7 @@ describe("student handles", () => {
         variant: 1,
         state: null,
       }),
-    ).rejects.toThrow("");
+    ).rejects.toThrow();
   });
 
   test("outside account cannot be used to take course assignment, in sub folder", async () => {
@@ -2106,7 +2037,7 @@ describe("student handles", () => {
     );
     const { assignmentId } = await createAssignment({
       contentId: docId,
-      closeAt: DateTime.now().plus({ days: 1 }),
+      closedOn: DateTime.now().plus({ days: 1 }),
       loggedInUserId: instructorId,
       destinationParentId: subFolderId,
     });
@@ -2127,7 +2058,7 @@ describe("student handles", () => {
         variant: 1,
         state: null,
       }),
-    ).rejects.toThrow("");
+    ).rejects.toThrow();
   });
 
   test("anonymous account cannot be used to take course assignment", async () => {
@@ -2140,7 +2071,7 @@ describe("student handles", () => {
     });
     const { assignmentId } = await createAssignment({
       contentId: docId,
-      closeAt: DateTime.now().plus({ days: 1 }),
+      closedOn: DateTime.now().plus({ days: 1 }),
       loggedInUserId: instructorId,
       destinationParentId: folderId,
     });
@@ -2161,6 +2092,6 @@ describe("student handles", () => {
         variant: 1,
         state: null,
       }),
-    ).rejects.toThrow("");
+    ).rejects.toThrow();
   });
 });

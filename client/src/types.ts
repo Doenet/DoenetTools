@@ -244,7 +244,7 @@ export type Content = Doc | QuestionBank | ProblemSet | Folder;
 export type AssignmentInfo = {
   assignmentStatus: AssignmentStatus;
   classCode: number | null;
-  codeValidUntil: DoenetDateTime;
+  assignmentClosedOn: DoenetDateTime;
   hasScoreData: boolean;
   mode: AssignmentMode;
   individualizeByStudent: boolean;

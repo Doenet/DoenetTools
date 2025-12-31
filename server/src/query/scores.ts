@@ -91,9 +91,9 @@ export async function saveScoreAndState({
   }
 
   async function getMaxAttemptNumber() {
-    const assignment = await prisma.assignments.findUniqueOrThrow({
+    const assignment = await prisma.content.findUniqueOrThrow({
       where: {
-        rootContentId: contentId,
+        id: contentId,
       },
       select: {
         contentState: {
@@ -286,21 +286,16 @@ export async function createNewAttempt({
       mode: true,
       maxAttempts: true,
       type: true,
-      rootAssignment: {
-        select: {
-          contentState: {
-            distinct: ["contentId", "userId"],
-            where: { userId: loggedInUserId },
-            orderBy: { attemptNumber: "desc" },
-            select: { attemptNumber: true },
-          },
-        },
+      contentState: {
+        distinct: ["contentId", "userId"],
+        where: { userId: loggedInUserId },
+        orderBy: { attemptNumber: "desc" },
+        select: { attemptNumber: true },
       },
     },
   });
 
-  const maxAttemptNumber =
-    assignment.rootAssignment!.contentState[0]?.attemptNumber ?? 0;
+  const maxAttemptNumber = assignment.contentState[0]?.attemptNumber ?? 0;
 
   if (assignment.mode === "formative" && assignment.type !== "singleDoc") {
     if (shuffledItemOrder === undefined) {
@@ -495,16 +490,14 @@ export async function loadState({
   const stateUserId = requestedUserId ?? loggedInUserId;
 
   try {
-    await prisma.assignments.findUniqueOrThrow({
+    await prisma.content.findUniqueOrThrow({
       where: {
-        rootContentId: contentId,
-        rootContent: {
-          // if getting data for other person, you must be the owner
-          ownerId: isEqualUUID(stateUserId, loggedInUserId)
-            ? undefined
-            : loggedInUserId,
-          isDeletedOn: null,
-        },
+        id: contentId,
+        // if getting data for other person, you must be the owner
+        ownerId: isEqualUUID(stateUserId, loggedInUserId)
+          ? undefined
+          : loggedInUserId,
+        isDeletedOn: null,
       },
     });
   } catch (e) {
@@ -672,13 +665,11 @@ export async function loadItemState({
 
   const contentStateWhere = {
     assignment: {
-      rootContent: {
-        // if getting data for other person, you must be the owner
-        ownerId: isEqualUUID(stateUserId, loggedInUserId)
-          ? undefined
-          : loggedInUserId,
-        isDeletedOn: null,
-      },
+      // if getting data for other person, you must be the owner
+      ownerId: isEqualUUID(stateUserId, loggedInUserId)
+        ? undefined
+        : loggedInUserId,
+      isDeletedOn: null,
     },
   };
 
@@ -805,20 +796,14 @@ export async function calculateScoreAndCacheResults({
   // if getting data for other person, you must be the owner
   const forMyself = isEqualUUID(scoreUserId, loggedInUserId);
 
-  const assignment = await prisma.assignments.findUniqueOrThrow({
+  const assignment = await prisma.content.findUniqueOrThrow({
     where: {
-      rootContentId: contentId,
-      rootContent: {
-        ownerId: forMyself ? undefined : loggedInUserId,
-        isDeletedOn: null,
-      },
+      id: contentId,
+      ownerId: forMyself ? undefined : loggedInUserId,
+      isDeletedOn: null,
     },
     select: {
-      rootContent: {
-        select: {
-          mode: true,
-        },
-      },
+      mode: true,
       contentState: {
         where: { userId: scoreUserId },
         distinct: ["contentId", "userId"],
@@ -830,7 +815,7 @@ export async function calculateScoreAndCacheResults({
     },
   });
 
-  const mode = assignment.rootContent.mode;
+  const mode = assignment.mode;
   if (assignment.contentState.length !== 1) {
     return { calculatedScore: false as const };
   }
@@ -983,16 +968,14 @@ export async function getScore({
   const scoreUserId = requestedUserId ?? loggedInUserId;
 
   // verify have access
-  await prisma.assignments.findUniqueOrThrow({
+  await prisma.content.findUniqueOrThrow({
     where: {
-      rootContentId: contentId,
-      rootContent: {
-        // if getting data for other person, you must be the owner
-        ownerId: isEqualUUID(scoreUserId, loggedInUserId)
-          ? undefined
-          : loggedInUserId,
-        isDeletedOn: null,
-      },
+      id: contentId,
+      // if getting data for other person, you must be the owner
+      ownerId: isEqualUUID(scoreUserId, loggedInUserId)
+        ? undefined
+        : loggedInUserId,
+      isDeletedOn: null,
     },
   });
 

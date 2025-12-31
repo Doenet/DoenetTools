@@ -3,6 +3,7 @@ import { prisma } from "../model";
 import { LicenseCode, UserInfo } from "../types";
 import {
   filterEditableContent,
+  filterExcludeAssignments,
   filterViewableContent,
   getIsEditor,
   mustBeEditor,
@@ -65,14 +66,13 @@ export async function moveContent({
       isPublic: true,
       parent: {
         select: {
-          rootAssignment: { select: { rootContentId: true } },
-          nonRootAssignment: { select: { rootContentId: true } },
+          isAssignmentRoot: true,
         },
       },
     },
   });
 
-  if (content.parent?.rootAssignment || content.parent?.nonRootAssignment) {
+  if (content.parent?.isAssignmentRoot) {
     throw new InvalidRequestError(
       "Cannot move content in an assigned activity",
     );
@@ -98,12 +98,11 @@ export async function moveContent({
         isPublic: true,
         licenseCode: true,
         sharedWith: { select: { userId: true } },
-        rootAssignment: { select: { rootContentId: true } },
-        nonRootAssignment: { select: { rootContentId: true } },
+        isAssignmentRoot: true,
       },
     });
 
-    if (parent.rootAssignment || parent.nonRootAssignment) {
+    if (parent.isAssignmentRoot) {
       throw new InvalidRequestError(
         "Cannot move content into an assigned activity",
       );
@@ -307,20 +306,19 @@ export async function copyContent({
     const parent = await prisma.content.findUniqueOrThrow({
       where: {
         id: parentId,
-        type: { not: "singleDoc" },
         ...filterEditableContent(loggedInUserId, isEditor),
+        type: { not: "singleDoc" },
       },
       select: {
         isPublic: true,
         type: true,
         licenseCode: true,
         sharedWith: { select: { userId: true } },
-        rootAssignment: { select: { rootContentId: true } },
-        nonRootAssignment: { select: { rootContentId: true } },
+        isAssignmentRoot: true,
       },
     });
 
-    if (parent.rootAssignment || parent.nonRootAssignment) {
+    if (parent.isAssignmentRoot) {
       throw new InvalidRequestError(
         "Cannot copy content into an assigned activity",
       );
@@ -437,7 +435,10 @@ async function copySingleContent({
       createdAt: true,
       sortIndex: true,
       lastEdited: true,
-      nonRootAssignmentId: true,
+      isAssignmentRoot: true,
+      assignmentOpenOn: true,
+      assignmentClosedOn: true,
+      classCode: true,
     },
     include: {
       owner: {
@@ -724,14 +725,10 @@ export async function getMoveCopyContentData({
       id: true,
       name: true,
       type: true,
-      rootAssignment: {
+      isAssignmentRoot: true,
+      parent: {
         select: {
-          rootContentId: true,
-        },
-      },
-      nonRootAssignment: {
-        select: {
-          rootContentId: true,
+          isAssignmentRoot: true,
         },
       },
     },
@@ -770,7 +767,7 @@ export async function getMoveCopyContentData({
   for (const child of results) {
     let canOpen = true;
     const isAssignment = Boolean(
-      child.rootAssignment || child.nonRootAssignment,
+      child.isAssignmentRoot || child.parent?.isAssignmentRoot,
     );
     if (isAssignment) {
       canOpen = false;
@@ -845,9 +842,7 @@ export async function checkIfContentContains({
   const children = await prisma.content.findMany({
     where: {
       parentId: contentId,
-      rootAssignment: { is: null },
-      nonRootAssignmentId: null,
-      ...filterEditableContent(loggedInUserId),
+      AND: [filterEditableContent(loggedInUserId), filterExcludeAssignments],
     },
     select: {
       id: true,

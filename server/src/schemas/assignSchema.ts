@@ -8,14 +8,14 @@ import {
   stringAsRangedNumberIncludingZero,
 } from "./rangedNumber";
 
-export const assignmentCloseAtSchema = z.object({
+export const assignmentClosedOnSchema = z.object({
   contentId: uuidSchema,
-  closeAt: z.iso
+  closedOn: z.iso
     .datetime({ offset: true })
     .transform((val) => DateTime.fromISO(val)),
 });
 
-export const createAssignmentSchema = assignmentCloseAtSchema.extend({
+export const createAssignmentSchema = assignmentClosedOnSchema.extend({
   destinationParentId: uuidOrNullSchema,
 });
 
@@ -54,7 +54,7 @@ export const recordSubmittedEventSchema = z.object({
   itemCreditAchieved: z.number(),
 });
 
-export const codeSchema = z.object({ code: z.number() });
+export const assignmentIdSchema = z.object({ assignmentId: uuidSchema });
 
 export const getAssignmentResponseStudentSchema = z.object({
   contentId: uuidSchema,

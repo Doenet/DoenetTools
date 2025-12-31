@@ -78,12 +78,12 @@ export async function createContent({
         isPublic: true,
         licenseCode: true,
         sharedWith: { select: { userId: true } },
-        rootAssignment: { select: { rootContentId: true } },
-        nonRootAssignment: { select: { rootContentId: true } },
+        isAssignmentRoot: true,
+        parent: { select: { isAssignmentRoot: true } },
       },
     });
 
-    if (parent.rootAssignment || parent.nonRootAssignment) {
+    if (parent.isAssignmentRoot || parent.parent?.isAssignmentRoot) {
       throw new InvalidRequestError(
         "Cannot add content to an assigned activity",
       );
@@ -174,14 +174,13 @@ export async function deleteContent({
       id: true,
       parent: {
         select: {
-          rootAssignment: { select: { rootContentId: true } },
-          nonRootAssignment: { select: { rootContentId: true } },
+          isAssignmentRoot: true,
         },
       },
     },
   });
 
-  if (content.parent?.rootAssignment || content.parent?.nonRootAssignment) {
+  if (content.parent?.isAssignmentRoot) {
     throw new InvalidRequestError(
       "Cannot delete content from an assigned activity",
     );
@@ -410,13 +409,13 @@ export async function updateContent({
       ...filterEditableContent(loggedInUserId, isEditor),
     },
     select: {
-      rootAssignment: { select: { rootContentId: true } },
-      nonRootAssignment: { select: { rootContentId: true } },
+      isAssignmentRoot: true,
+      parent: { select: { isAssignmentRoot: true } },
     },
   });
 
   const isAssigned = Boolean(
-    content.rootAssignment || content.nonRootAssignment,
+    content.isAssignmentRoot || content.parent?.isAssignmentRoot,
   );
 
   if (isAssigned) {
@@ -438,7 +437,6 @@ export async function updateContent({
       throw new InvalidRequestError("Cannot change assigned content");
     }
   }
-
   if (repeatInProblemSet) {
     // Make sure this content is a document and the parent is a problem set
     const check = await prisma.content.findUniqueOrThrow({
@@ -552,17 +550,13 @@ export async function getContentDescription({
       type: true,
       doenetmlVersionId: true,
       parent: {
-        where: {
-          ...filterViewableContent(loggedInUserId, isEditor),
-        },
+        where: filterViewableContent(loggedInUserId, isEditor),
         select: {
           type: true,
           id: true,
           name: true,
           parent: {
-            where: {
-              ...filterViewableContent(loggedInUserId, isEditor),
-            },
+            where: filterViewableContent(loggedInUserId, isEditor),
             select: {
               id: true,
               name: true,

@@ -59,7 +59,7 @@ export function ConfirmAssignModal({
   const submitFetcher = useFetcher();
 
   const [duration, setDuration] = useState(JSON.stringify({ hours: 48 }));
-  const [customCloseAt, setCustomCloseAt] = useState(
+  const [customClosedOn, setCustomClosedOn] = useState(
     DateTime.fromSeconds(Math.round(DateTime.now().toSeconds() / 60) * 60)
       .plus({ weeks: 2 })
       .toISO({
@@ -127,8 +127,8 @@ export function ConfirmAssignModal({
                         step="60"
                         width="220px"
                         value={
-                          customCloseAt
-                            ? customCloseAt
+                          customClosedOn
+                            ? customClosedOn
                             : (DateTime.fromSeconds(
                                 Math.round(DateTime.now().toSeconds() / 60) *
                                   60,
@@ -141,7 +141,7 @@ export function ConfirmAssignModal({
                                 }) ?? DateTime.now().toISO())
                         }
                         onChange={(e) => {
-                          setCustomCloseAt(e.target.value);
+                          setCustomClosedOn(e.target.value);
                         }}
                       />
                     </FormControl>
@@ -176,10 +176,10 @@ export function ConfirmAssignModal({
         action={"Copy"}
         createAssignment={true}
         createAssignmentCallback={(parentId) => {
-          const closeAtDateTime: DateTime =
+          const closedOnDateTime: DateTime =
             duration === "custom"
-              ? customCloseAt
-                ? DateTime.fromISO(customCloseAt).set({
+              ? customClosedOn
+                ? DateTime.fromISO(customClosedOn).set({
                     second: 0,
                     millisecond: 0,
                   })
@@ -188,7 +188,7 @@ export function ConfirmAssignModal({
                   .set({ second: 0, millisecond: 0 })
                   .plus(JSON.parse(duration));
 
-          const closeAt = closeAtDateTime.toUTC().toISO({
+          const closedOn = closedOnDateTime.toUTC().toISO({
             precision: "minutes",
           });
 
@@ -196,7 +196,7 @@ export function ConfirmAssignModal({
             {
               path: "assign/createAssignment",
               contentId,
-              closeAt,
+              closedOn,
               destinationParentId: parentId,
             },
             { method: "post", encType: "application/json" },

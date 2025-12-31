@@ -56,7 +56,6 @@ export async function getTestAssignment(
       id: contentId,
       ...filterEditableRootAssignment(loggedInUserId),
     },
-    include: { rootAssignment: true },
   });
   return assignment;
 }

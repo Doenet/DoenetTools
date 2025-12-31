@@ -67,9 +67,7 @@ const filterRootAssignment = {
  */
 export const filterExcludeAssignments = {
   isAssignmentRoot: false,
-  parent: {
-    isAssignmentRoot: false,
-  },
+  OR: [{ parent: null }, { parent: { isAssignmentRoot: false } }],
   isDeletedOn: null,
 };
 
@@ -78,9 +76,10 @@ export const filterExcludeAssignments = {
  * Use on table `contents`.
  */
 const filterActivity = {
-  type: { not: "folder" as const },
-  ...filterExcludeAssignments,
-  isDeletedOn: null,
+  AND: [
+    { type: { not: "folder" as const }, isDeletedOn: null },
+    filterExcludeAssignments,
+  ],
 };
 
 /**
@@ -101,8 +100,7 @@ export function filterViewableActivity(
   isEditor: boolean = false,
 ) {
   return {
-    ...filterViewableContent(loggedInUserId, isEditor),
-    ...filterActivity,
+    AND: [filterViewableContent(loggedInUserId, isEditor), filterActivity],
   };
 }
 
@@ -118,29 +116,33 @@ export function filterViewableActivity(
  */
 export function filterViewableRootAssignment(loggedInUserId: Uint8Array) {
   return {
-    ...filterRootAssignment,
-    OR: [
+    AND: [
+      filterRootAssignment,
       {
-        // TODO - confirm this works with timezone stuff
-        assignmentOpenOn: {
-          lte: DateTime.now().toISO(),
-        },
-        assignmentCloseOn: {
-          gte: DateTime.now().toISO(),
-        },
-      },
-      {
-        assignmentScores: {
-          some: {
-            userId: loggedInUserId,
+        OR: [
+          {
+            // TODO - confirm this works with timezone stuff
+            assignmentOpenOn: {
+              lte: DateTime.now().toISO(),
+            },
+            assignmentClosedOn: {
+              gte: DateTime.now().toISO(),
+            },
           },
-        },
-      },
-      {
-        ownerId: loggedInUserId,
+          {
+            assignmentScores: {
+              some: {
+                userId: loggedInUserId,
+              },
+            },
+          },
+          {
+            ownerId: loggedInUserId,
+          },
+        ],
+        isDeletedOn: null,
       },
     ],
-    isDeletedOn: null,
   };
 }
 
@@ -226,9 +228,9 @@ export function viewableContentWhere(
  *
  * For content to be editable, one of these conditions must be true:
  * 1. `loggedInUserId` is the owner
- * 4. `loggedInUserId` is an editor and the content is in the library.
+ * 2. `loggedInUserId` is an editor and the content is in the library.
  *
- * For content to be an activity, it must not be a folder and must not be attached to an assignment.
+ * For content to be an activity, it must not be a folder or an assignment.
  *
  * NOTE: This function does not verify editor privileges. You must pass in the correct `isEditor` flag.
  */
@@ -237,8 +239,7 @@ export function filterEditableActivity(
   isEditor: boolean = false,
 ) {
   return {
-    ...filterActivity,
-    ...filterEditableContent(loggedInUserId, isEditor),
+    AND: [filterActivity, filterEditableContent(loggedInUserId, isEditor)],
   };
 }
 
@@ -252,8 +253,7 @@ export function filterEditableActivity(
  */
 export function filterEditableRootAssignment(loggedInUserId: Uint8Array) {
   return {
-    ...filterEditableContent(loggedInUserId),
-    ...filterRootAssignment,
+    AND: [filterEditableContent(loggedInUserId), filterRootAssignment],
   };
 }
 

@@ -1649,7 +1649,7 @@ describe("shareContent()", () => {
     // create assignment from doc1 and place it in the folder
     await createAssignment({
       contentId: docId,
-      closeAt: DateTime.now().plus({ days: 7 }),
+      closedOn: DateTime.now().plus({ days: 7 }),
       destinationParentId: folderId,
       loggedInUserId: ownerId,
     });

@@ -103,8 +103,10 @@ export async function getContent({
     permissionCheck = { isDeletedOn: null };
   } else {
     permissionCheck = {
-      ...filterViewableContent(loggedInUserId, isEditor),
-      type: { not: "folder" as const },
+      AND: [
+        filterViewableContent(loggedInUserId, isEditor),
+        { type: { not: "folder" as const } },
+      ],
     };
   }
 

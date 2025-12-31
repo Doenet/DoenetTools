@@ -598,7 +598,7 @@ export function AssignmentData() {
     </Tooltip>
   );
 
-  const localValidUntil = DateTime.fromISO(info.codeValidUntil!).toISO({
+  const localValidUntil = DateTime.fromISO(info.assignmentClosedOn!).toISO({
     includeOffset: false,
   })!;
 
@@ -691,7 +691,7 @@ export function AssignmentData() {
               width="220px"
               value={localValidUntil}
               onChange={(e) => {
-                const closeAt = DateTime.fromISO(e.target.value)
+                const closedOn = DateTime.fromISO(e.target.value)
                   .set({ second: 0, millisecond: 0 })
                   .toISO({
                     suppressSeconds: true,
@@ -699,9 +699,9 @@ export function AssignmentData() {
                   });
                 fetcher.submit(
                   {
-                    path: "assign/updateAssignmentCloseAt",
+                    path: "assign/updateAssignmentClosedOn",
                     contentId,
-                    closeAt,
+                    closedOn,
                   },
                   { method: "post", encType: "application/json" },
                 );

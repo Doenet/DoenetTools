@@ -11,8 +11,8 @@ export function formatAssignmentBlurb(content: Content) {
   }
 
   const status = content.assignmentInfo.assignmentStatus;
-  const closeTime = content.assignmentInfo.codeValidUntil
-    ? formatTime(content.assignmentInfo.codeValidUntil)
+  const closeTime = content.assignmentInfo.assignmentClosedOn
+    ? formatTime(content.assignmentInfo.assignmentClosedOn)
     : null;
   if (status === "Open" && closeTime) {
     return `Open until ${closeTime}`;

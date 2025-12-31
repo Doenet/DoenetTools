@@ -188,6 +188,15 @@ export function returnContentSelect({
       }
     : false;
 
+  const parentAssignmentSelect = includeAssignInfo && {
+    isAssignmentRoot: true,
+    assignmentClosedOn: true,
+    classCode: true,
+    mode: true,
+    individualizeByStudent: true,
+    maxAttempts: true,
+  };
+
   const baseSelect = {
     id: true,
     name: true,
@@ -209,38 +218,17 @@ export function returnContentSelect({
         type: true,
         isPublic: true,
         sharedWith,
+        ...parentAssignmentSelect,
       },
     },
     ...classificationsObj,
   };
 
-  const rootAssignment = includeAssignInfo
-    ? {
-        select: {
-          codeValidUntil: true,
-          _count: { select: { contentState: true } },
-        },
-      }
-    : false;
-
-  const nonRootAssignment = includeAssignInfo
-    ? {
-        select: {
-          codeValidUntil: true,
-          rootContent: {
-            select: {
-              name: true,
-              id: true,
-              type: true,
-              classCode: true,
-              mode: true,
-              individualizeByStudent: true,
-              maxAttempts: true,
-            },
-          },
-        },
-      }
-    : false;
+  const assignmentSelect = includeAssignInfo && {
+    isAssignmentRoot: true,
+    assignmentClosedOn: true,
+    _count: { select: { contentState: true } },
+  };
 
   const docSelect = {
     numVariants: true,
@@ -263,13 +251,12 @@ export function returnContentSelect({
   };
 
   return {
-    rootAssignment,
-    nonRootAssignment,
     ...baseSelect,
     ...docSelect,
     ...questionBankSelect,
     ...problemSetSelect,
     ...repeatInProblemSetSelect,
+    ...assignmentSelect,
   };
 }
 
@@ -316,7 +303,6 @@ type PreliminaryContent = {
   mode: AssignmentMode;
   individualizeByStudent: boolean;
   maxAttempts: number;
-  classCode: number | null;
   categories: {
     id: number;
     code: string;
@@ -332,6 +318,11 @@ type PreliminaryContent = {
     type: ContentType;
     isPublic: boolean;
     sharedWith: { userId: Uint8Array }[] | { user: UserInfoWithEmail }[];
+    classCode: number | null;
+
+    // if `includeAssignInfo` is specified
+    isAssignmentRoot?: boolean;
+    assignmentClosedOn?: Date;
   } | null;
   classifications?: {
     classification: ContentClassification;
@@ -340,22 +331,15 @@ type PreliminaryContent = {
   itemLevelAttempts: boolean;
   repeatInProblemSet?: number;
 
+  // Assignment related fields
+  classCode: number | null;
+
   // if `includeAssignInfo` is specified
-  rootAssignment?: {
-    codeValidUntil: Date;
-    _count?: {
-      contentState: number;
-    };
-  } | null;
-  nonRootAssignment?: {
-    codeValidUntil: Date;
-    rootContent: {
-      name: string;
-      id: Uint8Array;
-      type: ContentType;
-      classCode: number | null;
-    };
-  } | null;
+  isAssignmentRoot?: boolean;
+  assignmentClosedOn?: Date;
+  _count?: {
+    contentState: number;
+  };
 
   // from document select
   source?: string | null;
@@ -380,15 +364,15 @@ type PreliminaryContent = {
 };
 
 /**
- * Converts fields `assigned` and `codeValidUntil` to field `assignmentStatus`
+ * Converts fields `assigned` and `assignmentClosedOn` to field `assignmentStatus`
  * Leaves any additional fields the same.
  */
 export function processAssignmentStatus({
-  codeValidUntil,
+  assignmentClosedOn,
 }: {
-  codeValidUntil: Date;
+  assignmentClosedOn: Date;
 }) {
-  const isOpen = DateTime.now() <= DateTime.fromJSDate(codeValidUntil);
+  const isOpen = DateTime.now() <= DateTime.fromJSDate(assignmentClosedOn);
   const assignmentStatus: AssignmentStatus = isOpen ? "Open" : "Closed";
 
   return assignmentStatus;
@@ -424,10 +408,12 @@ export function processContent(
     individualizeByStudent,
     maxAttempts,
     mode,
-    classCode,
 
-    rootAssignment,
-    nonRootAssignment,
+    // Assignment related fields
+    classCode,
+    isAssignmentRoot,
+    assignmentClosedOn,
+    _count,
 
     // from doc select
     source: sourceOrig,
@@ -450,26 +436,25 @@ export function processContent(
 
   const assignmentInfoObj: { assignmentInfo?: AssignmentInfo } = {};
 
-  if (rootAssignment) {
-    const { codeValidUntil, _count, ...other } = rootAssignment;
-
+  if (isAssignmentRoot) {
     assignmentInfoObj.assignmentInfo = {
-      ...other,
       classCode,
-      assignmentStatus: processAssignmentStatus({ codeValidUntil }),
-      codeValidUntil,
+      assignmentStatus: processAssignmentStatus({
+        assignmentClosedOn: assignmentClosedOn!,
+      }),
+      assignmentClosedOn: assignmentClosedOn!,
       hasScoreData: _count ? _count.contentState > 0 : false,
       individualizeByStudent,
       maxAttempts,
       mode,
     };
-  } else if (nonRootAssignment) {
-    const { codeValidUntil, rootContent, ...other } = nonRootAssignment;
+  } else if (parent?.isAssignmentRoot) {
     assignmentInfoObj.assignmentInfo = {
-      ...other,
-      classCode: rootContent.classCode,
-      assignmentStatus: processAssignmentStatus({ codeValidUntil }),
-      codeValidUntil,
+      classCode: parent.classCode,
+      assignmentStatus: processAssignmentStatus({
+        assignmentClosedOn: parent.assignmentClosedOn!,
+      }),
+      assignmentClosedOn: parent.assignmentClosedOn!,
       hasScoreData: false,
       individualizeByStudent,
       maxAttempts,

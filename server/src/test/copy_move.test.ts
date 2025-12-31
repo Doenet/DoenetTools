@@ -1,10 +1,6 @@
 import { expect, test } from "vitest";
-import { createTestUser, doc, pset, qbank, setupTestContent } from "./utils";
-import {
-  createContent,
-  getContentDescription,
-  updateContent,
-} from "../query/activity";
+import { createTestUser, doc, pset, setupTestContent } from "./utils";
+import { createContent, updateContent } from "../query/activity";
 import {
   copyContent,
   createContentCopyInChildren,
@@ -779,198 +775,114 @@ test("create content copy in children", async () => {
   expect(newActivity.children[4].name).eq("Question 3B");
 });
 
-test("cannot copy/move into assigned problem set or question bank or move out", async () => {
+test("cannot move out of assigned problem set", async () => {
   const { userId: ownerId } = await createTestUser();
-
-  const [sequenceId, select1Id, select2Id, doc1Id, doc2Id, doc3Id, doc4Id] =
-    await setupTestContent(ownerId, {
-      "sequence 1": pset({
-        "select 1": qbank({}),
-      }),
-      "select 2": qbank({}),
+  const [problemSetId, _doc1Id] = await setupTestContent(ownerId, {
+    "problem set 1": pset({
       "doc 1": doc(""),
-      "doc 2": doc(""),
-      "doc 3": doc(""),
-      "doc 4": doc(" "),
-    });
+    }),
+  });
+  const { assignmentId } = await createAssignment({
+    contentId: problemSetId,
+    loggedInUserId: ownerId,
+    destinationParentId: null,
+    closedOn: DateTime.now(),
+  });
+  // cannot move doc 1 out of assignment
+  const docAssignmentId = (await getAssignmentNonRootIds(assignmentId))[0];
 
-  // can copy doc1Id into selects and sequences
-  const {
-    newContentIds: [doc1aId],
-  } = await copyContent({
-    contentIds: [doc1Id],
-    loggedInUserId: ownerId,
-    parentId: sequenceId,
-  });
-  const {
-    newContentIds: [doc1bId],
-  } = await copyContent({
-    contentIds: [doc1Id],
-    loggedInUserId: ownerId,
-    parentId: select1Id,
-  });
-  const {
-    newContentIds: [doc1cId],
-  } = await copyContent({
-    contentIds: [doc1Id],
-    loggedInUserId: ownerId,
-    parentId: select2Id,
-  });
+  await expect(
+    moveContent({
+      contentId: docAssignmentId,
+      loggedInUserId: ownerId,
+      parentId: null,
+      desiredPosition: 0,
+    }),
+  ).rejects.toThrow("Cannot move content");
+});
 
-  // can move docs 2-4 into selects and sequences
-  await moveContent({
-    contentId: doc2Id,
-    parentId: sequenceId,
-    loggedInUserId: ownerId,
-    desiredPosition: 0,
+test("can copy out of assigned problem set", async () => {
+  const { userId: ownerId } = await createTestUser();
+  const [problemSetId, _doc1Id] = await setupTestContent(ownerId, {
+    "problem set 1": pset({
+      "doc 1": doc(""),
+    }),
   });
-  await moveContent({
-    contentId: doc3Id,
-    parentId: select1Id,
+  const { assignmentId } = await createAssignment({
+    contentId: problemSetId,
     loggedInUserId: ownerId,
-    desiredPosition: 0,
-  });
-  await moveContent({
-    contentId: doc4Id,
-    parentId: select2Id,
-    loggedInUserId: ownerId,
-    desiredPosition: 0,
+    destinationParentId: null,
+    closedOn: DateTime.now(),
   });
 
-  // check that copies and moves worked
-  let contentList = await getMyContent({
-    ownerId,
+  // can copy doc 1 out of assignment
+  const docAssignmentId = (await getAssignmentNonRootIds(assignmentId))[0];
+  const { newContentIds } = await copyContent({
+    contentIds: [docAssignmentId],
+    loggedInUserId: ownerId,
     parentId: null,
-    loggedInUserId: ownerId,
   });
-  if (contentList.notMe) {
-    throw Error("Shouldn't happen");
-  }
-  expect(contentList.content.map((c) => c.contentId)).eqls([
-    sequenceId,
-    select2Id,
-    doc1Id,
-  ]);
+  expect(newContentIds.length).toBe(1);
 
-  contentList = await getMyContent({
-    ownerId,
-    parentId: sequenceId,
+  const allContent = await getMyContent({
     loggedInUserId: ownerId,
+    ownerId: ownerId,
+    parentId: null,
   });
-  if (contentList.notMe) {
-    throw Error("Shouldn't happen");
-  }
-  expect(contentList.content.map((c) => c.contentId)).eqls([
-    doc2Id,
-    select1Id,
-    doc1aId,
-  ]);
 
-  contentList = await getMyContent({
-    ownerId,
-    parentId: select1Id,
-    loggedInUserId: ownerId,
+  if (allContent.notMe) {
+    throw Error("shouldn't happen");
+  }
+
+  expect(allContent.content.length).toBe(3);
+  expect(allContent.content[2].contentId).toEqual(newContentIds[0]);
+});
+
+test("cannot move into assigned problem set", async () => {
+  const { userId: ownerId } = await createTestUser();
+  const [problemSetId, doc1Id] = await setupTestContent(ownerId, {
+    "problem set 1": pset({}),
+    "doc 1": doc(" "),
   });
-  if (contentList.notMe) {
-    throw Error("Shouldn't happen");
-  }
-  expect(contentList.content.map((c) => c.contentId)).eqls([doc3Id, doc1bId]);
-
-  contentList = await getMyContent({
-    ownerId,
-    parentId: select2Id,
-    loggedInUserId: ownerId,
-  });
-  if (contentList.notMe) {
-    throw Error("Shouldn't happen");
-  }
-  expect(contentList.content.map((c) => c.contentId)).eqls([doc4Id, doc1cId]);
-
-  // assigned sequence and select2
-  const { assignmentId: assignedSequenceId } = await createAssignment({
-    contentId: sequenceId,
+  const { assignmentId } = await createAssignment({
+    contentId: problemSetId,
     loggedInUserId: ownerId,
     destinationParentId: null,
-    closeAt: DateTime.now(),
+    closedOn: DateTime.now(),
   });
-  const { assignmentId: assignedSelect2Id } = await createAssignment({
-    contentId: select2Id,
+
+  // cannot move doc 1 into assignment
+  await expect(
+    moveContent({
+      contentId: doc1Id,
+      loggedInUserId: ownerId,
+      parentId: assignmentId,
+      desiredPosition: 0,
+    }),
+  ).rejects.toThrow("Cannot move content into an assigned activity");
+});
+
+test("cannot copy into assigned problem set", async () => {
+  const { userId: ownerId } = await createTestUser();
+  const [problemSetId, doc1Id] = await setupTestContent(ownerId, {
+    "problem set 1": pset({}),
+    "doc 1": doc(" "),
+  });
+  const { assignmentId } = await createAssignment({
+    contentId: problemSetId,
     loggedInUserId: ownerId,
     destinationParentId: null,
-    closeAt: DateTime.now(),
+    closedOn: DateTime.now(),
   });
 
-  const assign1NonrootIds = await getAssignmentNonRootIds(assignedSequenceId);
-  const assign1subs = [];
-  for (const id of assign1NonrootIds) {
-    assign1subs.push(
-      await getContentDescription({ contentId: id, loggedInUserId: ownerId }),
-    );
-  }
-  const assignedInnerSelect = assign1subs.find((v) => v.type === "select")!;
-
-  const assign2NonrootIds = await getAssignmentNonRootIds(assignedSelect2Id);
-
-  // cannot copy doc1 into sequence, select1, or select2
+  // cannot copy doc 1 into assignment
   await expect(
     copyContent({
       contentIds: [doc1Id],
       loggedInUserId: ownerId,
-      parentId: assignedSequenceId,
+      parentId: assignmentId,
     }),
   ).rejects.toThrow("Cannot copy content into an assigned activity");
-  await expect(
-    copyContent({
-      contentIds: [doc1Id],
-      loggedInUserId: ownerId,
-      parentId: assignedInnerSelect.contentId,
-    }),
-  ).rejects.toThrow("Cannot copy content into an assigned activity");
-  await expect(
-    copyContent({
-      contentIds: [doc1Id],
-      loggedInUserId: ownerId,
-      parentId: assignedSelect2Id,
-    }),
-  ).rejects.toThrow("Cannot copy content into an assigned activity");
-
-  // cannot move doc1 into sequence, select1 or select2
-  await expect(
-    moveContent({
-      contentId: doc1Id,
-      parentId: assignedSequenceId,
-      desiredPosition: 0,
-      loggedInUserId: ownerId,
-    }),
-  ).rejects.toThrow("Cannot move content into an assigned activity");
-  await expect(
-    moveContent({
-      contentId: doc1Id,
-      parentId: assignedInnerSelect.contentId,
-      desiredPosition: 0,
-      loggedInUserId: ownerId,
-    }),
-  ).rejects.toThrow("Cannot move content into an assigned activity");
-  await expect(
-    moveContent({
-      contentId: doc1Id,
-      parentId: assignedSelect2Id,
-      desiredPosition: 0,
-      loggedInUserId: ownerId,
-    }),
-  ).rejects.toThrow("Cannot move content into an assigned activity");
-
-  // cannot move content out of sequence, select1 or select2
-  for (const subAssignedId of [...assign1NonrootIds, ...assign2NonrootIds]) {
-    await expect(
-      moveContent({
-        contentId: subAssignedId,
-        parentId: null,
-        desiredPosition: 0,
-        loggedInUserId: ownerId,
-      }),
-    ).rejects.toThrow("Cannot move content in an assigned activity");
-  }
 });
 
 test("MoveCopyContent does not allow singleDoc` as parent type", async () => {
