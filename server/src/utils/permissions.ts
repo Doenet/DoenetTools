@@ -18,6 +18,23 @@ export async function mustBeEditor(
 }
 
 /**
+ * Assert user is editor
+ */
+export async function mustBeScopedStudent(
+  userId: Uint8Array,
+  classId: Uint8Array,
+  message = "You must be a student of this class",
+) {
+  const inClass = await prisma.users.findUnique({
+    where: { userId, scopedToClassId: classId },
+    select: { userId: true },
+  });
+  if (!inClass) {
+    throw new InvalidRequestError(message);
+  }
+}
+
+/**
  * Query whether user is editor or not.
  */
 export async function getIsEditor(userId: Uint8Array) {

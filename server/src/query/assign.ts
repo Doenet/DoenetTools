@@ -41,6 +41,22 @@ export async function getContentFromCode({
   throw new Error("unimplemented");
 }
 
+export async function getClassId(
+  contentId: Uint8Array,
+): Promise<Uint8Array | null> {
+  const ancestors = await getAncestorIds(contentId);
+  const course = await prisma.content.findFirst({
+    where: {
+      id: { in: ancestors },
+      // having at least one scoped user indicates a course
+      scopedUsers: { some: {} },
+    },
+    select: { id: true },
+  });
+
+  return course ? course.id : null;
+}
+
 /**
  * Create an assignment from an activity
  * Remixes activity to destination parent and automatically opens the assignment.
@@ -106,12 +122,13 @@ export async function createAssignment({
   const ancestorCourse = await prisma.content.findFirst({
     where: {
       id: { in: ancestors },
-      classCode: { not: null },
+      // having at least one scoped user indicates a course
+      scopedUsers: { some: {} },
     },
     select: { id: true, classCode: true },
   });
 
-  let classCode: number;
+  let classCode: number | null = null;
   if (!ancestorCourse) {
     const { classCode: newClassCode } = await prisma.content.update({
       where: {
@@ -121,9 +138,7 @@ export async function createAssignment({
         classCode: generateClassCode(),
       },
     });
-    classCode = newClassCode!;
-  } else {
-    classCode = ancestorCourse.classCode!;
+    classCode = newClassCode;
   }
 
   return { assignmentId, classCode, assignmentClosedOn };

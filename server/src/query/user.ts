@@ -220,7 +220,8 @@ export async function createStudentHandleAccounts({
   }
 
   // Create the student handle accounts
-  const accounts: { handle: string; password: string }[] = [];
+  const accounts: { userId: Uint8Array; handle: string; password: string }[] =
+    [];
 
   for (let i = 0; i < numAccounts; i++) {
     const password = generateHandle(true);
@@ -233,7 +234,7 @@ export async function createStudentHandleAccounts({
       const username = `${fromUUID(folderId)}:${handle}`;
 
       try {
-        await prisma.users.create({
+        const { userId } = await prisma.users.create({
           data: {
             username,
             firstNames: "",
@@ -243,7 +244,7 @@ export async function createStudentHandleAccounts({
           },
         });
 
-        accounts.push({ handle, password });
+        accounts.push({ handle, password, userId });
         success = true;
       } catch (_e) {
         continue;

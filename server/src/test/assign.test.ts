@@ -284,6 +284,35 @@ test("open and close one-off assignment", async () => {
   );
 });
 
+test("new assignment in course does not generate code", async () => {
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+
+  const [folderId, docId] = await setupTestContent(ownerId, {
+    "folder 1": fold({
+      "doc 1": doc("hi"),
+    }),
+  });
+
+  // This marks the folder as a class
+  await createStudentHandleAccounts({
+    loggedInUserId: ownerId,
+    folderId,
+    numAccounts: 1,
+  });
+
+  // open assignment assigns activity and generates code
+  const closedOn = DateTime.now().plus({ days: 1 });
+  const { classCode } = await createAssignment({
+    contentId: docId,
+    closedOn: closedOn,
+    loggedInUserId: ownerId,
+    destinationParentId: folderId,
+  });
+
+  expect(classCode).toBeNull();
+});
+
 test("assignment document in problem set gets status from parent", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
@@ -1988,7 +2017,70 @@ test("only user and assignment owner can load document state", async () => {
 });
 
 describe("student handles", () => {
-  test("outside account cannot be used to take course assignment", async () => {
+  test("scoped user can take course assignment", async () => {
+    const { userId: instructorId } = await createTestUser();
+    const [folderId, docId] = await setupTestContent(instructorId, {
+      "folder 1": fold({
+        "doc 1": doc("hi"),
+      }),
+    });
+    const { assignmentId } = await createAssignment({
+      contentId: docId,
+      closedOn: DateTime.now().plus({ days: 1 }),
+      loggedInUserId: instructorId,
+      destinationParentId: folderId,
+    });
+
+    // This marks the folder as a class
+    const { accounts } = await createStudentHandleAccounts({
+      loggedInUserId: instructorId,
+      folderId,
+      numAccounts: 1,
+    });
+    const attempt = await createNewAttempt({
+      contentId: assignmentId,
+      loggedInUserId: accounts[0].userId,
+      variant: 1,
+      state: null,
+    });
+    expect(attempt.score).toBe(0);
+  });
+
+  test("scoped user can take course assignment in sub-folder", async () => {
+    const { userId: instructorId } = await createTestUser();
+    const [folderId, subFolderId, docId] = await setupTestContent(
+      instructorId,
+      {
+        "folder 1": fold({
+          "folder 2": fold({
+            "doc 1": doc("hi"),
+          }),
+        }),
+      },
+    );
+    const { assignmentId } = await createAssignment({
+      contentId: docId,
+      closedOn: DateTime.now().plus({ days: 1 }),
+      loggedInUserId: instructorId,
+      destinationParentId: subFolderId,
+    });
+
+    // This marks the folder as a class
+    const { accounts } = await createStudentHandleAccounts({
+      loggedInUserId: instructorId,
+      folderId,
+      numAccounts: 1,
+    });
+    const attempt = await createNewAttempt({
+      contentId: assignmentId,
+      loggedInUserId: accounts[0].userId,
+      variant: 1,
+      state: null,
+    });
+    expect(attempt.score).toBe(0);
+  });
+
+  test("external user cannot take course assignment", async () => {
     const { userId: instructorId } = await createTestUser();
 
     const [folderId, docId] = await setupTestContent(instructorId, {
@@ -2019,10 +2111,10 @@ describe("student handles", () => {
         variant: 1,
         state: null,
       }),
-    ).rejects.toThrow();
+    ).rejects.toThrow("must be a student");
   });
 
-  test("outside account cannot be used to take course assignment, in sub folder", async () => {
+  test("external user cannot take course assignment in sub folder", async () => {
     const { userId: instructorId } = await createTestUser();
 
     const [folderId, subFolderId, docId] = await setupTestContent(
@@ -2058,7 +2150,7 @@ describe("student handles", () => {
         variant: 1,
         state: null,
       }),
-    ).rejects.toThrow();
+    ).rejects.toThrow("must be a student");
   });
 
   test("anonymous account cannot be used to take course assignment", async () => {
@@ -2092,6 +2184,6 @@ describe("student handles", () => {
         variant: 1,
         state: null,
       }),
-    ).rejects.toThrow();
+    ).rejects.toThrow("must be a student");
   });
 });
