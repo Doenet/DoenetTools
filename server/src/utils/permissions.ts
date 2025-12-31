@@ -18,7 +18,24 @@ export async function mustBeEditor(
 }
 
 /**
- * Assert user is editor
+ * Assert user is anonymous
+ */
+export async function mustBeAnonymous(
+  userId: Uint8Array,
+  message = "You must be an anonymous user",
+) {
+  const user = await prisma.users.findUniqueOrThrow({
+    where: { userId },
+    select: { isAnonymous: true },
+  });
+
+  if (!user.isAnonymous) {
+    throw new InvalidRequestError(message);
+  }
+}
+
+/**
+ * Assert user is student of specified course
  */
 export async function mustBeScopedStudent(
   userId: Uint8Array,

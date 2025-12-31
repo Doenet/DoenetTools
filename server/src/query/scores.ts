@@ -5,6 +5,7 @@ import { InvalidRequestError } from "../utils/error";
 import {
   filterEditableRootAssignment,
   filterViewableRootAssignment,
+  mustBeAnonymous,
   mustBeScopedStudent,
 } from "../utils/permissions";
 import {
@@ -282,6 +283,8 @@ export async function createNewAttempt({
   const classId = await getClassId(contentId);
   if (classId) {
     await mustBeScopedStudent(loggedInUserId, classId);
+  } else {
+    await mustBeAnonymous(loggedInUserId);
   }
 
   const assignment = await prisma.content.findUniqueOrThrow({

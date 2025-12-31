@@ -2017,7 +2017,7 @@ test("only user and assignment owner can load document state", async () => {
   expect(retrievedState3).eqls({ loadedState: false });
 });
 
-describe("student handles", () => {
+describe("createNewAttempt user permissions", () => {
   test("scoped user can take course assignment", async () => {
     const { userId: instructorId } = await createTestUser();
     const [folderId, docId] = await setupTestContent(instructorId, {
@@ -2186,6 +2186,92 @@ describe("student handles", () => {
         state: null,
       }),
     ).rejects.toThrow("must be a student");
+  });
+
+  test("anonymous user can take one-off assignment", async () => {
+    const { userId: instructorId } = await createTestUser();
+
+    const [folderId, docId] = await setupTestContent(instructorId, {
+      "folder 1": fold({
+        "doc 1": doc("hi"),
+      }),
+    });
+    const { assignmentId } = await createAssignment({
+      contentId: docId,
+      closedOn: DateTime.now().plus({ days: 1 }),
+      loggedInUserId: instructorId,
+      destinationParentId: folderId,
+    });
+
+    const { userId: anonUserId } = await createTestAnonymousUser();
+
+    const attempt = await createNewAttempt({
+      contentId: assignmentId,
+      loggedInUserId: anonUserId,
+      variant: 1,
+      state: null,
+    });
+    expect(attempt.score).toBe(0);
+  });
+
+  test("scoped user cannot take one-off assignment", async () => {
+    const { userId: instructorId } = await createTestUser();
+
+    const [folder1, doc1, folder2] = await setupTestContent(instructorId, {
+      "folder 1": fold({
+        "doc 1": doc("hi"),
+      }),
+      "folder 2": fold({}),
+    });
+    // This marks the folder as a class
+    const { accounts } = await createStudentHandleAccounts({
+      loggedInUserId: instructorId,
+      folderId: folder2,
+      numAccounts: 1,
+    });
+
+    const { assignmentId } = await createAssignment({
+      contentId: doc1,
+      closedOn: DateTime.now().plus({ days: 1 }),
+      loggedInUserId: instructorId,
+      destinationParentId: folder1,
+    });
+
+    await expect(
+      createNewAttempt({
+        contentId: assignmentId,
+        loggedInUserId: accounts[0].userId,
+        variant: 1,
+        state: null,
+      }),
+    ).rejects.toThrow("must be an anonymous user");
+  });
+
+  test("external user cannot take one-off assignment", async () => {
+    const { userId: instructorId } = await createTestUser();
+    const { userId: externalUserId } = await createTestUser();
+
+    const [folder1, doc1] = await setupTestContent(instructorId, {
+      "folder 1": fold({
+        "doc 1": doc("hi"),
+      }),
+    });
+
+    const { assignmentId } = await createAssignment({
+      contentId: doc1,
+      closedOn: DateTime.now().plus({ days: 1 }),
+      loggedInUserId: instructorId,
+      destinationParentId: folder1,
+    });
+
+    await expect(
+      createNewAttempt({
+        contentId: assignmentId,
+        loggedInUserId: externalUserId,
+        variant: 1,
+        state: null,
+      }),
+    ).rejects.toThrow("must be an anonymous user");
   });
 });
 
