@@ -27,6 +27,7 @@ import {
   updateAssignmentClosedOn,
   updateAssignmentMaxAttempts,
   updateAssignmentSettings,
+  getContentFromCode,
 } from "../query/assign";
 import { modifyContentSharedWith, setContentIsPublic } from "../query/share";
 import {
@@ -768,11 +769,11 @@ async function testSingleDocResponses({
   for (const studentData of dataByStudent) {
     const scoreFromAttempts = scoreFromStudentAttempts(studentData.attempts);
 
-    const dataFromCode = await getAssignmentData({
+    const data = await getAssignmentData({
       assignmentId: contentId,
       loggedInUserId: studentData.user.userId,
     });
-    expect(dataFromCode.scoreData).eqls({
+    expect(data.scoreData).eqls({
       calculatedScore: true,
       ...scoreFromAttempts,
     });
@@ -2185,5 +2186,58 @@ describe("student handles", () => {
         state: null,
       }),
     ).rejects.toThrow("must be a student");
+  });
+});
+
+describe("getContentFromCode", () => {
+  test("get assignment id from code", async () => {
+    const { userId: instructorId } = await createTestUser();
+    const [docId] = await setupTestContent(instructorId, {
+      "doc 1": doc("hi"),
+    });
+    const { assignmentId, classCode } = await createAssignment({
+      contentId: docId,
+      closedOn: DateTime.now().plus({ days: 1 }),
+      loggedInUserId: instructorId,
+      destinationParentId: null,
+    });
+
+    const content = await getContentFromCode({ code: classCode! });
+    expect(content.contentId).toEqual(assignmentId);
+    expect(content.contentType).toEqual("singleDoc");
+  });
+
+  test("get course id from code", async () => {
+    const { userId: instructorId } = await createTestUser();
+    const [folder1, _folder2, folder3, doc1] = await setupTestContent(
+      instructorId,
+      {
+        "folder 1": fold({
+          "folder 2": fold({
+            "folder 3": fold({
+              "doc 1": doc("hi"),
+            }),
+          }),
+        }),
+      },
+    );
+
+    // create scoped accounts to mark folder1 as a class
+    const { code } = await createStudentHandleAccounts({
+      loggedInUserId: instructorId,
+      folderId: folder1,
+      numAccounts: 1,
+    });
+
+    await createAssignment({
+      contentId: doc1,
+      closedOn: DateTime.now().plus({ days: 1 }),
+      loggedInUserId: instructorId,
+      destinationParentId: folder3,
+    });
+
+    const content = await getContentFromCode({ code });
+    expect(content.contentId).toEqual(folder1);
+    expect(content.contentType).toEqual("folder");
   });
 });

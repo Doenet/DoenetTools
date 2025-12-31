@@ -56,14 +56,14 @@ assignRouter.post(
 );
 
 assignRouter.post(
-  "/closeAssignmentWithCode",
+  "/closeAssignment",
   queryLoggedIn(closeAssignment, contentIdSchema),
 );
 
 assignRouter.get("/getAssigned", queryLoggedInNoArguments(listUserAssigned));
 
 assignRouter.get(
-  "/getAssignmentViewerDataFromCode/:code",
+  "/getAssignmentData/:assignmentId",
   queryLoggedIn(getAssignmentData, assignmentIdSchema),
 );
 

@@ -6,6 +6,7 @@ import { filterEditableContent } from "../utils/permissions";
 import { getDescendantIds, getAncestorIds } from "./activity";
 import { fromUUID } from "../utils/uuid";
 import bcrypt from "bcryptjs";
+import { generateClassCode } from "./assign";
 
 export async function findOrCreateUser({
   email,
@@ -254,5 +255,21 @@ export async function createStudentHandleAccounts({
 
   accounts.sort((a, b) => (a.handle < b.handle ? -1 : 1));
 
-  return { accounts };
+  // Create a code for this course folder if one does not already exist
+  const folder = await prisma.content.findUniqueOrThrow({
+    where: { id: folderId },
+    select: { classCode: true },
+  });
+
+  let code = folder.classCode;
+  if (!code) {
+    const newClassCode = await generateClassCode();
+    await prisma.content.update({
+      where: { id: folderId },
+      data: { classCode: newClassCode },
+    });
+    code = newClassCode;
+  }
+
+  return { accounts, code };
 }

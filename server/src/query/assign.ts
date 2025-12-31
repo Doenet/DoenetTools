@@ -26,19 +26,46 @@ import { getAncestorIds } from "./activity";
 
 /**
  * Randomly generate a 6 digit number.
+ * Retries up to 10 times to avoid collisions.
  */
-function generateClassCode() {
-  const array = new Uint32Array(1);
-  getRandomValues(array);
-  return Number(array[0].toString().slice(-6));
+export async function generateClassCode() {
+  for (let i = 0; i < 10; i++) {
+    const array = new Uint32Array(1);
+    getRandomValues(array);
+    const code = Number(array[0].toString().slice(-6));
+
+    const existing = await prisma.content.findUnique({
+      where: { classCode: code },
+      select: { id: true },
+    });
+    if (existing === null) {
+      return code;
+    }
+  }
+  throw new Error("Could not generate unique class code");
 }
 
+/**
+ * Get the contentId and contentType from a class code.
+ * Content type is either a singleDoc, sequence, or folder.
+ * If it's a folder, this code refers to a course, otherwise it refers to an assignment.
+ */
 export async function getContentFromCode({
   code,
 }: {
   code: number;
 }): Promise<{ contentId: Uint8Array; contentType: ContentType }> {
-  throw new Error("unimplemented");
+  const content = await prisma.content.findUniqueOrThrow({
+    where: {
+      classCode: code,
+    },
+    select: {
+      id: true,
+      type: true,
+    },
+  });
+
+  return { contentId: content.id, contentType: content.type };
 }
 
 export async function getClassId(
@@ -135,7 +162,7 @@ export async function createAssignment({
         id: assignmentId,
       },
       data: {
-        classCode: generateClassCode(),
+        classCode: await generateClassCode(),
       },
     });
     classCode = newClassCode;
