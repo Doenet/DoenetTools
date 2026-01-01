@@ -16,66 +16,94 @@ model Session {
 }
 
 model content {
-  // General metadata
+  // 
+  // ========= General ==========
   id                     Bytes                    @id @default(dbgenerated("(uuid_to_bin(uuid(),1))")) @db.Binary(16)
   type                   ContentType              @default(singleDoc)
   ownerId                Bytes                    @db.Binary(16)
+  owner                  users                    @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
   name                   String
-  parentId               Bytes?                   @db.Binary(16)
-  isPublic               Boolean                  @default(false)
-  isDeletedOn            DateTime?
-  // The parent id that the user deleted. Not defined if this is root
-  deletionRootId         Bytes?                   @db.Binary(16)
   createdAt              DateTime                 @default(now())
   sortIndex              BigInt
   licenseCode            String?                  @default("CCDUAL") @db.VarChar(10)
+  license                licenses?                @relation(fields: [licenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
   lastEdited             DateTime                 @default(now())
-  // Some settings for assignments
-  mode                   AssignmentMode           @default(formative)
-  maxAttempts            Int                      @default(1) @db.UnsignedSmallInt
-  individualizeByStudent Boolean                  @default(false)
-  // Specific to document type
+  // 
+  // ========== Tree structure ==========
+  parentId               Bytes?                   @db.Binary(16)
+  parent                 content?                 @relation("childParent", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children               content[]                @relation("childParent")
+  // 
+  // ========== Sharing ==========
+  isPublic               Boolean                  @default(false)
+  sharedWith             contentShares[]
+  // 
+  // ====== Documents =========
   source                 String?                  @db.MediumText
   doenetmlVersionId      Int?
+  doenetmlVersion        doenetmlVersions?        @relation(fields: [doenetmlVersionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   numVariants            Int                      @default(1)
-  // Specific to sequence type
-  shuffle                Boolean                  @default(false)
-  paginate               Boolean                  @default(false)
-  // Specific to select type
-  numToSelect            Int                      @default(1) @db.UnsignedSmallInt
-  selectByVariant        Boolean                  @default(false)
   // Specific to documents inside problem sets
   repeatInProblemSet     Int                      @default(1)
+  // 
+  // ====== Problem Sets =========
+  shuffle                Boolean                  @default(false)
+  paginate               Boolean                  @default(false)
+  // 
+  // ====== Selects (obsolete) =========
+  numToSelect            Int                      @default(1) @db.UnsignedSmallInt
+  selectByVariant        Boolean                  @default(false)
+  // 
+  // ===== Code ==========
   // Course or assignment code
   // This becomes assigned when you add scoped users to a folder or the content is a one-off assignment
   // This is removed when either 1) all scoped users are removed or 2) scoped user is added to ancestor
   classCode              Int?                     @unique @db.UnsignedInt
-  //  Assignment
+  // 
+  // ====== Assignments ==========
   // `isAssignmentRoot` is true if both: 1) this content is an assignment 2) this content is the root of that assignment
   isAssignmentRoot       Boolean                  @default(false)
   assignmentOpenOn       DateTime?
   assignmentClosedOn     DateTime?
-  // Relations
-  owner                  users                    @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
-  parent                 content?                 @relation("childParent", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  children               content[]                @relation("childParent")
-  license                licenses?                @relation(fields: [licenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
-  doenetmlVersion        doenetmlVersions?        @relation(fields: [doenetmlVersionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  categories             categories[]
-  sharedWith             contentShares[]
-  classifications        contentClassifications[]
-  contentViews           contentViews[]
-  recentContent          recentContent[]
-  librarySourceInfo      libraryActivityInfos?    @relation("source")
-  libraryActivityInfo    libraryActivityInfos?    @relation("activity")
-  contentRevisions       contentRevisions[]
+  mode                   AssignmentMode           @default(formative)
+  maxAttempts            Int                      @default(1) @db.UnsignedSmallInt
+  individualizeByStudent Boolean                  @default(false)
   submittedResponses     submittedResponses[]
-  deletionRoot           content?                 @relation("deletionRoot", fields: [deletionRootId], references: [id])
-  isDeletionRootFor      content[]                @relation("deletionRoot")
   contentState           contentState[]
   assignmentScores       assignmentScores[]
-  // Scoped users cannot be nested. If a folder has scoped users, its ancestors and descendants cannot.
+  // 
+  // ====== Deletion =========
+  // The parent id that the user deleted. Not defined if this is root
+  deletionRootId         Bytes?                   @db.Binary(16)
+  isDeletedOn            DateTime?
+  deletionRoot           content?                 @relation("deletionRoot", fields: [deletionRootId], references: [id])
+  isDeletionRootFor      content[]                @relation("deletionRoot")
+  // 
+  // ======= Courses ==========
+  // `courseRoot`: If I'm part of a course, points to root of course I'm in (myself if I'm root)
+  //               If empty, I'm not in a course.
+  //               Course roots cannot be nested.
+  // `courseContent`: If non-empty, I'm a course root and it points to all the content in my course, including myself.
+  // `scopedUsers`: ignored if not at course root.
+  courseRootId           Bytes?                   @db.Binary(16)
+  courseRoot             content?                 @relation("courseRoot", fields: [courseRootId], references: [id])
+  courseContent          content[]                @relation("courseRoot")
   scopedUsers            users[]                  @relation(name: "scopedToClass")
+  // 
+  // ====== Metadata/tagging =========
+  categories             categories[]
+  classifications        contentClassifications[]
+  // 
+  // ====== Library =========
+  librarySourceInfo      libraryActivityInfos?    @relation("source")
+  libraryActivityInfo    libraryActivityInfos?    @relation("activity")
+  // 
+  // ===== Tracking data ========
+  contentViews           contentViews[]
+  recentContent          recentContent[]
+  // 
+  // ====== History =========
+  contentRevisions       contentRevisions[]
 
   @@index([ownerId, parentId, sortIndex])
   @@index([parentId, type])
