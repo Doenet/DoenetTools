@@ -1,5 +1,9 @@
 import { expect, test } from "vitest";
-import { createTestAnonymousUser, createTestPremiumUser, createTestUser } from "./utils";
+import {
+  createTestAnonymousUser,
+  createTestPremiumUser,
+  createTestUser,
+} from "./utils";
 import { createContent } from "../query/activity";
 import { DateTime } from "luxon";
 import {
