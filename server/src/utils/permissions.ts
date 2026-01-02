@@ -18,49 +18,42 @@ export async function mustBeEditor(
 }
 
 /**
- * Assert user is anonymous
- */
-export async function mustBeAnonymous(
-  userId: Uint8Array,
-  message = "You must be an anonymous user",
-) {
-  const user = await prisma.users.findUniqueOrThrow({
-    where: { userId },
-    select: { isAnonymous: true },
-  });
-
-  if (!user.isAnonymous) {
-    throw new InvalidRequestError(message);
-  }
-}
-
-/**
- * Assert user is student of specified course
- */
-export async function mustBeScopedStudent(
-  userId: Uint8Array,
-  classId: Uint8Array,
-  message = "You must be a student of this class",
-) {
-  const inClass = await prisma.users.findUnique({
-    where: { userId, scopedToClassId: classId },
-    select: { userId: true },
-  });
-  if (!inClass) {
-    throw new InvalidRequestError(message);
-  }
-}
-
-/**
  * Query whether user is editor or not.
  */
 export async function getIsEditor(userId: Uint8Array) {
-  const user = await prisma.users.findUnique({ where: { userId } });
+  const user = await prisma.users.findUnique({
+    where: { userId },
+    select: { isEditor: true },
+  });
   let isEditor = false;
   if (user) {
     isEditor = user.isEditor;
   }
   return isEditor;
+}
+
+export async function getScopedStudentCourseId(userId: Uint8Array) {
+  const user = await prisma.users.findUnique({
+    where: { userId },
+    select: { scopedToClassId: true },
+  });
+  let courseId = null;
+  if (user) {
+    courseId = user.scopedToClassId;
+  }
+  return courseId;
+}
+
+export async function getIsAnonymous(userId: Uint8Array) {
+  const user = await prisma.users.findUnique({
+    where: { userId },
+    select: { isAnonymous: true },
+  });
+  let isAnonymous = false;
+  if (user) {
+    isAnonymous = user.isAnonymous;
+  }
+  return isAnonymous;
 }
 
 /**
@@ -148,36 +141,68 @@ export function filterViewableActivity(
  *
  * For content to be a root assignment, it must be attached to an entry in the assignments table.
  */
-export function filterViewableRootAssignment(loggedInUserId: Uint8Array) {
-  return {
-    AND: [
-      filterRootAssignment,
-      {
-        OR: [
-          {
-            // TODO - confirm this works with timezone stuff
-            assignmentOpenOn: {
-              lte: DateTime.now().toISO(),
-            },
-            assignmentClosedOn: {
-              gte: DateTime.now().toISO(),
-            },
+export function filterViewableRootAssignment({
+  loggedInUserId,
+  courseRootIdOfScopedUser,
+  isAnonymous,
+}: {
+  loggedInUserId: Uint8Array;
+  courseRootIdOfScopedUser: Uint8Array | null;
+  isAnonymous: boolean;
+}) {
+  if (courseRootIdOfScopedUser === null) {
+    const studentCondition = isAnonymous
+      ? {
+          // TODO - confirm this works with timezone stuff
+          assignmentOpenOn: {
+            lte: DateTime.now().toISO(),
           },
-          {
-            assignmentScores: {
-              some: {
-                userId: loggedInUserId,
+          assignmentClosedOn: {
+            gte: DateTime.now().toISO(),
+          },
+          courseRootId: null,
+        }
+      : {};
+
+    return {
+      AND: [
+        filterRootAssignment,
+        {
+          OR: [
+            studentCondition,
+            {
+              assignmentScores: {
+                some: {
+                  userId: loggedInUserId,
+                },
               },
             },
-          },
-          {
-            ownerId: loggedInUserId,
-          },
-        ],
-        isDeletedOn: null,
-      },
-    ],
-  };
+            {
+              ownerId: loggedInUserId,
+            },
+          ],
+          isDeletedOn: null,
+        },
+      ],
+    };
+  } else {
+    return {
+      AND: [
+        filterRootAssignment,
+        {
+          OR: [
+            {
+              courseRootId: courseRootIdOfScopedUser,
+            },
+            {
+              ownerId: loggedInUserId,
+            },
+          ],
+          isDeletedOn: null,
+        },
+      ],
+    };
+  }
 }
 
 /**

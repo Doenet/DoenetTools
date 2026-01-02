@@ -1,5 +1,10 @@
 import { describe, expect, test } from "vitest";
-import { createTestAnonymousUser, createTestUser } from "./utils";
+import {
+  createTestAnonymousUser,
+  createTestUser,
+  fold,
+  setupTestContent,
+} from "./utils";
 import { fromUUID } from "../utils/uuid";
 import {
   createStudentHandleAccounts,
@@ -14,6 +19,7 @@ import {
 import { getMyContent } from "../query/content_list";
 import { createContent } from "../query/activity";
 import { prisma } from "../model";
+import { markFolderAsCourse } from "../query/course";
 
 test("New user has no content", async () => {
   const user = await createTestUser();
@@ -114,7 +120,7 @@ test("user apis do not provide email", async () => {
 
 describe("student handles", () => {
   describe("create", () => {
-    test("instructor creates accounts", async () => {
+    test("instructor creates accounts inside a course", async () => {
       const { userId } = await createTestUser();
 
       // create folder
@@ -122,6 +128,11 @@ describe("student handles", () => {
         loggedInUserId: userId,
         contentType: "folder",
         parentId: null,
+      });
+      // mark folder as course
+      await markFolderAsCourse({
+        loggedInUserId: userId,
+        folderId: contentId,
       });
 
       const { accounts } = await createStudentHandleAccounts({
@@ -156,6 +167,49 @@ describe("student handles", () => {
     test.todo("handles are unique inside the folder");
 
     test.todo("instructor cannot create nested accounts");
+
+    test("cannot add student handles to non-course", async () => {
+      const { userId } = await createTestUser();
+
+      // create folder
+      const { contentId } = await createContent({
+        loggedInUserId: userId,
+        contentType: "folder",
+        parentId: null,
+      });
+
+      await expect(
+        createStudentHandleAccounts({
+          loggedInUserId: userId,
+          folderId: contentId,
+          numAccounts: 3,
+        }),
+      ).rejects.toThrow("not found");
+    });
+
+    test("cannot add student handles to subfolder of course", async () => {
+      const { userId } = await createTestUser();
+
+      const [courseFolderId, subFolderId] = await setupTestContent(userId, {
+        "course folder": fold({
+          "sub folder": fold({}),
+        }),
+      });
+
+      // mark folder as course
+      await markFolderAsCourse({
+        loggedInUserId: userId,
+        folderId: courseFolderId,
+      });
+
+      await expect(
+        createStudentHandleAccounts({
+          loggedInUserId: userId,
+          folderId: subFolderId,
+          numAccounts: 3,
+        }),
+      ).rejects.toThrow("not found");
+    });
   });
   test.todo("only instructor can change student password");
 });

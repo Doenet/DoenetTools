@@ -1,4 +1,4 @@
-import { expect, test, vi } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 
 import { DateTime } from "luxon";
 
@@ -2045,4 +2045,8 @@ test("getContent does not provide email", async () => {
     includeOwnerDetails: true,
   });
   expect(result.owner).not.toHaveProperty("email");
+});
+
+describe("createContent", () => {
+  test.todo("make course and then create content inside it");
 });

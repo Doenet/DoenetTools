@@ -41,6 +41,7 @@ import { AssignmentMode } from "@prisma/client";
 import { ItemScores, UserInfo } from "../types";
 import { getAssignmentNonRootIds } from "./testQueries";
 import { createStudentHandleAccounts } from "../query/user";
+import { markFolderAsCourse } from "../query/course";
 
 test("assign an activity", async () => {
   const owner = await createTestUser();
@@ -2031,8 +2032,11 @@ describe("createNewAttempt user permissions", () => {
       loggedInUserId: instructorId,
       destinationParentId: folderId,
     });
-
-    // This marks the folder as a class
+    // mark folder as course
+    await markFolderAsCourse({
+      loggedInUserId: instructorId,
+      folderId: folderId,
+    });
     const { accounts } = await createStudentHandleAccounts({
       loggedInUserId: instructorId,
       folderId,
@@ -2065,8 +2069,11 @@ describe("createNewAttempt user permissions", () => {
       loggedInUserId: instructorId,
       destinationParentId: subFolderId,
     });
-
-    // This marks the folder as a class
+    // mark folder as course
+    await markFolderAsCourse({
+      loggedInUserId: instructorId,
+      folderId: folderId,
+    });
     const { accounts } = await createStudentHandleAccounts({
       loggedInUserId: instructorId,
       folderId,
@@ -2079,6 +2086,46 @@ describe("createNewAttempt user permissions", () => {
       state: null,
     });
     expect(attempt.score).toBe(0);
+  });
+
+  test("scoped user from another course cannot take course assignment", async () => {
+    const { userId: instructorId } = await createTestUser();
+
+    const [folder1, doc1, folder2] = await setupTestContent(instructorId, {
+      "folder 1": fold({
+        "doc 1": doc("hi"),
+      }),
+      "folder 2": fold({}),
+    });
+    await markFolderAsCourse({
+      loggedInUserId: instructorId,
+      folderId: folder1,
+    });
+
+    await markFolderAsCourse({
+      loggedInUserId: instructorId,
+      folderId: folder2,
+    });
+    const { accounts } = await createStudentHandleAccounts({
+      loggedInUserId: instructorId,
+      folderId: folder2,
+      numAccounts: 1,
+    });
+    const { assignmentId } = await createAssignment({
+      contentId: doc1,
+      closedOn: DateTime.now().plus({ days: 1 }),
+      loggedInUserId: instructorId,
+      destinationParentId: folder1,
+    });
+
+    await expect(
+      createNewAttempt({
+        contentId: assignmentId,
+        loggedInUserId: accounts[0].userId,
+        variant: 1,
+        state: null,
+      }),
+    ).rejects.toThrow("not found");
   });
 
   test("external user cannot take course assignment", async () => {
@@ -2095,8 +2142,11 @@ describe("createNewAttempt user permissions", () => {
       loggedInUserId: instructorId,
       destinationParentId: folderId,
     });
-
-    // This marks the folder as a class
+    // mark folder as course
+    await markFolderAsCourse({
+      loggedInUserId: instructorId,
+      folderId: folderId,
+    });
     await createStudentHandleAccounts({
       loggedInUserId: instructorId,
       folderId,
@@ -2112,7 +2162,7 @@ describe("createNewAttempt user permissions", () => {
         variant: 1,
         state: null,
       }),
-    ).rejects.toThrow("must be a student");
+    ).rejects.toThrow("not found");
   });
 
   test("external user cannot take course assignment in sub folder", async () => {
@@ -2134,8 +2184,11 @@ describe("createNewAttempt user permissions", () => {
       loggedInUserId: instructorId,
       destinationParentId: subFolderId,
     });
-
-    // This marks the folder as a class
+    // mark folder as course
+    await markFolderAsCourse({
+      loggedInUserId: instructorId,
+      folderId: folderId,
+    });
     await createStudentHandleAccounts({
       loggedInUserId: instructorId,
       folderId,
@@ -2151,10 +2204,10 @@ describe("createNewAttempt user permissions", () => {
         variant: 1,
         state: null,
       }),
-    ).rejects.toThrow("must be a student");
+    ).rejects.toThrow("not found");
   });
 
-  test("anonymous account cannot be used to take course assignment", async () => {
+  test("anonymous user cannot take course assignment", async () => {
     const { userId: instructorId } = await createTestUser();
 
     const [folderId, docId] = await setupTestContent(instructorId, {
@@ -2168,8 +2221,11 @@ describe("createNewAttempt user permissions", () => {
       loggedInUserId: instructorId,
       destinationParentId: folderId,
     });
-
-    // This marks the folder as a class
+    // mark folder as course
+    await markFolderAsCourse({
+      loggedInUserId: instructorId,
+      folderId: folderId,
+    });
     await createStudentHandleAccounts({
       loggedInUserId: instructorId,
       folderId,
@@ -2185,7 +2241,7 @@ describe("createNewAttempt user permissions", () => {
         variant: 1,
         state: null,
       }),
-    ).rejects.toThrow("must be a student");
+    ).rejects.toThrow("not found");
   });
 
   test("anonymous user can take one-off assignment", async () => {
@@ -2223,7 +2279,10 @@ describe("createNewAttempt user permissions", () => {
       }),
       "folder 2": fold({}),
     });
-    // This marks the folder as a class
+    await markFolderAsCourse({
+      loggedInUserId: instructorId,
+      folderId: folder2,
+    });
     const { accounts } = await createStudentHandleAccounts({
       loggedInUserId: instructorId,
       folderId: folder2,
@@ -2244,7 +2303,7 @@ describe("createNewAttempt user permissions", () => {
         variant: 1,
         state: null,
       }),
-    ).rejects.toThrow("must be an anonymous user");
+    ).rejects.toThrow("not found");
   });
 
   test("external user cannot take one-off assignment", async () => {
@@ -2271,7 +2330,7 @@ describe("createNewAttempt user permissions", () => {
         variant: 1,
         state: null,
       }),
-    ).rejects.toThrow("must be an anonymous user");
+    ).rejects.toThrow("not found");
   });
 });
 

@@ -63,6 +63,7 @@ export async function createContent({
   let isPublic = false;
   let licenseCode = undefined;
   let sharedWith: Uint8Array[] = [];
+  let courseRootId: Uint8Array | null = null;
 
   // If parent isn't `null`, check if it is shared and get its license,
   // and make sure it isn't assigned
@@ -79,6 +80,7 @@ export async function createContent({
         licenseCode: true,
         sharedWith: { select: { userId: true } },
         isAssignmentRoot: true,
+        courseRootId: true,
         parent: { select: { isAssignmentRoot: true } },
       },
     });
@@ -88,6 +90,8 @@ export async function createContent({
         "Cannot add content to an assigned activity",
       );
     }
+
+    courseRootId = parent.courseRootId;
 
     if (parent.isPublic) {
       isPublic = true;
@@ -134,6 +138,7 @@ export async function createContent({
       isPublic,
       licenseCode,
       sortIndex,
+      courseRootId,
       source: contentType === "singleDoc" ? "" : null,
       doenetmlVersionId:
         contentType === "singleDoc" ? defaultDoenetmlVersion.id : null,
@@ -295,7 +300,7 @@ export async function restoreDeletedContent({
   loggedInUserId: Uint8Array;
 }) {
   // Verify content is owned by `loggedInUserId`, is recoverable, and is the root of a deletion.
-  const checkForParent = await prisma.content.findUniqueOrThrow({
+  const { parent } = await prisma.content.findUniqueOrThrow({
     where: {
       ownerId: loggedInUserId,
       id: contentId,
@@ -307,40 +312,76 @@ export async function restoreDeletedContent({
         select: {
           id: true,
           isDeletedOn: true,
+          courseRootId: true,
         },
       },
     },
   });
 
-  // Figure out where to put the restored root. If the parent is not deleted we'll put it back where it was.
-  // If the parent is deleted or there was no parent, we're just going to put it in the base folder of the owner.
-  const parentId =
-    checkForParent.parent && checkForParent.parent.isDeletedOn === null
-      ? checkForParent.parent.id
-      : null;
+  let newParentId: null | undefined = undefined;
+  let newSortIndex: number | undefined = undefined;
+  let newCourseRootId: Uint8Array | null | undefined = undefined;
 
-  const updateRoot = prisma.content.update({
-    where: {
-      id: contentId,
-    },
-    data: {
-      isDeletedOn: null,
-      deletionRootId: null,
-      parentId,
-    },
-  });
+  const updateQueries = [];
 
-  const updateDescendants = prisma.content.updateMany({
-    where: {
-      deletionRootId: contentId,
-    },
-    data: {
-      isDeletedOn: null,
-      deletionRootId: null,
-    },
-  });
+  if (parent) {
+    // Figure out where to put the restored root. If the parent is not deleted we'll put it back where it was.
+    // If the parent is deleted, we're just going to put it in the base folder of the owner.
+    // We also have to deal with course references.
 
-  await prisma.$transaction([updateRoot, updateDescendants]);
+    // Special cases:
+    // 1) My existing parent is in a course
+    //    -> set me and all my descendants to be in that course
+    // 2) My parent was deleted and was not in a course
+    //    -> put me in base folder
+    // 3) My parent was deleted and was in a course
+    //    -> put me in base folder and remove course association from me and all descendants
+
+    const parentIsDeleted = parent.isDeletedOn !== null;
+
+    if (!parentIsDeleted && parent.courseRootId !== null) {
+      // Special case #1
+      newCourseRootId = parent.courseRootId;
+    } else if (parentIsDeleted) {
+      // Special case #2 or #3
+
+      // Put in base folder and modify sort index to be last child of base folder
+      newParentId = null;
+      newSortIndex = await getNextSortIndexForParent(loggedInUserId, null);
+      updateQueries.push(
+        prisma.content.update({
+          where: {
+            id: contentId,
+          },
+          data: {
+            parentId: newParentId,
+            sortIndex: newSortIndex,
+          },
+        }),
+      );
+
+      if (parent.courseRootId) {
+        // Special case #3
+        newCourseRootId = null;
+      }
+    }
+  }
+
+  // Now restore the content and its descendants, changing courseRootId as needed
+  updateQueries.push(
+    prisma.content.updateMany({
+      where: {
+        OR: [{ id: contentId }, { deletionRootId: contentId }],
+      },
+      data: {
+        isDeletedOn: null,
+        deletionRootId: null,
+        courseRootId: newCourseRootId,
+      },
+    }),
+  );
+
+  await prisma.$transaction(updateQueries);
 }
 
 /**

@@ -1,6 +1,17 @@
-import { expect, test } from "vitest";
-import { createTestUser, doc, pset, setupTestContent } from "./utils";
-import { createContent, updateContent } from "../query/activity";
+import { describe, expect, test } from "vitest";
+import {
+  createTestAnonymousUser,
+  createTestUser,
+  doc,
+  fold,
+  pset,
+  setupTestContent,
+} from "./utils";
+import {
+  createContent,
+  getContentDescription,
+  updateContent,
+} from "../query/activity";
 import {
   copyContent,
   createContentCopyInChildren,
@@ -15,6 +26,9 @@ import { ContentType } from "@prisma/client";
 import { createAssignment } from "../query/assign";
 import { DateTime } from "luxon";
 import { getAssignmentNonRootIds } from "./testQueries";
+import { markFolderAsCourse } from "../query/course";
+import { createStudentHandleAccounts } from "../query/user";
+import { createNewAttempt } from "../query/scores";
 
 test("copy folder", async () => {
   const { userId: ownerId } = await createTestUser();
@@ -1054,4 +1068,271 @@ test("MoveCopyContent has correct canOpen flags", async () => {
     parent: null,
   });
   expectContentsMatch(results.contents, [], []);
+});
+
+describe("moveContent() with courses", () => {
+  async function setupCourses({ addStudentData }: { addStudentData: boolean }) {
+    const { userId: ownerId } = await createTestUser();
+    const { userId: anonId } = await createTestAnonymousUser();
+    const [
+      outerFolder,
+      courseFolder1,
+      innerFolder1,
+      courseDoc,
+      innerFolder2,
+      courseFolder2,
+      nonCourseFolder,
+      nonCourseDoc,
+    ] = await setupTestContent(ownerId, {
+      "outer folder": fold({
+        "course folder 1": fold({
+          "inner folder 1": fold({
+            "course doc": doc(""),
+          }),
+          "inner folder 2": fold({}),
+        }),
+      }),
+      "course folder 2": fold({}),
+      "non-course folder": fold({
+        "non-course doc": doc(""),
+      }),
+    });
+    const { assignmentId: courseAssignmentId } = await createAssignment({
+      contentId: courseDoc,
+      loggedInUserId: ownerId,
+      destinationParentId: innerFolder1,
+      closedOn: DateTime.now().plus({ days: 1 }),
+    });
+    const { assignmentId: nonCourseAssignmentId } = await createAssignment({
+      contentId: nonCourseDoc,
+      loggedInUserId: ownerId,
+      destinationParentId: nonCourseFolder,
+      closedOn: DateTime.now().plus({ days: 1 }),
+    });
+
+    await markFolderAsCourse({
+      loggedInUserId: ownerId,
+      folderId: courseFolder1,
+    });
+    await markFolderAsCourse({
+      loggedInUserId: ownerId,
+      folderId: courseFolder2,
+    });
+
+    const { accounts } = await createStudentHandleAccounts({
+      loggedInUserId: ownerId,
+      numAccounts: 1,
+      folderId: courseFolder1,
+    });
+    const studentId = accounts[0].userId;
+
+    if (addStudentData) {
+      await createNewAttempt({
+        loggedInUserId: studentId,
+        contentId: courseAssignmentId,
+        variant: 1,
+        state: null,
+      });
+      await createNewAttempt({
+        loggedInUserId: anonId,
+        contentId: nonCourseAssignmentId,
+        variant: 1,
+        state: null,
+      });
+    }
+
+    return {
+      ownerId,
+      studentId,
+      anonId,
+      outerFolder,
+      courseFolder1,
+      innerFolder1,
+      courseDoc,
+      innerFolder2,
+      courseFolder2,
+      nonCourseFolder,
+      nonCourseDoc,
+      courseAssignmentId,
+      nonCourseAssignmentId,
+    };
+  }
+
+  test("move content within same course (with data)", async () => {
+    const { ownerId, innerFolder2, courseAssignmentId } = await setupCourses({
+      addStudentData: true,
+    });
+
+    await moveContent({
+      contentId: courseAssignmentId,
+      loggedInUserId: ownerId,
+      parentId: innerFolder2,
+      desiredPosition: 0,
+    });
+
+    const description = await getContentDescription({
+      contentId: courseAssignmentId,
+      loggedInUserId: ownerId,
+    });
+    expect(description.parent?.contentId).eqls(innerFolder2);
+  });
+
+  test("move content without data to a different course", async () => {
+    const { ownerId, courseFolder2, courseAssignmentId } = await setupCourses({
+      addStudentData: false,
+    });
+
+    await moveContent({
+      contentId: courseAssignmentId,
+      loggedInUserId: ownerId,
+      parentId: courseFolder2,
+      desiredPosition: 0,
+    });
+
+    const description = await getContentDescription({
+      contentId: courseAssignmentId,
+      loggedInUserId: ownerId,
+    });
+    expect(description.parent?.contentId).eqls(courseFolder2);
+  });
+
+  test("cannot move content with data to a different course", async () => {
+    const { ownerId, courseFolder2, courseAssignmentId } = await setupCourses({
+      addStudentData: true,
+    });
+
+    await expect(
+      moveContent({
+        contentId: courseAssignmentId,
+        loggedInUserId: ownerId,
+        parentId: courseFolder2,
+        desiredPosition: 0,
+      }),
+    ).rejects.toThrow("Cannot move content with student data");
+  });
+
+  test("move content without data out of course", async () => {
+    const { ownerId, nonCourseFolder, courseAssignmentId } = await setupCourses(
+      {
+        addStudentData: false,
+      },
+    );
+
+    await moveContent({
+      contentId: courseAssignmentId,
+      loggedInUserId: ownerId,
+      parentId: nonCourseFolder,
+      desiredPosition: 0,
+    });
+
+    const description = await getContentDescription({
+      contentId: courseAssignmentId,
+      loggedInUserId: ownerId,
+    });
+    expect(description.parent?.contentId).eqls(nonCourseFolder);
+  });
+
+  test("cannot move content with data out of course", async () => {
+    const { ownerId, nonCourseFolder, courseAssignmentId } = await setupCourses(
+      {
+        addStudentData: true,
+      },
+    );
+
+    await expect(
+      moveContent({
+        contentId: courseAssignmentId,
+        loggedInUserId: ownerId,
+        parentId: nonCourseFolder,
+        desiredPosition: 0,
+      }),
+    ).rejects.toThrow("Cannot move content with student data");
+  });
+
+  test("move course root to non-course parent", async () => {
+    const { ownerId, courseFolder1, nonCourseFolder } = await setupCourses({
+      addStudentData: true,
+    });
+
+    await moveContent({
+      contentId: courseFolder1,
+      loggedInUserId: ownerId,
+      parentId: nonCourseFolder,
+      desiredPosition: 0,
+    });
+
+    const description = await getContentDescription({
+      contentId: courseFolder1,
+      loggedInUserId: ownerId,
+    });
+    expect(description.parent?.contentId).eqls(nonCourseFolder);
+  });
+
+  test("cannot move course root to any course parent", async () => {
+    const { ownerId, courseFolder1, courseFolder2 } = await setupCourses({
+      addStudentData: true,
+    });
+
+    await expect(
+      moveContent({
+        contentId: courseFolder1,
+        loggedInUserId: ownerId,
+        parentId: courseFolder2,
+        desiredPosition: 0,
+      }),
+    ).rejects.toThrow("Cannot move a course into a course");
+  });
+
+  test("move content containing course to non-course parent", async () => {
+    const { ownerId, outerFolder, nonCourseFolder } = await setupCourses({
+      addStudentData: true,
+    });
+
+    await moveContent({
+      contentId: outerFolder,
+      loggedInUserId: ownerId,
+      parentId: nonCourseFolder,
+      desiredPosition: 0,
+    });
+
+    const description = await getContentDescription({
+      contentId: outerFolder,
+      loggedInUserId: ownerId,
+    });
+    expect(description.parent?.contentId).eqls(nonCourseFolder);
+  });
+
+  test("cannot move content containing course to any course parent", async () => {
+    const { ownerId, outerFolder, courseFolder2 } = await setupCourses({
+      addStudentData: true,
+    });
+
+    await expect(
+      moveContent({
+        contentId: outerFolder,
+        loggedInUserId: ownerId,
+        parentId: courseFolder2,
+        desiredPosition: 0,
+      }),
+    ).rejects.toThrow("Cannot move a course into a course");
+  });
+
+  test("move content not containing any courses into to a course", async () => {
+    const { ownerId, nonCourseFolder, courseFolder2 } = await setupCourses({
+      addStudentData: true,
+    });
+
+    await moveContent({
+      contentId: nonCourseFolder,
+      loggedInUserId: ownerId,
+      parentId: courseFolder2,
+      desiredPosition: 0,
+    });
+
+    const description = await getContentDescription({
+      contentId: nonCourseFolder,
+      loggedInUserId: ownerId,
+    });
+    expect(description.parent?.contentId).eqls(courseFolder2);
+  });
 });

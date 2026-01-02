@@ -5,8 +5,8 @@ import { InvalidRequestError } from "../utils/error";
 import {
   filterEditableRootAssignment,
   filterViewableRootAssignment,
-  mustBeAnonymous,
-  mustBeScopedStudent,
+  getIsAnonymous,
+  getScopedStudentCourseId,
 } from "../utils/permissions";
 import {
   isCachedLatestAttempt,
@@ -16,7 +16,6 @@ import {
   ScoreData,
   UserInfo,
 } from "../types";
-import { getClassId } from "./assign";
 
 // TODO: do we still save score and state if assignment isn't open?
 // If not, how do we communicate that fact
@@ -280,22 +279,24 @@ export async function createNewAttempt({
     variant: number;
   }[];
 }) {
-  const classId = await getClassId(contentId);
-  if (classId) {
-    await mustBeScopedStudent(loggedInUserId, classId);
-  } else {
-    await mustBeAnonymous(loggedInUserId);
-  }
+  // Make sure user has permission to view this assignment
+  const scopedCourseId = await getScopedStudentCourseId(loggedInUserId);
+  const isAnonymous = await getIsAnonymous(loggedInUserId);
 
   const assignment = await prisma.content.findUniqueOrThrow({
     where: {
       id: contentId,
-      ...filterViewableRootAssignment(loggedInUserId),
+      ...filterViewableRootAssignment({
+        loggedInUserId,
+        courseRootIdOfScopedUser: scopedCourseId,
+        isAnonymous,
+      }),
     },
     select: {
       mode: true,
       maxAttempts: true,
       type: true,
+      courseRootId: true,
       contentState: {
         distinct: ["contentId", "userId"],
         where: { userId: loggedInUserId },

@@ -5,7 +5,9 @@ import {
   filterEditableContent,
   filterEditableRootAssignment,
   filterViewableRootAssignment,
+  getIsAnonymous,
   getIsEditor,
+  getScopedStudentCourseId,
 } from "../utils/permissions";
 import { getRandomValues } from "crypto";
 import { AssignmentMode, ContentType, Prisma } from "@prisma/client";
@@ -66,22 +68,6 @@ export async function getContentFromCode({
   });
 
   return { contentId: content.id, contentType: content.type };
-}
-
-export async function getClassId(
-  contentId: Uint8Array,
-): Promise<Uint8Array | null> {
-  const ancestors = await getAncestorIds(contentId);
-  const course = await prisma.content.findFirst({
-    where: {
-      id: { in: ancestors },
-      // having at least one scoped user indicates a course
-      scopedUsers: { some: {} },
-    },
-    select: { id: true },
-  });
-
-  return course ? course.id : null;
 }
 
 /**
@@ -680,11 +666,17 @@ export async function getAssignmentData({
   assignment: Content | null;
   scoreData?: ScoreData;
 }> {
-  // make sure that content is assigned and is either open or has data from `loggedInUserId`
+  // Make sure user has permission to view this assignment
+  const scopedCourseId = await getScopedStudentCourseId(loggedInUserId);
+  const isAnonymous = await getIsAnonymous(loggedInUserId);
   await prisma.content.findFirstOrThrow({
     where: {
       id: assignmentId,
-      ...filterViewableRootAssignment(loggedInUserId),
+      ...filterViewableRootAssignment({
+        loggedInUserId,
+        courseRootIdOfScopedUser: scopedCourseId,
+        isAnonymous,
+      }),
     },
     select: { id: true },
   });
