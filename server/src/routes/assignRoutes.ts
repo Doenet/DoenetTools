@@ -1,6 +1,5 @@
 import express from "express";
 import {
-  closeAssignment,
   getAllAssignmentScores,
   getAssignedScores,
   getAssignmentResponseOverview,
@@ -53,11 +52,6 @@ assignRouter.post(
 assignRouter.post(
   "/updateAssignmentSettings",
   queryLoggedIn(updateAssignmentSettings, assignmentSettingsSchema),
-);
-
-assignRouter.post(
-  "/closeAssignment",
-  queryLoggedIn(closeAssignment, contentIdSchema),
 );
 
 assignRouter.get("/getAssigned", queryLoggedInNoArguments(listUserAssigned));

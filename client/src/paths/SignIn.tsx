@@ -46,8 +46,8 @@ export async function action({ request }: ActionFunctionArgs) {
 export function SignIn() {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  // const [username, setUsername] = useState("");
+  // const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
 
@@ -185,7 +185,7 @@ export function SignIn() {
               </button>
             </>
           )}
-          <Heading>TEST: student login</Heading>
+          {/* <Heading>TEST: student login</Heading>
           <Form
             method="post"
             onSubmit={() => {
@@ -219,9 +219,6 @@ export function SignIn() {
                 onChange={(e) => setPassword(e.target.value)}
               ></Input>
             </FormControl>
-            {/* <FormControl marginTop="10px">
-                  <Checkbox name="stay">Stay logged in</Checkbox>
-                </FormControl> */}
             <Button
               type="submit"
               data-test="sendEmailButton"
@@ -231,7 +228,7 @@ export function SignIn() {
             >
               Sign up/Log in
             </Button>
-          </Form>
+          </Form> */}
         </Box>
       </HStack>
     </Flex>

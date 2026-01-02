@@ -46,6 +46,7 @@ import { discourseRouter } from "./routes/discourseLoginRoutes";
 import passportLib from "passport";
 import bcrypt from "bcryptjs";
 import { generateHandle } from "./utils/names";
+import { codeRouter } from "./routes/code";
 
 // Type assertion to work around passport type declaration issues
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -380,6 +381,7 @@ app.use("/api/copyMove", copyMoveRouter);
 app.use("/api/curate", curateRouter);
 app.use("/api/compare", compareRouter);
 app.use("/api/editor", editorRouter);
+app.use("/api/code", codeRouter);
 
 // Discourse uses this endpoint to sign on
 app.use("/api/discourse", discourseRouter);

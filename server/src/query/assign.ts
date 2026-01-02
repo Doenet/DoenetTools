@@ -269,6 +269,7 @@ export async function updateAssignmentSettings({
 /**
  * Close an assignment by setting `assignmentClosedOn` to now.
  */
+// TODO: delete once we change the tests to use updateAssignmentClosedOn
 export async function closeAssignment({
   contentId,
   loggedInUserId,

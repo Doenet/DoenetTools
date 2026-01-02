@@ -350,7 +350,7 @@ export function SiteHeader() {
                           </Text>
                           <Text>
                             {user.isAnonymous
-                              ? `Pseudonym: ${createNameNoTag(user)}`
+                              ? `Nickname: ${createNameNoTag(user)}`
                               : user.email}
                           </Text>
                           {user.isAnonymous ? (
@@ -392,13 +392,15 @@ export function SiteHeader() {
                             </Box>
                           ) : null}
                         </VStack>
-                        <MenuItem
-                          as={ChakraLink}
-                          // When name change complete, redirect back to current page
-                          href={`/changeName?redirect=${currentPath}`}
-                        >
-                          Update {user.isAnonymous ? "pseudonym" : "name"}
-                        </MenuItem>
+                        {!user.isAnonymous && (
+                          <MenuItem
+                            as={ChakraLink}
+                            // When name change complete, redirect back to current page
+                            href={`/changeName?redirect=${currentPath}`}
+                          >
+                            Update name
+                          </MenuItem>
+                        )}
                         <MenuItem as="a" href="/api/login/logout">
                           {user.isAnonymous
                             ? "Clear anonymous data"

@@ -44,8 +44,12 @@ export async function loader({
     parentId?: string;
   };
 }) {
+  if (!params.parentId) {
+    throw new Error("Missing folder id");
+  }
+
   const { data } = await axios.get(
-    `/api/assign/getAllAssignmentScores/${params.parentId ?? ""}`,
+    `/api/assign/getAllAssignmentScores/${params.parentId}`,
   );
 
   const { orderedStudents, orderedAssignments, scores, folder } = data as {
@@ -277,7 +281,7 @@ export function Students() {
   );
 
   const addStudentButton = (
-    <Button size="sm" onClick={addStudentsOnOpen}>
+    <Button size="sm" onClick={addStudentsOnOpen} hidden={true}>
       Add students
     </Button>
   );
