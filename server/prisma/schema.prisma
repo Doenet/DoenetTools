@@ -338,6 +338,9 @@ model users {
   isLibrary          Boolean                @default(false)
   isEditor           Boolean                @default(false)
   isAuthor           Boolean                @default(false)
+  // For now, premium refers to the instructor accounts
+  // A premium account means: any assignment I create can be taken by normal (non-anonymous and non-scoped) users
+  isPremium          Boolean                @default(false)
   // There are two ways that an account is locked to not be able to explore or create content:
   // 1. Account has scopedToClassId. This means that the account is a student rostered to a folder.
   // 2. Account isAnonymous. We don't know what class they are in, but they're not going to author.

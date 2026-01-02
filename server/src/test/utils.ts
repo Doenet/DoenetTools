@@ -10,6 +10,7 @@ export async function createTestUser(
   isEditor = false,
   isAnonymous = false,
   lastNamePrefix = "",
+  isPremium = false,
 ) {
   const id =
     Date.now().toString() + Math.round(Math.random() * 100000).toString();
@@ -25,6 +26,7 @@ export async function createTestUser(
       lastNames,
       isEditor,
       isAnonymous,
+      isPremium,
     });
   } catch (_e) {
     // try again by adding "a" to the end of the id for the email
@@ -34,6 +36,7 @@ export async function createTestUser(
       lastNames: `user${id}a`,
       isEditor,
       isAnonymous,
+      isPremium,
     });
   }
   return user;
@@ -45,6 +48,10 @@ export async function createTestEditorUser() {
 
 export async function createTestAnonymousUser(lastNamePrefix = "") {
   return await createTestUser(false, true, lastNamePrefix);
+}
+
+export async function createTestPremiumUser(lastNamePrefix = "") {
+  return await createTestUser(false, false, lastNamePrefix, true);
 }
 
 export async function getTestAssignment(

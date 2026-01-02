@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { createTestAnonymousUser, createTestUser } from "./utils";
+import { createTestAnonymousUser, createTestPremiumUser, createTestUser } from "./utils";
 import { createContent } from "../query/activity";
 import { DateTime } from "luxon";
 import {
@@ -3817,7 +3817,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
 });
 
 test("getScoresOfAllStudents should not provide emails", async () => {
-  const { userId: ownerId } = await createTestUser();
+  const { userId: ownerId } = await createTestPremiumUser();
   const { contentId } = await createContent({
     loggedInUserId: ownerId,
     contentType: "singleDoc",

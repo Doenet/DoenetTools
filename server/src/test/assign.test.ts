@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
   createTestAnonymousUser,
+  createTestPremiumUser,
   createTestUser,
   doc,
   fold,
@@ -151,7 +152,9 @@ test("cannot assign other user's activity", async () => {
 });
 
 test("open and close one-off assignment", async () => {
-  const owner = await createTestUser();
+  // TODO: Unclear why `fakeId` should be allowed to `getAssignmentData`
+  // For now, we marked owner as premium
+  const owner = await createTestPremiumUser();
   const ownerId = owner.userId;
   const fakeId = new Uint8Array(16);
 
@@ -295,8 +298,10 @@ test("new assignment in course does not generate code", async () => {
       "doc 1": doc("hi"),
     }),
   });
-
-  // This marks the folder as a class
+  await markFolderAsCourse({
+    loggedInUserId: ownerId,
+    folderId,
+  });
   await createStudentHandleAccounts({
     loggedInUserId: ownerId,
     folderId,
@@ -341,7 +346,9 @@ test("assignment document in problem set gets status from parent", async () => {
 });
 
 test("open one-off compound assignment", async () => {
-  const owner = await createTestUser();
+  // TODO: Unclear why `fakeId` should be allowed to `getAssignmentData`
+  // For now, we marked owner as premium
+  const owner = await createTestPremiumUser();
   const ownerId = owner.userId;
   const fakeId = new Uint8Array(16);
 
@@ -1156,9 +1163,9 @@ test("can't get assignment data if other user, but student can get their own dat
 });
 
 test("list assigned and get assigned scores get student assignments and scores", async () => {
-  const user1 = await createTestUser();
+  const user1 = await createTestPremiumUser();
   const user1Id = user1.userId;
-  const user2 = await createTestUser();
+  const user2 = await createTestPremiumUser();
   const user2Id = user2.userId;
 
   let assignmentList = await listUserAssigned({ loggedInUserId: user1Id });
@@ -2018,6 +2025,12 @@ test("only user and assignment owner can load document state", async () => {
   expect(retrievedState3).eqls({ loadedState: false });
 });
 
+describe("getAssignmentData() user permissions", () => {
+  // TODO: same logic as `createNewAttempt` tests below, but for `getAssignmentData()`
+  // Should we abstract this logic and test it separately?
+  test.todo("see above");
+});
+
 describe("createNewAttempt user permissions", () => {
   test("scoped user can take course assignment", async () => {
     const { userId: instructorId } = await createTestUser();
@@ -2332,6 +2345,32 @@ describe("createNewAttempt user permissions", () => {
       }),
     ).rejects.toThrow("not found");
   });
+
+  test("external user can take one-off assignment if owner is premium", async () => {
+    const { userId: instructorId } = await createTestPremiumUser();
+    const { userId: externalUserId } = await createTestUser();
+
+    const [folder1, doc1] = await setupTestContent(instructorId, {
+      "folder 1": fold({
+        "doc 1": doc("hi"),
+      }),
+    });
+
+    const { assignmentId } = await createAssignment({
+      contentId: doc1,
+      closedOn: DateTime.now().plus({ days: 1 }),
+      loggedInUserId: instructorId,
+      destinationParentId: folder1,
+    });
+
+    const attempt = await createNewAttempt({
+      contentId: assignmentId,
+      loggedInUserId: externalUserId,
+      variant: 1,
+      state: null,
+    });
+    expect(attempt.score).toBe(0);
+  });
 });
 
 describe("getContentFromCode", () => {
@@ -2367,7 +2406,12 @@ describe("getContentFromCode", () => {
       },
     );
 
-    // create scoped accounts to mark folder1 as a class
+    // mark folder1 as course
+    await markFolderAsCourse({
+      loggedInUserId: instructorId,
+      folderId: folder1,
+    });
+
     const { code } = await createStudentHandleAccounts({
       loggedInUserId: instructorId,
       folderId: folder1,

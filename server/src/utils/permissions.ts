@@ -56,6 +56,22 @@ export async function getIsAnonymous(userId: Uint8Array) {
   return isAnonymous;
 }
 
+export async function getOwnerIsPremium(contentId: Uint8Array) {
+  const owner = await prisma.users.findFirst({
+    where: {
+      content: {
+        some: {
+          id: contentId,
+        },
+      },
+    },
+    select: { isPremium: true },
+  });
+
+  const isPremium = owner?.isPremium ?? false;
+  return isPremium;
+}
+
 /**
  * Query whether content is owned by the library (is a curated activity) or not.
  *
@@ -145,24 +161,29 @@ export function filterViewableRootAssignment({
   loggedInUserId,
   courseRootIdOfScopedUser,
   isAnonymous,
+  ownerIsPremium,
 }: {
   loggedInUserId: Uint8Array;
   courseRootIdOfScopedUser: Uint8Array | null;
   isAnonymous: boolean;
+  ownerIsPremium: boolean;
 }) {
+  // TODO: if owner is premium, allow regular accounts to take assignment in course
+
   if (courseRootIdOfScopedUser === null) {
-    const studentCondition = isAnonymous
-      ? {
-          // TODO - confirm this works with timezone stuff
-          assignmentOpenOn: {
-            lte: DateTime.now().toISO(),
-          },
-          assignmentClosedOn: {
-            gte: DateTime.now().toISO(),
-          },
-          courseRootId: null,
-        }
-      : {};
+    const studentCondition =
+      isAnonymous || ownerIsPremium
+        ? {
+            // TODO - confirm this works with timezone stuff
+            assignmentOpenOn: {
+              lte: DateTime.now().toISO(),
+            },
+            assignmentClosedOn: {
+              gte: DateTime.now().toISO(),
+            },
+            courseRootId: null,
+          }
+        : {};
 
     return {
       AND: [

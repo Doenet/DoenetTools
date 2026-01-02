@@ -14,13 +14,20 @@ export async function findOrCreateUser({
   lastNames,
   isEditor = false,
   isAnonymous = false,
+  isPremium,
 }: {
   email: string;
   firstNames: string | null;
   lastNames: string;
   isEditor?: boolean;
   isAnonymous?: boolean;
+  isPremium?: boolean;
 }) {
+  // For now, make any non-anonymous user a premium user
+  // We'll change this once we have the UI for non-premium users working
+  // by deleting this line and by defaulting isPremium to false in the function signature
+  isPremium = isPremium ?? !isAnonymous;
+
   let user = await prisma.users.upsert({
     where: { email },
     update: {},
@@ -31,6 +38,7 @@ export async function findOrCreateUser({
       username: email,
       isEditor,
       isAnonymous,
+      isPremium,
     },
   });
 
@@ -174,7 +182,7 @@ export async function createStudentHandleAccounts({
   await prisma.content.findUniqueOrThrow({
     where: {
       id: folderId,
-      ...filterEditableContent(loggedInUserId), 
+      ...filterEditableContent(loggedInUserId),
       courseRootId: folderId,
     },
     select: { id: true },

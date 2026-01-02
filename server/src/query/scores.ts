@@ -6,6 +6,7 @@ import {
   filterEditableRootAssignment,
   filterViewableRootAssignment,
   getIsAnonymous,
+  getOwnerIsPremium,
   getScopedStudentCourseId,
 } from "../utils/permissions";
 import {
@@ -282,6 +283,7 @@ export async function createNewAttempt({
   // Make sure user has permission to view this assignment
   const scopedCourseId = await getScopedStudentCourseId(loggedInUserId);
   const isAnonymous = await getIsAnonymous(loggedInUserId);
+  const ownerIsPremium = await getOwnerIsPremium(contentId);
 
   const assignment = await prisma.content.findUniqueOrThrow({
     where: {
@@ -290,6 +292,7 @@ export async function createNewAttempt({
         loggedInUserId,
         courseRootIdOfScopedUser: scopedCourseId,
         isAnonymous,
+        ownerIsPremium,
       }),
     },
     select: {

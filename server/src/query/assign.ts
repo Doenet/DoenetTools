@@ -7,6 +7,7 @@ import {
   filterViewableRootAssignment,
   getIsAnonymous,
   getIsEditor,
+  getOwnerIsPremium,
   getScopedStudentCourseId,
 } from "../utils/permissions";
 import { getRandomValues } from "crypto";
@@ -669,6 +670,8 @@ export async function getAssignmentData({
   // Make sure user has permission to view this assignment
   const scopedCourseId = await getScopedStudentCourseId(loggedInUserId);
   const isAnonymous = await getIsAnonymous(loggedInUserId);
+  const ownerIsPremium = await getOwnerIsPremium(assignmentId);
+
   await prisma.content.findFirstOrThrow({
     where: {
       id: assignmentId,
@@ -676,6 +679,7 @@ export async function getAssignmentData({
         loggedInUserId,
         courseRootIdOfScopedUser: scopedCourseId,
         isAnonymous,
+        ownerIsPremium,
       }),
     },
     select: { id: true },
