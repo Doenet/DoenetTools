@@ -26,7 +26,6 @@ ALTER TABLE `content` DROP COLUMN `nonRootAssignmentId`,
 -- CreateIndex
 CREATE UNIQUE INDEX `content_classCode_key` ON `content`(`classCode`);
 CREATE INDEX `content_classCode_idx` ON `content`(`classCode`);
-CREATE UNIQUE INDEX `users_username_key` ON `users`(`username`);
 
 
 -- AddForeignKey
@@ -49,7 +48,12 @@ SET
   content.classCode = CONVERT(assignments.classCode, UNSIGNED);
 
 -- Mark all non-anonymous users as premium
+
+UPDATE `users` SET username = email;
 UPDATE `users` SET isPremium = TRUE WHERE isAnonymous = FALSE;
+
+CREATE UNIQUE INDEX `users_username_key` ON `users`(`username`);
+
 
 -- AddForeignKey
 ALTER TABLE `users` ADD CONSTRAINT `users_scopedToClassId_fkey` FOREIGN KEY (`scopedToClassId`) REFERENCES `content`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
