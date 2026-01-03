@@ -356,7 +356,7 @@ model users {
   assignmentScores   assignmentScores[]
   libraryEvents      libraryEvents[]
   libraryEditorInfos libraryActivityInfos[]
-  scopedToClass      content?               @relation(name: "scopedToClass", fields: [scopedToClassId], references: [id])
+  scopedToClass      content?               @relation(name: "scopedToClass", fields: [scopedToClassId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@fulltext([firstNames, lastNames])
 }
