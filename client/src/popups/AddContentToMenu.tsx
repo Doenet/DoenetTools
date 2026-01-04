@@ -30,7 +30,11 @@ import {
 import axios from "axios";
 import { MoveCopyContent } from "../popups/MoveCopyContent";
 import { CopyContentAndReportFinish } from "../popups/CopyContentAndReportFinish";
-import { FetcherWithComponents, useOutletContext } from "react-router";
+import {
+  FetcherWithComponents,
+  useNavigate,
+  useOutletContext,
+} from "react-router";
 import { SiteContext } from "../paths/SiteHeader";
 import { getAllowedParentTypes, menuIcons } from "../utils/activity";
 
@@ -79,6 +83,8 @@ export function AddContentToMenu({
     useState<ContentDescription | null>(null);
 
   const [baseContains, setBaseContains] = useState<ContentType[]>([]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const allowedParents = getAllowedParentTypes(
@@ -174,6 +180,29 @@ export function AddContentToMenu({
       </Tooltip>
     );
   }
+
+  const scratchPadDisabled = !sourceContent[0]?.doenetmlVersion?.default;
+
+  const loadIntoScratchPad = sourceContent.length === 1 && (
+    <Tooltip
+      openDelay={500}
+      label={
+        scratchPadDisabled
+          ? "Scratch Pad can only load documents that use the default DoenetML version"
+          : null
+      }
+    >
+      <MenuItem
+        data-test="Load into Scratch Pad"
+        isDisabled={scratchPadDisabled}
+        onClick={() => {
+          navigate(`/scratchPad?contentId=${sourceContent[0].contentId}`);
+        }}
+      >
+        Load into Scratch Pad
+      </MenuItem>
+    </Tooltip>
+  );
 
   return (
     <>
@@ -290,6 +319,7 @@ export function AddContentToMenu({
           >
             My Activities
           </MenuItem>
+          {loadIntoScratchPad}
           {recentContent.length > 0 ? (
             <MenuGroup title="Recent">
               {recentContent.map((rc) => {

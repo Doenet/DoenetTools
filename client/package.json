@@ -15,9 +15,11 @@
       "files": [
         "src/**/*.ts",
         "src/**/*.js",
+        "src/**/*.tsx",
+        "src/**/*.jsx",
+        "src/**/*.css",
         "vite.config.ts",
-        "tsconfig.json",
-        ".env.production"
+        "tsconfig.json"
       ],
       "output": [
         "dist/**/*.js",
