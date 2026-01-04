@@ -202,7 +202,7 @@ export function ScratchPad() {
       <AlertTitle lineHeight="1em">Scratch Pad</AlertTitle>
       <AlertDescription>
         <Flex alignItems="center" lineHeight="1em">
-          <Box>Note: scratch pad is not permanently saved.</Box>
+          <Box>Your changes are not permanently saved.</Box>
         </Flex>
       </AlertDescription>
     </Alert>
