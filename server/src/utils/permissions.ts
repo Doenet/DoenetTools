@@ -150,10 +150,13 @@ export function filterViewableActivity(
 /**
  * Filter Prisma's `where` clause to viewable root assignments for `loggedInUserId`
  *
- * For an assignment to be viewable, one of these conditions must be true:
- * 1. The assignment is open
- * 2. `loggedInUserId` has score data for this assignment
- * 3. `loggedInUserId` is the owner
+ * If `loggedInUserId` is scoped to a course, then an assignment is viewable if it is in that course.
+ *
+ * If `loggedInUserId` is not scoped to a course, then an assignment is viewable if any of these are true:
+ * 1. `loggedInUserId` is anonymous and the assignment is an open one-off assignment
+ * 2. The assignment owner is premium and the assignment is an open one-off assignment
+ * 3. `loggedInUserId` has score data for this assignment
+ * 4. `loggedInUserId` is the owner
  *
  * For content to be a root assignment, it must be attached to an entry in the assignments table.
  */
@@ -169,6 +172,8 @@ export function filterViewableRootAssignment({
   ownerIsPremium: boolean;
 }) {
   // TODO: if owner is premium, allow regular accounts to take assignment in course
+  // TODO: Once we change the user-roster relationship to be many-to-many (to allow premium instructors to roster regular accounts), make this logic clearer!
+  // Suggestion: first determine if assignment is in course or not
 
   if (courseRootIdOfScopedUser === null) {
     const studentCondition =
@@ -211,14 +216,7 @@ export function filterViewableRootAssignment({
       AND: [
         filterRootAssignment,
         {
-          OR: [
-            {
-              courseRootId: courseRootIdOfScopedUser,
-            },
-            {
-              ownerId: loggedInUserId,
-            },
-          ],
+          courseRootId: courseRootIdOfScopedUser,
           isDeletedOn: null,
         },
       ],
