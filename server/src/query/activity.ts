@@ -30,12 +30,14 @@ export async function createContent({
   parentId,
   inLibrary = false,
   name,
+  doenetml = "",
 }: {
   loggedInUserId: Uint8Array;
   contentType: ContentType;
   parentId: Uint8Array | null;
   inLibrary?: boolean;
   name?: string;
+  doenetml?: string;
 }) {
   // TODO: Eventually, when we are sure we do not want question banks,
   // we will remove them entirely from the codebase. For now, just
@@ -54,11 +56,7 @@ export async function createContent({
 
   const sortIndex = await getNextSortIndexForParent(ownerId, parentId);
 
-  const defaultDoenetmlVersion = await prisma.doenetmlVersions.findFirstOrThrow(
-    {
-      where: { default: true },
-    },
-  );
+  const { defaultDoenetmlVersion } = await getDefaultDoenetmlVersion();
 
   let isPublic = false;
   let licenseCode = undefined;
@@ -139,7 +137,7 @@ export async function createContent({
       licenseCode,
       sortIndex,
       courseRootId,
-      source: contentType === "singleDoc" ? "" : null,
+      source: contentType === "singleDoc" ? doenetml : null,
       doenetmlVersionId:
         contentType === "singleDoc" ? defaultDoenetmlVersion.id : null,
       sharedWith: {
@@ -683,6 +681,16 @@ export async function getAllDoenetmlVersions() {
     },
   });
   return { allDoenetmlVersions };
+}
+
+export async function getDefaultDoenetmlVersion() {
+  const defaultDoenetmlVersion = await prisma.doenetmlVersions.findFirstOrThrow(
+    {
+      where: { default: true },
+    },
+  );
+
+  return { defaultDoenetmlVersion };
 }
 
 /**

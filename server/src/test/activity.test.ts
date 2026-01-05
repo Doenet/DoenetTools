@@ -15,6 +15,7 @@ import {
   restoreDeletedContent,
   getContentSource,
   getDescendantIds,
+  getDefaultDoenetmlVersion,
 } from "../query/activity";
 import { getActivityViewerData, getContent } from "../query/activity_edit_view";
 import { getMyContent, getMyTrash } from "../query/content_list";
@@ -53,6 +54,12 @@ const currentDoenetmlVersion = {
   removed: false,
   deprecationMessage: "",
 };
+
+test("Get default DoenetML version", async () => {
+  const { defaultDoenetmlVersion } = await getDefaultDoenetmlVersion();
+
+  expect(defaultDoenetmlVersion).eqls(currentDoenetmlVersion);
+});
 
 test("New activity starts out private, then delete it", async () => {
   const user = await createTestUser();
@@ -2045,6 +2052,40 @@ test("getContent does not provide email", async () => {
     includeOwnerDetails: true,
   });
   expect(result.owner).not.toHaveProperty("email");
+});
+
+test("Create new activity with DoenetML", async () => {
+  const user = await createTestUser();
+  const userId = user.userId;
+  const { contentId: contentId } = await createContent({
+    loggedInUserId: userId,
+    contentType: "singleDoc",
+    parentId: null,
+    doenetml: "My DoenetML source",
+    name: "The new document",
+  });
+
+  const data = await getMyContent({
+    ownerId: userId,
+    loggedInUserId: userId,
+    parentId: null,
+  });
+
+  if (data.notMe) {
+    throw Error("shouldn't happen");
+  }
+  expect(data.content).toBeDefined();
+  expect(data.content.length).toBe(1);
+
+  const newDoc = data.content[0];
+
+  if (newDoc.type !== "singleDoc") {
+    throw Error("shouldn't happen");
+  }
+
+  expect(newDoc.contentId).toStrictEqual(contentId);
+  expect(newDoc.name).toBe("The new document");
+  expect(newDoc.doenetML).toBe("My DoenetML source");
 });
 
 describe("createContent", () => {
