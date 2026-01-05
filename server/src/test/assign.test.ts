@@ -2407,12 +2407,12 @@ describe("getContentFromCode", () => {
     );
 
     // mark folder1 as course
-    await markFolderAsCourse({
+    const { classCode: code } = await markFolderAsCourse({
       loggedInUserId: instructorId,
       folderId: folder1,
     });
 
-    const { code } = await createStudentHandleAccounts({
+    await createStudentHandleAccounts({
       loggedInUserId: instructorId,
       folderId: folder1,
       numAccounts: 1,
