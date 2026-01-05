@@ -175,12 +175,12 @@ export async function createStudentHandleAccounts({
   folderId: Uint8Array;
   numAccounts: number;
 }) {
-  // Make sure 1) content is owned by user and 2) content is a course
+  // Make sure content is a course owned by `loggedInUserId`
   await prisma.content.findUniqueOrThrow({
     where: {
       id: folderId,
-      ...filterEditableContent(loggedInUserId),
       courseRootId: folderId,
+      ...filterEditableContent(loggedInUserId),
     },
     select: { id: true },
   });
