@@ -17,6 +17,7 @@ import { getContent } from "./activity_edit_view";
 import { compileActivityFromContent } from "../utils/contentStructure";
 import { InvalidRequestError } from "../utils/error";
 import { ContentDescription } from "../types";
+import { isEqualUUID } from "../utils/uuid";
 
 /**
  * Creates a new content of type `contentType` in `parentId` of `ownerId`,
@@ -298,7 +299,7 @@ export async function restoreDeletedContent({
   loggedInUserId: Uint8Array;
 }) {
   // Verify content is owned by `loggedInUserId`, is recoverable, and is the root of a deletion.
-  const { parent } = await prisma.content.findUniqueOrThrow({
+  const { courseRootId, parent } = await prisma.content.findUniqueOrThrow({
     where: {
       ownerId: loggedInUserId,
       id: contentId,
@@ -306,6 +307,7 @@ export async function restoreDeletedContent({
       isDeletedOn: { not: null, gte: getEarliestRecoverableDate().toJSDate() },
     },
     select: {
+      courseRootId: true,
       parent: {
         select: {
           id: true,
@@ -316,6 +318,7 @@ export async function restoreDeletedContent({
     },
   });
 
+  // `null` indicates base folder, `undefined` indicates no change
   let newParentId: null | undefined = undefined;
   let newSortIndex: number | undefined = undefined;
   let newCourseRootId: Uint8Array | null | undefined = undefined;
@@ -330,18 +333,30 @@ export async function restoreDeletedContent({
     // Special cases:
     // 1) My existing parent is in a course
     //    -> set me and all my descendants to be in that course
-    // 2) My parent was deleted and was not in a course
+    // 2) My existing parent is not a course, but I am part of a course (not course root)
+    //    -> remove any course association from me and all descendants
+    // 3) My parent was deleted and was not in a course
     //    -> put me in base folder
-    // 3) My parent was deleted and was in a course
+    // 4) My parent was deleted and was in a course
     //    -> put me in base folder and remove course association from me and all descendants
+    // TODO: Test these special cases
 
     const parentIsDeleted = parent.isDeletedOn !== null;
+    const iAmCourseNonroot =
+      courseRootId !== null && !isEqualUUID(courseRootId, contentId);
 
     if (!parentIsDeleted && parent.courseRootId !== null) {
       // Special case #1
       newCourseRootId = parent.courseRootId;
+    } else if (
+      !parentIsDeleted &&
+      parent.courseRootId === null &&
+      iAmCourseNonroot
+    ) {
+      // Special case #2
+      newCourseRootId = null;
     } else if (parentIsDeleted) {
-      // Special case #2 or #3
+      // Special case #3 or #4
 
       // Put in base folder and modify sort index to be last child of base folder
       newParentId = null;
@@ -359,7 +374,7 @@ export async function restoreDeletedContent({
       );
 
       if (parent.courseRootId) {
-        // Special case #3
+        // Special case #4
         newCourseRootId = null;
       }
     }
