@@ -1,3 +1,4 @@
+-- This migration assumes that `classCode` in `assignments` is unique, which is true on beta at the time of writing.
 
 -- Drop foreign keys
 ALTER TABLE `assignmentScores` DROP FOREIGN KEY `assignmentScores_contentId_fkey`;
@@ -26,7 +27,6 @@ ALTER TABLE `content` DROP COLUMN `nonRootAssignmentId`,
 -- CreateIndex
 CREATE UNIQUE INDEX `content_classCode_key` ON `content`(`classCode`);
 CREATE INDEX `content_classCode_idx` ON `content`(`classCode`);
-
 
 -- AddForeignKey
 ALTER TABLE `content` ADD CONSTRAINT `content_courseRootId_fkey` FOREIGN KEY (`courseRootId`) REFERENCES `content`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
