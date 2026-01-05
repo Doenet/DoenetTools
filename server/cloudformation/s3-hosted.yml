@@ -7,11 +7,11 @@ Parameters:
     Description: The environment name (the SSM prefix path name)
     MaxLength: 10
 
-  HostedZoneName:
+  PublicHostedZoneName:
     Type: String
     Description: The hosted zone name (e.g., example.com)
   
-  HostedZoneId:
+  PublicHostedZoneId:
     Type: String
     Description: The Route 53 hosted zone ID
   
@@ -23,7 +23,7 @@ Resources:
   WebsiteBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub '${ServiceName}-${AWS::AccountId}-${AWS::Region}'
+      BucketName: !Sub '${EnvironmentName}-${ServiceName}-${AWS::AccountId}-${AWS::Region}'
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
@@ -34,7 +34,7 @@ Resources:
     Type: AWS::CloudFront::OriginAccessControl
     Properties:
       OriginAccessControlConfig:
-        Name: !Sub '${ServiceName}-oac'
+        Name: !Sub '${EnvironmentName}-${ServiceName}-oac'
         OriginAccessControlOriginType: s3
         SigningBehavior: always
         SigningProtocol: sigv4
@@ -87,7 +87,7 @@ Resources:
             ResponseCode: 200
             ResponsePagePath: /index.html
         Aliases:
-          - !Sub ${ServiceName}.${HostedZoneName}
+          - !Sub ${ServiceName}.${PublicHostedZoneName}
         ViewerCertificate:
           AcmCertificateArn: !Ref SSLCertificate
           SslSupportMethod: sni-only
@@ -99,17 +99,17 @@ Resources:
   SSLCertificate:
     Type: AWS::CertificateManager::Certificate
     Properties:
-      DomainName: !Sub ${ServiceName}.${HostedZoneName}
+      DomainName: !Sub ${ServiceName}.${PublicHostedZoneName}
       ValidationMethod: DNS
       DomainValidationOptions:
-        - DomainName: !Sub ${ServiceName}.${HostedZoneName}
-          HostedZoneId: !Ref HostedZoneId
+        - DomainName: !Sub ${ServiceName}.${PublicHostedZoneName}
+          HostedZoneId: !Ref PublicHostedZoneId
 
   DNSRecord:
     Type: AWS::Route53::RecordSet
     Properties:
-      HostedZoneId: !Ref HostedZoneId
-      Name: !Sub ${ServiceName}.${HostedZoneName}
+      HostedZoneId: !Ref PublicHostedZoneId
+      Name: !Sub ${ServiceName}.${PublicHostedZoneName}
       Type: A
       AliasTarget:
         DNSName: !GetAtt CloudFrontDistribution.DomainName
@@ -138,4 +138,4 @@ Outputs:
   
   CustomDomainURL:
     Description: Custom domain URL
-    Value: !Sub 'https://${HostedZoneName}'
+    Value: !Sub 'https://${PublicHostedZoneName}'

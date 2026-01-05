@@ -11,7 +11,7 @@ STACKS['dev3-doenet-repositories']='repositories'
 STACKS['dev3-doenet-common']='service-common'
 STACKS['dev3-doenet-mysql']='service'
 STACKS['dev3-doenet']='service'
-STACKS['dev3-doenet-frontend']='s3-hosted'
+STACKS['dev3-doenet-frontend']='s3-hosted-stackset'
 
 
 declare -g -a STACK_ORDER

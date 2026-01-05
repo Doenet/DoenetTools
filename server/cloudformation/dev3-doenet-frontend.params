@@ -4,15 +4,23 @@
     "ParameterValue": "dev3"
   },
   {
-    "ParameterKey": "HostedZoneName",
-    "ParameterValue": "dev3.doenet.org"
+    "ParameterKey": "PublicHostedZoneName",
+    "ParameterValue": "/dev3/PublicHostedZoneName"
   },
   {
-    "ParameterKey": "HostedZoneId",
-    "ParameterValue": "Z0066937J8QHRAL9H84P"
+    "ParameterKey": "PublicHostedZoneId",
+    "ParameterValue": "/dev3/PublicHostedZoneId"
   },
   {
     "ParameterKey": "ServiceName",
     "ParameterValue": "frontend"
+  },
+  {
+    "ParameterKey": "TemplateS3Bucket",
+    "ParameterValue": "doenet-cf-dev"
+  },
+  {
+    "ParameterKey": "TemplateS3Key",
+    "ParameterValue": "dev3-doenet/s3-hosted.yml"
   }
 ]

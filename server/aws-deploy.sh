@@ -145,7 +145,7 @@ updateStacks() {
   for name in "${STACK_ORDER[@]}"; do 
     printGreen "Deploying Cloudformation stack ${name}"
     param_file="cloudformation/${name}.params"
-    ./scripts/cfn-deploy.sh -s $name -t "https://s3.${AWS_REGION}.amazonaws.com/${TEMPLATE_BUCKET}/${STACK_FILE}-${PROJECT}/${STACKS[$name]}.yml" -r ${AWS_REGION} -p "${param_file}" --no-wait-for-completion --changeset-name ${name}-${STACK_FILE};
+    ./scripts/cfn-deploy.sh -s $name -t "https://${TEMPLATE_BUCKET}.s3.amazonaws.com/${STACK_FILE}-${PROJECT}/${STACKS[$name]}.yml" -r ${AWS_REGION} -p "${param_file}" --no-wait-for-completion --changeset-name ${name}-${STACK_FILE};
     ./scripts/cfn-wait.sh ${name} ${AWS_REGION};
   done
 }
