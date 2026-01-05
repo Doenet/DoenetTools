@@ -13,7 +13,7 @@ import {
 import { getRandomValues } from "crypto";
 import { AssignmentMode, ContentType, Prisma } from "@prisma/client";
 import { Content, ItemScores, ScoreData, UserInfo } from "../types";
-import { isEqualUUID } from "../utils/uuid";
+import { fromUUID, isEqualUUID } from "../utils/uuid";
 import { processContent, returnContentSelect } from "../utils/contentStructure";
 import { InvalidRequestError } from "../utils/error";
 import { getContent } from "./activity_edit_view";
@@ -337,7 +337,7 @@ export async function getAllAssignmentScores({
   // We're converting from contentId to index in orderedActivities
   const indexOfAssignment = new Map<string, number>();
   for (const [i, activity] of orderedAssignments.entries()) {
-    indexOfAssignment.set(activity.contentId.toString(), i);
+    indexOfAssignment.set(fromUUID(activity.contentId), i);
   }
 
   const orderedStudentsWithScores = await prisma.users.findMany({
@@ -383,7 +383,7 @@ export async function getAllAssignmentScores({
   for (const [studentIndex, student] of orderedStudentsWithScores.entries()) {
     for (const assignmentScore of student.assignmentScores) {
       const assignmentIndex = indexOfAssignment.get(
-        assignmentScore.contentId.toString(),
+        fromUUID(assignmentScore.contentId),
       )!;
 
       let score = assignmentScore.cachedScore;
