@@ -1,12 +1,9 @@
 import { prisma } from "../model";
 import { UserInfo, UserInfoWithEmail } from "../types";
-import { InvalidRequestError } from "../utils/error";
 import { generateHandle } from "../utils/names";
 import { filterEditableContent } from "../utils/permissions";
-import { getDescendantIds, getAncestorIds } from "./activity";
 import { fromUUID } from "../utils/uuid";
 import bcrypt from "bcryptjs";
-import { generateClassCode } from "./assign";
 
 export async function findOrCreateUser({
   email,
@@ -188,46 +185,6 @@ export async function createStudentHandleAccounts({
     select: { id: true },
   });
 
-  const ancestorIds = await getAncestorIds(folderId);
-  let conflictingStudentHandles = await prisma.content.findMany({
-    where: {
-      id: { in: ancestorIds },
-    },
-    select: {
-      _count: {
-        select: {
-          scopedUsers: true,
-        },
-      },
-    },
-  });
-
-  if (conflictingStudentHandles.some((c) => c._count.scopedUsers > 0)) {
-    throw new InvalidRequestError(
-      "Parent folder already contains student handle accounts.",
-    );
-  }
-
-  const descendantIds = await getDescendantIds(folderId);
-  conflictingStudentHandles = await prisma.content.findMany({
-    where: {
-      id: { in: descendantIds },
-    },
-    select: {
-      _count: {
-        select: {
-          scopedUsers: true,
-        },
-      },
-    },
-  });
-
-  if (conflictingStudentHandles.some((c) => c._count.scopedUsers > 0)) {
-    throw new InvalidRequestError(
-      "Subfolder already contains student handle accounts.",
-    );
-  }
-
   // Create the student handle accounts
   const accounts: { userId: Uint8Array; handle: string; password: string }[] =
     [];
@@ -237,6 +194,8 @@ export async function createStudentHandleAccounts({
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
+    // We're looping in case `generateHandle` creates a duplicate handle
+    // Usernames are unique, so we try again if that happens
     let success = false;
     while (success === false) {
       const handle = generateHandle();
@@ -263,21 +222,5 @@ export async function createStudentHandleAccounts({
 
   accounts.sort((a, b) => (a.handle < b.handle ? -1 : 1));
 
-  // Create a code for this course folder if one does not already exist
-  const folder = await prisma.content.findUniqueOrThrow({
-    where: { id: folderId },
-    select: { classCode: true },
-  });
-
-  let code = folder.classCode;
-  if (!code) {
-    const newClassCode = await generateClassCode();
-    await prisma.content.update({
-      where: { id: folderId },
-      data: { classCode: newClassCode },
-    });
-    code = newClassCode;
-  }
-
-  return { accounts, code };
+  return { accounts };
 }
