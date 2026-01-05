@@ -26,7 +26,6 @@ ALTER TABLE `content` DROP COLUMN `nonRootAssignmentId`,
 
 -- CreateIndex
 CREATE UNIQUE INDEX `content_classCode_key` ON `content`(`classCode`);
-CREATE INDEX `content_classCode_idx` ON `content`(`classCode`);
 
 -- AddForeignKey
 ALTER TABLE `content` ADD CONSTRAINT `content_courseRootId_fkey` FOREIGN KEY (`courseRootId`) REFERENCES `content`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;

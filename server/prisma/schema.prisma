@@ -56,8 +56,7 @@ model content {
   // 
   // ===== Code ==========
   // Course or assignment code
-  // This becomes assigned when you add scoped users to a folder or the content is a one-off assignment
-  // This is removed when either 1) all scoped users are removed or 2) scoped user is added to ancestor
+  // All courses have a code, and all one-off assignments have a code.
   classCode              Int?                     @unique @db.UnsignedInt
   // 
   // ====== Assignments ==========
@@ -107,7 +106,6 @@ model content {
 
   @@index([ownerId, parentId, sortIndex])
   @@index([parentId, type])
-  @@index([classCode])
   @@fulltext([name])
   @@fulltext([source])
 }

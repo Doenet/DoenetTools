@@ -26,11 +26,10 @@ export async function action({ request }: ActionFunctionArgs) {
     });
   } else if (formObj._action === "login handle") {
     try {
-      const { data } = await axios.post("/api/login/handle", {
+      await axios.post("/api/login/handle", {
         username: formObj.username,
         password: formObj.password,
       });
-      console.log(data);
       return redirect(`/`);
     } catch (_e) {
       alert("Could not log in with provided username and password");

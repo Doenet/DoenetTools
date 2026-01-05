@@ -280,8 +280,6 @@ passport.serializeUser(async (req: any, user: any, done: any) => {
     return done(undefined, fromUUID(u.userId));
     // TODO: upgrade from anonymous user?
   } else if (user.provider === "local") {
-    console.log("local", user);
-
     const pause1000 = function () {
       return new Promise((resolve, _reject) => {
         setTimeout(resolve, 1000);
