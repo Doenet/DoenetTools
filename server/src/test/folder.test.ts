@@ -378,6 +378,10 @@ test(
       isEditor: _isEditor1,
       isAnonymous: _isAnonymous1,
       isAuthor: _isAuthor1,
+      isPremium: _isPremium1,
+      username: _username1,
+      passwordHash: _passwordHash1,
+      scopedToClassId: _scopedToClassId1,
       ...userFields1
     } = user1;
     let user2 = await createTestUser();
@@ -391,10 +395,18 @@ test(
       isEditor: _isEditor2,
       isAnonymous: _isAnonymous2,
       isAuthor: _isAuthor2,
+      isPremium: _isPremium2,
+      username: _username2,
+      passwordHash: _passwordHash2,
+      scopedToClassId: _scopedToClassId2,
       ...userFields2
     } = user2;
     const user3 = await createTestUser();
     const user3Id = user3.userId;
+
+    if (user1.email === null || user2.email === null) {
+      throw Error("Email shouldn't be null");
+    }
 
     const { contentId: sharedActivity1Id } = await createContent({
       loggedInUserId: ownerId,

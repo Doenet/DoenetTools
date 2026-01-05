@@ -1,7 +1,8 @@
 import express, { Request, Response } from "express";
 import passportLib from "passport";
-import { getUserInfoFromEmail } from "../query/user";
+import { getUser, getUserInfoFromEmail } from "../query/user";
 import axios from "axios";
+import { convertUUID } from "../utils/uuid";
 import { UserInfoWithEmail } from "../types";
 
 // Type assertion to work around passport type declaration issues
@@ -42,6 +43,15 @@ loginRouter.get(
       (req.user as { email: string }).email,
     );
     res.send({ user });
+  },
+);
+
+loginRouter.post(
+  "/handle",
+  passport.authenticate("local", {}),
+  async (req: Request, res: Response) => {
+    const user = await getUser(req.user as { userId: Uint8Array });
+    res.send({ user: convertUUID(user) });
   },
 );
 

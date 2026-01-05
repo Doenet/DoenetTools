@@ -6,7 +6,6 @@ const variantSchema = z.int().gte(0).lte(16777215);
 
 export const scoreAndStateSchema = z.object({
   contentId: uuidSchema,
-  code: z.string(),
   attemptNumber: rangedNumber,
   score: z.number().nullable(),
   state: z.string(),
@@ -33,7 +32,6 @@ export const scoreAndStateSchema = z.object({
 
 export const createNewAttemptSchema = z.object({
   contentId: uuidSchema,
-  code: z.string(),
   variant: variantSchema,
   state: z.string().nullable(),
   itemNumber: rangedNumber.optional(),

@@ -37,29 +37,33 @@ async function seedDoenetMLVersions() {
 async function seedUsers() {
   async function updateOrCreateUser(user: Prisma.usersCreateInput) {
     await prisma.users.upsert({
-      where: { email: user.email },
+      where: { username: user.username },
       update: user,
       create: user,
     });
   }
 
   await updateOrCreateUser({
+    username: "library@doenet.org",
     email: "library@doenet.org",
     lastNames: "Library",
     isLibrary: true,
   });
   await updateOrCreateUser({
+    username: "devuser@doenet.org",
     email: "devuser@doenet.org",
     firstNames: "Dev",
     lastNames: "User",
   });
   await updateOrCreateUser({
+    username: "editor@doenet.org",
     email: "editor@doenet.org",
     firstNames: "Editor",
     lastNames: "User",
     isEditor: true,
   });
   await updateOrCreateUser({
+    username: "editor2@doenet.org",
     email: "editor2@doenet.org",
     firstNames: "Second",
     lastNames: "Editor",

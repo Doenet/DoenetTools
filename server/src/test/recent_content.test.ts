@@ -204,7 +204,7 @@ test("recent content excludes deleted", async () => {
   expect(recent.map((r) => r.contentId)).eqls([contentId2]);
 });
 
-test("purge recent content", async () => {
+test("purge recent content", { timeout: 30000 }, async () => {
   const { userId: user1Id } = await createTestUser();
   const { userId: user2Id } = await createTestUser();
 

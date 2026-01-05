@@ -104,22 +104,6 @@ export async function loader({ params }: { params: any }) {
     return replace(`/changeName?redirect=/code/${params.classCode}`);
   }
 
-  const { data } = (await axios.get(
-    `/api/assign/getAssignmentViewerDataFromCode/${params.classCode}`,
-  )) as {
-    data:
-      | {
-          assignmentFound: true;
-          assignmentOpen?: boolean;
-          assignment: any;
-          scoreData: any;
-        }
-      | {
-          assignmentFound: false;
-          assignment: null;
-        };
-  };
-
   let initialScore: number = 0;
   let initialScoreNumberByItem: number[] | null = null;
   let latestAttemptScore: number = 0;
@@ -127,8 +111,28 @@ export async function loader({ params }: { params: any }) {
   let itemAttemptNumbers: number[] = [];
   let attemptNumber = 1;
   let loadedScore = false;
+  let data: {
+    assignmentOpen?: boolean;
+    assignment: any;
+    scoreData: any;
+  };
 
-  if (!data.assignmentFound) {
+  try {
+    const {
+      data: { contentId },
+    } = await axios.get(`/api/code/${params.classCode}`);
+
+    const result = (await axios.get(
+      `/api/assign/getAssignmentData/${contentId}`,
+    )) as {
+      data: {
+        assignmentOpen?: boolean;
+        assignment: any;
+        scoreData: any;
+      };
+    };
+    data = result.data;
+  } catch (_error) {
     return {
       assignmentFound: false,
       assignment: null,

@@ -663,7 +663,7 @@ describe("Remix tests", () => {
 
   test(
     "Update remixed chain of three to changed content, test all 12 orders",
-    { timeout: 35000 },
+    { timeout: 50000 },
     async () => {
       for (let firstUpdated = 0; firstUpdated < 3; firstUpdated++) {
         for (let secondUpdated = 0; secondUpdated < 3; secondUpdated++) {

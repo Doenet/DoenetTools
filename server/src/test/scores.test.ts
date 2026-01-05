@@ -1,5 +1,9 @@
 import { expect, test } from "vitest";
-import { createTestAnonymousUser, createTestUser } from "./utils";
+import {
+  createTestAnonymousUser,
+  createTestPremiumUser,
+  createTestUser,
+} from "./utils";
 import { createContent } from "../query/activity";
 import { DateTime } from "luxon";
 import {
@@ -25,10 +29,10 @@ test("Create and save responses for new attempts, no items", async () => {
   });
 
   // open assignment generates code
-  const closeAt = DateTime.now().plus({ days: 1 });
-  const { assignmentId, classCode } = await createAssignment({
+  const closedOn = DateTime.now().plus({ days: 1 });
+  const { assignmentId } = await createAssignment({
     contentId: contentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
@@ -38,7 +42,6 @@ test("Create and save responses for new attempts, no items", async () => {
 
   let retrievedScore = await createNewAttempt({
     contentId: assignmentId,
-    code: classCode,
     variant: 1,
     loggedInUserId: anonId,
     state: "document state 1",
@@ -60,7 +63,6 @@ test("Create and save responses for new attempts, no items", async () => {
 
   retrievedScore = await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: 0.5,
@@ -108,7 +110,6 @@ test("Create and save responses for new attempts, no items", async () => {
   await expect(
     saveScoreAndState({
       contentId: assignmentId,
-      code: classCode,
       loggedInUserId: anonId,
       attemptNumber: 2,
       score: 0.9,
@@ -128,7 +129,6 @@ test("Create and save responses for new attempts, no items", async () => {
   await expect(
     createNewAttempt({
       contentId: assignmentId,
-      code: classCode,
       variant: 2,
       loggedInUserId: anonId,
       state: null,
@@ -147,7 +147,6 @@ test("Create and save responses for new attempts, no items", async () => {
   // create a new attempt
   retrievedScore = await createNewAttempt({
     contentId: assignmentId,
-    code: classCode,
     variant: 2,
     loggedInUserId: anonId,
     state: null,
@@ -192,7 +191,6 @@ test("Create and save responses for new attempts, no items", async () => {
   // now we can save state to attempt 2
   retrievedScore = await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 2,
     score: 0.9,
@@ -253,7 +251,6 @@ test("Create and save responses for new attempts, no items", async () => {
   // if get lower score, lowers score on state and lower actual score to the higher previous attempt score
   retrievedScore = await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 2,
     score: 0.2,
@@ -345,10 +342,10 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
   });
 
   // open assignment generates code
-  const closeAt = DateTime.now().plus({ days: 1 });
-  const { assignmentId, classCode } = await createAssignment({
+  const closedOn = DateTime.now().plus({ days: 1 });
+  const { assignmentId } = await createAssignment({
     contentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
@@ -358,7 +355,6 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
 
   let retrievedScore = await createNewAttempt({
     contentId: assignmentId,
-    code: classCode,
     variant: 2,
     loggedInUserId: anonId,
     shuffledItemOrder,
@@ -395,7 +391,6 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
 
   retrievedScore = await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -527,7 +522,6 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
   await expect(
     saveScoreAndState({
       contentId: assignmentId,
-      code: classCode,
       loggedInUserId: anonId,
       attemptNumber: 2,
       score: null,
@@ -553,7 +547,6 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
   // create a new attempt
   retrievedScore = await createNewAttempt({
     contentId: assignmentId,
-    code: classCode,
     variant: 2,
     loggedInUserId: anonId,
     shuffledItemOrder,
@@ -627,7 +620,6 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
   // now we can save state to attempt 2
   retrievedScore = await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 2,
     score: null,
@@ -804,7 +796,6 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
   // get a lower score on problem 1 still increases score since combined with problem 2 on this attempt
   retrievedScore = await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 2,
     score: null,
@@ -965,10 +956,10 @@ test("Create and save responses for new item attempts, two items", async () => {
   });
 
   // open assignment generates code
-  const closeAt = DateTime.now().plus({ days: 1 });
-  const { assignmentId, classCode } = await createAssignment({
+  const closedOn = DateTime.now().plus({ days: 1 });
+  const { assignmentId } = await createAssignment({
     contentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
@@ -978,7 +969,6 @@ test("Create and save responses for new item attempts, two items", async () => {
 
   let retrievedScore = await createNewAttempt({
     contentId: assignmentId,
-    code: classCode,
     variant: 1,
     loggedInUserId: anonId,
     shuffledItemOrder,
@@ -1014,7 +1004,6 @@ test("Create and save responses for new item attempts, two items", async () => {
 
   retrievedScore = await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -1144,7 +1133,6 @@ test("Create and save responses for new item attempts, two items", async () => {
   await expect(
     saveScoreAndState({
       contentId: assignmentId,
-      code: classCode,
       loggedInUserId: anonId,
       attemptNumber: 1,
       score: null,
@@ -1163,7 +1151,6 @@ test("Create and save responses for new item attempts, two items", async () => {
   // create a new attempt for item 1
   retrievedScore = await createNewAttempt({
     contentId: assignmentId,
-    code: classCode,
     variant: 1,
     loggedInUserId: anonId,
     shuffledItemOrder,
@@ -1239,7 +1226,6 @@ test("Create and save responses for new item attempts, two items", async () => {
 
   retrievedScore = await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -1376,7 +1362,6 @@ test("Create and save responses for new item attempts, two items", async () => {
   // create a new attempt for item 2
   retrievedScore = await createNewAttempt({
     contentId: assignmentId,
-    code: classCode,
     variant: 1,
     loggedInUserId: anonId,
     shuffledItemOrder,
@@ -1484,7 +1469,6 @@ test("Create and save responses for new item attempts, two items", async () => {
   await expect(
     saveScoreAndState({
       contentId: assignmentId,
-      code: classCode,
       loggedInUserId: anonId,
       attemptNumber: 1,
       score: null,
@@ -1503,7 +1487,6 @@ test("Create and save responses for new item attempts, two items", async () => {
   // We can save state to attempt 2 of item 2
   retrievedScore = await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -1618,7 +1601,6 @@ test("Create and save responses for new item attempts, two items", async () => {
   // When create new attempt on item 2, latest attempt score is adjusted
   retrievedScore = await createNewAttempt({
     contentId: assignmentId,
-    code: classCode,
     variant: 1,
     loggedInUserId: anonId,
     shuffledItemOrder,
@@ -1663,10 +1645,10 @@ test("Create attempts before responding, no items", async () => {
   });
 
   // open assignment generates code
-  const closeAt = DateTime.now().plus({ days: 1 });
-  const { assignmentId, classCode } = await createAssignment({
+  const closedOn = DateTime.now().plus({ days: 1 });
+  const { assignmentId } = await createAssignment({
     contentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
@@ -1681,7 +1663,6 @@ test("Create attempts before responding, no items", async () => {
     contentId: assignmentId,
     variant: 1,
     loggedInUserId: anonId,
-    code: classCode,
     state: null,
   });
 
@@ -1691,7 +1672,6 @@ test("Create attempts before responding, no items", async () => {
       contentId: assignmentId,
       variant: 2,
       loggedInUserId: anonId,
-      code: classCode,
       state: null,
     }),
   ).rejects.toThrow(
@@ -1709,7 +1689,6 @@ test("Create attempts before responding, no items", async () => {
     contentId: assignmentId,
     variant: 2,
     loggedInUserId: anonId,
-    code: classCode,
     state: null,
   });
 
@@ -1750,7 +1729,6 @@ test("Create attempts before responding, no items", async () => {
   // save state to attempt 2
   retrievedScore = await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 2,
     score: 0.9,
@@ -1853,10 +1831,10 @@ test("Create item attempts before responding, two items", async () => {
   });
 
   // open assignment generates code
-  const closeAt = DateTime.now().plus({ days: 1 });
-  const { assignmentId, classCode } = await createAssignment({
+  const closedOn = DateTime.now().plus({ days: 1 });
+  const { assignmentId } = await createAssignment({
     contentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
@@ -1868,7 +1846,6 @@ test("Create item attempts before responding, two items", async () => {
   await createNewAttempt({
     contentId: assignmentId,
     loggedInUserId: anonId,
-    code: classCode,
     variant: 1,
     shuffledItemOrder,
     state: null,
@@ -1881,7 +1858,6 @@ test("Create item attempts before responding, two items", async () => {
     createNewAttempt({
       contentId: assignmentId,
       loggedInUserId: anonId,
-      code: classCode,
       variant: 1,
       itemNumber: 1,
       shuffledItemOrder,
@@ -1902,7 +1878,6 @@ test("Create item attempts before responding, two items", async () => {
     contentId: assignmentId,
     loggedInUserId: anonId,
     variant: 1,
-    code: classCode,
     itemNumber: 1,
     shuffledItemOrder,
     state: null,
@@ -1974,7 +1949,6 @@ test("Create item attempts before responding, two items", async () => {
   // now we can save state to attempt 2 for item 2
   retrievedScore = await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -2123,10 +2097,10 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
   });
 
   // open assignment generates code
-  const closeAt = DateTime.now().plus({ days: 1 });
-  const { assignmentId, classCode } = await createAssignment({
+  const closedOn = DateTime.now().plus({ days: 1 });
+  const { assignmentId } = await createAssignment({
     contentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
@@ -2138,7 +2112,6 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
     contentId: assignmentId,
     loggedInUserId: anonId,
     variant: 1,
-    code: classCode,
     shuffledItemOrder,
     state: null,
   });
@@ -2146,7 +2119,6 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
   // save state for shuffled item number 1 (which is item number 2)
   let retrievedScore = await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -2276,7 +2248,6 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
   await expect(
     saveScoreAndState({
       contentId: assignmentId,
-      code: classCode,
       loggedInUserId: anonId,
       attemptNumber: 1,
       score: null,
@@ -2295,7 +2266,6 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
   // create a new attempt for shuffled item 1
   retrievedScore = await createNewAttempt({
     contentId: assignmentId,
-    code: classCode,
     variant: 1,
     loggedInUserId: anonId,
     shuffledItemOrder,
@@ -2370,7 +2340,6 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
 
   retrievedScore = await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -2470,7 +2439,6 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
   // create a new attempt for shuffled item 2
   retrievedScore = await createNewAttempt({
     contentId: assignmentId,
-    code: classCode,
     variant: 1,
     loggedInUserId: anonId,
     shuffledItemOrder,
@@ -2544,7 +2512,6 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
   await expect(
     saveScoreAndState({
       contentId: assignmentId,
-      code: classCode,
       loggedInUserId: anonId,
       attemptNumber: 1,
       score: null,
@@ -2563,7 +2530,6 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
   // We can save state to attempt 2 of shuffled item 2
   retrievedScore = await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -2690,10 +2656,10 @@ test("New item attempt does not affect other item", async () => {
   });
 
   // open assignment generates code
-  const closeAt = DateTime.now().plus({ days: 1 });
-  const { assignmentId, classCode } = await createAssignment({
+  const closedOn = DateTime.now().plus({ days: 1 });
+  const { assignmentId } = await createAssignment({
     contentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
@@ -2705,7 +2671,6 @@ test("New item attempt does not affect other item", async () => {
     contentId: assignmentId,
     loggedInUserId: anonId,
     variant: 1,
-    code: classCode,
     shuffledItemOrder,
     state: null,
   });
@@ -2713,7 +2678,6 @@ test("New item attempt does not affect other item", async () => {
   // save state for items 1 amd 2
   await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -2730,7 +2694,6 @@ test("New item attempt does not affect other item", async () => {
 
   let retrievedScore = await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -2812,7 +2775,6 @@ test("New item attempt does not affect other item", async () => {
   // but does not lock in the score of item 1
   await createNewAttempt({
     contentId: assignmentId,
-    code: classCode,
     variant: 1,
     loggedInUserId: anonId,
     shuffledItemOrder,
@@ -2823,7 +2785,6 @@ test("New item attempt does not affect other item", async () => {
   // save state with lower scores for items 1 amd 2
   await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -2840,7 +2801,6 @@ test("New item attempt does not affect other item", async () => {
 
   retrievedScore = await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -3000,10 +2960,10 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
   });
 
   // open assignment generates code
-  const closeAt = DateTime.now().plus({ days: 1 });
-  const { assignmentId, classCode } = await createAssignment({
+  const closedOn = DateTime.now().plus({ days: 1 });
+  const { assignmentId } = await createAssignment({
     contentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
@@ -3015,7 +2975,6 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
     contentId: assignmentId,
     loggedInUserId: anonId,
     variant: 1,
-    code: classCode,
     shuffledItemOrder,
     state: null,
   });
@@ -3023,7 +2982,6 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
   // save state for item number 1 (which is shuffled item number 2)
   await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -3041,7 +2999,6 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
   // save state for shuffled item number 1 (which is item number 2)
   let retrievedScore = await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -3122,7 +3079,6 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
   await expect(
     saveScoreAndState({
       contentId: assignmentId,
-      code: classCode,
       loggedInUserId: anonId,
       attemptNumber: 1,
       score: null,
@@ -3143,7 +3099,6 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
   await expect(
     createNewAttempt({
       contentId: assignmentId,
-      code: classCode,
       variant: 1,
       loggedInUserId: anonId,
       shuffledItemNumber: 2,
@@ -3156,7 +3111,6 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
     createNewAttempt({
       contentId: assignmentId,
       variant: 1,
-      code: classCode,
       loggedInUserId: anonId,
       itemNumber: 2,
       state: "assignment state 3",
@@ -3168,7 +3122,6 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
   // create a new attempt for shuffled item 2 (item number 1)
   await createNewAttempt({
     contentId: assignmentId,
-    code: classCode,
     variant: 1,
     loggedInUserId: anonId,
     shuffledItemOrder,
@@ -3179,7 +3132,6 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
   // create a new attempt for item 2 (shuffled item number 1)
   await createNewAttempt({
     contentId: assignmentId,
-    code: classCode,
     variant: 1,
     loggedInUserId: anonId,
     shuffledItemOrder,
@@ -3256,10 +3208,10 @@ test("Cannot create activity-wide attempt on formative assessment", async () => 
   });
 
   // open assignment generates code
-  const closeAt = DateTime.now().plus({ days: 1 });
-  const { assignmentId, classCode } = await createAssignment({
+  const closedOn = DateTime.now().plus({ days: 1 });
+  const { assignmentId } = await createAssignment({
     contentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
@@ -3284,7 +3236,6 @@ test("Cannot create activity-wide attempt on formative assessment", async () => 
   await createNewAttempt({
     contentId: assignmentId,
     variant: 1,
-    code: classCode,
     loggedInUserId: anonId,
     state: "assignment state 1",
     shuffledItemOrder,
@@ -3295,7 +3246,6 @@ test("Cannot create activity-wide attempt on formative assessment", async () => 
     createNewAttempt({
       contentId: assignmentId,
       variant: 1,
-      code: classCode,
       loggedInUserId: anonId,
       state: "assignment state 2",
       shuffledItemOrder,
@@ -3348,10 +3298,10 @@ test("Cannot create item attempt on summative assessment", async () => {
   });
 
   // open assignment generates code
-  const closeAt = DateTime.now().plus({ days: 1 });
-  const { assignmentId, classCode } = await createAssignment({
+  const closedOn = DateTime.now().plus({ days: 1 });
+  const { assignmentId } = await createAssignment({
     contentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
@@ -3363,7 +3313,6 @@ test("Cannot create item attempt on summative assessment", async () => {
   await createNewAttempt({
     contentId: assignmentId,
     variant: 1,
-    code: classCode,
     loggedInUserId: anonId,
     state: "assignment state 1",
     shuffledItemOrder,
@@ -3373,7 +3322,6 @@ test("Cannot create item attempt on summative assessment", async () => {
     createNewAttempt({
       contentId: assignmentId,
       variant: 1,
-      code: classCode,
       loggedInUserId: anonId,
       itemNumber: 1,
       shuffledItemOrder,
@@ -3394,10 +3342,10 @@ test("Setting maximum number of attempts, no items", async () => {
   });
 
   // open assignment generates code
-  const closeAt = DateTime.now().plus({ days: 1 });
-  const { assignmentId, classCode } = await createAssignment({
+  const closedOn = DateTime.now().plus({ days: 1 });
+  const { assignmentId } = await createAssignment({
     contentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
@@ -3408,7 +3356,6 @@ test("Setting maximum number of attempts, no items", async () => {
   // create initial attempt
   await createNewAttempt({
     contentId: assignmentId,
-    code: classCode,
     variant: 1,
     loggedInUserId: anonId,
     state: "document state 1",
@@ -3417,7 +3364,6 @@ test("Setting maximum number of attempts, no items", async () => {
   // can save state
   await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: 0.5,
@@ -3429,7 +3375,6 @@ test("Setting maximum number of attempts, no items", async () => {
   await expect(
     createNewAttempt({
       contentId: assignmentId,
-      code: classCode,
       variant: 2,
       loggedInUserId: anonId,
       state: "document state 3",
@@ -3448,7 +3393,6 @@ test("Setting maximum number of attempts, no items", async () => {
   // create a new attempt, attempt 2
   await createNewAttempt({
     contentId: assignmentId,
-    code: classCode,
     variant: 2,
     loggedInUserId: anonId,
     state: "document state 4",
@@ -3457,7 +3401,6 @@ test("Setting maximum number of attempts, no items", async () => {
   // can save state
   await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 2,
     score: 0.6,
@@ -3470,7 +3413,6 @@ test("Setting maximum number of attempts, no items", async () => {
     createNewAttempt({
       contentId: assignmentId,
       variant: 3,
-      code: classCode,
       loggedInUserId: anonId,
       state: "document state 6",
     }),
@@ -3488,7 +3430,6 @@ test("Setting maximum number of attempts, no items", async () => {
   // create a new attempt, attempt 3
   await createNewAttempt({
     contentId: assignmentId,
-    code: classCode,
     variant: 3,
     loggedInUserId: anonId,
     state: "document state 7",
@@ -3504,7 +3445,6 @@ test("Setting maximum number of attempts, no items", async () => {
   // can still save state
   await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 3,
     score: 0.7,
@@ -3516,7 +3456,6 @@ test("Setting maximum number of attempts, no items", async () => {
   await expect(
     saveScoreAndState({
       contentId: assignmentId,
-      code: classCode,
       loggedInUserId: anonId,
       attemptNumber: 2,
       score: 0.8,
@@ -3604,10 +3543,10 @@ test("Setting maximum number of attempts, new item attempts", async () => {
   });
 
   // open assignment generates code
-  const closeAt = DateTime.now().plus({ days: 1 });
-  const { assignmentId, classCode } = await createAssignment({
+  const closedOn = DateTime.now().plus({ days: 1 });
+  const { assignmentId } = await createAssignment({
     contentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
@@ -3619,7 +3558,6 @@ test("Setting maximum number of attempts, new item attempts", async () => {
   await createNewAttempt({
     contentId: assignmentId,
     variant: 1,
-    code: classCode,
     loggedInUserId: anonId,
     state: "assignment state 1",
     shuffledItemOrder,
@@ -3628,7 +3566,6 @@ test("Setting maximum number of attempts, new item attempts", async () => {
   // save state for attempt 1 of item 1
   await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -3647,7 +3584,6 @@ test("Setting maximum number of attempts, new item attempts", async () => {
   await expect(
     createNewAttempt({
       contentId: assignmentId,
-      code: classCode,
       variant: 1,
       loggedInUserId: anonId,
       shuffledItemOrder,
@@ -3661,7 +3597,6 @@ test("Setting maximum number of attempts, new item attempts", async () => {
   await expect(
     createNewAttempt({
       contentId: assignmentId,
-      code: classCode,
       variant: 1,
       loggedInUserId: anonId,
       shuffledItemOrder,
@@ -3682,7 +3617,6 @@ test("Setting maximum number of attempts, new item attempts", async () => {
   // create a new attempt for item 1, attempt 2
   await createNewAttempt({
     contentId: assignmentId,
-    code: classCode,
     variant: 1,
     loggedInUserId: anonId,
     shuffledItemOrder,
@@ -3693,7 +3627,6 @@ test("Setting maximum number of attempts, new item attempts", async () => {
   // save state for attempt 2 of item 1
   await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -3712,7 +3645,6 @@ test("Setting maximum number of attempts, new item attempts", async () => {
   await expect(
     createNewAttempt({
       contentId: assignmentId,
-      code: classCode,
       variant: 1,
       loggedInUserId: anonId,
       shuffledItemOrder,
@@ -3733,7 +3665,6 @@ test("Setting maximum number of attempts, new item attempts", async () => {
   // create a new attempt for item 1, attempt 3
   await createNewAttempt({
     contentId: assignmentId,
-    code: classCode,
     variant: 1,
     loggedInUserId: anonId,
     shuffledItemOrder,
@@ -3751,7 +3682,6 @@ test("Setting maximum number of attempts, new item attempts", async () => {
   // can still save state for attempt 3 of item 1
   await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -3770,7 +3700,6 @@ test("Setting maximum number of attempts, new item attempts", async () => {
   await expect(
     saveScoreAndState({
       contentId: assignmentId,
-      code: classCode,
       loggedInUserId: anonId,
       attemptNumber: 1,
       score: null,
@@ -3791,7 +3720,6 @@ test("Setting maximum number of attempts, new item attempts", async () => {
   // create a new attempt for item 2, attempt 2
   await createNewAttempt({
     contentId: assignmentId,
-    code: classCode,
     variant: 1,
     loggedInUserId: anonId,
     shuffledItemOrder,
@@ -3803,7 +3731,6 @@ test("Setting maximum number of attempts, new item attempts", async () => {
   await expect(
     createNewAttempt({
       contentId: assignmentId,
-      code: classCode,
       variant: 1,
       loggedInUserId: anonId,
       shuffledItemOrder,
@@ -3817,7 +3744,6 @@ test("Setting maximum number of attempts, new item attempts", async () => {
   // can  save state for attempt 2 of item 1
   await saveScoreAndState({
     contentId: assignmentId,
-    code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -3894,24 +3820,23 @@ test("Setting maximum number of attempts, new item attempts", async () => {
   });
 });
 
-test("getScoresOfAllStudents should provide emails", async () => {
-  const { userId: ownerId } = await createTestUser();
+test("getScoresOfAllStudents should not provide emails", async () => {
+  const { userId: ownerId } = await createTestPremiumUser();
   const { contentId } = await createContent({
     loggedInUserId: ownerId,
     contentType: "singleDoc",
     parentId: null,
   });
-  const closeAt = DateTime.now().plus({ days: 1 });
-  const { assignmentId, classCode } = await createAssignment({
+  const closedOn = DateTime.now().plus({ days: 1 });
+  const { assignmentId } = await createAssignment({
     contentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
   const { userId: studentId } = await createTestUser();
   await createNewAttempt({
     contentId: assignmentId,
-    code: classCode,
     variant: 1,
     loggedInUserId: studentId,
     state: "document state 1",
@@ -3922,5 +3847,5 @@ test("getScoresOfAllStudents should provide emails", async () => {
     loggedInUserId: ownerId,
   });
   expect(results.scores.length).eqls(1);
-  expect(results.scores[0].user).toHaveProperty("email");
+  expect(results.scores[0].user).not.toHaveProperty("email");
 });

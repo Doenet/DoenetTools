@@ -44,10 +44,7 @@ import {
   action as assignmentViewerAction,
   AssignmentViewer,
 } from "./paths/AssignmentViewer";
-import {
-  loader as allAssignmentScoresLoader,
-  AllAssignmentScores,
-} from "./paths/AllAssignmentScores";
+import { loader as studentsLoader, Students } from "./paths/Students";
 import {
   loader as studentAssignmentScoresLoader,
   StudentAssignmentScores,
@@ -250,9 +247,10 @@ const router = createBrowserRouter([
             errorElement: <ErrorPage />,
           },
           {
-            path: "allAssignmentScores/:parentId?",
-            loader: allAssignmentScoresLoader,
-            element: <AllAssignmentScores />,
+            path: "students/:parentId",
+            loader: studentsLoader,
+            action: genericAction,
+            element: <Students />,
             errorElement: <ErrorPage />,
           },
         ],

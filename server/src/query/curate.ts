@@ -335,10 +335,14 @@ export async function suggestToBeCurated({
   const content = await prisma.content.findUniqueOrThrow({
     where: {
       id: contentId,
-      ...filterViewableActivity(loggedInUserId, false),
-      isPublic: true,
-      // for now, only allow single docs
-      type: "singleDoc",
+      AND: [
+        filterViewableActivity(loggedInUserId, false),
+        {
+          isPublic: true,
+          // for now, only allow single docs
+          type: "singleDoc",
+        },
+      ],
     },
     select: {
       ownerId: true,
@@ -479,14 +483,18 @@ export async function publishActivityToLibrary({
   await prisma.content.update({
     where: {
       id: contentId,
-      ...filterEditableActivity(loggedInUserId, true),
-      libraryActivityInfo: {
-        status: LibraryStatus.UNDER_REVIEW,
-        primaryEditorId: loggedInUserId,
-      },
-      license: {
-        isNot: null,
-      },
+      AND: [
+        {
+          libraryActivityInfo: {
+            status: LibraryStatus.UNDER_REVIEW,
+            primaryEditorId: loggedInUserId,
+          },
+          license: {
+            isNot: null,
+          },
+        },
+        filterEditableActivity(loggedInUserId, true),
+      ],
     },
     data: {
       // Publish
@@ -525,12 +533,16 @@ export async function unpublishActivityFromLibrary({
   await prisma.content.update({
     where: {
       id: contentId,
-      isPublic: true,
-      ...filterEditableActivity(loggedInUserId, true),
-      libraryActivityInfo: {
-        status: LibraryStatus.PUBLISHED,
-        primaryEditorId: loggedInUserId,
-      },
+      AND: [
+        {
+          isPublic: true,
+          libraryActivityInfo: {
+            status: LibraryStatus.PUBLISHED,
+            primaryEditorId: loggedInUserId,
+          },
+        },
+        filterEditableActivity(loggedInUserId, true),
+      ],
     },
     data: {
       isPublic: false,
