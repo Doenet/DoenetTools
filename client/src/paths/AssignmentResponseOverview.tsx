@@ -612,12 +612,14 @@ export function AssignmentData() {
     });
   };
 
+  const classCode = String(info.classCode!).padStart(6, "0");
+
   return (
     <>
       <AssignmentInvitation
         isOpen={inviteIsOpen}
         onClose={inviteOnClose}
-        classCode={info.classCode!}
+        classCode={classCode}
         assignmentStatus={info.assignmentStatus}
         assignmentName={assignment.name}
       />
@@ -708,7 +710,7 @@ export function AssignmentData() {
               }}
             />
           </Text>
-          <Text>Class code: {info.classCode}</Text>
+          <Text>Class code: {classCode}</Text>
           <Button
             onClick={inviteOnOpen}
             colorScheme="blue"
