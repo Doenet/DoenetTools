@@ -119,41 +119,33 @@ export async function createAssignment({
     loggedInUserId,
   });
   const assignmentId = newContentIds[0];
-  // const newDescendantIds = await getDescendantIds(assignmentId);
   const assignmentClosedOn = closedOn.toJSDate();
-
-  await prisma.content.update({
-    where: { id: assignmentId },
-    data: {
-      isAssignmentRoot: true,
-      assignmentClosedOn,
-      assignmentOpenOn: new Date(),
-    },
-  });
 
   // Check whether we're in a course or not. If we're not, generate code.
   const ancestors = await getAncestorIds(assignmentId);
   const ancestorCourse = await prisma.content.findFirst({
     where: {
       id: { in: ancestors },
-      // having at least one scoped user indicates a course
-      scopedUsers: { some: {} },
+      courseContent: { some: {} },
     },
     select: { id: true, classCode: true },
   });
 
-  let classCode: number | null = null;
+  // an undefined `newClassCode` means no changes
+  let newClassCode: number | undefined = undefined;
   if (!ancestorCourse) {
-    const { classCode: newClassCode } = await prisma.content.update({
-      where: {
-        id: assignmentId,
-      },
-      data: {
-        classCode: await generateClassCode(),
-      },
-    });
-    classCode = newClassCode;
+    newClassCode = await generateClassCode();
   }
+
+  const { classCode } = await prisma.content.update({
+    where: { id: assignmentId },
+    data: {
+      isAssignmentRoot: true,
+      assignmentClosedOn,
+      assignmentOpenOn: new Date(),
+      classCode: newClassCode,
+    },
+  });
 
   return { assignmentId, classCode, assignmentClosedOn };
 }
@@ -341,8 +333,8 @@ export async function getAllAssignmentScores({
     WHERE ct.type != "folder" ORDER BY path
   `);
 
-  // The index of where this activity's scores will be placed
-  // Converting from contentId to index in orderedActivities
+  // The index of where this activity's scores will be placed.
+  // We're converting from contentId to index in orderedActivities
   const indexOfAssignment = new Map<string, number>();
   for (const [i, activity] of orderedAssignments.entries()) {
     indexOfAssignment.set(activity.contentId.toString(), i);
