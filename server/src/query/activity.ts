@@ -318,10 +318,11 @@ export async function restoreDeletedContent({
     },
   });
 
-  // `null` indicates base folder, `undefined` indicates no change
+  // For `newCourseRootId`: `null` indicates removing course association, `undefined` indicates no change
+  let newCourseRootId: Uint8Array | null | undefined = undefined;
+  // For `newParentId`: `null` indicates base folder, `undefined` indicates no change
   let newParentId: null | undefined = undefined;
   let newSortIndex: number | undefined = undefined;
-  let newCourseRootId: Uint8Array | null | undefined = undefined;
 
   const updateQueries = [];
 

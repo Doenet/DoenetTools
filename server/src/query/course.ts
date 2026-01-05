@@ -43,7 +43,7 @@ export async function markFolderAsCourse({
 
   actions.push(
     prisma.content.updateMany({
-      where: { OR: [{ id: { in: descendantIds } }, { id: folderId }] },
+      where: { id: { in: [folderId, ...descendantIds] } },
       data: {
         courseRootId: folderId,
       },
