@@ -11,5 +11,5 @@
     // Only include types that the server actually uses (excludes cypress)
     "types": ["node", "express", "passport", "chai"]
   },
-  "include": ["src", "prisma"]
+  "include": ["src", "prisma", "scripts"]
 }
