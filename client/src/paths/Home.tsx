@@ -20,7 +20,8 @@ import {
   Stack,
   VStack,
 } from "@chakra-ui/react";
-import { Link as ReactRouterLink } from "react-router";
+import { Link as ReactRouterLink, useOutletContext } from "react-router";
+import { SiteContext } from "./SiteHeader";
 
 export async function loader() {
   return {};
@@ -30,6 +31,8 @@ export function Home() {
   useEffect(() => {
     document.title = `Doenet - Richly interactive classroom activities`;
   }, []);
+
+  const { user } = useOutletContext<SiteContext>();
 
   // The first string is the video source path,
   // the second string is the link to try the activity.
@@ -212,32 +215,52 @@ export function Home() {
     </WithSideBanners>
   );
 
+  const discussHref = `${import.meta.env.VITE_DISCOURSE_URL}${user && user?.isAnonymous === false ? "/session/sso" : ""}`;
+
   const communitySection = (
     <WithSideBanners bgColor="white" padding="70px">
       <Box px={{ base: "16px", md: "0px" }}>
         <Heading size="lg">
           Join the community - get support, contribute
         </Heading>
-        <Text fontSize="1.2rem">
+        <Box marginTop="10px" fontSize="1.4rem">
           Doenet—as a free and open-source platform—derives its value from its
-          community of authors and contributors. We run a Discord server, which
-          is a great place to ask your questions and get support. (Newcomers are
-          always welcome).
-        </Text>
-        <ChakraLink
-          href="https://discord.gg/PUduwtKJ5h"
-          isExternal
-          _hover={{ textDecoration: "none" }}
-        >
-          <Button mt="1rem" mb="90px" colorScheme="blue" size="lg">
-            <BsDiscord fontSize="1.7rem" />
-            <Text ml="10px" fontSize="1.1rem">
-              Join our Discord server
-            </Text>
-          </Button>
-        </ChakraLink>
-
-        <Heading size="md">Events</Heading>
+          community of authors and contributors.
+        </Box>
+        <Box marginTop="10px" fontSize="1.4rem">
+          To get support, check out our{" "}
+          <ChakraLink href={discussHref} textDecoration="underline">
+            community discussions
+          </ChakraLink>{" "}
+          or our{" "}
+          <ChakraLink
+            href="https://discord.gg/PUduwtKJ5h"
+            textDecoration="underline"
+          >
+            Discord server
+          </ChakraLink>
+          .
+        </Box>
+        <Box marginTop="10px" fontSize="1.4rem">
+          To learn how to get involved, check out{" "}
+          <ChakraLink
+            href="https://pages.doenet.org"
+            textDecoration="underline"
+          >
+            How to get involved with Doenet
+          </ChakraLink>
+          .
+        </Box>
+        <Box marginTop="10px" fontSize="1.4rem">
+          To experiment with writing Doenet activities, visit the{" "}
+          <ChakraLink href="/scratchPad" textDecoration="underline">
+            Scratch Pad
+          </ChakraLink>
+          .
+        </Box>
+        <Heading size="lg" marginTop="40px">
+          Events
+        </Heading>
         <Stack direction={{ base: "column", md: "row" }}>
           <Card>
             <CardHeader>

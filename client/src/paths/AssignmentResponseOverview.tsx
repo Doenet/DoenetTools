@@ -59,7 +59,7 @@ import { EditAssignmentSettings } from "../widgets/editor/EditAssignmentSettings
 import { DateTime } from "luxon";
 import { NameBar } from "../widgets/NameBar";
 import { AssignmentInvitation } from "../views/AssignmentInvitation";
-import { downloadScoresToCsv } from "../utils/scores";
+import { downloadScoresToCsv } from "../utils/csv";
 
 type ScoreItem = {
   score: number;
@@ -598,34 +598,28 @@ export function AssignmentData() {
     </Tooltip>
   );
 
-  const localValidUntil = DateTime.fromISO(info.codeValidUntil!).toISO({
+  const localValidUntil = DateTime.fromISO(info.assignmentClosedOn!).toISO({
     includeOffset: false,
   })!;
 
   const downloadScores = () => {
-    downloadScoresToCsv(
-      `Scores for ${assignment.name}`,
-      scores.map((score) => {
-        const assignmentScores: Record<string, number> = {};
-        assignmentScores[assignment.name] = score.score;
-
-        return {
-          firstNames: score.user.firstNames,
-          lastNames: score.user.lastNames,
-          email: score.user.email,
-          studentId: score.user.userId,
-          assignmentScores,
-        };
-      }),
-    );
+    downloadScoresToCsv({
+      title: `Scores for ${assignment.name}`,
+      orderedStudents: scores.map((s) => s.user),
+      // [s.score] indicates we only have one assignment here
+      scores: scores.map((s) => [s.score]),
+      orderedAssignments: [assignment.name],
+    });
   };
+
+  const classCode = String(info.classCode!).padStart(6, "0");
 
   return (
     <>
       <AssignmentInvitation
         isOpen={inviteIsOpen}
         onClose={inviteOnClose}
-        classCode={info.classCode}
+        classCode={classCode}
         assignmentStatus={info.assignmentStatus}
         assignmentName={assignment.name}
       />
@@ -699,7 +693,7 @@ export function AssignmentData() {
               width="220px"
               value={localValidUntil}
               onChange={(e) => {
-                const closeAt = DateTime.fromISO(e.target.value)
+                const closedOn = DateTime.fromISO(e.target.value)
                   .set({ second: 0, millisecond: 0 })
                   .toISO({
                     suppressSeconds: true,
@@ -707,16 +701,16 @@ export function AssignmentData() {
                   });
                 fetcher.submit(
                   {
-                    path: "assign/updateAssignmentCloseAt",
+                    path: "assign/updateAssignmentClosedOn",
                     contentId,
-                    closeAt,
+                    closedOn,
                   },
                   { method: "post", encType: "application/json" },
                 );
               }}
             />
           </Text>
-          <Text>Class code: {info.classCode}</Text>
+          <Text>Class code: {classCode}</Text>
           <Button
             onClick={inviteOnOpen}
             colorScheme="blue"

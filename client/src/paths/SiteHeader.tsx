@@ -265,9 +265,23 @@ export function SiteHeader() {
                       )}
                     </>
                   )}
-                  <NavLinkTab to={discussHref} dataTest="Discourse Link">
-                    Discuss
-                  </NavLinkTab>
+                  <ChakraLink
+                    href={discussHref}
+                    isExternal
+                    data-test="Discourse Link"
+                    _hover={{ textDecoration: "none" }}
+                  >
+                    <Center
+                      h="40px"
+                      borderBottomStyle="none"
+                      borderBottomWidth="0px"
+                      p="4px"
+                    >
+                      <Text fontSize="md" color="doenet.canvastext">
+                        Discuss
+                      </Text>
+                    </Center>
+                  </ChakraLink>
                 </HStack>
               </GridItem>
             </Show>
@@ -336,7 +350,7 @@ export function SiteHeader() {
                           </Text>
                           <Text>
                             {user.isAnonymous
-                              ? `Pseudonym: ${createNameNoTag(user)}`
+                              ? `Nickname: ${createNameNoTag(user)}`
                               : user.email}
                           </Text>
                           {user.isAnonymous ? (
@@ -378,14 +392,22 @@ export function SiteHeader() {
                             </Box>
                           ) : null}
                         </VStack>
+                        {!user.isAnonymous && (
+                          <MenuItem
+                            as={ChakraLink}
+                            // When name change complete, redirect back to current page
+                            href={`/changeName?redirect=${currentPath}`}
+                          >
+                            Update name
+                          </MenuItem>
+                        )}
                         <MenuItem
-                          as={ChakraLink}
-                          // When name change complete, redirect back to current page
-                          href={`/changeName?redirect=${currentPath}`}
+                          as="a"
+                          href="/api/login/logout"
+                          onClick={() => {
+                            localStorage.removeItem("scratchPad");
+                          }}
                         >
-                          Update {user.isAnonymous ? "pseudonym" : "name"}
-                        </MenuItem>
-                        <MenuItem as="a" href="/api/login/logout">
                           {user.isAnonymous
                             ? "Clear anonymous data"
                             : "Log Out"}
@@ -439,12 +461,26 @@ export function SiteHeader() {
                                 Curate
                               </NavLinkDropdownTab>
                             )}
-                            <NavLinkDropdownTab
-                              to={discussHref}
-                              dataTest="Discourse Link"
-                            >
-                              Discuss
-                            </NavLinkDropdownTab>
+                            <MenuItem>
+                              <ChakraLink
+                                href={discussHref}
+                                isExternal
+                                data-test="Discourse Link"
+                                _hover={{ textDecoration: "none" }}
+                                w="100%"
+                              >
+                                <Center
+                                  h="40px"
+                                  borderBottomStyle="none"
+                                  borderBottomWidth="0px"
+                                  p="4px"
+                                >
+                                  <Text fontSize="md" color="doenet.canvastext">
+                                    Discuss
+                                  </Text>
+                                </Center>
+                              </ChakraLink>
+                            </MenuItem>
                           </>
                         )}
                       </MenuList>

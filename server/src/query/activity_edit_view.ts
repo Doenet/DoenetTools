@@ -12,24 +12,6 @@ import { isEqualUUID } from "../utils/uuid";
 import { getRemixSources } from "./remix";
 import { recordContentView } from "./popularity";
 
-/**
- * Get the data needed to view the source of public activity `contentId`
- */
-export async function getSharedEditorData({
-  contentId,
-  loggedInUserId = new Uint8Array(16),
-}: {
-  contentId: Uint8Array;
-  loggedInUserId?: Uint8Array;
-}) {
-  // TODO: add pagination or a hard limit in the number of documents one can add to an activity
-  const activity = getContent({
-    contentId,
-    loggedInUserId,
-  });
-  return activity;
-}
-
 export async function getActivityViewerData({
   contentId,
   loggedInUserId = new Uint8Array(16),
@@ -121,8 +103,10 @@ export async function getContent({
     permissionCheck = { isDeletedOn: null };
   } else {
     permissionCheck = {
-      ...filterViewableContent(loggedInUserId, isEditor),
-      type: { not: "folder" as const },
+      AND: [
+        filterViewableContent(loggedInUserId, isEditor),
+        { type: { not: "folder" as const } },
+      ],
     };
   }
 

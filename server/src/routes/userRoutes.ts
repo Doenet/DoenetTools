@@ -1,11 +1,13 @@
 import express from "express";
 import {
+  createStudentHandleAccounts,
   getUser,
   getUserInfoIfLoggedIn,
   setIsAuthor,
   updateUser,
 } from "../query/user";
 import {
+  createHandleSchema,
   setIsAuthorSchema,
   userIdSchema,
   userNamesSchema,
@@ -31,3 +33,8 @@ userRouter.get(
 );
 
 userRouter.post("/setIsAuthor", queryLoggedIn(setIsAuthor, setIsAuthorSchema));
+
+userRouter.post(
+  "/handles",
+  queryLoggedIn(createStudentHandleAccounts, createHandleSchema),
+);

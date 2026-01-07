@@ -45,10 +45,7 @@ import {
   action as assignmentViewerAction,
   AssignmentViewer,
 } from "./paths/AssignmentViewer";
-import {
-  loader as allAssignmentScoresLoader,
-  AllAssignmentScores,
-} from "./paths/AllAssignmentScores";
+import { loader as studentsLoader, Students } from "./paths/Students";
 import {
   loader as studentAssignmentScoresLoader,
   StudentAssignmentScores,
@@ -70,7 +67,6 @@ import {
   loader as doenetMLComparisonLoader,
   action as doenetMLComparisonAction,
 } from "./paths/DoenetMLComparison";
-import { CodeViewer, loader as codeViewerLoader } from "./paths/CodeViewer";
 import { mathjaxConfig } from "@doenet/doenetml-iframe";
 import { SignIn, action as signInAction } from "./paths/SignIn";
 import {
@@ -125,6 +121,7 @@ import {
   loader as sharedWithMeLoader,
 } from "./paths/SharedWithMe";
 import { editorUrl } from "./utils/url";
+import { ScratchPad, loader as scratchPadLoader } from "./paths/ScratchPad";
 
 const router = createBrowserRouter([
   {
@@ -203,9 +200,10 @@ const router = createBrowserRouter([
             errorElement: <ErrorPage />,
           },
           {
-            path: "allAssignmentScores/:parentId?",
-            loader: allAssignmentScoresLoader,
-            element: <AllAssignmentScores />,
+            path: "students/:parentId",
+            loader: studentsLoader,
+            action: genericAction,
+            element: <Students />,
             errorElement: <ErrorPage />,
           },
         ],
@@ -317,12 +315,6 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "codeViewer/:contentId?",
-        loader: codeViewerLoader,
-        errorElement: <ErrorPage />,
-        element: <CodeViewer />,
-      },
-      {
         path: "assigned",
         // no actions on this page
         loader: assignedLoader,
@@ -396,6 +388,13 @@ const router = createBrowserRouter([
       {
         path: "loadShareStatus/:contentId",
         loader: loadShareStatus,
+      },
+      {
+        path: "scratchPad",
+        loader: scratchPadLoader,
+        action: genericAction,
+        errorElement: <ErrorPage />,
+        element: <ScratchPad />,
       },
     ],
   },

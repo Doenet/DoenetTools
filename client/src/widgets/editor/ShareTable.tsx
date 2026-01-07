@@ -76,6 +76,10 @@ export function ShareTable({
           );
         };
 
+    if (user.email === null) {
+      throw new Error("User email is null in ShareTable");
+    }
+
     rows.push(
       <ShareTableRow
         key={user.userId}

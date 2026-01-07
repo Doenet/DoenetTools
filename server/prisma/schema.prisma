@@ -16,56 +16,94 @@ model Session {
 }
 
 model content {
-  // General metadata
+  // 
+  // ========= General ==========
   id                     Bytes                    @id @default(dbgenerated("(uuid_to_bin(uuid(),1))")) @db.Binary(16)
   type                   ContentType              @default(singleDoc)
   ownerId                Bytes                    @db.Binary(16)
+  owner                  users                    @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
   name                   String
-  parentId               Bytes?                   @db.Binary(16)
-  isPublic               Boolean                  @default(false)
-  isDeletedOn            DateTime?
-  // The parent id that the user deleted. Not defined if this is root
-  deletionRootId         Bytes?                   @db.Binary(16)
   createdAt              DateTime                 @default(now())
   sortIndex              BigInt
   licenseCode            String?                  @default("CCDUAL") @db.VarChar(10)
+  license                licenses?                @relation(fields: [licenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
   lastEdited             DateTime                 @default(now())
-  // Specific to document type
+  // 
+  // ========== Tree structure ==========
+  parentId               Bytes?                   @db.Binary(16)
+  parent                 content?                 @relation("childParent", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children               content[]                @relation("childParent")
+  // 
+  // ========== Sharing ==========
+  isPublic               Boolean                  @default(false)
+  sharedWith             contentShares[]
+  // 
+  // ====== Documents =========
   source                 String?                  @db.MediumText
   doenetmlVersionId      Int?
+  doenetmlVersion        doenetmlVersions?        @relation(fields: [doenetmlVersionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   numVariants            Int                      @default(1)
-  // Specific to sequence type
-  shuffle                Boolean                  @default(false)
-  paginate               Boolean                  @default(false)
-  // Specific to select type
-  numToSelect            Int                      @default(1) @db.UnsignedSmallInt
-  selectByVariant        Boolean                  @default(false)
   // Specific to documents inside problem sets
   repeatInProblemSet     Int                      @default(1)
-  // Assignments
-  nonRootAssignmentId    Bytes?                   @db.Binary(16)
+  // 
+  // ====== Problem Sets =========
+  shuffle                Boolean                  @default(false)
+  paginate               Boolean                  @default(false)
+  // 
+  // ====== Selects (obsolete) =========
+  numToSelect            Int                      @default(1) @db.UnsignedSmallInt
+  selectByVariant        Boolean                  @default(false)
+  // 
+  // ===== Code ==========
+  // Course or assignment code
+  // All courses have a code, and all one-off assignments have a code.
+  classCode              Int?                     @unique @db.UnsignedInt
+  // 
+  // ====== Assignments ==========
+  // `isAssignmentRoot` is true if both: 1) this content is an assignment 2) this content is the root of that assignment
+  isAssignmentRoot       Boolean                  @default(false)
+  assignmentOpenOn       DateTime?
+  assignmentClosedOn     DateTime?
   mode                   AssignmentMode           @default(formative)
   maxAttempts            Int                      @default(1) @db.UnsignedSmallInt
   individualizeByStudent Boolean                  @default(false)
-  // Relations
-  nonRootAssignment      assignments?             @relation("nonRootAssignment", fields: [nonRootAssignmentId], references: [rootContentId], onDelete: SetNull, onUpdate: NoAction)
-  rootAssignment         assignments?             @relation("rootAssignment")
-  owner                  users                    @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
-  parent                 content?                 @relation("childParent", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  children               content[]                @relation("childParent")
-  license                licenses?                @relation(fields: [licenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
-  doenetmlVersion        doenetmlVersions?        @relation(fields: [doenetmlVersionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  categories             categories[]
-  sharedWith             contentShares[]
-  classifications        contentClassifications[]
-  contentViews           contentViews[]
-  recentContent          recentContent[]
-  librarySourceInfo      libraryActivityInfos?    @relation("source")
-  libraryActivityInfo    libraryActivityInfos?    @relation("activity")
-  contentRevisions       contentRevisions[]
   submittedResponses     submittedResponses[]
+  contentStates          contentState[]
+  assignmentScores       assignmentScores[]
+  contentItemStates      contentItemState[]
+  // 
+  // ====== Deletion =========
+  // The parent id that the user deleted. Not defined if this is root
+  deletionRootId         Bytes?                   @db.Binary(16)
+  isDeletedOn            DateTime?
   deletionRoot           content?                 @relation("deletionRoot", fields: [deletionRootId], references: [id])
   isDeletionRootFor      content[]                @relation("deletionRoot")
+  // 
+  // ======= Courses ==========
+  // `courseRoot`: If I'm part of a course, points to root of course I'm in (myself if I'm root)
+  //               If empty, I'm not in a course.
+  //               Course roots cannot be nested.
+  // `courseContent`: If non-empty, I'm a course root and it points to all the content in my course, including myself.
+  // `scopedUsers`: ignored if not at course root.
+  courseRootId           Bytes?                   @db.Binary(16)
+  courseRoot             content?                 @relation("courseRoot", fields: [courseRootId], references: [id])
+  courseContent          content[]                @relation("courseRoot")
+  scopedUsers            users[]                  @relation(name: "scopedToClass")
+  // 
+  // ====== Metadata/tagging =========
+  categories             categories[]
+  classifications        contentClassifications[]
+  // 
+  // ====== Library =========
+  librarySourceInfo      libraryActivityInfos?    @relation("source")
+  libraryActivityInfo    libraryActivityInfos?    @relation("activity")
+  // 
+  // ===== Tracking data ========
+  contentViews           contentViews[]
+  recentContent          recentContent[]
+  // 
+  // ====== History =========
+  contentRevisions       contentRevisions[]
 
   @@index([ownerId, parentId, sortIndex])
   @@index([parentId, type])
@@ -206,33 +244,20 @@ model doenetmlVersions {
   contentRevisions   contentRevisions[]
 }
 
-model assignments {
-  rootContentId     Bytes              @id @db.Binary(16)
-  classCode         String             @db.VarChar(45)
-  codeValidStarting DateTime
-  codeValidUntil    DateTime
-  rootContent       content            @relation("rootAssignment", fields: [rootContentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  nonRootContent    content[]          @relation("nonRootAssignment")
-  contentState      contentState[]
-  assignmentScores  assignmentScores[]
-
-  @@index([classCode])
-}
-
 enum AssignmentMode {
   formative
   summative
 }
 
 model assignmentScores {
-  contentId               Bytes       @db.Binary(16)
-  userId                  Bytes       @db.Binary(16)
+  contentId               Bytes   @db.Binary(16)
+  userId                  Bytes   @db.Binary(16)
   cachedScore             Float?
-  cachedBestAttemptNumber Int         @db.UnsignedSmallInt
-  cachedItemScores        String?     @db.Text
-  cachedLatestAttempt     String?     @db.Text
-  assignment              assignments @relation(fields: [contentId], references: [rootContentId], onDelete: NoAction, onUpdate: NoAction)
-  user                    users       @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  cachedBestAttemptNumber Int     @db.UnsignedSmallInt
+  cachedItemScores        String? @db.Text
+  cachedLatestAttempt     String? @db.Text
+  assignment              content @relation(fields: [contentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user                    users   @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([contentId, userId])
   @@index([userId])
@@ -245,7 +270,7 @@ model contentState {
   attemptNumber     Int                @db.UnsignedSmallInt
   score             Float?
   state             String?            @db.MediumText
-  assignment        assignments        @relation(fields: [contentId], references: [rootContentId], onDelete: NoAction, onUpdate: NoAction)
+  assignment        content            @relation(fields: [contentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   user              users              @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
   contentItemStates contentItemState[]
 
@@ -265,6 +290,7 @@ model contentItemState {
   score                Float        @default(0)
   state                String?      @db.MediumText
   contentState         contentState @relation(fields: [contentId, userId, contentAttemptNumber], references: [contentId, userId, attemptNumber], onDelete: NoAction, onUpdate: NoAction)
+  document             content      @relation(fields: [docId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([contentId, userId, contentAttemptNumber, itemNumber, itemAttemptNumber])
   @@unique([contentId, userId, contentAttemptNumber, shuffledItemNumber, itemAttemptNumber])
@@ -304,13 +330,24 @@ model contentViews {
 
 model users {
   userId             Bytes                  @id @default(dbgenerated("(uuid_to_bin(uuid(),1))")) @db.Binary(16)
-  email              String                 @unique
+  username           String                 @unique
+  email              String?                @unique
+  passwordHash       String?                @db.Char(60)
   firstNames         String?
   lastNames          String
-  isEditor           Boolean                @default(false)
   isLibrary          Boolean                @default(false)
-  isAnonymous        Boolean                @default(false)
+  isEditor           Boolean                @default(false)
   isAuthor           Boolean                @default(false)
+  // For now, premium refers to the instructor accounts
+  // A premium account means: any assignment I create can be taken by normal (non-anonymous and non-scoped) users
+  isPremium          Boolean                @default(false)
+  // There are two ways that an account is locked to not be able to explore or create content:
+  // 1. Account has scopedToClassId. This means that the account is a student rostered to a folder.
+  // 2. Account isAnonymous. We don't know what class they are in, but they're not going to author.
+  //
+  // This field should be true for any account that is scoped to an instructor's folder
+  scopedToClassId    Bytes?                 @db.Binary(16)
+  isAnonymous        Boolean                @default(false)
   content            content[]
   contentState       contentState[]
   submittedResponses submittedResponses[]
@@ -319,6 +356,7 @@ model users {
   assignmentScores   assignmentScores[]
   libraryEvents      libraryEvents[]
   libraryEditorInfos libraryActivityInfos[]
+  scopedToClass      content?               @relation(name: "scopedToClass", fields: [scopedToClassId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@fulltext([firstNames, lastNames])
 }

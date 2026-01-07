@@ -5,14 +5,24 @@ import { InvalidRequestError } from "../utils/error";
 import {
   filterEditableRootAssignment,
   filterViewableRootAssignment,
+  getIsAnonymous,
+  getOwnerIsPremium,
+  getScopedStudentCourseId,
 } from "../utils/permissions";
-import { UserInfoWithEmail } from "../types";
+import {
+  isCachedLatestAttempt,
+  isItemScores,
+  ItemScores,
+  LatestAttempt,
+  ScoreData,
+  UserInfo,
+} from "../types";
 
 // TODO: do we still save score and state if assignment isn't open?
 // If not, how do we communicate that fact
 
 /**
- * Save the `score` and `state` of assignment `contentId` for `loggedInUserId`, assuming `code` matches.
+ * Save the `score` and `state` of assignment `contentId` for `loggedInUserId`.
  * The specified `attemptNumber` must be the latest attempt of `loggedInUserId`
  * (otherwise an `InvalidRequestError` is thrown).
  *
@@ -30,7 +40,6 @@ import { UserInfoWithEmail } from "../types";
  */
 export async function saveScoreAndState({
   contentId,
-  code,
   loggedInUserId,
   attemptNumber,
   score,
@@ -40,7 +49,6 @@ export async function saveScoreAndState({
   variant,
 }: {
   contentId: Uint8Array;
-  code: string;
   loggedInUserId: Uint8Array;
   attemptNumber: number;
   score: number | null;
@@ -86,13 +94,12 @@ export async function saveScoreAndState({
   }
 
   async function getMaxAttemptNumber() {
-    const assignment = await prisma.assignments.findUniqueOrThrow({
+    const assignment = await prisma.content.findUniqueOrThrow({
       where: {
-        rootContentId: contentId,
-        classCode: code,
+        id: contentId,
       },
       select: {
-        contentState: {
+        contentStates: {
           distinct: ["contentId", "userId"],
           where: { userId: loggedInUserId },
           orderBy: { attemptNumber: "desc" },
@@ -101,7 +108,7 @@ export async function saveScoreAndState({
       },
     });
 
-    const maxAttemptNumber = assignment.contentState[0]?.attemptNumber ?? 0;
+    const maxAttemptNumber = assignment.contentStates[0]?.attemptNumber ?? 0;
     return maxAttemptNumber;
   }
 
@@ -110,7 +117,6 @@ export async function saveScoreAndState({
   if (maxAttemptNumber === 0) {
     await createNewAttempt({
       contentId,
-      code,
       variant,
       state,
       loggedInUserId,
@@ -255,7 +261,6 @@ export async function saveScoreAndState({
  */
 export async function createNewAttempt({
   contentId,
-  code,
   variant,
   state,
   loggedInUserId,
@@ -264,7 +269,6 @@ export async function createNewAttempt({
   shuffledItemOrder,
 }: {
   contentId: Uint8Array;
-  code: string;
   variant: number;
   state: string | null;
   loggedInUserId: Uint8Array;
@@ -276,33 +280,36 @@ export async function createNewAttempt({
     variant: number;
   }[];
 }) {
+  // Make sure user has permission to view this assignment
+  const scopedCourseId = await getScopedStudentCourseId(loggedInUserId);
+  const isAnonymous = await getIsAnonymous(loggedInUserId);
+  const ownerIsPremium = await getOwnerIsPremium(contentId);
+
   const assignment = await prisma.content.findUniqueOrThrow({
     where: {
       id: contentId,
-      ...filterViewableRootAssignment(loggedInUserId),
-      rootAssignment: {
-        classCode: code,
-      },
+      ...filterViewableRootAssignment({
+        loggedInUserId,
+        courseRootIdOfScopedUser: scopedCourseId,
+        isAnonymous,
+        ownerIsPremium,
+      }),
     },
     select: {
       mode: true,
       maxAttempts: true,
       type: true,
-      rootAssignment: {
-        select: {
-          contentState: {
-            distinct: ["contentId", "userId"],
-            where: { userId: loggedInUserId },
-            orderBy: { attemptNumber: "desc" },
-            select: { attemptNumber: true },
-          },
-        },
+      courseRootId: true,
+      contentStates: {
+        distinct: ["contentId", "userId"],
+        where: { userId: loggedInUserId },
+        orderBy: { attemptNumber: "desc" },
+        select: { attemptNumber: true },
       },
     },
   });
 
-  const maxAttemptNumber =
-    assignment.rootAssignment!.contentState[0]?.attemptNumber ?? 0;
+  const maxAttemptNumber = assignment.contentStates[0]?.attemptNumber ?? 0;
 
   if (assignment.mode === "formative" && assignment.type !== "singleDoc") {
     if (shuffledItemOrder === undefined) {
@@ -497,16 +504,14 @@ export async function loadState({
   const stateUserId = requestedUserId ?? loggedInUserId;
 
   try {
-    await prisma.assignments.findUniqueOrThrow({
+    await prisma.content.findUniqueOrThrow({
       where: {
-        rootContentId: contentId,
-        rootContent: {
-          // if getting data for other person, you must be the owner
-          ownerId: isEqualUUID(stateUserId, loggedInUserId)
-            ? undefined
-            : loggedInUserId,
-          isDeletedOn: null,
-        },
+        id: contentId,
+        // if getting data for other person, you must be the owner
+        ownerId: isEqualUUID(stateUserId, loggedInUserId)
+          ? undefined
+          : loggedInUserId,
+        isDeletedOn: null,
       },
     });
   } catch (e) {
@@ -674,13 +679,11 @@ export async function loadItemState({
 
   const contentStateWhere = {
     assignment: {
-      rootContent: {
-        // if getting data for other person, you must be the owner
-        ownerId: isEqualUUID(stateUserId, loggedInUserId)
-          ? undefined
-          : loggedInUserId,
-        isDeletedOn: null,
-      },
+      // if getting data for other person, you must be the owner
+      ownerId: isEqualUUID(stateUserId, loggedInUserId)
+        ? undefined
+        : loggedInUserId,
+      isDeletedOn: null,
     },
   };
 
@@ -807,21 +810,15 @@ export async function calculateScoreAndCacheResults({
   // if getting data for other person, you must be the owner
   const forMyself = isEqualUUID(scoreUserId, loggedInUserId);
 
-  const assignment = await prisma.assignments.findUniqueOrThrow({
+  const assignment = await prisma.content.findUniqueOrThrow({
     where: {
-      rootContentId: contentId,
-      rootContent: {
-        ownerId: forMyself ? undefined : loggedInUserId,
-        isDeletedOn: null,
-      },
+      id: contentId,
+      ownerId: forMyself ? undefined : loggedInUserId,
+      isDeletedOn: null,
     },
     select: {
-      rootContent: {
-        select: {
-          mode: true,
-        },
-      },
-      contentState: {
+      mode: true,
+      contentStates: {
         where: { userId: scoreUserId },
         distinct: ["contentId", "userId"],
         orderBy: { attemptNumber: "desc" },
@@ -832,12 +829,12 @@ export async function calculateScoreAndCacheResults({
     },
   });
 
-  const mode = assignment.rootContent.mode;
-  if (assignment.contentState.length !== 1) {
+  const mode = assignment.mode;
+  if (assignment.contentStates.length !== 1) {
     return { calculatedScore: false as const };
   }
 
-  const latestAttemptNumber = assignment.contentState[0].attemptNumber;
+  const latestAttemptNumber = assignment.contentStates[0].attemptNumber;
 
   // Get the score for each attempt
   // For each attempt, also calculate the latest score for each item
@@ -962,45 +959,6 @@ export async function calculateScoreAndCacheResults({
   };
 }
 
-export type ItemScores = {
-  score: number;
-  itemNumber: number;
-  itemAttemptNumber: number;
-}[];
-
-type LatestAttempt = {
-  attemptNumber: number;
-  score: number;
-  itemScores: ItemScores;
-};
-
-function isItemScores(obj: unknown): obj is ItemScores {
-  const typedObj = obj as ItemScores;
-  return (
-    Array.isArray(typedObj) &&
-    typedObj.every((item) => {
-      return (
-        item !== null &&
-        typeof item === "object" &&
-        typeof item.score === "number" &&
-        typeof item.itemNumber === "number" &&
-        typeof item.itemAttemptNumber === "number"
-      );
-    })
-  );
-}
-
-function isCachedLatestAttempt(obj: unknown): obj is LatestAttempt {
-  const typedObj = obj as LatestAttempt;
-  return (
-    typedObj !== null &&
-    typeof typedObj === "object" &&
-    typeof typedObj.attemptNumber === "number" &&
-    typeof typedObj.score === "number" &&
-    isItemScores(typedObj.itemScores)
-  );
-}
-
 /**
  * Get the overall score, item scores if they exist, and latest scores of `requestedUserId` for assignment `contentId`.
  * If `requestedUserId` is not specified, default to `loggedInUserId`.
@@ -1020,20 +978,18 @@ export async function getScore({
   contentId: Uint8Array;
   requestedUserId?: Uint8Array;
   loggedInUserId: Uint8Array;
-}) {
+}): Promise<ScoreData> {
   const scoreUserId = requestedUserId ?? loggedInUserId;
 
   // verify have access
-  await prisma.assignments.findUniqueOrThrow({
+  await prisma.content.findUniqueOrThrow({
     where: {
-      rootContentId: contentId,
-      rootContent: {
-        // if getting data for other person, you must be the owner
-        ownerId: isEqualUUID(scoreUserId, loggedInUserId)
-          ? undefined
-          : loggedInUserId,
-        isDeletedOn: null,
-      },
+      id: contentId,
+      // if getting data for other person, you must be the owner
+      ownerId: isEqualUUID(scoreUserId, loggedInUserId)
+        ? undefined
+        : loggedInUserId,
+      isDeletedOn: null,
     },
   });
 
@@ -1125,9 +1081,7 @@ export async function getScoresOfAllStudents({
           firstNames: true,
           lastNames: true,
           userId: true,
-          // NOTE: we're including the email here because instructors want to know
-          // the emails of the people who have taken their assignment
-          email: true,
+          username: true,
           isAnonymous: true,
         },
       },
@@ -1143,7 +1097,7 @@ export async function getScoresOfAllStudents({
     bestAttemptNumber: number;
     itemScores: ItemScores | null;
     latestAttempt: LatestAttempt | null;
-    user: UserInfoWithEmail;
+    user: UserInfo;
   }[] = [];
 
   for (const scoreObj of cachedScores) {
@@ -1183,8 +1137,7 @@ export async function getScoresOfAllStudents({
         }
       }
 
-      const { email, isAnonymous, ...userOther } = scoreObj.user;
-      const user = { ...userOther, email: isAnonymous ? "" : email };
+      const { isAnonymous, ...user } = scoreObj.user;
 
       scores.push({
         score: scoreObj.cachedScore,

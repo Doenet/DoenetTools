@@ -127,8 +127,6 @@ export function EditorHeader() {
     contentType: ContentType;
     isPublic: boolean;
     assignmentStatus: AssignmentStatus;
-    assignmentClassCode: string;
-    assignmentHasScoreData: boolean;
     remixSourceHasChanged: boolean;
     inLibrary: boolean;
     contentDescription: ContentDescription;

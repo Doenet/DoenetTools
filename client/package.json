@@ -16,9 +16,11 @@
       "files": [
         "src/**/*.ts",
         "src/**/*.js",
+        "src/**/*.tsx",
+        "src/**/*.jsx",
+        "src/**/*.css",
         "vite.config.ts",
-        "tsconfig.json",
-        ".env.production"
+        "tsconfig.json"
       ],
       "output": [
         "dist/**/*.js",
@@ -32,10 +34,10 @@
   "dependencies": {
     "@chakra-ui/icons": "^2.2.4",
     "@chakra-ui/react": "^2.10.9",
+    "@doenet/assignment-viewer": "^0.1.0-alpha-12",
+    "@doenet/doenetml-iframe": "^0.7.0",
+    "@doenet/v06-to-v07": "^0.7.0",
     "@doenet-tools/shared": "*",
-    "@doenet/assignment-viewer": "^0.1.0-alpha-13",
-    "@doenet/doenetml-iframe": "^0.7.0-rc-2",
-    "@doenet/v06-to-v07": "^0.7.0-beta-17",
     "@fontsource/jost": "^5.2.6",
     "axios": "^1.11.0",
     "better-react-mathjax": "^2.4.0-beta-1",

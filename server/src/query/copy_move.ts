@@ -3,6 +3,7 @@ import { prisma } from "../model";
 import { LicenseCode, UserInfo } from "../types";
 import {
   filterEditableContent,
+  filterExcludeAssignments,
   filterViewableContent,
   getIsEditor,
   mustBeEditor,
@@ -14,11 +15,16 @@ import {
   ShiftIndicesCallbackFunction,
 } from "../utils/sort";
 import { modifyContentSharedWith, setContentIsPublic } from "./share";
-import { createContentRevision, createContent } from "./activity";
+import {
+  createContentRevision,
+  createContent,
+  getDescendantIds,
+} from "./activity";
 import { InvalidRequestError } from "../utils/error";
 import { createFullName } from "../utils/names";
 import { recordRecentContent } from "./recent";
 import { getLibraryAccountId } from "./curate";
+import { generateClassCode } from "./assign";
 
 /**
  * Move the content with `id` to position `desiredPosition` in the folder `parentId`
@@ -56,6 +62,7 @@ export async function moveContent({
       id: true,
       type: true,
       licenseCode: true,
+      courseRootId: true,
       owner: {
         select: {
           userId: true,
@@ -65,14 +72,13 @@ export async function moveContent({
       isPublic: true,
       parent: {
         select: {
-          rootAssignment: { select: { rootContentId: true } },
-          nonRootAssignment: { select: { rootContentId: true } },
+          isAssignmentRoot: true,
         },
       },
     },
   });
 
-  if (content.parent?.rootAssignment || content.parent?.nonRootAssignment) {
+  if (content.parent?.isAssignmentRoot) {
     throw new InvalidRequestError(
       "Cannot move content in an assigned activity",
     );
@@ -81,6 +87,8 @@ export async function moveContent({
   let desiredParentIsPublic = false;
   let desiredParentLicenseCode: LicenseCode = "CCDUAL";
   let desiredParentShares: Uint8Array[] = [];
+
+  let parentCourseId: Uint8Array | null = null;
 
   if (parentId !== null) {
     // if desired parent is specified, make sure it exists, is owned by the same owner as the content,
@@ -97,13 +105,13 @@ export async function moveContent({
       select: {
         isPublic: true,
         licenseCode: true,
+        courseRootId: true,
         sharedWith: { select: { userId: true } },
-        rootAssignment: { select: { rootContentId: true } },
-        nonRootAssignment: { select: { rootContentId: true } },
+        isAssignmentRoot: true,
       },
     });
 
-    if (parent.rootAssignment || parent.nonRootAssignment) {
+    if (parent.isAssignmentRoot) {
       throw new InvalidRequestError(
         "Cannot move content into an assigned activity",
       );
@@ -127,6 +135,8 @@ export async function moveContent({
         desiredParentLicenseCode = parent.licenseCode as LicenseCode;
       }
     }
+
+    parentCourseId = parent.courseRootId;
 
     if (content.type !== "singleDoc") {
       // if content has children and we're moving it to another parent,
@@ -205,6 +215,78 @@ export async function moveContent({
     shiftCallback,
   );
 
+  // ======= Courses: check validity of move ========
+
+  const descendants = await getDescendantIds(contentId);
+
+  let modifyCourseRootId = false;
+
+  const contentIsCourseRoot =
+    content.courseRootId !== null &&
+    isEqualUUID(content.courseRootId, content.id);
+  const contentIsCourseNonroot =
+    content.courseRootId !== null && !contentIsCourseRoot;
+  const parentIsInCourse = parentCourseId !== null;
+
+  const nonCourseContentMovingIntoCourse =
+    parentIsInCourse && !contentIsCourseRoot && !contentIsCourseNonroot;
+
+  const contentMovingOutsideCourse =
+    contentIsCourseNonroot &&
+    (parentCourseId === null ||
+      !isEqualUUID(content.courseRootId!, parentCourseId));
+
+  if (nonCourseContentMovingIntoCourse) {
+    // Case: Move non-course content into a course.
+    // We can move non-course content into a course freely, but we have to make sure that
+    // no ~descendants~ are courses.
+    // A course inside a course is not allowed.
+    const contentContainsCourse = await prisma.content.findFirst({
+      where: {
+        id: { in: descendants },
+        courseContent: { some: {} },
+      },
+      select: { id: true },
+    });
+    if (contentContainsCourse) {
+      throw new InvalidRequestError("Cannot move a course into a course");
+    }
+  }
+
+  if (parentIsInCourse && contentIsCourseRoot) {
+    // Case: Cannot move course root inside course
+    // `content` is a course root, so parent must necessarily be a different course
+    throw new InvalidRequestError("Cannot move a course into a course");
+  }
+
+  if (contentMovingOutsideCourse) {
+    // Case: Move out of course (possibly to a different one)
+    // Note that this fails if what you are moving holds student data.
+    // Since the students accounts won't exist in the new scope, and the data would be lost,
+    // we don't allow course content WITH data to be move out of the course.
+    // Course content without data is fine.
+
+    const hasContentState = await prisma.contentState.findFirst({
+      where: {
+        contentId: { in: [contentId, ...descendants] },
+      },
+      select: { contentId: true },
+    });
+
+    if (hasContentState) {
+      throw new InvalidRequestError(
+        "Cannot move content with student data out of the course",
+      );
+    }
+  }
+
+  // Change the course of all contents if either:
+  // 1) moving non-course content into a course
+  // 2) moving part of course out of course (possibly into to a different course)
+  if (nonCourseContentMovingIntoCourse || contentMovingOutsideCourse) {
+    modifyCourseRootId = true;
+  }
+
   const data =
     content.licenseCode === undefined
       ? {
@@ -224,6 +306,13 @@ export async function moveContent({
     where: { id: contentId },
     data,
   });
+
+  if (modifyCourseRootId) {
+    await prisma.content.updateMany({
+      where: { id: { in: [contentId, ...descendants] } },
+      data: { courseRootId: parentCourseId },
+    });
+  }
 
   if (desiredParentIsPublic) {
     await setContentIsPublic({
@@ -300,6 +389,7 @@ export async function copyContent({
   let desiredParentLicenseCode: LicenseCode = "CCDUAL";
   let desiredParentShares: Uint8Array[] = [];
   let desiredParentType: ContentType = "folder";
+  let desiredCourseId: Uint8Array | null = null;
 
   if (parentId !== null) {
     // if desired parent is specified, make sure it exists, is editable by `loggedInUserId`
@@ -307,20 +397,20 @@ export async function copyContent({
     const parent = await prisma.content.findUniqueOrThrow({
       where: {
         id: parentId,
-        type: { not: "singleDoc" },
         ...filterEditableContent(loggedInUserId, isEditor),
+        type: { not: "singleDoc" },
       },
       select: {
         isPublic: true,
         type: true,
         licenseCode: true,
         sharedWith: { select: { userId: true } },
-        rootAssignment: { select: { rootContentId: true } },
-        nonRootAssignment: { select: { rootContentId: true } },
+        isAssignmentRoot: true,
+        courseRootId: true,
       },
     });
 
-    if (parent.rootAssignment || parent.nonRootAssignment) {
+    if (parent.isAssignmentRoot) {
       throw new InvalidRequestError(
         "Cannot copy content into an assigned activity",
       );
@@ -374,6 +464,25 @@ export async function copyContent({
         );
       }
     }
+
+    if (parent.courseRootId) {
+      desiredCourseId = parent.courseRootId;
+
+      // Since we're copying into a course, fail if any content or their descendants are course roots
+      // You can't have a course inside a course
+      for (const contentId of contentIds) {
+        const descendantIds = await getDescendantIds(contentId);
+        const hasCourseRoot = await prisma.content.findFirst({
+          where: {
+            id: { in: [contentId, ...descendantIds] },
+            courseContent: { some: {} },
+          },
+        });
+        if (hasCourseRoot) {
+          throw new InvalidRequestError("Cannot copy a course into a course");
+        }
+      }
+    }
   }
 
   const newContentIds: Uint8Array[] = [];
@@ -390,6 +499,7 @@ export async function copyContent({
         desiredParentLicenseCode,
         desiredParentShares,
         desiredParentType,
+        desiredCourseId,
       })),
     );
   }
@@ -411,6 +521,7 @@ async function copySingleContent({
   desiredParentLicenseCode,
   desiredParentShares,
   desiredParentType,
+  desiredCourseId,
 }: {
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
@@ -421,6 +532,7 @@ async function copySingleContent({
   desiredParentLicenseCode: LicenseCode;
   desiredParentShares: Uint8Array[];
   desiredParentType: ContentType;
+  desiredCourseId: Uint8Array | null;
 }) {
   // collect all the data that we will need to copy
   const originalContent = await prisma.content.findUniqueOrThrow({
@@ -429,7 +541,6 @@ async function copySingleContent({
       ...filterViewableContent(loggedInUserId, isEditor),
     },
     omit: {
-      id: true,
       ownerId: true,
       parentId: true,
       isPublic: true,
@@ -437,9 +548,14 @@ async function copySingleContent({
       createdAt: true,
       sortIndex: true,
       lastEdited: true,
-      nonRootAssignmentId: true,
+      isAssignmentRoot: true,
+      assignmentOpenOn: true,
+      assignmentClosedOn: true,
+      classCode: true,
+      courseRootId: true,
     },
     include: {
+      _count: { select: { courseContent: true } },
       owner: {
         omit: { email: true },
       },
@@ -454,6 +570,14 @@ async function copySingleContent({
   });
 
   const sortIndex = await getNextSortIndexForParent(loggedInUserId, parentId);
+
+  let classCode: number | null = null;
+
+  if (originalContent._count.courseContent > 0) {
+    // We've hit a course root, so it and all descendants need to be in this course.
+    desiredCourseId = originalContent.id;
+    classCode = await generateClassCode();
+  }
 
   // if `originalContent` is not allowed to be a child of `parentId`,
   // then copy the children of `originalContent` rather than the content itself
@@ -479,6 +603,7 @@ async function copySingleContent({
         desiredParentLicenseCode,
         desiredParentShares,
         desiredParentType,
+        desiredCourseId,
       });
       newIds.push(...contentIds);
     }
@@ -487,6 +612,8 @@ async function copySingleContent({
     // Duplicate the content itself and make it a child of `parentId`.
 
     const {
+      id: _id, // Don't copy the id!
+      _count,
       children,
       categories,
       classifications,
@@ -506,6 +633,8 @@ async function copySingleContent({
         sortIndex,
         isPublic: desiredParentIsPublic,
         licenseCode,
+        courseRootId: desiredCourseId,
+        classCode,
         classifications: {
           create: classifications.map((c) => ({
             classificationId: c.classificationId,
@@ -543,6 +672,7 @@ async function copySingleContent({
         desiredParentLicenseCode,
         desiredParentShares,
         desiredParentType,
+        desiredCourseId,
       });
     }
 
@@ -724,14 +854,10 @@ export async function getMoveCopyContentData({
       id: true,
       name: true,
       type: true,
-      rootAssignment: {
+      isAssignmentRoot: true,
+      parent: {
         select: {
-          rootContentId: true,
-        },
-      },
-      nonRootAssignment: {
-        select: {
-          rootContentId: true,
+          isAssignmentRoot: true,
         },
       },
     },
@@ -770,7 +896,7 @@ export async function getMoveCopyContentData({
   for (const child of results) {
     let canOpen = true;
     const isAssignment = Boolean(
-      child.rootAssignment || child.nonRootAssignment,
+      child.isAssignmentRoot || child.parent?.isAssignmentRoot,
     );
     if (isAssignment) {
       canOpen = false;
@@ -845,9 +971,7 @@ export async function checkIfContentContains({
   const children = await prisma.content.findMany({
     where: {
       parentId: contentId,
-      rootAssignment: { is: null },
-      nonRootAssignmentId: null,
-      ...filterEditableContent(loggedInUserId),
+      AND: [filterEditableContent(loggedInUserId), filterExcludeAssignments],
     },
     select: {
       id: true,

@@ -34,6 +34,10 @@ test("searchSharedContent returns public/shared activities and folders matching 
   const user = await createTestUser();
   const userId = user.userId;
 
+  if (user.email === null) {
+    throw new Error("User should have email");
+  }
+
   // Create unique session number for names in this test
   const sessionNumber = Date.now().toString();
 

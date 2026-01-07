@@ -1,5 +1,9 @@
 import { prisma } from "../model";
 import { UserInfo, UserInfoWithEmail } from "../types";
+import { generateHandle } from "../utils/names";
+import { filterEditableContent } from "../utils/permissions";
+import { fromUUID } from "../utils/uuid";
+import bcrypt from "bcryptjs";
 
 export async function findOrCreateUser({
   email,
@@ -7,17 +11,32 @@ export async function findOrCreateUser({
   lastNames,
   isEditor = false,
   isAnonymous = false,
+  isPremium,
 }: {
   email: string;
   firstNames: string | null;
   lastNames: string;
   isEditor?: boolean;
   isAnonymous?: boolean;
+  isPremium?: boolean;
 }) {
+  // For now, make any non-anonymous user a premium user
+  // We'll change this once we have the UI for non-premium users working
+  // by deleting this line and by defaulting isPremium to false in the function signature
+  isPremium = isPremium ?? !isAnonymous;
+
   let user = await prisma.users.upsert({
     where: { email },
     update: {},
-    create: { email, firstNames, lastNames, isEditor, isAnonymous },
+    create: {
+      email,
+      firstNames,
+      lastNames,
+      username: email,
+      isEditor,
+      isAnonymous,
+      isPremium,
+    },
   });
 
   if (lastNames !== "" && user.lastNames == "") {
@@ -115,9 +134,17 @@ export async function updateUser({
   lastNames,
 }: {
   loggedInUserId: Uint8Array;
-  firstNames: string;
-  lastNames: string;
+  firstNames?: string;
+  lastNames?: string;
 }) {
+  const { isAnonymous } = await prisma.users.findUniqueOrThrow({
+    where: { userId: loggedInUserId },
+    select: { isAnonymous: true },
+  });
+  if (isAnonymous && (firstNames !== "" || lastNames !== "")) {
+    throw new Error("Anonymous users cannot set name.");
+  }
+
   const user = await prisma.users.update({
     where: { userId: loggedInUserId },
     data: { firstNames, lastNames },
@@ -137,4 +164,63 @@ export async function setIsAuthor({
     where: { userId: loggedInUserId },
     data: { isAuthor },
   });
+}
+
+export async function createStudentHandleAccounts({
+  loggedInUserId,
+  folderId,
+  numAccounts,
+}: {
+  loggedInUserId: Uint8Array;
+  folderId: Uint8Array;
+  numAccounts: number;
+}) {
+  // Make sure content is a course owned by `loggedInUserId`
+  await prisma.content.findUniqueOrThrow({
+    where: {
+      id: folderId,
+      courseRootId: folderId,
+      ...filterEditableContent(loggedInUserId),
+    },
+    select: { id: true },
+  });
+
+  // Create the student handle accounts
+  const accounts: { userId: Uint8Array; handle: string; password: string }[] =
+    [];
+
+  for (let i = 0; i < numAccounts; i++) {
+    const password = generateHandle(true);
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(password, salt);
+
+    // We're looping in case `generateHandle` creates a duplicate handle
+    // Usernames are unique, so we try again if that happens
+    let success = false;
+    while (success === false) {
+      const handle = generateHandle();
+      const username = `${fromUUID(folderId)}:${handle}`;
+
+      try {
+        const { userId } = await prisma.users.create({
+          data: {
+            username,
+            firstNames: "",
+            lastNames: handle,
+            scopedToClassId: folderId,
+            passwordHash,
+          },
+        });
+
+        accounts.push({ handle, password, userId });
+        success = true;
+      } catch (_e) {
+        continue;
+      }
+    }
+  }
+
+  accounts.sort((a, b) => (a.handle < b.handle ? -1 : 1));
+
+  return { accounts };
 }
