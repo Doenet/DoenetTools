@@ -326,7 +326,12 @@ export function EditorHeader() {
 
       <Show above="xl">
         {folderIcon}
-        <ChakraLink as={ReactRouterLink} mb="-3px" to={folderLink}>
+        <ChakraLink
+          as={ReactRouterLink}
+          mb="-3px"
+          to={folderLink}
+          _hover={{ fontWeight: "bold", textDecoration: "none" }}
+        >
           {folderName}
         </ChakraLink>
       </Show>
@@ -364,6 +369,7 @@ export function EditorHeader() {
         <ChakraLink
           as={ReactRouterLink}
           mb="-3px"
+          _hover={{ fontWeight: "bold", textDecoration: "none" }}
           to={`/compoundEditor/${parent!.contentId}/${tab}`}
         >
           {parent!.name!}
