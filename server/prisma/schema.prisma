@@ -68,8 +68,9 @@ model content {
   maxAttempts            Int                      @default(1) @db.UnsignedSmallInt
   individualizeByStudent Boolean                  @default(false)
   submittedResponses     submittedResponses[]
-  contentState           contentState[]
+  contentStates          contentState[]
   assignmentScores       assignmentScores[]
+  contentItemStates      contentItemState[]
   // 
   // ====== Deletion =========
   // The parent id that the user deleted. Not defined if this is root
@@ -289,6 +290,7 @@ model contentItemState {
   score                Float        @default(0)
   state                String?      @db.MediumText
   contentState         contentState @relation(fields: [contentId, userId, contentAttemptNumber], references: [contentId, userId, attemptNumber], onDelete: NoAction, onUpdate: NoAction)
+  document             content      @relation(fields: [docId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([contentId, userId, contentAttemptNumber, itemNumber, itemAttemptNumber])
   @@unique([contentId, userId, contentAttemptNumber, shuffledItemNumber, itemAttemptNumber])

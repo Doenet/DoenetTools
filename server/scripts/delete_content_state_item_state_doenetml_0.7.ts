@@ -9,11 +9,9 @@ const prisma = new PrismaClient();
 async function main() {
   const deleteItemState = await prisma.contentItemState.updateMany({
     where: {
-      contentState: {
-        assignment: {
-          doenetmlVersion: {
-            displayedVersion: "0.7",
-          },
+      document: {
+        doenetmlVersion: {
+          displayedVersion: "0.7",
         },
       },
     },
@@ -38,10 +36,6 @@ async function main() {
   });
 
   console.log(`Deleted content state for ${deleteContentState.count} items.`);
-
-  // Important: delete item state before deleting content state
-  // since item state relies on content state for the link to the assignment
-  // await prisma.$transaction([deleteItemState, deleteContentState]);
 }
 
 main()

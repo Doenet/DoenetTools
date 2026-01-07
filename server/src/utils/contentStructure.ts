@@ -227,7 +227,7 @@ export function returnContentSelect({
   const assignmentSelect = includeAssignInfo && {
     isAssignmentRoot: true,
     assignmentClosedOn: true,
-    _count: { select: { contentState: true } },
+    _count: { select: { contentStates: true } },
   };
 
   const docSelect = {
@@ -338,7 +338,7 @@ type PreliminaryContent = {
   isAssignmentRoot?: boolean;
   assignmentClosedOn?: Date;
   _count?: {
-    contentState: number;
+    contentStates: number;
   };
 
   // from document select
@@ -443,7 +443,7 @@ export function processContent(
         assignmentClosedOn: assignmentClosedOn!,
       }),
       assignmentClosedOn: assignmentClosedOn!,
-      hasScoreData: _count ? _count.contentState > 0 : false,
+      hasScoreData: _count ? _count.contentStates > 0 : false,
       individualizeByStudent,
       maxAttempts,
       mode,

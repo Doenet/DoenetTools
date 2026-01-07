@@ -712,7 +712,7 @@ export async function listUserAssigned({
   const preliminaryAssignments = await prisma.content.findMany({
     where: {
       isDeletedOn: null,
-      contentState: {
+      contentStates: {
         some: { userId: loggedInUserId },
       },
     },
