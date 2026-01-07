@@ -68,8 +68,8 @@ export function toMathJaxString(
   s: string,
   options: { noInvisibleTimes?: boolean } = {},
 ) {
-  let chars = s.split("");
-  let newChars: string[] = [];
+  const chars = s.split("");
+  const newChars: string[] = [];
 
   if (options.noInvisibleTimes) {
     newChars.push(...chars);
