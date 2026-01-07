@@ -68,7 +68,7 @@ model content {
   maxAttempts            Int                      @default(1) @db.UnsignedSmallInt
   individualizeByStudent Boolean                  @default(false)
   submittedResponses     submittedResponses[]
-  contentState           contentState[]
+  contentStates          contentState[]
   assignmentScores       assignmentScores[]
   contentItemStates      contentItemState[]
   // 

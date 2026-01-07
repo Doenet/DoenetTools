@@ -99,7 +99,7 @@ export async function saveScoreAndState({
         id: contentId,
       },
       select: {
-        contentState: {
+        contentStates: {
           distinct: ["contentId", "userId"],
           where: { userId: loggedInUserId },
           orderBy: { attemptNumber: "desc" },
@@ -108,7 +108,7 @@ export async function saveScoreAndState({
       },
     });
 
-    const maxAttemptNumber = assignment.contentState[0]?.attemptNumber ?? 0;
+    const maxAttemptNumber = assignment.contentStates[0]?.attemptNumber ?? 0;
     return maxAttemptNumber;
   }
 
@@ -300,7 +300,7 @@ export async function createNewAttempt({
       maxAttempts: true,
       type: true,
       courseRootId: true,
-      contentState: {
+      contentStates: {
         distinct: ["contentId", "userId"],
         where: { userId: loggedInUserId },
         orderBy: { attemptNumber: "desc" },
@@ -309,7 +309,7 @@ export async function createNewAttempt({
     },
   });
 
-  const maxAttemptNumber = assignment.contentState[0]?.attemptNumber ?? 0;
+  const maxAttemptNumber = assignment.contentStates[0]?.attemptNumber ?? 0;
 
   if (assignment.mode === "formative" && assignment.type !== "singleDoc") {
     if (shuffledItemOrder === undefined) {
@@ -818,7 +818,7 @@ export async function calculateScoreAndCacheResults({
     },
     select: {
       mode: true,
-      contentState: {
+      contentStates: {
         where: { userId: scoreUserId },
         distinct: ["contentId", "userId"],
         orderBy: { attemptNumber: "desc" },
@@ -830,11 +830,11 @@ export async function calculateScoreAndCacheResults({
   });
 
   const mode = assignment.mode;
-  if (assignment.contentState.length !== 1) {
+  if (assignment.contentStates.length !== 1) {
     return { calculatedScore: false as const };
   }
 
-  const latestAttemptNumber = assignment.contentState[0].attemptNumber;
+  const latestAttemptNumber = assignment.contentStates[0].attemptNumber;
 
   // Get the score for each attempt
   // For each attempt, also calculate the latest score for each item
