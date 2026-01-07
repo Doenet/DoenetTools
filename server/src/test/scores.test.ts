@@ -3,6 +3,9 @@ import {
   createTestAnonymousUser,
   createTestPremiumUser,
   createTestUser,
+  doc,
+  pset,
+  setupTestContent,
 } from "./utils";
 import { createContent } from "../query/activity";
 import { DateTime } from "luxon";
@@ -3193,16 +3196,14 @@ test("Cannot create activity-wide attempt on formative assessment", async () => 
 
   // Note: wouldn't get two items without adding children to the sequence,
   // but we aren't testing that part
-  const { contentId } = await createContent({
-    loggedInUserId: ownerId,
-    contentType: "sequence",
-    parentId: null,
+  const [psetId, doc1Id, doc2Id] = await setupTestContent(ownerId, {
+    "problem set": pset({ doc1: doc(""), doc2: doc("") }),
   });
 
   // Since we are doing item attempts, we are creating data in line with the formative mode.
   // (Set the mode to stress the fact even though it is the default)
   await updateAssignmentSettings({
-    contentId,
+    contentId: psetId,
     loggedInUserId: ownerId,
     mode: "formative",
   });
@@ -3210,7 +3211,7 @@ test("Cannot create activity-wide attempt on formative assessment", async () => 
   // open assignment generates code
   const closedOn = DateTime.now().plus({ days: 1 });
   const { assignmentId } = await createAssignment({
-    contentId,
+    contentId: psetId,
     closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
@@ -3222,12 +3223,12 @@ test("Cannot create activity-wide attempt on formative assessment", async () => 
   const shuffledItemOrder = [
     {
       shuffledItemNumber: 2,
-      docId: new Uint8Array(16),
+      docId: doc1Id,
       variant: 11,
     },
     {
       shuffledItemNumber: 1,
-      docId: new Uint8Array(16),
+      docId: doc2Id,
       variant: 21,
     },
   ];
