@@ -177,11 +177,7 @@ const router = createBrowserRouter([
     element: (
       <>
         <ChakraProvider theme={theme}>
-          <MathJaxContext
-            version={3}
-            config={mathjaxConfig}
-            // onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-          >
+          <MathJaxContext version={4} config={mathjaxConfig}>
             <SiteHeader />
           </MathJaxContext>
         </ChakraProvider>

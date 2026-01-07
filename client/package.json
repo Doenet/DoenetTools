@@ -39,7 +39,7 @@
     "@doenet-tools/shared": "*",
     "@fontsource/jost": "^5.2.6",
     "axios": "^1.11.0",
-    "better-react-mathjax": "^2.1.0",
+    "better-react-mathjax": "^2.4.0-beta-1",
     "browser-image-resizer": "^2.4.1",
     "cssesc": "^3.0.0",
     "export-to-csv": "^1.4.0",
