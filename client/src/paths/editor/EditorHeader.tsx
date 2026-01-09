@@ -57,7 +57,6 @@ import { LibraryEditorControls } from "../../widgets/editor/LibraryEditorControl
 import { editorUrl } from "../../utils/url";
 import { NameBar } from "../../widgets/NameBar";
 import { loader as settingsLoader } from "./EditorSettingsMode";
-import "../../utils/editor-header.css";
 import { isActivityFullyCategorized } from "../../utils/classification";
 
 export async function loader({
@@ -331,7 +330,7 @@ export function EditorHeader() {
           to={folderLink}
           _hover={{ fontWeight: "bold", textDecoration: "none" }}
         >
-          <HStack spacing="5px">
+          <HStack spacing="0.3rem">
             {folderIcon}
             <Text>{folderName}</Text>
           </HStack>
@@ -371,13 +370,15 @@ export function EditorHeader() {
         />
       </Show>
       <Show above="lg">
-        {outerActivityIcon}
         <ChakraLink
           as={ReactRouterLink}
-          _hover={{ fontWeight: "bold", textDecoration: "none" }}
           to={`/compoundEditor/${parent!.contentId}/${tab}`}
+          _hover={{ fontWeight: "bold", textDecoration: "none" }}
         >
-          {parent!.name!}
+          <HStack spacing="0.3rem">
+            {outerActivityIcon}
+            <Text>{parent!.name!}</Text>
+          </HStack>
         </ChakraLink>
       </Show>
       <Box
@@ -567,7 +568,7 @@ export function EditorHeader() {
         borderBottom="1px solid"
         borderColor="doenet.mediumGray"
       >
-        <HStack width="100%" ml="10px">
+        <HStack width="100%" ml="0.6rem">
           {folder}
           {outerActivity}
           {editableName}

@@ -8,7 +8,6 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useFetcher } from "react-router";
-import "../utils/editor-header.css";
 
 /**
  * Component to display the title of content, optionally editable
