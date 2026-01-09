@@ -26,7 +26,8 @@ export default defineConfig({
     proxy: {
       "/cyapi": "http://apache",
       //"/media": "http://apache",
-      "/api": "http://localhost:3000",
+      // "/api": "http://localhost:3000",
+      "/api": "https://doenet.dev3.doenet.org",
       "/media": "http://localhost:3000",
       //"/api": "http://apache",
     },
