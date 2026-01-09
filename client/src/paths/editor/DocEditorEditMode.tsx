@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from "react";
-import { useLoaderData, useOutletContext } from "react-router";
+import { useBlocker, useLoaderData, useOutletContext } from "react-router";
 import { DoenetmlVersion } from "../../types";
 import { DoenetEditor } from "@doenet/doenetml-iframe";
 import axios, { AxiosError } from "axios";
@@ -120,6 +120,23 @@ function DocumentEditor({
       }
     }
   }, [contentId]);
+
+  // Block when leaving this page to go to view mode
+  const blocker = useBlocker(({ nextLocation }) =>
+    nextLocation.pathname.endsWith("/view"),
+  );
+
+  useEffect(() => {
+    if (blocker.state === "blocked") {
+      (async () => {
+        try {
+          await handleSaveDoc(); // wait for save to finish
+        } finally {
+          blocker.proceed();
+        }
+      })();
+    }
+  }, [blocker, handleSaveDoc]);
 
   // save draft when leave page
   useEffect(() => {

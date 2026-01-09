@@ -1,6 +1,6 @@
 describe("Navigate Explore Tests", function () {
   it("remember explore's current tab", () => {
-    cy.loginAsTestUser({ isAdmin: true });
+    cy.loginAsTestUser({ isEditor: true });
 
     // make sure library contains at least one item
     cy.createContent({
