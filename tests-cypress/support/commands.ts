@@ -110,10 +110,10 @@ Cypress.Commands.add(
       if (makePublic) {
         cy.request({
           method: "POST",
-          url: "/api/share/makeContentPublic",
+          url: "/api/share/setContentIsPublic",
           body: {
             contentId,
-            licenseCode: "CCDUAL",
+            isPublic: true,
           },
         });
       }
