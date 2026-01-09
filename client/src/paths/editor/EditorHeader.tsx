@@ -78,10 +78,6 @@ export async function loader({
     throw e;
   }
 
-  if (data.isNotEditable) {
-    return redirect(`/activityEditor/${params.contentId}`);
-  }
-
   const contentType: ContentType = data.contentType;
   const pageRoute = request.url.split("/")[0];
 
