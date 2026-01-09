@@ -1,7 +1,7 @@
 PROJECT=doenet
 FARGATE_CLUSTER=dev3
-AWS_REGION=us-east-1
-TEMPLATE_BUCKET=doenet-cf-dev3
+AWS_REGION=us-east-2
+TEMPLATE_BUCKET=doenet-cf-dev
 SSO_ACCOUNT_NAME=CSE-doenet-dev
 SAM_CONFIG_ENV=dev
 
