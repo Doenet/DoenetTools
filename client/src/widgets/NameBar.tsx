@@ -61,7 +61,7 @@ export function NameBar({
             pointerEvents="none"
             display="flex"
             alignItems="center"
-            padding="0 0.75rem"
+            padding="0 0.1rem"
           >
             {leftIcon}
           </Box>
@@ -91,7 +91,7 @@ export function NameBar({
           pointerEvents="none"
           display="flex"
           alignItems="center"
-          padding="0 0.75rem"
+          padding="0 0.1rem"
         >
           {leftIcon}
         </Box>
@@ -124,18 +124,24 @@ export function NameBar({
           );
         }}
       >
-        <EditablePreview
+        <Box
+          as={EditablePreview}
           className="editable-name"
           data-test="Editable Title"
           noOfLines={1}
           lineHeight="1.2"
-          pl={{ base: "0rem", md: "2.5rem" }}
+          pl={{ base: "0rem", md: "1.8rem" }}
+          rounded="none"
+          outline="1px solid gray"
         />
-        <EditableInput
+        <Box
+          as={EditableInput}
           data-test="Editable Input"
           maxLength={191}
           lineHeight="1.2"
-          pl={{ base: "0rem", md: "2.5rem" }}
+          pl={{ base: "0rem", md: "1.8rem" }}
+          rounded="none"
+          outline="1px solid gray"
         />
       </Editable>
     </Box>

@@ -28,6 +28,7 @@ import {
   Hide,
   HStack,
   Spacer,
+  Text,
 } from "@chakra-ui/react";
 import {
   MdModeEditOutline,
@@ -300,7 +301,6 @@ export function EditorHeader() {
       aria-label="Go to containing folder"
       color="gray.500"
       fontSize="1.1rem"
-      ml="1rem"
     />
   );
 
@@ -318,6 +318,7 @@ export function EditorHeader() {
         <IconButton
           as={ReactRouterLink}
           icon={folderIcon}
+          size="sm"
           variant="ghost"
           aria-label={"Folder"}
           to={folderLink}
@@ -325,17 +326,21 @@ export function EditorHeader() {
       </Show>
 
       <Show above="xl">
-        {folderIcon}
         <ChakraLink
           as={ReactRouterLink}
-          mb="-3px"
           to={folderLink}
           _hover={{ fontWeight: "bold", textDecoration: "none" }}
         >
-          {folderName}
+          <HStack spacing="5px">
+            {folderIcon}
+            <Text>{folderName}</Text>
+          </HStack>
         </ChakraLink>
       </Show>
-      <Box ml="0.5rem" mr="0.5rem">
+      <Box
+        ml={{ base: "0rem", xl: "0.5rem" }}
+        mr={{ base: "0rem", xl: "0.5rem" }}
+      >
         <FaChevronRight color="gray.500" fontSize="0.7rem" />
       </Box>
     </Hide>
@@ -359,6 +364,7 @@ export function EditorHeader() {
         <IconButton
           as={ReactRouterLink}
           icon={outerActivityIcon}
+          size="sm"
           variant="ghost"
           aria-label={"Problem set"}
           to={`/compoundEditor/${parent!.contentId}/${tab}`}
@@ -368,14 +374,16 @@ export function EditorHeader() {
         {outerActivityIcon}
         <ChakraLink
           as={ReactRouterLink}
-          mb="-3px"
           _hover={{ fontWeight: "bold", textDecoration: "none" }}
           to={`/compoundEditor/${parent!.contentId}/${tab}`}
         >
           {parent!.name!}
         </ChakraLink>
       </Show>
-      <Box ml="0.5rem" mr="0.5rem">
+      <Box
+        ml={{ base: "0rem", xl: "0.5rem" }}
+        mr={{ base: "0rem", xl: "0.5rem" }}
+      >
         <FaChevronRight color="gray.500" fontSize="0.7rem" />
       </Box>
     </Hide>
@@ -559,7 +567,7 @@ export function EditorHeader() {
         borderBottom="1px solid"
         borderColor="doenet.mediumGray"
       >
-        <HStack width="100%">
+        <HStack width="100%" ml="10px">
           {folder}
           {outerActivity}
           {editableName}
