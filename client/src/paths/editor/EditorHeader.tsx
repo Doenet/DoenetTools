@@ -28,6 +28,7 @@ import {
   Hide,
   HStack,
   Spacer,
+  Text,
 } from "@chakra-ui/react";
 import {
   MdModeEditOutline,
@@ -56,7 +57,6 @@ import { LibraryEditorControls } from "../../widgets/editor/LibraryEditorControl
 import { editorUrl } from "../../utils/url";
 import { NameBar } from "../../widgets/NameBar";
 import { loader as settingsLoader } from "./EditorSettingsMode";
-import "../../utils/editor-header.css";
 import { isActivityFullyCategorized } from "../../utils/classification";
 
 export async function loader({
@@ -296,7 +296,6 @@ export function EditorHeader() {
       aria-label="Go to containing folder"
       color="gray.500"
       fontSize="1.1rem"
-      ml="1rem"
     />
   );
 
@@ -314,6 +313,7 @@ export function EditorHeader() {
         <IconButton
           as={ReactRouterLink}
           icon={folderIcon}
+          size="sm"
           variant="ghost"
           aria-label={"Folder"}
           to={folderLink}
@@ -321,12 +321,21 @@ export function EditorHeader() {
       </Show>
 
       <Show above="xl">
-        {folderIcon}
-        <ChakraLink as={ReactRouterLink} mb="-3px" to={folderLink}>
-          {folderName}
+        <ChakraLink
+          as={ReactRouterLink}
+          to={folderLink}
+          _hover={{ fontWeight: "bold", textDecoration: "none" }}
+        >
+          <HStack spacing="0.3rem">
+            {folderIcon}
+            <Text>{folderName}</Text>
+          </HStack>
         </ChakraLink>
       </Show>
-      <Box ml="0.5rem" mr="0.5rem">
+      <Box
+        ml={{ base: "0rem", xl: "0.5rem" }}
+        mr={{ base: "0rem", xl: "0.5rem" }}
+      >
         <FaChevronRight color="gray.500" fontSize="0.7rem" />
       </Box>
     </Hide>
@@ -350,22 +359,28 @@ export function EditorHeader() {
         <IconButton
           as={ReactRouterLink}
           icon={outerActivityIcon}
+          size="sm"
           variant="ghost"
           aria-label={"Problem set"}
           to={`/compoundEditor/${parent!.contentId}/${tab}`}
         />
       </Show>
       <Show above="lg">
-        {outerActivityIcon}
         <ChakraLink
           as={ReactRouterLink}
-          mb="-3px"
           to={`/compoundEditor/${parent!.contentId}/${tab}`}
+          _hover={{ fontWeight: "bold", textDecoration: "none" }}
         >
-          {parent!.name!}
+          <HStack spacing="0.3rem">
+            {outerActivityIcon}
+            <Text>{parent!.name!}</Text>
+          </HStack>
         </ChakraLink>
       </Show>
-      <Box ml="0.5rem" mr="0.5rem">
+      <Box
+        ml={{ base: "0rem", xl: "0.5rem" }}
+        mr={{ base: "0rem", xl: "0.5rem" }}
+      >
         <FaChevronRight color="gray.500" fontSize="0.7rem" />
       </Box>
     </Hide>
@@ -549,7 +564,7 @@ export function EditorHeader() {
         borderBottom="1px solid"
         borderColor="doenet.mediumGray"
       >
-        <HStack width="100%">
+        <HStack width="100%" ml="0.6rem">
           {folder}
           {outerActivity}
           {editableName}
