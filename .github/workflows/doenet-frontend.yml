@@ -53,6 +53,6 @@ jobs:
         shell: bash
         working-directory: ${{ env.WORKING_DIR }}
         run: |
-          aws s3 sync --delete client/dist s3://frontend-${{ env.AWS_ACCOUNT_ID }}-${{ env.AWS_REGION }}
+          aws s3 sync --delete client/dist s3://${{env.ENV_NAME}}-frontend-${{ env.AWS_ACCOUNT_ID }}-${{ env.AWS_REGION }}
           id=$(aws ssm get-parameter --name "/${{ env.ENV_NAME }}/frontend/DistributionId" --query "Parameter.Value" --output text)
           aws cloudfront create-invalidation --distribution-id $id --paths "/"
