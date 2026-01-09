@@ -7,7 +7,8 @@
     "build": "wireit",
     "dev": "cross-env NODE_ENV=production vite",
     "lint": "eslint --fix",
-    "lint:check": "eslint"
+    "lint:check": "eslint",
+    "test-cypress": "cypress open"
   },
   "wireit": {
     "build": {

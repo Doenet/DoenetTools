@@ -317,6 +317,7 @@ export function EditorHeader() {
           variant="ghost"
           aria-label={"Folder"}
           to={folderLink}
+          data-test="Folder Breadcrumb Icon"
         />
       </Show>
 
@@ -532,6 +533,7 @@ export function EditorHeader() {
         colorScheme="blue"
         isDisabled={inLibrary}
         onClick={() => shareContentOnOpen()}
+        data-test="Share Button"
       >
         Share
       </Button>
