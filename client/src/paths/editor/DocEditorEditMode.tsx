@@ -123,7 +123,7 @@ function DocumentEditor({
 
   // Block when leaving this page to go to view mode
   const blocker = useBlocker(({ nextLocation }) =>
-    nextLocation.pathname.endsWith("/view"),
+    nextLocation.pathname.endsWith(`${contentId}/view`),
   );
 
   useEffect(() => {
@@ -136,7 +136,7 @@ function DocumentEditor({
         }
       })();
     }
-  }, [blocker, handleSaveDoc]);
+  }, [blocker.state, handleSaveDoc]);
 
   // save draft when leave page
   useEffect(() => {
