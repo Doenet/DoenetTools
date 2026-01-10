@@ -87,6 +87,7 @@ export function CompoundActivityEditor({
 
   useEffect(() => {
     setHaveContentSpinner(false);
+    setSelectedCards([]);
   }, [activity]);
 
   const [moveCopyData, setMoveCopyData] = useState<{
