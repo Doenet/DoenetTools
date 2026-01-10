@@ -463,7 +463,7 @@ async function genericAction({ request }: ActionFunctionArgs) {
         error === "Invalid request" &&
         details === "Cannot copy content into a descendant of itself"
       ) {
-        return { message: details };
+        return { success: false, message: details };
       }
     }
 
