@@ -181,7 +181,9 @@ test("Search for content classifications, query alone", async () => {
     const results = await searchPossibleClassifications({
       query: "coMMoN cOrE",
     });
-    expect(results.find((i) => i.code === "2.G.1")).toBeDefined();
+    expect(results[0].descriptions[0].subCategory.category.system.name).eq(
+      "Common Core Math",
+    );
   }
   {
     // Combination of fields
