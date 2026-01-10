@@ -136,7 +136,7 @@ function DocumentEditor({
         }
       })();
     }
-  }, [blocker.state, handleSaveDoc]);
+  }, [blocker, handleSaveDoc]);
 
   // save draft when leave page
   useEffect(() => {
