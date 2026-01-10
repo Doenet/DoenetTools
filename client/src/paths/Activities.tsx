@@ -585,7 +585,12 @@ export function Activities() {
           {createNewButton}
           {parent && (
             <>
-              <Button size="sm" colorScheme="blue" onClick={shareFolderOnOpen}>
+              <Button
+                size="sm"
+                colorScheme="blue"
+                onClick={shareFolderOnOpen}
+                data-test="Share Folder Button"
+              >
                 Share
               </Button>
               <Button
