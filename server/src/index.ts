@@ -295,6 +295,7 @@ passport.serializeUser(async (req: any, user: any, done: any) => {
     let lastNames = generateHandle();
     let isAnonymous = true;
     let isEditor = false;
+    let isAuthor = false;
 
     if (
       process.env.ALLOW_TEST_LOGIN &&
@@ -311,6 +312,9 @@ passport.serializeUser(async (req: any, user: any, done: any) => {
         if (req.body.isEditor) {
           isEditor = true;
         }
+        if (req.body.isAuthor) {
+          isAuthor = true;
+        }
         isAnonymous = false;
       }
     }
@@ -321,6 +325,7 @@ passport.serializeUser(async (req: any, user: any, done: any) => {
       firstNames,
       isAnonymous,
       isEditor,
+      isAuthor,
     });
     return done(undefined, fromUUID(u.userId));
   }

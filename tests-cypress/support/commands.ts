@@ -36,12 +36,14 @@ Cypress.Commands.add(
     email,
     firstNames,
     lastNames,
-    isAdmin = false,
+    isEditor = false,
+    isAuthor = false,
   }: {
     email?: string;
     firstNames?: string;
     lastNames?: string;
-    isAdmin?: boolean;
+    isEditor?: boolean;
+    isAuthor?: boolean;
   } = {}) => {
     if (!email) {
       const code = Date.now().toString();
@@ -54,7 +56,7 @@ Cypress.Commands.add(
       cy.request({
         method: "POST",
         url: "/api/login/createOrLoginAsTest",
-        body: { email, firstNames, lastNames, isAdmin },
+        body: { email, firstNames, lastNames, isEditor, isAuthor },
       });
     });
   },
@@ -89,7 +91,7 @@ Cypress.Commands.add(
       url: "/api/updateContent/createContent",
       body: {
         contentType,
-        parentId,
+        parentId: parentId ?? null,
       },
     }).then((resp) => {
       const contentId: string = resp.body.contentId;

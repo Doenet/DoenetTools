@@ -10,12 +10,14 @@ declare global {
         email,
         firstNames,
         lastNames,
-        isAdmin,
+        isEditor,
+        isAuthor,
       }?: {
         email?: string;
         firstNames?: string;
         lastNames?: string;
-        isAdmin?: boolean;
+        isEditor?: boolean;
+        isAuthor?: boolean;
       }): Chainable<null>;
 
       /**
