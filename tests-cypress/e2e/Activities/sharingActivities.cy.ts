@@ -12,6 +12,7 @@ describe("Share Activities Tests", function () {
       email: scoobyEmail,
       firstNames: "Scooby",
       lastNames: "Doo",
+      isAuthor: true,
     });
 
     cy.visit("/");
@@ -30,14 +31,18 @@ describe("Share Activities Tests", function () {
 
     cy.iframe().find(".doenet-viewer").should("contain.text", `Hello there!`);
 
-    cy.get('[data-test="Sharing Button"]').click();
-    cy.get('[data-test="Public Checkbox"]').click();
-    cy.get('[data-test="Status message"]').should(
+    cy.get('[data-test="Share Button"]').click();
+    cy.get('[data-test="Public Status"]').should(
       "contain.text",
-      "shared publicly",
+      "Content is not public",
+    );
+    cy.get('[data-test="Share Publicly Button"]').click();
+    cy.get('[data-test="Public Status"]').should(
+      "contain.text",
+      "Content is public",
     );
 
-    cy.get('[data-test="Close Share Drawer Button"]').click();
+    cy.get('[data-test="Share Close Button"]').click();
 
     cy.loginAsTestUser({
       email: scrappyEmail,
@@ -61,6 +66,8 @@ describe("Share Activities Tests", function () {
     cy.get('[data-test="Add To"]').click();
     cy.get('[data-test="Add To My Activities"]').click();
 
+    // Note: get a typesetting error from MathJax without cy.wait here
+    cy.wait(500);
     cy.get('[data-test="Go to Destination"]').click();
 
     cy.get(`[data-test="Content Card"]`).eq(0).click();
