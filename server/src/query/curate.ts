@@ -358,7 +358,8 @@ export async function suggestToBeCurated({
     ? isEqualUUID(loggedInUserId, content.ownerId)
     : false;
 
-  // If this activity is already pending or under review, we will silently do nothing. No need to update the database.
+  // If this activity is already pending or under review, we won't update the database,
+  // but we will still return the corresponding contentIdInLibrary.
 
   let contentIdInLibrary = content.librarySourceInfo?.contentId;
 
