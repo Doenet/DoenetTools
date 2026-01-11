@@ -1,4 +1,64 @@
-describe("Move to tests", () => {
+describe("Move tests", () => {
+  it("Move items up and down", () => {
+    cy.loginAsTestUser();
+
+    cy.createContent({ name: "Document", contentType: "singleDoc" });
+    cy.createContent({ name: "Problem Set", contentType: "sequence" });
+    cy.createContent({ name: "Folder", contentType: "folder" });
+
+    cy.visit("/");
+
+    cy.get('[data-test="Activities"]').click();
+
+    cy.get(`[data-test="Content Card"]`).should("have.length", 3);
+    cy.get(`[data-test="Content Card"]`)
+      .eq(0)
+      .should("contain.text", "Document");
+    cy.get(`[data-test="Content Card"]`)
+      .eq(1)
+      .should("contain.text", "Problem Set");
+    cy.get(`[data-test="Content Card"]`).eq(2).should("contain.text", "Folder");
+
+    cy.get('[data-test="Card Menu Button"]').eq(0).click();
+    cy.get('[data-test="Move Up Menu Item"]').should("not.be.visible");
+    cy.get('[data-test="Move Down Menu Item"]').eq(0).click();
+
+    cy.get(`[data-test="Content Card"]`).should("have.length", 3);
+    cy.get(`[data-test="Content Card"]`)
+      .eq(0)
+      .should("contain.text", "Problem Set");
+    cy.get(`[data-test="Content Card"]`)
+      .eq(1)
+      .should("contain.text", "Document");
+    cy.get(`[data-test="Content Card"]`).eq(2).should("contain.text", "Folder");
+
+    cy.get('[data-test="Card Menu Button"]').eq(1).click();
+    cy.get('[data-test="Move Up Menu Item"]').should("be.visible");
+    cy.get('[data-test="Move Down Menu Item"]').eq(1).click();
+
+    cy.get(`[data-test="Content Card"]`).should("have.length", 3);
+    cy.get(`[data-test="Content Card"]`)
+      .eq(0)
+      .should("contain.text", "Problem Set");
+    cy.get(`[data-test="Content Card"]`).eq(1).should("contain.text", "Folder");
+    cy.get(`[data-test="Content Card"]`)
+      .eq(2)
+      .should("contain.text", "Document");
+
+    cy.get('[data-test="Card Menu Button"]').eq(2).click();
+    cy.get('[data-test="Move Down Menu Item"]').should("not.be.visible");
+    cy.get('[data-test="Move Up Menu Item"]').eq(1).click(); // since no Move Up button on first card
+
+    cy.get(`[data-test="Content Card"]`).should("have.length", 3);
+    cy.get(`[data-test="Content Card"]`)
+      .eq(0)
+      .should("contain.text", "Problem Set");
+    cy.get(`[data-test="Content Card"]`)
+      .eq(1)
+      .should("contain.text", "Document");
+    cy.get(`[data-test="Content Card"]`).eq(2).should("contain.text", "Folder");
+  });
+
   it("Move document into problem set", () => {
     cy.loginAsTestUser();
 
