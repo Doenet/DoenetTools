@@ -107,7 +107,7 @@ Cypress.Commands.add(
         });
       }
 
-      if (makePublic) {
+      if (makePublic || publishInLibrary) {
         cy.request({
           method: "POST",
           url: "/api/share/setContentIsPublic",
