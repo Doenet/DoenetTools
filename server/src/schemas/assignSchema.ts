@@ -8,6 +8,23 @@ import {
   stringAsRangedNumberIncludingZero,
 } from "./rangedNumber";
 
+/**
+ * Schema for validating assignment closed-on data.
+ * Validates that the assignment has a unique content identifier and a closed-on timestamp.
+ *
+ * @property {string} contentId - A UUID that uniquely identifies the assignment content
+ * @property {DateTime} closedOn - An ISO 8601 datetime string with timezone offset information (e.g., "2024-01-15T10:30:00+05:00").
+ *                                 The `{offset: true}` requirement ensures the datetime includes timezone offset,
+ *                                 rejecting UTC-only formats like "2024-01-15T10:30:00Z".
+ *                                 The string is transformed into a Luxon DateTime object for server-side processing.
+ *
+ * @example
+ * // Valid input
+ * { contentId: "550e8400-e29b-41d4-a716-446655440000", closedOn: "2024-01-15T10:30:00+05:00" }
+ *
+ * // Invalid - no offset
+ * { contentId: "550e8400-e29b-41d4-a716-446655440000", closedOn: "2024-01-15T10:30:00Z" }
+ */
 export const assignmentClosedOnSchema = z.object({
   contentId: uuidSchema,
   closedOn: z.iso
