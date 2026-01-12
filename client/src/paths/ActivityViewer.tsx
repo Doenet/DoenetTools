@@ -38,7 +38,12 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { BsPlayBtnFill } from "react-icons/bs";
-import { MdOutlineAdd, MdOutlineEditOff, MdOutlineInfo } from "react-icons/md";
+import {
+  MdEditNote,
+  MdOutlineAdd,
+  MdOutlineEditOff,
+  MdOutlineInfo,
+} from "react-icons/md";
 import { useFetcher } from "react-router";
 
 import axios from "axios";
@@ -601,16 +606,44 @@ export function ActivityViewer() {
                     {user ? (
                       addToMenu
                     ) : (
-                      <Button
-                        data-test="Nav to signIn"
-                        colorScheme="blue"
-                        size="sm"
-                        onClick={() => {
-                          navigate("/signIn");
-                        }}
-                      >
-                        Sign In To Use Content
-                      </Button>
+                      <>
+                        <Show above="xl">
+                          <Button
+                            data-test="Nav to signIn"
+                            colorScheme="blue"
+                            size="sm"
+                            onClick={() => {
+                              navigate("/signIn");
+                            }}
+                          >
+                            Sign In To Use Content
+                          </Button>
+                        </Show>
+                        {activityData.type === "singleDoc" && (
+                          <Tooltip
+                            hasArrow
+                            label={`Load into scratchpad`}
+                            placement="bottom-end"
+                          >
+                            <Button
+                              data-test="Load into scratchpad"
+                              colorScheme="blue"
+                              size="sm"
+                              onClick={() => {
+                                navigate(
+                                  `/scratchPad?contentId=${activityData.contentId}`,
+                                );
+                              }}
+                              leftIcon={<MdEditNote size={20} />}
+                            >
+                              <Show above="md">
+                                <Show below="lg">Scratchpad</Show>
+                              </Show>
+                              <Show above="lg">Load into scratchpad</Show>
+                            </Button>
+                          </Tooltip>
+                        )}
+                      </>
                     )}
 
                     <Tooltip
