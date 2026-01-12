@@ -65,7 +65,7 @@ export function EditAssignmentSettings({
  * A number input to set an activity's max attempt count
  * If `attempts` is 0, that means unlimited
  */
-function MaxAttemptsSelectionBox({
+export function MaxAttemptsSelectionBox({
   contentId,
   attempts,
 }: {
@@ -98,7 +98,7 @@ function MaxAttemptsSelectionBox({
 
   // We keep track of the latest number input just so unchecking the
   // unlimited option will revert back to the previous input value
-  const [numberInputVal, setNumberInputVal] = useState(
+  const [numberInputVal, setNumberInputVal] = useState<number | "">(
     attempts > 0 ? attempts : 1,
   );
 
@@ -111,7 +111,8 @@ function MaxAttemptsSelectionBox({
         <Switch
           isChecked={isUnlimited}
           onChange={(e) => {
-            fetcherUpdate(e.target.checked ? 0 : numberInputVal);
+            const val = typeof numberInputVal === "number" ? numberInputVal : 1;
+            fetcherUpdate(e.target.checked ? 0 : val);
           }}
         />
       </HStack>
@@ -124,20 +125,29 @@ function MaxAttemptsSelectionBox({
           width="80px"
           min={1}
           max={65535}
-          onChange={(valueString) => setNumberInputVal(parseInt(valueString))}
+          data-test="max-attempts-input"
+          onChange={(valueString) => {
+            if (valueString === "") {
+              setNumberInputVal("");
+            } else {
+              const newVal = parseInt(valueString);
+              if (!isNaN(newVal)) {
+                setNumberInputVal(newVal);
+                if (newVal >= 1) {
+                  fetcherUpdate(newVal);
+                }
+              }
+            }
+          }}
           value={isUnlimited ? "---" : numberInputVal}
           onKeyDown={(e) => {
             if (e.key == "Enter") {
               const target = e.target as HTMLInputElement;
-              if (parseInt(target.value) >= 1) {
-                fetcherUpdate(parseInt(target.value));
-              }
+              setMaxAttemptsFromInput(target);
             }
           }}
           onBlur={(e) => {
-            if (parseInt(e.target.value) >= 1) {
-              fetcherUpdate(parseInt(e.target.value));
-            }
+            setMaxAttemptsFromInput(e.target);
           }}
         >
           <NumberInputField />
@@ -149,6 +159,22 @@ function MaxAttemptsSelectionBox({
       </HStack>
     </Box>
   );
+
+  /**
+   * Set set max attempts from the input field of the number input.
+   * - If the value is a positive integer, set that as the new max attempts.
+   * - If the value is blank and the previous value is a positive integer,
+   *   reset to the last valid value and also reset the input field.
+   * - Otherwise do nothing.
+   */
+  function setMaxAttemptsFromInput(target: HTMLInputElement) {
+    if (parseInt(target.value) >= 1) {
+      fetcherUpdate(parseInt(target.value));
+    } else if (target.value === "" && attempts >= 1) {
+      fetcherUpdate(attempts);
+      setNumberInputVal(attempts);
+    }
+  }
 }
 
 function VariantSelectionBox({
