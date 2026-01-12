@@ -18,7 +18,7 @@ const action = async ({ request }: { request: Request }) => {
 
     if (contentType.includes("application/json")) {
       const body = await request.json();
-      let maxAttempts = body.maxAttempts;
+      const maxAttempts = body.maxAttempts;
 
       if (maxAttempts !== undefined) {
         // Update the component's attempts prop
