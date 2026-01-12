@@ -42,6 +42,11 @@ declare global {
           code: string;
         }[];
         makePublic?: boolean;
+        /**
+         * Publish the content in the library.
+         * Automatically make content public even if `makePublic` is false.
+         * Requires that the logged in user is an editor.
+         */
         publishInLibrary?: boolean;
         parentId?: string;
       }): Chainable<string>;
