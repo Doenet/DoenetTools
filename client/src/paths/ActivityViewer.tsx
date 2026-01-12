@@ -619,30 +619,30 @@ export function ActivityViewer() {
                             Sign In To Use Content
                           </Button>
                         </Show>
-                        {activityData.type === "singleDoc" && (
-                          <Tooltip
-                            hasArrow
-                            label={`Load into scratchpad`}
-                            placement="bottom-end"
-                          >
-                            <Button
-                              data-test="Load into scratchpad"
-                              colorScheme="blue"
-                              size="sm"
-                              onClick={() => {
-                                navigate(
-                                  `/scratchPad?contentId=${activityData.contentId}`,
-                                );
-                              }}
-                              leftIcon={<MdEditNote size={20} />}
+                        {activityData.type === "singleDoc" &&
+                          activityData.doenetmlVersion.default && (
+                            <Tooltip
+                              hasArrow
+                              label={`Load into Scratch Pad`}
+                              placement="bottom-end"
                             >
-                              <Show above="md">
-                                <Show below="lg">Scratchpad</Show>
-                              </Show>
-                              <Show above="lg">Load into scratchpad</Show>
-                            </Button>
-                          </Tooltip>
-                        )}
+                              <Button
+                                data-test="Load into Scratch Pad"
+                                pr={{ base: "0px", md: "10px" }}
+                                colorScheme="blue"
+                                size="sm"
+                                onClick={() => {
+                                  navigate(
+                                    `/scratchPad?contentId=${activityData.contentId}`,
+                                  );
+                                }}
+                                leftIcon={<MdEditNote size={20} />}
+                              >
+                                <Show above="lg">Load into </Show>
+                                <Show above="md">Scratch Pad</Show>
+                              </Button>
+                            </Tooltip>
+                          )}
                       </>
                     )}
 
