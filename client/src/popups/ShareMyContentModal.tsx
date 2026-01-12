@@ -255,13 +255,13 @@ function SharePublicly({
   );
 
   if (parentIsPublic) {
-    return <p>Parent is public.</p>;
+    return <p data-test="Public Status">Parent is public.</p>;
   } else if (isPublic) {
     return (
       <VStack justify="flex-start" align="flex-start" spacing="1rem" pt="1rem">
         {browseWarning}
 
-        <Text>Content is public.</Text>
+        <Text data-test="Public Status">Content is public.</Text>
 
         <Button
           size="sm"
@@ -302,7 +302,7 @@ function SharePublicly({
       <VStack justify="flex-start" align="flex-start" spacing="1rem" pt="1rem">
         {browseWarning}
 
-        <Text>
+        <Text data-test="Public Status">
           Content is not public. Allow others to find and use your content.
         </Text>
         <Button

@@ -432,6 +432,7 @@ export function Explore() {
                     <ChakraLink
                       as={ReactRouterLink}
                       to={`/sharedActivities/${author.userId}`}
+                      data-test="Author Link"
                     >
                       {authorName}
                     </ChakraLink>
