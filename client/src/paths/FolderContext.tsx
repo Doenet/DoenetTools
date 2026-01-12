@@ -44,6 +44,7 @@ export function FolderContext() {
         marginLeft={isActivitiesActive ? "0" : "4px"}
         borderLeftColor={isActivitiesActive ? "doenet.mainBlue" : "transparent"}
         aria-current={isActivitiesActive ? "page" : undefined}
+        data-test="My Activities Link"
       >
         <Text fontSize="large">My Activities</Text>
       </Button>
@@ -92,6 +93,7 @@ export function FolderContext() {
         marginLeft={isTrashActive ? "0" : "4px"}
         borderLeftColor={isTrashActive ? "doenet.mainBlue" : "transparent"}
         aria-current={isTrashActive ? "page" : undefined}
+        data-test="Trash Link"
       >
         <Text fontSize="large">Trash</Text>
       </Button>
