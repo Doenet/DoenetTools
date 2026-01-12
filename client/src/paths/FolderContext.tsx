@@ -69,7 +69,7 @@ export function FolderContext() {
           isSharedWithMeActive ? "doenet.mainBlue" : "transparent"
         }
         aria-current={isSharedWithMeActive ? "page" : undefined}
-        data-test="Shared with me Link"
+        data-test="Shared With Me Button"
       >
         <Text fontSize="large">
           <Show above="lg">Shared with me</Show>

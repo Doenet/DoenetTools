@@ -436,19 +436,34 @@ async function genericAction({ request }: ActionFunctionArgs) {
       return results;
     }
   } catch (e) {
-    /**
-     * Special case: sharing content with specific people by email address
-     * Normally, when the server returns an error, we want to go the error page.
-     * However, in this case, it might mean that the owner entered an invalid email address.
-     * If that's the case, catch it and let the route deal with it (handled in component EditorHeader).
-     */
     if (path === "share/shareContent" && e instanceof AxiosError) {
+      /**
+       * Special case: sharing content with specific people by email address
+       * Normally, when the server returns an error, we want to go the error page.
+       * However, in this case, it might mean that the owner entered an invalid email address.
+       * If that's the case, catch it and let the route deal with it (handled in component EditorHeader).
+       */
       const error = e.response!.data!.error;
       const details = e.response!.data!.details;
       if (error === "Invalid data" && details[0]?.message === "Invalid email") {
         return "Invalid email";
       } else {
         return details;
+      }
+    } else if (path === "copyMove/copyContent" && e instanceof AxiosError) {
+      /**
+       * Special case: copying content into a descendant of itself.
+       * This could occur when copying a selected folder into the list of recent destinations.
+       * We don't want to go to the error page in this case but show a message in the copy modal instead.
+       */
+      const error = e.response!.data!.error;
+      const details = e.response!.data!.details;
+
+      if (
+        error === "Invalid request" &&
+        details === "Cannot copy content into a descendant of itself"
+      ) {
+        return { success: false, message: details };
       }
     }
 

@@ -107,7 +107,7 @@ Cypress.Commands.add(
         });
       }
 
-      if (makePublic) {
+      if (makePublic || publishInLibrary) {
         cy.request({
           method: "POST",
           url: "/api/share/setContentIsPublic",
@@ -121,19 +121,26 @@ Cypress.Commands.add(
       if (publishInLibrary) {
         cy.request({
           method: "POST",
-          url: "/api/addDraftToLibrary",
+          url: "/api/curate/suggestToBeCurated",
           body: {
             contentId: contentId,
-            type: "singleDoc",
           },
         }).then((resp) => {
+          const contentIdInLibrary = resp.body.contentIdInLibrary;
           cy.request({
             method: "POST",
-            url: "/api/publishActivityToLibrary",
+            url: "/api/curate/claimOwnershipOfReview",
             body: {
-              id: resp.body.newContentId,
-              comment: "Publish it!",
+              contentId: contentIdInLibrary,
             },
+          }).then(() => {
+            cy.request({
+              method: "POST",
+              url: "/api/curate/publishActivityToLibrary",
+              body: {
+                contentId: contentIdInLibrary,
+              },
+            });
           });
         });
       }
