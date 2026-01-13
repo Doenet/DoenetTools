@@ -69,7 +69,6 @@ describe("Share Activities Tests", function () {
     cy.get('[data-test="Community Tab"]').click();
 
     // Click on the content card
-    cy.get('[data-test="Community Results"] [data-test="Content Card"]');
     cy.get('[data-test="Community Results"]')
       .find('[data-test="Content Card"]')
       .click();
@@ -82,7 +81,6 @@ describe("Share Activities Tests", function () {
     cy.get('[data-test="Go to Destination"]').click();
 
     // Click the first content card - use eq() on a fresh query
-    cy.get(`[data-test="Content Card"]`);
     cy.get(`[data-test="Content Card"]`).eq(0).click();
 
     // Wait for iframe and viewer to load before checking content
