@@ -25,10 +25,16 @@ describe("Share Activities Tests", function () {
       `My new activity${code}{enter}`,
     );
 
+    // Edit content - wait for editor to be ready before typing
+    cy.iframe().find(".cm-activeLine", { timeout: 10000 });
     cy.iframe().find(".cm-activeLine").type("Hello there!");
+    cy.wait(500); // Wait for text to be set
     cy.iframe().find(".cm-editor").click(); // Click to ensure focus
+    cy.wait(300);
     cy.iframe().find(".cm-activeLine").type("{enter}");
+    cy.wait(300);
     cy.iframe().find(".cm-activeLine").type("{ctrl+S}");
+    cy.wait(500);
 
     // Verify viewer shows content
     cy.iframe().find(".doenet-viewer").should("contain.text", `Hello there!`);
