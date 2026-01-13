@@ -10,15 +10,7 @@ Cypress.on("uncaught:exception", (err) => {
   ) {
     return false; // Suppress the error
   }
-  // Let other errors fail the test
-  return true;
-});
 
-// Also handle promise rejections from MathJax
-Cypress.on("uncaught:exception", (err, runnable, promise) => {
-  // If it's a promise rejection related to MathJax, suppress it
-  if (promise && err.message?.includes("Typesetting failed")) {
-    return false;
-  }
+  // Let other errors fail the test
   return true;
 });
