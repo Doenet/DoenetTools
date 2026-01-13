@@ -80,6 +80,13 @@ jobs:
       GITHUB_CLIENT_ID: ci-test-client-id
       GITHUB_CLIENT_SECRET: ci-test-client-secret
       SESSION_SECRET: ci-test-session-secret
+      MAGIC_LINK_SECRET: ci-test-magic-link-secret
+      LOGIN_CALLBACK_ROOT: http://localhost:8000/
+      CONFIRM_SIGNIN_URL: http://localhost:8000/signIn
+      CONSOLE_LOG_EMAIL: "true"
+      # Enable test features for CI
+      ALLOW_TEST_LOGIN: "true"
+      ADD_TEST_APIS: "true"
 
     steps:
       # Checkout repo
