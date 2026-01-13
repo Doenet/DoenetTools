@@ -25,12 +25,15 @@ describe("Share Activities Tests", function () {
       `My new activity${code}{enter}`,
     );
 
+    // Edit content - each operation is a fresh query
     cy.iframe().find(".cm-activeLine").invoke("text", "Hello there!");
     cy.wait(200);
     cy.iframe().find(".cm-activeLine").type("{enter}");
+    cy.wait(200);
     cy.iframe().find(".cm-activeLine").type("{ctrl+S}");
     cy.wait(300);
 
+    // Verify viewer shows content
     cy.iframe().find(".doenet-viewer").should("contain.text", `Hello there!`);
 
     cy.get('[data-test="Share Button"]').click();
@@ -61,9 +64,11 @@ describe("Share Activities Tests", function () {
 
     cy.get('[data-test="Community Tab"]').click();
 
-    cy.get(
-      '[data-test="Community Results"] [data-test="Content Card"]',
-    ).click();
+    // Click on the content card
+    cy.get('[data-test="Community Results"] [data-test="Content Card"]');
+    cy.get('[data-test="Community Results"]')
+      .find('[data-test="Content Card"]')
+      .click();
 
     cy.get('[data-test="Add To"]').click();
     cy.get('[data-test="Add To My Activities"]').click();
@@ -72,6 +77,8 @@ describe("Share Activities Tests", function () {
     cy.wait(1000);
     cy.get('[data-test="Go to Destination"]').click();
 
+    // Click the first content card - use eq() on a fresh query
+    cy.get(`[data-test="Content Card"]`);
     cy.get(`[data-test="Content Card"]`).eq(0).click();
 
     // Wait for iframe and viewer to load before checking content
