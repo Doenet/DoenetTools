@@ -74,6 +74,12 @@ jobs:
     env:
       PORT: 3306
       DATABASE_URL: mysql://root:root@localhost:3306/db
+      # OAuth environment variables for CI (dummy values for testing)
+      GOOGLE_CLIENT_ID: ci-test-client-id
+      GOOGLE_CLIENT_SECRET: ci-test-client-secret
+      GITHUB_CLIENT_ID: ci-test-client-id
+      GITHUB_CLIENT_SECRET: ci-test-client-secret
+      SESSION_SECRET: ci-test-session-secret
 
     steps:
       # Checkout repo
