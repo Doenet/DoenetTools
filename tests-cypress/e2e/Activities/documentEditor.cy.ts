@@ -34,6 +34,7 @@ describe("Document Editor Tests", function () {
 
       // Switch back to edit mode
       cy.get(`[data-test="Edit Mode Button"]`).click();
+      cy.wait(100);
 
       // Verify editor is back - separate queries
       cy.iframe().find(".cm-editor").should("contain.text", "Initial content");
