@@ -34,7 +34,6 @@ describe("Share Activities Tests", function () {
     cy.iframe().find(".cm-activeLine").type("{enter}");
     cy.wait(300);
     cy.iframe().find(".cm-activeLine").type("{ctrl+S}");
-    cy.wait(500);
 
     // Verify viewer shows content
     cy.iframe().find(".doenet-viewer").should("contain.text", `Hello there!`);
