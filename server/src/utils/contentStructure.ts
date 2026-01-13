@@ -158,6 +158,7 @@ export function returnContentSelect({
               email: true,
               firstNames: true,
               lastNames: true,
+              username: true,
             },
           },
         }
@@ -184,6 +185,7 @@ export function returnContentSelect({
           userId: true,
           firstNames: true,
           lastNames: true,
+          username: true,
         },
       }
     : false;

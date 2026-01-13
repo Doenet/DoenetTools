@@ -68,6 +68,7 @@ export type UserInfo = {
   userId: Uuid;
   firstNames: string | null;
   lastNames: string;
+  username: string;
   isAuthor?: boolean;
   isAnonymous?: boolean;
   numLibrary?: number;
@@ -83,6 +84,7 @@ export function isUserInfo(obj: unknown): obj is UserInfo {
     isUuid(typedObj.userId) &&
     (typedObj.firstNames === null || typeof typedObj.firstNames === "string") &&
     typeof typedObj.lastNames === "string" &&
+    typeof typedObj.username === "string" &&
     (typedObj.numLibrary === undefined ||
       typeof typedObj.numLibrary === "number") &&
     (typedObj.numCommunity === undefined ||

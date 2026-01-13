@@ -19,7 +19,7 @@ export async function findOrCreateUser({
   isEditor?: boolean;
   isAnonymous?: boolean;
   isPremium?: boolean;
-}) {
+}): Promise<UserInfoWithEmail> {
   // For now, make any non-anonymous user a premium user
   // We'll change this once we have the UI for non-premium users working
   // by deleting this line and by defaulting isPremium to false in the function signature
@@ -46,8 +46,15 @@ export async function findOrCreateUser({
     });
   }
 
-  const { isLibrary: _isLibrary, ...userNoLibrary } = user;
-  return userNoLibrary;
+  return {
+    userId: user.userId,
+    email: user.email,
+    firstNames: user.firstNames,
+    lastNames: user.lastNames,
+    username: user.username,
+    isAnonymous: user.isAnonymous,
+    isAuthor: user.isAuthor,
+  };
 }
 
 export function getUserInfoIfLoggedIn({
@@ -92,6 +99,7 @@ export async function getAuthorInfo(userId: Uint8Array): Promise<UserInfo> {
       userId: true,
       firstNames: true,
       lastNames: true,
+      username: true,
     },
   });
 }
@@ -106,6 +114,7 @@ export async function getUserInfoFromEmail(
       email: true,
       firstNames: true,
       lastNames: true,
+      username: true,
       isAnonymous: true,
       isEditor: true,
     },
@@ -136,7 +145,7 @@ export async function updateUser({
   loggedInUserId: Uint8Array;
   firstNames?: string;
   lastNames?: string;
-}) {
+}): Promise<UserInfoWithEmail> {
   const { isAnonymous } = await prisma.users.findUniqueOrThrow({
     where: { userId: loggedInUserId },
     select: { isAnonymous: true },
@@ -149,8 +158,15 @@ export async function updateUser({
     where: { userId: loggedInUserId },
     data: { firstNames, lastNames },
   });
-  const { isLibrary: _isLibrary, ...userNoLibrary } = user;
-  return userNoLibrary;
+  return {
+    userId: user.userId,
+    email: user.email,
+    firstNames: user.firstNames,
+    lastNames: user.lastNames,
+    username: user.username,
+    isAnonymous: user.isAnonymous,
+    isAuthor: user.isAuthor,
+  };
 }
 
 export async function setIsAuthor({

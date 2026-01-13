@@ -580,7 +580,13 @@ export async function getAssignedScores({
 
   const userData: UserInfo = await prisma.users.findUniqueOrThrow({
     where: { userId: loggedInUserId },
-    select: { userId: true, firstNames: true, lastNames: true, email: true },
+    select: {
+      userId: true,
+      firstNames: true,
+      lastNames: true,
+      username: true,
+      email: true,
+    },
   });
 
   return { userData, orderedActivityScores };
@@ -727,7 +733,13 @@ export async function listUserAssigned({
 
   const user: UserInfo = await prisma.users.findUniqueOrThrow({
     where: { userId: loggedInUserId },
-    select: { userId: true, firstNames: true, lastNames: true, email: true },
+    select: {
+      userId: true,
+      firstNames: true,
+      lastNames: true,
+      username: true,
+      email: true,
+    },
   });
 
   return {

@@ -81,16 +81,7 @@ describe("Share tests", () => {
     const ownerId = owner.userId;
     const user = await createTestUser();
     const userId = user.userId;
-    const {
-      isEditor,
-      isAnonymous,
-      isAuthor,
-      isPremium: _isPremium,
-      passwordHash: _passwordHash,
-      scopedToClassId: _scopedToClassId,
-      username: _username,
-      ...userFields
-    } = user;
+    const { isAnonymous, isAuthor, ...userFields } = user;
 
     const { contentId: publicFolderId } = await createContent({
       loggedInUserId: ownerId,
@@ -394,13 +385,8 @@ describe("Share tests", () => {
         lastNames: "Zaborowski",
       });
       const {
-        isEditor: _isEditor1,
         isAnonymous: _isAnonymous1,
         isAuthor: _isAuthor1,
-        isPremium: _isPremium1,
-        passwordHash: _passwordHash,
-        scopedToClassId: _scopedToClassId,
-        username: _username,
         ...userFields1
       } = user1;
       let user2 = await createTestUser();
@@ -411,13 +397,8 @@ describe("Share tests", () => {
         lastNames: "Abbas",
       });
       const {
-        isEditor: _isEditor2,
         isAnonymous: _isAnonymous2,
         isAuthor: _isAuthor2,
-        isPremium: _isPremium2,
-        passwordHash: _passwordHash2,
-        scopedToClassId: _scopedToClassId2,
-        username: _username2,
         ...userFields2
       } = user2;
       let user3 = await createTestUser();
@@ -428,13 +409,8 @@ describe("Share tests", () => {
         lastNames: "Nyquist",
       });
       const {
-        isEditor: _isEditor3,
         isAnonymous: _isAnonymous3,
         isAuthor: _isAuthor3,
-        isPremium: _isPremium3,
-        passwordHash: _passwordHash3,
-        scopedToClassId: _scopedToClassId3,
-        username: _username3,
         ...userFields3
       } = user3;
 
@@ -938,13 +914,8 @@ describe("Share tests", () => {
     const user = await createTestUser();
     const userId = user.userId;
     const {
-      isEditor: _isEditor,
       isAnonymous: _isAnonymous,
       isAuthor: _isAuthor,
-      isPremium: _isPremium,
-      passwordHash: _passwordHash,
-      scopedToClassId: _scopedToClassId,
-      username: _username,
       ...userFields
     } = user;
 
