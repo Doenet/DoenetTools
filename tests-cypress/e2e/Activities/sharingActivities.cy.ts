@@ -1,8 +1,4 @@
 describe("Share Activities Tests", function () {
-  before(() => {});
-
-  beforeEach(() => {});
-
   it("create, share, and copy public activity", () => {
     const code = Date.now().toString();
     const scrappyEmail = `scrappy${code}@doo`;
@@ -74,6 +70,8 @@ describe("Share Activities Tests", function () {
     cy.get('[data-test="Add To"]').click();
     cy.get('[data-test="Add To My Activities"]').click();
 
+    // Wait for MathJax to finish typesetting before navigating
+    cy.wait(500);
     cy.get('[data-test="Go to Destination"]').click();
 
     // Click the first content card - use eq() on a fresh query
