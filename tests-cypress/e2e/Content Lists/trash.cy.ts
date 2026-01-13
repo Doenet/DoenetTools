@@ -186,7 +186,7 @@ describe("Trash tests", () => {
     cy.get(`[data-test="Content Card"]`).should("have.length", 0);
   });
 
-  it.only("Delete and undelete folder with contents", () => {
+  it("Delete and undelete folder with contents", () => {
     cy.loginAsTestUser();
 
     cy.createContent({ name: "Folder 1", contentType: "folder" }).then(
