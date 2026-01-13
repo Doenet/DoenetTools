@@ -70,9 +70,7 @@ describe("Create Folders Tests", function () {
 
     cy.wait(200);
 
-    cy.iframe().find(".cm-activeLine").invoke("text", `Hello${code}!`);
-    cy.wait(500);
-    cy.iframe().find(".cm-activeLine").type("{enter}");
+    cy.iframe().find(".cm-activeLine").type(`Hello${code}!{enter}`);
     cy.wait(200);
 
     cy.iframe().find('[data-test="Viewer Update Button"]').click();
