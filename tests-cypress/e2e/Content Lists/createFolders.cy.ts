@@ -72,6 +72,7 @@ describe("Create Folders Tests", function () {
 
     cy.iframe().find(".cm-activeLine").invoke("text", `Hello${code}!`);
     cy.wait(200);
+    cy.iframe().find(".cm-activeLine").should("not.be.disabled");
     cy.iframe().find(".cm-activeLine").type("{enter}");
     cy.wait(200);
 
