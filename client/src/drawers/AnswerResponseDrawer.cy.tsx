@@ -34,7 +34,6 @@ describe("AnswerResponseDrawer component tests", () => {
           userId: "student1",
           firstNames: "Student",
           lastNames: "One",
-          username: "some@email.com",
         }}
         answerId={"answer123"}
         itemNumber={1}
@@ -102,7 +101,6 @@ describe("AnswerResponseDrawer component tests", () => {
           userId: "student1",
           firstNames: "Student",
           lastNames: "One",
-          username: "some@email.com",
         }}
         answerId={"answer123"}
         itemNumber={1}
@@ -163,7 +161,6 @@ describe("AnswerResponseDrawer component tests", () => {
           userId: "student1",
           firstNames: "Student",
           lastNames: "One",
-          username: "some@email.com",
         }}
         answerId={"answer123"}
         itemNumber={1}

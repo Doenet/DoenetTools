@@ -56,7 +56,6 @@ export async function findOrCreateUser({
     email: user.email,
     firstNames: user.firstNames,
     lastNames: user.lastNames,
-    username: user.username,
     isAnonymous: user.isAnonymous,
     isAuthor: user.isAuthor,
   };
@@ -104,7 +103,6 @@ export async function getAuthorInfo(userId: Uint8Array): Promise<UserInfo> {
       userId: true,
       firstNames: true,
       lastNames: true,
-      username: true,
     },
   });
 }
@@ -119,7 +117,6 @@ export async function getUserInfoFromEmail(
       email: true,
       firstNames: true,
       lastNames: true,
-      username: true,
       isAnonymous: true,
       isEditor: true,
     },
@@ -168,7 +165,6 @@ export async function updateUser({
     email: user.email,
     firstNames: user.firstNames,
     lastNames: user.lastNames,
-    username: user.username,
     isAnonymous: user.isAnonymous,
     isAuthor: user.isAuthor,
   };
