@@ -3,7 +3,9 @@ import { prisma } from "../model";
 type Metric = {
   metric: "users_joined" | "content_created" | "content_shared_publicly";
   granularity: "daily" | "weekly" | "monthly";
-  timezone: string;
+  // TODO: Once we start providing actual dates rather than yearWeek numbers,
+  // we should explicitly define the timezone used for those dates.
+  // timezone: string;
   range: {
     start: Date;
     end: Date;
@@ -32,10 +34,13 @@ export async function getWeeklyUsersJoined({
     GROUP BY yearWeek
     ORDER BY yearWeek;
   `;
+
+  // YEARWEEK returns week number (1-53) and year, stored as YYYYWW format
+  // Converting back to actual dates is complex; for now using the yearWeek as date identifier
+
   return {
     metric: "users_joined",
     granularity: "weekly",
-    timezone: "UTC",
     range: { start, end },
     data: result.map((row) => ({
       date: row.yearWeek.toString(),
@@ -71,7 +76,6 @@ export async function getWeeklyContentCreated({
   return {
     metric: "content_created",
     granularity: "weekly",
-    timezone: "UTC",
     range: { start, end },
     data: result.map((row) => ({
       date: row.yearWeek.toString(),
@@ -104,7 +108,6 @@ export async function getWeeklyContentSharedPublicly({
   return {
     metric: "content_shared_publicly",
     granularity: "weekly",
-    timezone: "UTC",
     range: { start, end },
     data: result.map((row) => ({
       date: row.yearWeek.toString(),

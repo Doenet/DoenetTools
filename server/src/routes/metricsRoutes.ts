@@ -10,8 +10,8 @@ import { z } from "zod";
 export const metricsRouter = express.Router();
 
 const metricStartEnd = z.object({
-  start: z.date(),
-  end: z.date(),
+  start: z.coerce.date(),
+  end: z.coerce.date(),
 });
 
 metricsRouter.get(
