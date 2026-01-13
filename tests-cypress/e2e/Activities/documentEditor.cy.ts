@@ -12,7 +12,6 @@ describe("Activity Editor Tests", function () {
       cy.visit(`/documentEditor/${activityId}/edit`);
 
       // Wait for viewer to display initial content
-      cy.iframe().find(".doenet-viewer", { timeout: 10000 });
       cy.iframe()
         .find(".doenet-viewer")
         .should("contain.text", `Initial content`);
