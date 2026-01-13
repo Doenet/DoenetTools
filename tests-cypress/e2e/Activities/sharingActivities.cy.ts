@@ -83,8 +83,6 @@ describe("Share Activities Tests", function () {
     cy.get(`[data-test="Content Card"]`).eq(0).click();
 
     // Wait for iframe and viewer to load before checking content
-    cy.iframe().find(".doenet-viewer", { timeout: 10000 });
-    cy.wait(500);
     cy.iframe().find(".doenet-viewer").should("contain.text", `Hello there!`);
   });
 });
