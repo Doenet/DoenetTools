@@ -1,6 +1,6 @@
-describe("Activity Editor Tests", function () {
+describe("Document Editor Tests", function () {
   it("correctly restore editor state after clicking view", () => {
-    // test bug where activity editor was not restoring itself with the correct state
+    // test bug where document editor was not restoring itself with the correct state
     // after one switched to view mode and back
 
     cy.loginAsTestUser({ isAuthor: true });
