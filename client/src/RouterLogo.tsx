@@ -21,7 +21,7 @@ const LogoButton = styled.button`
   // border-radius: 50%;
   margin-top: 2px;
   margin-left: 10px;
-  cursor: "pointer";
+  cursor: pointer;
 `;
 
 export default function RouterLogo() {
