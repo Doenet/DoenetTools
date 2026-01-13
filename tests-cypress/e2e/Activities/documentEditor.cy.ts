@@ -17,12 +17,7 @@ describe("Activity Editor Tests", function () {
         .find(".doenet-viewer")
         .should("contain.text", `Initial content`);
 
-      // Edit the content - type enter, wait for DOM to settle
-      cy.iframe().find(".cm-activeLine").type("{enter}");
-      cy.wait(500);
-
-      // Re-query for the active line after DOM update
-      cy.iframe().find(".cm-activeLine").invoke("text", "More!");
+      cy.iframe().find(".cm-activeLine").type("{enter}More!");
       cy.wait(100);
 
       // Switch to view mode
