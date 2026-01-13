@@ -1,5 +1,5 @@
 import express from "express";
-import { queryLoggedIn } from "../middleware/queryMiddleware";
+import { queryOptionalLoggedIn } from "../middleware/queryMiddleware";
 import {
   getWeeklyContentCreated,
   getWeeklyContentSharedPublicly,
@@ -10,21 +10,21 @@ import { z } from "zod";
 export const metricsRouter = express.Router();
 
 const metricStartEnd = z.object({
-  start: z.coerce.date(),
-  end: z.coerce.date(),
+  start: z.coerce.date().optional(),
+  end: z.coerce.date().optional(),
 });
 
 metricsRouter.get(
   "/users/joined/weekly",
-  queryLoggedIn(getWeeklyUsersJoined, metricStartEnd),
+  queryOptionalLoggedIn(getWeeklyUsersJoined, metricStartEnd),
 );
 
 metricsRouter.get(
   "/content/created/weekly",
-  queryLoggedIn(getWeeklyContentCreated, metricStartEnd),
+  queryOptionalLoggedIn(getWeeklyContentCreated, metricStartEnd),
 );
 
 metricsRouter.get(
   "/content/sharedPublicly/weekly",
-  queryLoggedIn(getWeeklyContentSharedPublicly, metricStartEnd),
+  queryOptionalLoggedIn(getWeeklyContentSharedPublicly, metricStartEnd),
 );

@@ -18,13 +18,13 @@ type Metric = {
  * Does not include anonymous users.
  */
 export async function getWeeklyUsersJoined({
-  start,
-  end,
+  start = new Date(0),
+  end = new Date(),
 }: {
-  start: Date;
-  end: Date;
+  start?: Date;
+  end?: Date;
 }): Promise<Metric> {
-  const result = await prisma.$queryRaw<{ yearWeek: number; count: number }[]>`
+  const result = await prisma.$queryRaw<{ yearWeek: number; count: bigint }[]>`
     SELECT
       YEARWEEK(joinedAt, 0) AS yearWeek,
       COUNT(*) AS count
@@ -44,7 +44,7 @@ export async function getWeeklyUsersJoined({
     range: { start, end },
     data: result.map((row) => ({
       date: row.yearWeek.toString(),
-      count: row.count,
+      count: Number(row.count),
     })),
   };
 }
@@ -54,13 +54,13 @@ export async function getWeeklyUsersJoined({
  * Does not include deleted content or assignments.
  */
 export async function getWeeklyContentCreated({
-  start,
-  end,
+  start = new Date(0),
+  end = new Date(),
 }: {
-  start: Date;
-  end: Date;
+  start?: Date;
+  end?: Date;
 }): Promise<Metric> {
-  const result = await prisma.$queryRaw<{ yearWeek: number; count: number }[]>`
+  const result = await prisma.$queryRaw<{ yearWeek: number; count: bigint }[]>`
     SELECT
       YEARWEEK(c.createdAt, 0) AS yearWeek,
       COUNT(*) AS count
@@ -79,7 +79,7 @@ export async function getWeeklyContentCreated({
     range: { start, end },
     data: result.map((row) => ({
       date: row.yearWeek.toString(),
-      count: row.count,
+      count: Number(row.count),
     })),
   };
 }
@@ -89,13 +89,13 @@ export async function getWeeklyContentCreated({
  * Does not include deleted content that was public.
  */
 export async function getWeeklyContentSharedPublicly({
-  start,
-  end,
+  start = new Date(0),
+  end = new Date(),
 }: {
-  start: Date;
-  end: Date;
+  start?: Date;
+  end?: Date;
 }): Promise<Metric> {
-  const result = await prisma.$queryRaw<{ yearWeek: number; count: number }[]>`
+  const result = await prisma.$queryRaw<{ yearWeek: number; count: bigint }[]>`
     SELECT
       YEARWEEK(publiclySharedAt, 0) AS yearWeek,
       COUNT(*) AS count
@@ -111,7 +111,7 @@ export async function getWeeklyContentSharedPublicly({
     range: { start, end },
     data: result.map((row) => ({
       date: row.yearWeek.toString(),
-      count: row.count,
+      count: Number(row.count),
     })),
   };
 }
