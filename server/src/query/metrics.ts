@@ -8,7 +8,7 @@ type Metric = {
     start: Date;
     end: Date;
   };
-  data: { date: string; count: bigint }[];
+  data: { date: string; count: number }[];
 };
 
 /**
@@ -22,7 +22,7 @@ export async function getWeeklyUsersJoined({
   start: Date;
   end: Date;
 }): Promise<Metric> {
-  const result = await prisma.$queryRaw<{ yearWeek: number; count: bigint }[]>`
+  const result = await prisma.$queryRaw<{ yearWeek: number; count: number }[]>`
     SELECT
       YEARWEEK(joinedAt, 0) AS yearWeek,
       COUNT(*) AS count
@@ -55,7 +55,7 @@ export async function getWeeklyContentCreated({
   start: Date;
   end: Date;
 }): Promise<Metric> {
-  const result = await prisma.$queryRaw<{ yearWeek: number; count: bigint }[]>`
+  const result = await prisma.$queryRaw<{ yearWeek: number; count: number }[]>`
     SELECT
       YEARWEEK(c.createdAt, 0) AS yearWeek,
       COUNT(*) AS count
@@ -91,7 +91,7 @@ export async function getWeeklyContentSharedPublicly({
   start: Date;
   end: Date;
 }): Promise<Metric> {
-  const result = await prisma.$queryRaw<{ yearWeek: number; count: bigint }[]>`
+  const result = await prisma.$queryRaw<{ yearWeek: number; count: number }[]>`
     SELECT
       YEARWEEK(publiclySharedAt, 0) AS yearWeek,
       COUNT(*) AS count
