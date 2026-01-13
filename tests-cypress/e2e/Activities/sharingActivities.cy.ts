@@ -26,8 +26,10 @@ describe("Share Activities Tests", function () {
     );
 
     cy.iframe().find(".cm-activeLine").invoke("text", "Hello there!");
+    cy.wait(200);
     cy.iframe().find(".cm-activeLine").type("{enter}");
     cy.iframe().find(".cm-activeLine").type("{ctrl+S}");
+    cy.wait(300);
 
     cy.iframe().find(".doenet-viewer").should("contain.text", `Hello there!`);
 
@@ -66,11 +68,15 @@ describe("Share Activities Tests", function () {
     cy.get('[data-test="Add To"]').click();
     cy.get('[data-test="Add To My Activities"]').click();
 
-    // Note: get a typesetting error from MathJax without cy.wait here
-    cy.wait(500);
+    // Wait for MathJax to finish typesetting before navigating
+    cy.wait(1000);
     cy.get('[data-test="Go to Destination"]').click();
 
     cy.get(`[data-test="Content Card"]`).eq(0).click();
+
+    // Wait for iframe and viewer to load before checking content
+    cy.iframe().find(".doenet-viewer", { timeout: 10000 });
+    cy.wait(500);
     cy.iframe().find(".doenet-viewer").should("contain.text", `Hello there!`);
   });
 });
