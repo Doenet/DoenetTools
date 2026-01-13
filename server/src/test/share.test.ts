@@ -20,6 +20,7 @@ import { getSharedWithMe } from "../query/content_list";
 import { isEqualUUID } from "../utils/uuid";
 import { createAssignment } from "../query/assign";
 import { DateTime } from "luxon";
+import { prisma } from "../model";
 
 describe("Share tests", () => {
   test("content in public folder is created as public", async () => {
@@ -1905,4 +1906,113 @@ describe("shareContent()", () => {
       expect(results.content[1].contentId).toEqual(folder1);
     });
   });
+});
+
+describe("setContentIsPublic()", () => {
+  test("publicly sharing content sets `publiclySharedAt` of itself and descendants", async () => {
+    const { userId } = await createTestUser();
+    const [folderId, _folder2Id, childContentId] = await setupTestContent(
+      userId,
+      {
+        folder1: fold({
+          folder2: fold({
+            doc1: doc(""),
+          }),
+        }),
+      },
+    );
+
+    const beforeShare = DateTime.now().minus({ seconds: 1 });
+    await setContentIsPublic({
+      contentId: folderId,
+      loggedInUserId: userId,
+      isPublic: true,
+    });
+
+    const { publiclySharedAt: folderMetric } =
+      await prisma.content.findUniqueOrThrow({
+        where: { id: folderId },
+        select: { publiclySharedAt: true },
+      });
+
+    const { publiclySharedAt: childMetric } =
+      await prisma.content.findUniqueOrThrow({
+        where: { id: childContentId },
+        select: { publiclySharedAt: true },
+      });
+
+    expect(folderMetric).not.toBeNull();
+    expect(folderMetric!.getTime()).toBeGreaterThan(beforeShare.toMillis());
+    expect(childMetric).not.toBeNull();
+    expect(childMetric!.getTime()).toBeGreaterThan(beforeShare.toMillis());
+    expect(folderMetric!.getTime()).toEqual(childMetric!.getTime());
+  });
+
+  test("publicly unsharing content removes `publiclySharedAt` of itself and descendants", async () => {
+    const { userId } = await createTestUser();
+    const [folderId, _folder2Id, childContentId] = await setupTestContent(
+      userId,
+      {
+        folder1: fold({
+          folder2: fold({
+            doc1: doc(""),
+          }),
+        }),
+      },
+    );
+
+    await setContentIsPublic({
+      contentId: folderId,
+      loggedInUserId: userId,
+      isPublic: true,
+    });
+
+    await setContentIsPublic({
+      contentId: folderId,
+      loggedInUserId: userId,
+      isPublic: false,
+    });
+
+    const { publiclySharedAt: folderMetric } =
+      await prisma.content.findUniqueOrThrow({
+        where: { id: folderId },
+        select: { publiclySharedAt: true },
+      });
+
+    const { publiclySharedAt: childMetric } =
+      await prisma.content.findUniqueOrThrow({
+        where: { id: childContentId },
+        select: { publiclySharedAt: true },
+      });
+
+    expect(folderMetric).toBeNull();
+    expect(childMetric).toBeNull();
+  });
+});
+
+test("new content does not have publiclySharedAt date", async () => {
+  const { userId } = await createTestUser();
+  const [folderId, _folder2Id, childContentId] = await setupTestContent(
+    userId,
+    {
+      folder1: fold({
+        folder2: fold({
+          doc1: doc(""),
+        }),
+      }),
+    },
+  );
+  const { publiclySharedAt: folderMetric } =
+    await prisma.content.findUniqueOrThrow({
+      where: { id: folderId },
+      select: { publiclySharedAt: true },
+    });
+
+  const { publiclySharedAt: childMetric } =
+    await prisma.content.findUniqueOrThrow({
+      where: { id: childContentId },
+      select: { publiclySharedAt: true },
+    });
+  expect(folderMetric).toBeNull();
+  expect(childMetric).toBeNull();
 });

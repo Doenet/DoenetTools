@@ -213,3 +213,21 @@ describe("student handles", () => {
   });
   test.todo("only instructor can change student password");
 });
+
+describe("findOrCreateUser()", () => {
+  test("sets joinedAt date", async () => {
+    const now = Date.now();
+    const email = `unique-${now}@example.com`;
+    const firstNames = "vitest";
+    const lastNames = "user";
+    const user = await findOrCreateUser({ email, firstNames, lastNames });
+    expect(user).not.toHaveProperty("joinedAt");
+
+    // Explicilty query the joinedAt date
+    const dbUser = await prisma.users.findUniqueOrThrow({
+      where: { userId: user.userId },
+      select: { joinedAt: true },
+    });
+    expect(dbUser.joinedAt.getTime()).toBeGreaterThanOrEqual(now);
+  });
+});
