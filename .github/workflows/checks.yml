@@ -100,15 +100,23 @@ jobs:
       - run: npm run prisma:migrate-dev --workspace server
       - run: npm run prisma:seed --workspace server
 
+      # Build shared workspace (required dependency for client and server)
+      - name: Build shared
+        run: npm run build --workspace shared
+
       # Start server in background (port 3000)
       - name: Start server
-        run: npm run dev --workspace server &
+        run: |
+          npm run dev --workspace server > /tmp/server.log 2>&1 &
+          echo $! > /tmp/server.pid
         env:
           NODE_ENV: development
 
       # Start client dev server in background (port 8000)
       - name: Start client
-        run: npm run dev --workspace client &
+        run: |
+          npm run dev --workspace client > /tmp/client.log 2>&1 &
+          echo $! > /tmp/client.pid
         env:
           NODE_ENV: production
 
@@ -116,6 +124,13 @@ jobs:
       - name: Wait for servers
         run: |
           npx wait-on http://localhost:3000 http://localhost:8000 --timeout 60000
+
+      - name: Check server logs if wait-on fails
+        if: failure()
+        run: |
+          echo "=== Server Log ===" && cat /tmp/server.log || true
+          echo "=== Client Log ===" && cat /tmp/client.log || true
+          echo "=== Server processes ===" && ps aux | grep "node\|npm" || true
 
       # Run Cypress e2e tests
       - name: Run Cypress e2e tests
