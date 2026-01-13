@@ -58,6 +58,7 @@ export async function findOrCreateUser({
     lastNames: user.lastNames,
     isAnonymous: user.isAnonymous,
     isAuthor: user.isAuthor,
+    isEditor: user.isEditor,
   };
 }
 
@@ -167,6 +168,7 @@ export async function updateUser({
     lastNames: user.lastNames,
     isAnonymous: user.isAnonymous,
     isAuthor: user.isAuthor,
+    isEditor: user.isEditor,
   };
 }
 

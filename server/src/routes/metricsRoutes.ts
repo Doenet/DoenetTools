@@ -9,6 +9,8 @@ import { z } from "zod";
 
 export const metricsRouter = express.Router();
 
+// These fields are currently optional.
+// If returning the entire date range becomes too much data, we can require them.
 const metricStartEnd = z.object({
   start: z.coerce.date().optional(),
   end: z.coerce.date().optional(),
