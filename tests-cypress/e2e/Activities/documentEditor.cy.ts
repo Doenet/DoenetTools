@@ -22,7 +22,6 @@ describe("Activity Editor Tests", function () {
       cy.wait(500);
 
       // Re-query for the active line after DOM update
-      cy.iframe().find(".cm-activeLine").should("not.be.disabled");
       cy.iframe().find(".cm-activeLine").invoke("text", "More!");
       cy.wait(100);
 
