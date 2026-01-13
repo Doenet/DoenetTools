@@ -71,9 +71,12 @@ describe("Create Folders Tests", function () {
     cy.wait(200);
 
     cy.iframe().find(".cm-activeLine").invoke("text", `Hello${code}!`);
+    cy.wait(200);
     cy.iframe().find(".cm-activeLine").type("{enter}");
+    cy.wait(200);
 
     cy.iframe().find('[data-test="Viewer Update Button"]').click();
+    cy.wait(200);
     cy.iframe().find(".doenet-viewer").should("contain.text", `Hello${code}!`);
 
     cy.loginAsTestUser({
@@ -84,6 +87,8 @@ describe("Create Folders Tests", function () {
 
     cy.get('[data-test="Activities"]').click();
     cy.get('[data-test="Shared With Me Button"]').click();
+
+    cy.get('[data-test="Folder Title"]').should("have.text", "Shared with me");
 
     cy.get('[data-test="Content Card"]')
       .should("contain.text", `Shared folder${code}`)
