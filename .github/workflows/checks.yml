@@ -72,7 +72,6 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      PORT: 3306
       DATABASE_URL: mysql://root:root@localhost:3306/db
       # OAuth environment variables for CI (dummy values for testing)
       GOOGLE_CLIENT_ID: ci-test-client-id
