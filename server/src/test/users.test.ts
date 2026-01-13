@@ -223,7 +223,7 @@ describe("findOrCreateUser()", () => {
     const user = await findOrCreateUser({ email, firstNames, lastNames });
     expect(user).not.toHaveProperty("joinedAt");
 
-    // Explicilty query the joinedAt date
+    // Explicitly query the joinedAt date
     const dbUser = await prisma.users.findUniqueOrThrow({
       where: { userId: user.userId },
       select: { joinedAt: true },

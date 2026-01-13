@@ -27,6 +27,8 @@ export async function findOrCreateUser({
   // by deleting this line and by defaulting isPremium to false in the function signature
   isPremium = isPremium ?? !isAnonymous;
 
+  const username = email;
+
   let user = await prisma.users.upsert({
     where: { email },
     update: {},
@@ -34,7 +36,7 @@ export async function findOrCreateUser({
       email,
       firstNames,
       lastNames,
-      username: email,
+      username,
       isEditor,
       isAnonymous,
       isPremium,

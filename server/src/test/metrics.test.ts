@@ -9,7 +9,7 @@ import { createTestUser } from "./utils";
 import { createContent } from "../query/activity";
 import { setContentIsPublic } from "../query/share";
 
-// TODO: more meaninngful tests for metrics
+// TODO: more meaningful tests for metrics
 // In order to do this, we would need to spin up a fresh testing container
 // so that we can get verifiable metrics data.
 

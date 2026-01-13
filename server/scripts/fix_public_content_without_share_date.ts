@@ -1,5 +1,5 @@
 // This script fills in missing share dates for public content
-// We don't have the exact when they we shared,
+// We don't have the exact time when they we shared,
 // so we fill in the field with the present time
 // -----
 // Usage (must be in server directory):
