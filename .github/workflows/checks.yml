@@ -162,3 +162,38 @@ jobs:
           name: cypress-videos
           path: tests-cypress/cypress/videos
           if-no-files-found: ignore
+
+  component-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout repo
+      - uses: actions/checkout@v4
+
+      # Setup Node with caching
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      # Install dependencies
+      - run: npm ci
+
+      # Build shared workspace (required by client)
+      - name: Build shared workspace
+        run: npm run build --workspace shared
+
+      # Run component tests
+      - name: Run component tests
+        run: npm run test:all --workspace client
+
+      # Upload artifacts on failure
+      - name: Upload test artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: component-test-artifacts
+          path: |
+            client/cypress/screenshots/
+            client/cypress/videos/
+          retention-days: 7
