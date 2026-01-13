@@ -10,6 +10,7 @@ export async function findOrCreateUser({
   firstNames,
   lastNames,
   isEditor = false,
+  isAuthor = false,
   isAnonymous = false,
   isPremium,
 }: {
@@ -17,6 +18,7 @@ export async function findOrCreateUser({
   firstNames: string | null;
   lastNames: string;
   isEditor?: boolean;
+  isAuthor?: boolean;
   isAnonymous?: boolean;
   isPremium?: boolean;
 }): Promise<UserInfoWithEmail> {
@@ -36,6 +38,7 @@ export async function findOrCreateUser({
       isEditor,
       isAnonymous,
       isPremium,
+      isAuthor,
     },
   });
 

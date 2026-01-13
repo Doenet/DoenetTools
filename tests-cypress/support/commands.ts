@@ -36,12 +36,14 @@ Cypress.Commands.add(
     email,
     firstNames,
     lastNames,
-    isAdmin = false,
+    isEditor = false,
+    isAuthor = false,
   }: {
     email?: string;
     firstNames?: string;
     lastNames?: string;
-    isAdmin?: boolean;
+    isEditor?: boolean;
+    isAuthor?: boolean;
   } = {}) => {
     if (!email) {
       const code = Date.now().toString();
@@ -54,7 +56,7 @@ Cypress.Commands.add(
       cy.request({
         method: "POST",
         url: "/api/login/createOrLoginAsTest",
-        body: { email, firstNames, lastNames, isAdmin },
+        body: { email, firstNames, lastNames, isEditor, isAuthor },
       });
     });
   },
@@ -89,7 +91,7 @@ Cypress.Commands.add(
       url: "/api/updateContent/createContent",
       body: {
         contentType,
-        parentId,
+        parentId: parentId ?? null,
       },
     }).then((resp) => {
       const contentId: string = resp.body.contentId;
@@ -105,13 +107,13 @@ Cypress.Commands.add(
         });
       }
 
-      if (makePublic) {
+      if (makePublic || publishInLibrary) {
         cy.request({
           method: "POST",
-          url: "/api/share/makeContentPublic",
+          url: "/api/share/setContentIsPublic",
           body: {
             contentId,
-            licenseCode: "CCDUAL",
+            isPublic: true,
           },
         });
       }
@@ -119,19 +121,26 @@ Cypress.Commands.add(
       if (publishInLibrary) {
         cy.request({
           method: "POST",
-          url: "/api/addDraftToLibrary",
+          url: "/api/curate/suggestToBeCurated",
           body: {
             contentId: contentId,
-            type: "singleDoc",
           },
         }).then((resp) => {
+          const contentIdInLibrary = resp.body.contentIdInLibrary;
           cy.request({
             method: "POST",
-            url: "/api/publishActivityToLibrary",
+            url: "/api/curate/claimOwnershipOfReview",
             body: {
-              id: resp.body.newContentId,
-              comment: "Publish it!",
+              contentId: contentIdInLibrary,
             },
+          }).then(() => {
+            cy.request({
+              method: "POST",
+              url: "/api/curate/publishActivityToLibrary",
+              body: {
+                contentId: contentIdInLibrary,
+              },
+            });
           });
         });
       }
