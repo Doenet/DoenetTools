@@ -75,8 +75,6 @@ describe("Share Activities Tests", function () {
     cy.get('[data-test="Add To"]').click();
     cy.get('[data-test="Add To My Activities"]').click();
 
-    // Wait for MathJax to finish typesetting before navigating
-    cy.wait(1000);
     cy.get('[data-test="Go to Destination"]').click();
 
     // Click the first content card - use eq() on a fresh query
