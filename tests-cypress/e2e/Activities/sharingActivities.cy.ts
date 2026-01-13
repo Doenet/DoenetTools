@@ -82,7 +82,6 @@ describe("Share Activities Tests", function () {
     // Click the first content card - use eq() on a fresh query
     cy.get(`[data-test="Content Card"]`).eq(0).click();
 
-    // Wait for iframe and viewer to load before checking content
     cy.wait(100);
     cy.iframe().find(".doenet-viewer").should("contain.text", `Hello there!`);
   });
