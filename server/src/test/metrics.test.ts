@@ -51,7 +51,7 @@ describe("getWeeklyContentCreated()", () => {
 });
 
 describe("getWeeklyContentSharedPublicly()", () => {
-  test("picks up on new content", async () => {
+  test("picks up on newly shared public content", async () => {
     const start = DateTime.now().minus({ days: 5 });
     const end = start.plus({ days: 10 });
 
