@@ -1,5 +1,17 @@
 /// <reference path="./component.d.ts" />
 
+// Handle MathJax async typesetting errors that aren't critical for tests.
+// MathJax appears to crash if you navigate away while it is typesetting,
+// so we suppress those errors here rather than adding waits in each test.
+Cypress.on("uncaught:exception", (err) => {
+  // Suppress MathJax typesetting errors
+  if (err.message?.includes("Typesetting failed")) {
+    return false; // Suppress the error
+  }
+  // Let other errors fail the test
+  return true;
+});
+
 // ***********************************************************
 // This example support/component.ts is processed and
 // loaded automatically before your test files.

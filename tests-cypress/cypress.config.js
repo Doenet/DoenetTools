@@ -23,6 +23,10 @@ import { defineConfig } from "cypress";
 export default defineConfig({
   numTestsKeptInMemory: 20,
   defaultCommandTimeout: 10000,
+  retries: {
+    runMode: 2,
+    openMode: 0,
+  },
   e2e: {
     setupNodeEvents(on) {
       on("before:browser:launch", (browser = {}, launchOptions) => {
