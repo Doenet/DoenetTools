@@ -107,6 +107,13 @@ export function MaxAttemptsSelectionBox({
     attempts > 0 ? attempts : 1,
   );
 
+  // Keep numberInputVal in sync with attempts when attempts changes externally
+  useEffect(() => {
+    if (Number.isInteger(attempts) && attempts > 0) {
+      setNumberInputVal(attempts);
+    }
+  }, [attempts]);
+
   // Debounce timer for saving on onChange (for stepper clicks and typing)
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
   // Track the pending value to save if component unmounts before debounce completes
@@ -123,7 +130,7 @@ export function MaxAttemptsSelectionBox({
         }
       }
     };
-  }, []);
+  }, [fetcherUpdate]);
 
   return (
     <Box>
