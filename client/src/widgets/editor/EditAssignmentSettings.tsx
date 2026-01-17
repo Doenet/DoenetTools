@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Box,
   HStack,
@@ -102,6 +102,24 @@ export function MaxAttemptsSelectionBox({
     attempts > 0 ? attempts : 1,
   );
 
+  // Debounce timer for saving on onChange (for stepper clicks and typing)
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  // Track the pending value to save if component unmounts before debounce completes
+  const pendingValueRef = useRef<number | null>(null);
+
+  // Cleanup debounce timer on unmount, but save any pending changes first
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+        // Save any pending changes before unmounting
+        if (pendingValueRef.current !== null && pendingValueRef.current >= 1) {
+          fetcherUpdate(pendingValueRef.current);
+        }
+      }
+    };
+  }, []);
+
   return (
     <Box>
       <HStack>
@@ -129,19 +147,30 @@ export function MaxAttemptsSelectionBox({
           onChange={(valueString) => {
             if (valueString === "") {
               setNumberInputVal("");
+              pendingValueRef.current = null;
             } else {
               const newVal = parseInt(valueString);
               if (!isNaN(newVal)) {
                 setNumberInputVal(newVal);
+                // Track the pending value in case component unmounts before debounce completes
+                pendingValueRef.current = newVal >= 1 ? newVal : null;
+                // Debounce the save to avoid excessive API calls while typing,
+                // but still save on stepper clicks
+                if (debounceTimerRef.current) {
+                  clearTimeout(debounceTimerRef.current);
+                }
                 if (newVal >= 1) {
-                  fetcherUpdate(newVal);
+                  debounceTimerRef.current = setTimeout(() => {
+                    fetcherUpdate(newVal);
+                    pendingValueRef.current = null;
+                  }, 500);
                 }
               }
             }
           }}
           value={isUnlimited ? "---" : numberInputVal}
           onKeyDown={(e) => {
-            if (e.key == "Enter") {
+            if (e.key === "Enter") {
               const target = e.target as HTMLInputElement;
               setMaxAttemptsFromInput(target);
             }
@@ -161,7 +190,7 @@ export function MaxAttemptsSelectionBox({
   );
 
   /**
-   * Set set max attempts from the input field of the number input.
+   * Set max attempts from the input field of the number input.
    * - If the value is a positive integer, set that as the new max attempts.
    * - If the value is blank and the previous value is a positive integer,
    *   reset to the last valid value and also reset the input field.
