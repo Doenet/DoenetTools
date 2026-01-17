@@ -34,6 +34,7 @@ export default function RouterLogo() {
       height="100%"
       alignItems="center"
       aria-label="Home"
+      data-test="Home"
     >
       <LogoButton />
     </ChakraLink>
