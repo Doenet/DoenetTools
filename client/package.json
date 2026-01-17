@@ -3,6 +3,9 @@
   "version": "1.0.1",
   "type": "module",
   "private": true,
+  "exports": {
+    "./src/types": "./src/types.ts"
+  },
   "scripts": {
     "build": "wireit",
     "dev": "cross-env NODE_ENV=production vite",

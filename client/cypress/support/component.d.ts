@@ -9,10 +9,15 @@ declare global {
        * Mounts a React node
        * @param component React Node to mount
        * @param options Additional options to pass into mount
+       * @param options.routerProps Props for the memory router
+       * @param options.action Optional action handler for route actions (e.g., fetcher.submit())
        */
       mount(
         component: React.ReactNode,
-        options?: MountOptions & { routerProps?: MemoryRouterProps },
+        options?: MountOptions & {
+          routerProps?: MemoryRouterProps;
+          action?: (data: { request: Request }) => Promise<any>;
+        },
       ): Cypress.Chainable<MountReturn>;
     }
   }
