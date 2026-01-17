@@ -92,7 +92,12 @@ export function MaxAttemptsSelectionBox({
         contentId,
         maxAttempts: val,
       },
-      { method: "post", encType: "application/json" },
+      {
+        method: "post",
+        encType: "application/json",
+        // Use the settings route so the request still resolves after navigating away
+        action: `/documentEditor/${contentId}/settings`,
+      },
     );
   }
 
@@ -197,9 +202,19 @@ export function MaxAttemptsSelectionBox({
    * - Otherwise do nothing.
    */
   function setMaxAttemptsFromInput(target: HTMLInputElement) {
+    const clearDebounce = () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+        debounceTimerRef.current = null;
+      }
+      pendingValueRef.current = null;
+    };
+
     if (parseInt(target.value) >= 1) {
+      clearDebounce();
       fetcherUpdate(parseInt(target.value));
     } else if (target.value === "" && attempts >= 1) {
+      clearDebounce();
       fetcherUpdate(attempts);
       setNumberInputVal(attempts);
     }
