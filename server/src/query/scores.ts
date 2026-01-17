@@ -1081,7 +1081,6 @@ export async function getScoresOfAllStudents({
           firstNames: true,
           lastNames: true,
           userId: true,
-          username: true,
           isAnonymous: true,
         },
       },

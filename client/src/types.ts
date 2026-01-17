@@ -68,7 +68,6 @@ export type UserInfo = {
   userId: Uuid;
   firstNames: string | null;
   lastNames: string;
-  isAuthor?: boolean;
   isAnonymous?: boolean;
   numLibrary?: number;
   numCommunity?: number;
@@ -90,8 +89,14 @@ export function isUserInfo(obj: unknown): obj is UserInfo {
   );
 }
 
+/**
+ * This type extends `UserInfo` with sensitive fields.
+ * TODO: rename, it's not just email anymore
+ */
 export type UserInfoWithEmail = UserInfo & {
   email: string | null;
+  isAuthor?: boolean;
+  isEditor?: boolean;
 };
 
 export type CategoryGroup = {

@@ -295,7 +295,12 @@ export async function getAllAssignmentScores({
 }: {
   loggedInUserId: Uint8Array;
   parentId: Uint8Array;
-}) {
+}): Promise<{
+  orderedStudents: UserInfo[];
+  orderedAssignments: { contentId: Uint8Array; name: string }[];
+  scores: (number | null)[][];
+  folder: { contentId: Uint8Array; name: string };
+}> {
   // Make sure parentId is owned by loggedInUser and get name
   const { name: folderName } = await prisma.content.findUniqueOrThrow({
     where: {
@@ -355,7 +360,6 @@ export async function getAllAssignmentScores({
     },
     select: {
       userId: true,
-      username: true,
       firstNames: true,
       lastNames: true,
       assignmentScores: {
@@ -415,6 +419,12 @@ export async function getAllAssignmentScores({
   };
 }
 
+type OrderedActivityScore = {
+  contentId: Uint8Array;
+  activityName: string;
+  score: number | null;
+};
+
 /**
  * Recurses through all subfolders of `parentId`
  * to return all content of it and its subfolders.
@@ -435,7 +445,11 @@ export async function getStudentAssignmentScores({
   studentUserId: Uint8Array;
   loggedInUserId: Uint8Array;
   parentId: Uint8Array | null;
-}) {
+}): Promise<{
+  studentData: UserInfo;
+  orderedActivityScores: OrderedActivityScore[];
+  folder: { contentId: Uint8Array; name: string } | null;
+}> {
   const studentData = await prisma.users.findUniqueOrThrow({
     where: {
       userId: studentUserId,
@@ -534,7 +548,10 @@ export async function getAssignedScores({
   loggedInUserId,
 }: {
   loggedInUserId: Uint8Array;
-}) {
+}): Promise<{
+  userData: UserInfo;
+  orderedActivityScores: OrderedActivityScore[];
+}> {
   const scores = await prisma.assignmentScores.findMany({
     where: {
       userId: loggedInUserId,
@@ -578,9 +595,14 @@ export async function getAssignedScores({
     });
   }
 
-  const userData: UserInfo = await prisma.users.findUniqueOrThrow({
+  const userData = await prisma.users.findUniqueOrThrow({
     where: { userId: loggedInUserId },
-    select: { userId: true, firstNames: true, lastNames: true, email: true },
+    select: {
+      userId: true,
+      firstNames: true,
+      lastNames: true,
+      email: true,
+    },
   });
 
   return { userData, orderedActivityScores };
@@ -727,7 +749,12 @@ export async function listUserAssigned({
 
   const user: UserInfo = await prisma.users.findUniqueOrThrow({
     where: { userId: loggedInUserId },
-    select: { userId: true, firstNames: true, lastNames: true, email: true },
+    select: {
+      userId: true,
+      firstNames: true,
+      lastNames: true,
+      email: true,
+    },
   });
 
   return {
