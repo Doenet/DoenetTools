@@ -1,5 +1,5 @@
 import { AnswerResponseDrawer } from "./AnswerResponseDrawer";
-import { toMathJaxString } from "../utils/test";
+import { toMathJaxString } from "@doenet-tools/shared";
 import { DateTime } from "luxon";
 
 describe("AnswerResponseDrawer component tests", () => {
