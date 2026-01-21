@@ -18,6 +18,10 @@ Parameters:
   ServiceName:
     Type: String
     Description: Service name to include in bucket name
+  
+  LoadBalancerDnsName:
+    Type: String
+    Description: DNS name of the Application Load Balancer
 
 Resources:
   WebsiteBucket:
@@ -64,6 +68,33 @@ Resources:
             S3OriginConfig:
               OriginAccessIdentity: ''
             OriginAccessControlId: !GetAtt OriginAccessControl.Id
+          - Id: ALBOrigin
+            DomainName: !Ref LoadBalancerDnsName
+            CustomOriginConfig:
+              HTTPPort: 80
+              HTTPSPort: 443
+              OriginProtocolPolicy: https-only
+        CacheBehaviors:
+          - PathPattern: /api/*
+            TargetOriginId: ALBOrigin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+              - PUT
+              - POST
+              - PATCH
+              - DELETE
+            CachedMethods:
+              - GET
+              - HEAD
+            ForwardedValues:
+              QueryString: true
+              Headers:
+                - '*'
+              Cookies:
+                Forward: all
         DefaultCacheBehavior:
           TargetOriginId: S3Origin
           ViewerProtocolPolicy: redirect-to-https
@@ -87,7 +118,7 @@ Resources:
             ResponseCode: 200
             ResponsePagePath: /index.html
         Aliases:
-          - !Sub ${ServiceName}.${PublicHostedZoneName}
+          - !Ref PublicHostedZoneName
         ViewerCertificate:
           AcmCertificateArn: !Ref SSLCertificate
           SslSupportMethod: sni-only
@@ -99,17 +130,17 @@ Resources:
   SSLCertificate:
     Type: AWS::CertificateManager::Certificate
     Properties:
-      DomainName: !Sub ${ServiceName}.${PublicHostedZoneName}
+      DomainName: !Ref PublicHostedZoneName
       ValidationMethod: DNS
       DomainValidationOptions:
-        - DomainName: !Sub ${ServiceName}.${PublicHostedZoneName}
+        - DomainName: !Ref PublicHostedZoneName
           HostedZoneId: !Ref PublicHostedZoneId
 
   DNSRecord:
     Type: AWS::Route53::RecordSet
     Properties:
       HostedZoneId: !Ref PublicHostedZoneId
-      Name: !Sub ${ServiceName}.${PublicHostedZoneName}
+      Name: !Ref PublicHostedZoneName
       Type: A
       AliasTarget:
         DNSName: !GetAtt CloudFrontDistribution.DomainName

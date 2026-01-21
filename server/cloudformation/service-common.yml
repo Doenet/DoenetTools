@@ -372,17 +372,17 @@ Resources:
           IpProtocol: "-1"
           Description: Permit all outboud traffic
 
-  LoadBalancerDns:
-    Type: AWS::Route53::RecordSet
-    Condition: LbIsEnabled
-    Properties:
-      HostedZoneId: !Ref PublicHostedZoneId
-      Name: !Sub "${PublicHostedZoneName}."
-      Type: A
-      AliasTarget:
-        HostedZoneId: !GetAtt LoadBalancer.CanonicalHostedZoneID
-        DNSName: !GetAtt LoadBalancer.DNSName
-        EvaluateTargetHealth: false
+  # LoadBalancerDns:
+  #   Type: AWS::Route53::RecordSet
+  #   Condition: LbIsEnabled
+  #   Properties:
+  #     HostedZoneId: !Ref PublicHostedZoneId
+  #     Name: !Sub "${PublicHostedZoneName}."
+  #     Type: A
+  #     AliasTarget:
+  #       HostedZoneId: !GetAtt LoadBalancer.CanonicalHostedZoneID
+  #       DNSName: !GetAtt LoadBalancer.DNSName
+  #       EvaluateTargetHealth: false
 
   LoadBalancerFullNameSSMParameter:
     Type: AWS::SSM::Parameter

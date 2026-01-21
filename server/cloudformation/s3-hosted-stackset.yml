@@ -1,5 +1,5 @@
-AWSTemplateFormatVersion: '2010-09-09'
-Description: 'StackSet to deploy S3 website hosting template to us-east-1 region'
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "StackSet to deploy S3 website hosting template to us-east-1 region"
 
 Parameters:
   EnvironmentName:
@@ -8,11 +8,11 @@ Parameters:
     MaxLength: 10
 
   PublicHostedZoneId:
-    Type: 'AWS::SSM::Parameter::Value<String>'
+    Type: "AWS::SSM::Parameter::Value<String>"
 
   PublicHostedZoneName:
-    Type: 'AWS::SSM::Parameter::Value<String>'
-  
+    Type: "AWS::SSM::Parameter::Value<String>"
+
   ServiceName:
     Type: String
     Description: Service name to include in bucket name
@@ -25,6 +25,10 @@ Parameters:
     Type: String
     Description: S3 key for the s3-hosted.yml template
     Default: cloudformation/s3-hosted.yml
+
+  LoadBalancerDnsName:
+    Type: "AWS::SSM::Parameter::Value<String>"
+    Description: DNS name of the Application Load Balancer
 
 Resources:
   StackSetAdministrationRole:
@@ -45,7 +49,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - sts:AssumeRole
-                Resource: !Sub 'arn:aws:iam::${AWS::AccountId}:role/AWSCloudFormationStackSetExecutionRole'
+                Resource: !Sub "arn:aws:iam::${AWS::AccountId}:role/AWSCloudFormationStackSetExecutionRole"
 
   StackSetExecutionRole:
     Type: AWS::IAM::Role
@@ -74,7 +78,7 @@ Resources:
                   - iam:DetachRolePolicy
                   - iam:PutRolePolicy
                   - iam:DeleteRolePolicy
-                Resource: '*'
+                Resource: "*"
 
   S3HostedStackSet:
     Type: AWS::CloudFormation::StackSet
@@ -82,7 +86,7 @@ Resources:
       - StackSetAdministrationRole
       - StackSetExecutionRole
     Properties:
-      StackSetName: !Sub '${EnvironmentName}-${ServiceName}-s3-hosted-stackset'
+      StackSetName: !Sub "${EnvironmentName}-${ServiceName}-s3-hosted-stackset"
       Description: StackSet for S3 website hosting with CloudFront
       AdministrationRoleARN: !GetAtt StackSetAdministrationRole.Arn
       ExecutionRoleName: AWSCloudFormationStackSetExecutionRole
@@ -104,17 +108,19 @@ Resources:
           ParameterValue: !Ref PublicHostedZoneId
         - ParameterKey: ServiceName
           ParameterValue: !Ref ServiceName
-      TemplateURL: !Sub 'https://${TemplateS3Bucket}.s3.amazonaws.com/${TemplateS3Key}'
+        - ParameterKey: LoadBalancerDnsName
+          ParameterValue: !Ref LoadBalancerDnsName
+      TemplateURL: !Sub "https://${TemplateS3Bucket}.s3.amazonaws.com/${TemplateS3Key}"
 
 Outputs:
   StackSetId:
     Description: ID of the created StackSet
     Value: !Ref S3HostedStackSet
-  
+
   StackSetAdministrationRoleArn:
     Description: ARN of the StackSet administration role
     Value: !GetAtt StackSetAdministrationRole.Arn
-  
+
   StackSetExecutionRoleArn:
     Description: ARN of the StackSet execution role
     Value: !GetAtt StackSetExecutionRole.Arn

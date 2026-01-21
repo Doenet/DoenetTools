@@ -22,5 +22,9 @@
   {
     "ParameterKey": "TemplateS3Key",
     "ParameterValue": "dev3-doenet/s3-hosted.yml"
+  },
+  {
+    "ParameterKey": "LoadBalancerDnsName",
+    "ParameterValue": "/dev3/LoadBalancerDnsName"
   }
 ]
