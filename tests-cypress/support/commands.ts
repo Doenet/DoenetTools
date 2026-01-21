@@ -38,12 +38,14 @@ Cypress.Commands.add(
     lastNames,
     isEditor = false,
     isAuthor = false,
+    isAnonymous = false,
   }: {
     email?: string;
     firstNames?: string;
     lastNames?: string;
     isEditor?: boolean;
     isAuthor?: boolean;
+    isAnonymous?: boolean;
   } = {}) => {
     if (!email) {
       const code = Date.now().toString();
@@ -56,7 +58,7 @@ Cypress.Commands.add(
       cy.request({
         method: "POST",
         url: "/api/login/createOrLoginAsTest",
-        body: { email, firstNames, lastNames, isEditor, isAuthor },
+        body: { email, firstNames, lastNames, isEditor, isAuthor, isAnonymous },
       });
     });
   },
