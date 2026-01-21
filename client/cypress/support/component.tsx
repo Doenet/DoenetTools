@@ -81,10 +81,6 @@ Cypress.Commands.add("mount", (component, options = {}) => {
         ),
         action: safeActionWithDefault,
       },
-      {
-        path: "/documentEditor/:contentId/settings",
-        action: safeActionWithDefault,
-      },
     ],
     routerProps as any,
   );

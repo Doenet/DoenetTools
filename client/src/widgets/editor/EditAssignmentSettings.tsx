@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Box,
   HStack,
@@ -85,21 +85,22 @@ export function MaxAttemptsSelectionBox({
     fetcher.state !== "idle" && (attempts === 0 || optimisticAttempts === 0);
   const finiteMaxUpdating = fetcher.state !== "idle" && !unlimitedUpdating;
 
-  function fetcherUpdate(val: number) {
-    fetcher.submit(
-      {
-        path: "assign/updateAssignmentMaxAttempts",
-        contentId,
-        maxAttempts: val,
-      },
-      {
-        method: "post",
-        encType: "application/json",
-        // Use the settings route so the request still resolves after navigating away
-        action: `/documentEditor/${contentId}/settings`,
-      },
-    );
-  }
+  const fetcherUpdate = useCallback(
+    (val: number) => {
+      fetcher.submit(
+        {
+          path: "assign/updateAssignmentMaxAttempts",
+          contentId,
+          maxAttempts: val,
+        },
+        {
+          method: "post",
+          encType: "application/json",
+        },
+      );
+    },
+    [contentId, fetcher],
+  );
 
   // We keep track of the latest number input just so unchecking the
   // unlimited option will revert back to the previous input value
@@ -113,24 +114,6 @@ export function MaxAttemptsSelectionBox({
       setNumberInputVal(attempts);
     }
   }, [attempts]);
-
-  // Debounce timer for saving on onChange (for stepper clicks and typing)
-  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
-  // Track the pending value to save if component unmounts before debounce completes
-  const pendingValueRef = useRef<number | null>(null);
-
-  // Cleanup debounce timer on unmount, but save any pending changes first
-  useEffect(() => {
-    return () => {
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current);
-        // Save any pending changes before unmounting
-        if (pendingValueRef.current !== null && pendingValueRef.current >= 1) {
-          fetcherUpdate(pendingValueRef.current);
-        }
-      }
-    };
-  }, [fetcherUpdate]);
 
   return (
     <Box>
@@ -156,30 +139,11 @@ export function MaxAttemptsSelectionBox({
           min={1}
           max={65535}
           data-test="max-attempts-input"
-          onChange={(valueString) => {
-            if (valueString === "") {
-              setNumberInputVal("");
-              pendingValueRef.current = null;
-            } else {
-              const newVal = parseInt(valueString);
-              if (!isNaN(newVal)) {
-                setNumberInputVal(newVal);
-                // Track the pending value in case component unmounts before debounce completes
-                pendingValueRef.current = newVal >= 1 ? newVal : null;
-                // Debounce the save to avoid excessive API calls while typing,
-                // but still save on stepper clicks
-                if (debounceTimerRef.current) {
-                  clearTimeout(debounceTimerRef.current);
-                }
-                if (newVal >= 1) {
-                  debounceTimerRef.current = setTimeout(() => {
-                    fetcherUpdate(newVal);
-                    pendingValueRef.current = null;
-                  }, 500);
-                }
-              }
-            }
-          }}
+          onChange={(valueString) =>
+            valueString === ""
+              ? setNumberInputVal("")
+              : setNumberInputVal(parseInt(valueString))
+          }
           value={isUnlimited ? "---" : numberInputVal}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
@@ -209,19 +173,9 @@ export function MaxAttemptsSelectionBox({
    * - Otherwise do nothing.
    */
   function setMaxAttemptsFromInput(target: HTMLInputElement) {
-    const clearDebounce = () => {
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current);
-        debounceTimerRef.current = null;
-      }
-      pendingValueRef.current = null;
-    };
-
     if (parseInt(target.value) >= 1) {
-      clearDebounce();
       fetcherUpdate(parseInt(target.value));
     } else if (target.value === "" && attempts >= 1) {
-      clearDebounce();
       fetcherUpdate(attempts);
       setNumberInputVal(attempts);
     }
