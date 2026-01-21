@@ -43,13 +43,17 @@ export function downloadScoresToCsv({
     );
     return;
   }
+  if (scores.length === 0) {
+    alert("There are no scores to download.");
+    return;
+  }
 
   const data = scores.map((studentScores, i) => {
     const { firstNames, lastNames, userId } = orderedStudents[i];
     const formattedScores: Record<string, number | ""> = {};
     for (const [j, score] of studentScores.entries()) {
       const assignmentName = orderedAssignments[j];
-      formattedScores[assignmentName] = score === null ? "" : score;
+      formattedScores[assignmentName] = score === null ? "" : score * 100;
     }
 
     return {

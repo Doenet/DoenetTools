@@ -234,6 +234,7 @@ export function AssignmentItemResponseStudent({
                 maxWidth="350px"
                 marginLeft="5px"
                 id="student-select"
+                data-test="Student Select"
                 size="lg"
                 value={user.userId}
                 onChange={(e) => {
@@ -266,6 +267,7 @@ export function AssignmentItemResponseStudent({
               maxWidth="350px"
               marginLeft="5px"
               id="attempt-select"
+              data-test="Attempt Select"
               size="lg"
               value={attemptNumber}
               onChange={(e) => {

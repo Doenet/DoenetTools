@@ -710,7 +710,9 @@ export function AssignmentData() {
               }}
             />
           </Text>
-          <Text>Class code: {classCode}</Text>
+          <Text>
+            Class code: <span data-test="Class Code">{classCode}</span>
+          </Text>
           <Button
             onClick={inviteOnOpen}
             colorScheme="blue"
@@ -722,7 +724,12 @@ export function AssignmentData() {
             label="Download scores for this assignment as a CSV file"
             openDelay={50}
           >
-            <Button colorScheme="blue" onClick={downloadScores}>
+            <Button
+              colorScheme="blue"
+              onClick={downloadScores}
+              data-test="Download Scores Button"
+              disabled={numStudents === 0}
+            >
               Download assignment scores
             </Button>
           </Tooltip>
