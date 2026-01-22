@@ -88,26 +88,16 @@ describe("Share Activities Tests", function () {
     const scrappyEmail = `scrappy${code}@doo.org`;
     const scoobyEmail = `scooby${code}@doo.org`;
 
-    let user1: UserInfo | null = null;
-    let user2: UserInfo | null = null;
-
     cy.loginAsTestUser({
       email: scoobyEmail,
       firstNames: "Scooby",
       lastNames: "Doo",
     });
 
-    cy.getUserInfo().then((userInfo) => {
-      user1 = userInfo;
-    });
     cy.loginAsTestUser({
       email: scrappyEmail,
       firstNames: "Scrappy",
       lastNames: "Doo",
-    });
-
-    cy.getUserInfo().then((userInfo) => {
-      user2 = userInfo;
     });
 
     cy.createContent({
@@ -119,7 +109,7 @@ describe("Share Activities Tests", function () {
 
       cy.get('[data-test="Share Button"]').click();
 
-      cy.get('[data-test="Email address').type(`${scoobyEmail}{enter}`);
+      cy.get('[data-test="Email address"]').type(`${scoobyEmail}{enter}`);
 
       cy.get('[data-test="Share Table"]').should(
         "contain.text",
