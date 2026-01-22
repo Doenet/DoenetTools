@@ -195,6 +195,7 @@ export function AssignmentItemResponseStudent({
             ? itemAttemptState.shuffledItemNumber
             : (itemAttemptState.itemNumber ?? 1)
         }
+        data-test="Item Select"
         onChange={(e) => {
           let newSearch = clearQueryParameter(
             "itemNumber",
