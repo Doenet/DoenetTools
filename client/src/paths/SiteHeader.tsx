@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { useState } from "react";
 import {
   Grid,
   GridItem,
@@ -27,8 +27,13 @@ import {
   Divider,
   useDisclosure,
 } from "@chakra-ui/react";
-import { Outlet, useFetcher, useLoaderData, useLocation } from "react-router";
-import { NavLink as ReactRouterLink } from "react-router";
+import {
+  Outlet,
+  useFetcher,
+  useLoaderData,
+  useLocation,
+  Link as RouterLink,
+} from "react-router";
 import RouterLogo from "../RouterLogo";
 import { HamburgerIcon, ChevronLeftIcon } from "@chakra-ui/icons";
 import axios from "axios";
@@ -80,17 +85,11 @@ export async function loader() {
   return { user, allLicenses, allDoenetmlVersions };
 }
 
-type NavbarMenuOption = {
-  label: string;
-  to?: string; // for internal React Router links
-  href?: string; // for external links
-};
-
 type NavItem = {
   label: string;
   to?: string; // for React Router links
   href?: string; // for external links
-  children?: NavItem[]; // if present, renders as menu/dropdown
+  subItems?: NavItem[]; // if present, renders as menu/dropdown
 };
 
 type NavSection = {
@@ -98,6 +97,12 @@ type NavSection = {
   items: NavItem[];
 };
 
+/**
+ * Main site header component that provides responsive navigation.
+ * Renders a horizontal navbar on desktop (md+) with dropdown menus,
+ * and a hamburger menu with drill-down navigation on mobile.
+ * Includes skip navigation link for accessibility.
+ */
 export function SiteHeader() {
   const { user, allLicenses, allDoenetmlVersions } = useLoaderData() as {
     user?: User;
@@ -128,7 +133,7 @@ export function SiteHeader() {
     { label: "About", to: "about" },
     {
       label: "Get Involved",
-      children: [
+      subItems: [
         { label: "How to get involved", href: "https://pages.doenet.org" },
         { label: "Community discussions", href: discussHref },
         { label: "Software/technical", href: "https://github.com/Doenet" },
@@ -139,29 +144,31 @@ export function SiteHeader() {
   const navSectionRole: NavItem[] = [
     {
       label: "Instructors",
-      children: [{ label: "Get support", href: discussHref }],
+      subItems: [{ label: "Get support", href: discussHref }],
     },
     {
       label: "Authors",
-      children: [
+      subItems: [
         { label: "Authoring documentation", href: "https://docs.doenet.org" },
         { label: "Get support", href: discussHref },
       ],
     },
     {
       label: "Students",
-      children: [{ label: "Join with code", to: "code" }],
+      subItems: [{ label: "Join with code", to: "code" }],
     },
   ];
 
-  const navSectionAccount: NavItem[] = [];
-  if (user && !user.isAnonymous) {
-    navSectionAccount.push({
-      label: "My Activities",
-      to: `activities/${user.userId}`,
-    });
-    navSectionAccount.push({ label: "Assigned to Me", to: "assigned" });
-  }
+  const navSectionAccount: NavItem[] =
+    user && !user.isAnonymous
+      ? [
+          {
+            label: "My Activities",
+            to: `activities/${user.userId}`,
+          },
+          { label: "Assigned to Me", to: "assigned" },
+        ]
+      : [];
 
   // Group navigation into sections
   const navSections: NavSection[] = [
@@ -171,29 +178,19 @@ export function SiteHeader() {
 
   // Add account section if user is logged in
   if (navSectionAccount.length > 0) {
-    navSections.push({ items: navSectionAccount });
+    navSections.push({ heading: "My Account", items: navSectionAccount });
   }
 
   const renderDesktopSections = (sections: NavSection[]) => {
     return sections.flatMap((section, sectionIndex) => {
       const items = section.items.map((item, index) => {
-        if (item.children) {
+        if (item.subItems) {
           return (
-            <DesktopNavbarMenu
-              key={`${sectionIndex}-${index}`}
-              label={item.label}
-              options={item.children}
-            />
+            <DesktopNavMenu key={`${sectionIndex}-${index}`} navItem={item} />
           );
         } else {
           return (
-            <DesktopNavbarItem
-              key={`${sectionIndex}-${index}`}
-              to={item.to || item.href || ""}
-              dataTest={item.label}
-            >
-              {item.label}
-            </DesktopNavbarItem>
+            <DesktopNavLeaf key={`${sectionIndex}-${index}`} navItem={item} />
           );
         }
       });
@@ -220,30 +217,35 @@ export function SiteHeader() {
   const account = user ? (
     <AccountIconAndCard user={user} />
   ) : (
-    <DesktopNavbarItem to="/signIn" dataTest="signIn">
-      Sign up/Log In
-    </DesktopNavbarItem>
+    <DesktopNavLeaf navItem={{ label: "Sign up/Log In", to: "/signIn" }} />
   );
 
   const desktopNav = (
-    <HStack h="100%" spacing="0px" display={{ base: "none", md: "flex" }}>
+    <HStack
+      h="100%"
+      // Only show on larger screens
+      display={{ base: "none", lg: "flex" }}
+      spacing="0px"
+    >
       <RouterLogo paddingRight="0.5rem" />
-      {renderDesktopSections(navSections)}
+      {renderDesktopSections([navSections[0], navSections[1]])}
       <Spacer />
+      {navSectionAccount.length > 0 &&
+        renderDesktopSections([{ items: navSectionAccount }])}
       {account}
     </HStack>
   );
 
   const mobileNav = (
     <HStack
+      // Only show on small screens
+      display={{ base: "flex", lg: "none" }}
       h="100%"
       spacing="0px"
-      display={{ base: "flex", md: "none" }}
       justifyContent="space-between"
-      width="100%"
     >
-      <RouterLogo paddingRight="0.5rem" />
-      <HStack spacing="0.5rem">
+      <RouterLogo />
+      <HStack spacing="1rem">
         {user && <AccountIconAndCard user={user} />}
         <MobileNavbar sections={navSections} user={user} />
       </HStack>
@@ -267,18 +269,12 @@ export function SiteHeader() {
         width="100vw"
         height="100vh"
       >
-        <GridItem
-          area="siteHeader"
-          as="header"
-          width="100vw"
-          m="0"
-          h={navBarHeight}
-        >
+        <GridItem area="siteHeader" width="100vw" m="0" h={navBarHeight}>
           <WithSideBanners gutterColumns={1} padding="0px">
             {header}
           </WithSideBanners>
         </GridItem>
-        <GridItem area="main" as="main" margin="0" overflowY="auto">
+        <GridItem area="main" margin="0" overflowY="auto">
           <SkipNavContent />
           <Outlet context={siteContext} />
         </GridItem>
@@ -287,20 +283,59 @@ export function SiteHeader() {
   );
 }
 
-function DesktopNavbarItem({
-  to,
-  children,
-  dataTest,
-}: {
-  to: string;
-  children: ReactNode;
-  dataTest: string;
-}) {
+/**
+ * Desktop navigation item for direct links.
+ * Renders as a styled link in the horizontal navbar with hover effects.
+ * Only visible on md breakpoint and above.
+ */
+function DesktopNavLeaf({ navItem }: { navItem: NavItem }) {
+  const { to, href, label } = navItem;
+  if (to) {
+    return (
+      <ChakraLink
+        as={RouterLink}
+        to={to}
+        data-test={label}
+        h="100%"
+        alignContent="center"
+        _hover={{ backgroundColor: navItemHoverBg }}
+      >
+        <Text
+          px={navItemPaddingX}
+          fontSize="md"
+          fontWeight={navTextStyles.fontWeight}
+          letterSpacing={navTextStyles.letterSpacing}
+        >
+          {label}
+        </Text>
+      </ChakraLink>
+    );
+  }
+
+  if (href) {
+    return (
+      <ChakraLink
+        href={href}
+        data-test={label}
+        h="100%"
+        alignContent="center"
+        _hover={{ backgroundColor: navItemHoverBg }}
+      >
+        <Text
+          px={navItemPaddingX}
+          fontSize="md"
+          fontWeight={navTextStyles.fontWeight}
+          letterSpacing={navTextStyles.letterSpacing}
+        >
+          {label}
+        </Text>
+      </ChakraLink>
+    );
+  }
+
   return (
     <ChakraLink
-      as={ReactRouterLink}
-      to={to}
-      data-test={dataTest}
+      data-test={label}
       h="100%"
       alignContent="center"
       _hover={{ backgroundColor: navItemHoverBg }}
@@ -311,19 +346,19 @@ function DesktopNavbarItem({
         fontWeight={navTextStyles.fontWeight}
         letterSpacing={navTextStyles.letterSpacing}
       >
-        {children}
+        {label}
       </Text>
     </ChakraLink>
   );
 }
 
-function DesktopNavbarMenu({
-  label,
-  options,
-}: {
-  label: string;
-  options: NavbarMenuOption[];
-}) {
+/**
+ * Desktop dropdown menu for navigation items with children.
+ * Displays a menu button that reveals a dropdown list on hover/click.
+ * Only visible on md breakpoint and above.
+ */
+function DesktopNavMenu({ navItem }: { navItem: NavItem }) {
+  const { label, subItems } = navItem;
   const button = (
     <MenuButton
       color="doenet.canvastext"
@@ -342,22 +377,56 @@ function DesktopNavbarMenu({
     <Menu gutter={-4}>
       {button}
       <MenuList borderRadius="0">
-        {options.map((option, index) => (
-          <MenuItem
-            key={index}
-            as={ReactRouterLink}
-            backgroundColor="transparent"
-            _hover={{ backgroundColor: navItemHoverBg }}
-            to={option.to}
-          >
-            {option.label}
-          </MenuItem>
-        ))}
+        {subItems?.map((option, index) => {
+          if (option.to) {
+            return (
+              <MenuItem
+                key={index}
+                as={RouterLink}
+                to={option.to}
+                backgroundColor="transparent"
+                _hover={{ backgroundColor: navItemHoverBg }}
+              >
+                {option.label}
+              </MenuItem>
+            );
+          }
+
+          if (option.href) {
+            return (
+              <MenuItem
+                key={index}
+                as="a"
+                href={option.href}
+                backgroundColor="transparent"
+                _hover={{ backgroundColor: navItemHoverBg }}
+              >
+                {option.label}
+              </MenuItem>
+            );
+          }
+
+          return (
+            <MenuItem
+              key={index}
+              backgroundColor="transparent"
+              _hover={{ backgroundColor: navItemHoverBg }}
+            >
+              {option.label}
+            </MenuItem>
+          );
+        })}
       </MenuList>
     </Menu>
   );
 }
 
+/**
+ * Mobile navigation with hamburger menu and drawer.
+ * Uses a right-side drawer with drill-down pattern for nested navigation.
+ * When a parent item is clicked, the drawer transitions to show its children
+ * with a back button. Only visible below md breakpoint.
+ */
 function MobileNavbar({
   sections,
   user,
@@ -368,9 +437,9 @@ function MobileNavbar({
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [activeSubmenu, setActiveSubmenu] = useState<NavItem | null>(null);
 
-  const handleItemClick = (item: NavItem) => {
-    if (item.children) {
-      setActiveSubmenu(item);
+  const handleItemClick = (navItem: NavItem) => {
+    if (navItem.subItems) {
+      setActiveSubmenu(navItem);
     } else {
       onClose();
       setActiveSubmenu(null);
@@ -385,10 +454,11 @@ function MobileNavbar({
     <>
       <IconButton
         aria-label="Open navigation menu"
-        icon={<HamburgerIcon />}
+        icon={<HamburgerIcon width="full" height="full" p="5px" />}
         onClick={onOpen}
         variant="ghost"
-        size="sm"
+        width={navBarHeight}
+        height={navBarHeight}
       />
       <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
         <DrawerOverlay />
@@ -414,10 +484,10 @@ function MobileNavbar({
                   <Text fontWeight="medium">Back</Text>
                 </Box>
                 <Divider />
-                {activeSubmenu.children?.map((child, index) => (
-                  <MobileNavbarItem
+                {activeSubmenu.subItems?.map((child, index) => (
+                  <MobileNavLeaf
                     key={index}
-                    item={child}
+                    navItem={child}
                     onClick={() => handleItemClick(child)}
                   />
                 ))}
@@ -439,9 +509,9 @@ function MobileNavbar({
                       </Text>
                     )}
                     {section.items.map((item, itemIndex) => (
-                      <MobileNavbarItem
+                      <MobileNavLeaf
                         key={itemIndex}
-                        item={item}
+                        navItem={item}
                         onClick={() => handleItemClick(item)}
                       />
                     ))}
@@ -451,8 +521,8 @@ function MobileNavbar({
                 {!user || user.isAnonymous ? (
                   <>
                     <Divider my={2} />
-                    <MobileNavbarItem
-                      item={{ label: "Sign up/Log In", to: "/signIn" }}
+                    <MobileNavLeaf
+                      navItem={{ label: "Sign up/Log In", to: "/signIn" }}
                       onClick={() =>
                         handleItemClick({
                           label: "Sign up/Log In",
@@ -471,18 +541,23 @@ function MobileNavbar({
   );
 }
 
-function MobileNavbarItem({
-  item,
+/**
+ * Individual navigation item in the mobile drawer.
+ * Renders as a touch-friendly link (44px min height) with optional chevron
+ * indicator for items with children. Supports both internal routes and external links.
+ */
+function MobileNavLeaf({
+  navItem,
   onClick,
 }: {
-  item: NavItem;
+  navItem: NavItem;
   onClick: () => void;
 }) {
-  const hasChildren = !!item.children;
+  const hasChildren = !!navItem.subItems;
 
   const content = (
     <>
-      <Text>{item.label}</Text>
+      <Text>{navItem.label}</Text>
       {hasChildren && <ChevronLeftIcon transform="rotate(180deg)" />}
     </>
   );
@@ -498,15 +573,15 @@ function MobileNavbarItem({
     minH: "44px",
   };
 
-  if (item.to) {
+  if (navItem.to) {
     return (
-      <Box as={ReactRouterLink} to={item.to} onClick={onClick} {...boxStyles}>
+      <Box as={RouterLink} to={navItem.to} onClick={onClick} {...boxStyles}>
         {content}
       </Box>
     );
-  } else if (item.href) {
+  } else if (navItem.href) {
     return (
-      <Box as="a" href={item.href} onClick={onClick} {...boxStyles}>
+      <Box as="a" href={navItem.href} onClick={onClick} {...boxStyles}>
         {content}
       </Box>
     );
@@ -519,6 +594,12 @@ function MobileNavbarItem({
   }
 }
 
+/**
+ * User account menu with avatar icon.
+ * Displays user avatar that opens a dropdown menu with account information,
+ * settings (author mode toggle), and sign out option. Shows different options
+ * for anonymous vs authenticated users.
+ */
 function AccountIconAndCard({ user }: { user: NonNullable<User> }) {
   const currentPath = useLocation().pathname;
   const fetcher = useFetcher();

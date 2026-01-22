@@ -31,12 +31,12 @@ export function WithSideBanners({
       templateColumns={"repeat(12, 1fr)"}
       w="100%"
       bg={bgColor}
-      pt={padding}
-      pb={padding}
+      paddingY={padding}
+      paddingX={{ base: 0, md: "20px", lg: 0 }}
     >
       <GridItem
-        colStart={{ base: 0, md: 1 + left }}
-        colSpan={{ base: 12, md: 12 - left - right }}
+        colStart={{ base: 0, lg: 1 + left }}
+        colSpan={{ base: 12, lg: 12 - left - right }}
       >
         {children}
       </GridItem>
