@@ -94,20 +94,15 @@ describe("Assignment workflow Tests", function () {
       // Visit assignment
       cy.visit(`/code/${classCode}`);
 
-      cy.frameLoaded("iframe:eq(0)", { timeout: 20000 });
-      cy.frameLoaded("iframe:eq(1)", { timeout: 20000 });
-
       // Verify have 3 attempts (i.e., 2 left after initial)
       cy.get("#viewer-container").find("button").first().contains("2 left");
 
       // Submit an incorrect answer for this attempt
-      cy.iframe()
-        .find(".doenet-viewer #ans textarea")
-        .type("3x{enter}", { force: true });
+      cy.getIframeBody("iframe", ".doenet-viewer").within(() => {
+        cy.get("#ans textarea").type("3x{enter}", { force: true });
 
-      cy.iframe()
-        .find(".doenet-viewer #ans .mq-editable-field")
-        .should("contain.text", "3x");
+        cy.get("#ans .mq-editable-field").should("contain.text", "3x");
+      });
 
       // Get a new attempt
       cy.get("#viewer-container").find("button").first().click();
@@ -116,32 +111,24 @@ describe("Assignment workflow Tests", function () {
       // Wait so that don't get element that will be removed
       cy.wait(500);
 
-      // Verify answer is now blank
-      cy.iframe()
-        .find(".doenet-viewer #ans .mq-editable-field")
-        .should("not.contain.text", "3x");
+      cy.getIframeBody("iframe", ".doenet-viewer").within(() => {
+        // Verify answer is now blank
+        cy.get("#ans .mq-editable-field").should("not.contain.text", "3x");
 
-      // Submit an incorrect answer at first
-      cy.iframe()
-        .find(".doenet-viewer #ans textarea")
-        .type("4x{enter}", { force: true });
+        // Submit an incorrect answer at first
+        cy.get("#ans textarea").type("4x{enter}", { force: true });
 
-      cy.iframe()
-        .find(".doenet-viewer #ans .mq-editable-field")
-        .should("contain.text", "4x");
+        cy.get("#ans .mq-editable-field").should("contain.text", "4x");
 
-      // Then submit a correct answer
-      cy.iframe()
-        .find(".doenet-viewer #ans textarea")
-        .type("{end}{backspace}{backspace}2x{enter}", { force: true });
+        // Then submit a correct answer
+        cy.get("#ans textarea").type("{end}{backspace}{backspace}2x{enter}", {
+          force: true,
+        });
 
-      cy.iframe()
-        .find(".doenet-viewer #ans .mq-editable-field")
-        .should("not.contain.text", "4x");
+        cy.get("#ans .mq-editable-field").should("not.contain.text", "4x");
 
-      cy.iframe()
-        .find(".doenet-viewer #ans .mq-editable-field")
-        .should("contain.text", "2x");
+        cy.get("#ans .mq-editable-field").should("contain.text", "2x");
+      });
 
       // Get third and final attempt
       cy.get("#viewer-container").find("button").first().click();
@@ -154,19 +141,15 @@ describe("Assignment workflow Tests", function () {
       // Wait so that don't get element that will be removed
       cy.wait(500);
 
-      // Verify answer is now blank
-      cy.iframe()
-        .find(".doenet-viewer #ans .mq-editable-field")
-        .should("not.contain.text", "2x");
+      cy.getIframeBody("iframe", ".doenet-viewer").within(() => {
+        // Verify answer is now blank
+        cy.get("#ans .mq-editable-field").should("not.contain.text", "2x");
 
-      // Submit an incorrect answer
-      cy.iframe()
-        .find(".doenet-viewer #ans textarea")
-        .type("5x{enter}", { force: true });
+        // Submit an incorrect answer
+        cy.get("#ans textarea").type("5x{enter}", { force: true });
 
-      cy.iframe()
-        .find(".doenet-viewer #ans .mq-editable-field")
-        .should("contain.text", "5x");
+        cy.get("#ans .mq-editable-field").should("contain.text", "5x");
+      });
     });
 
     // Log in as second anonymous user to take assignment
@@ -183,14 +166,12 @@ describe("Assignment workflow Tests", function () {
       // Verify have 3 attempts (i.e., 2 left after initial)
       cy.get("#viewer-container").find("button").first().contains("2 left");
 
-      // Submit an incorrect answer for this attempt
-      cy.iframe()
-        .find(".doenet-viewer #ans textarea")
-        .type("6x{enter}", { force: true });
+      cy.getIframeBody("iframe", ".doenet-viewer").within(() => {
+        // Submit an incorrect answer for this attempt
+        cy.get("#ans textarea").type("6x{enter}", { force: true });
 
-      cy.iframe()
-        .find(".doenet-viewer #ans .mq-editable-field")
-        .should("contain.text", "6x");
+        cy.get("#ans .mq-editable-field").should("contain.text", "6x");
+      });
     });
 
     // Log back in as instructor to view data
@@ -227,16 +208,15 @@ describe("Assignment workflow Tests", function () {
 
       cy.get('[data-test="Title"]').should("contain.text", `Item Details`);
 
-      cy.iframe()
-        .find(".doenet-viewer #ans .mq-editable-field")
-        .should("contain.text", "2x");
-
+      cy.getIframeBody("iframe", ".doenet-viewer").within(() => {
+        cy.get("#ans .mq-editable-field").should("contain.text", "2x");
+      });
       cy.get('[data-test="Attempt Select"]').select("3");
 
       cy.wait(500); // wait for iframe to update
-      cy.iframe()
-        .find(".doenet-viewer #ans .mq-editable-field")
-        .should("contain.text", "5x");
+      cy.getIframeBody("iframe", ".doenet-viewer").within(() => {
+        cy.get("#ans .mq-editable-field").should("contain.text", "5x");
+      });
 
       // switch to second student
       cy.get('[data-test="Student Select"]').select(
@@ -246,9 +226,9 @@ describe("Assignment workflow Tests", function () {
       cy.get('[data-test="Attempt Select"]').should("have.value", `1`);
 
       cy.wait(500); // wait for iframe to update
-      cy.iframe()
-        .find(".doenet-viewer #ans .mq-editable-field")
-        .should("contain.text", "6x");
+      cy.getIframeBody("iframe", ".doenet-viewer").within(() => {
+        cy.get("#ans .mq-editable-field").should("contain.text", "6x");
+      });
 
       cy.get('[data-test="Back Link"]').click();
 
