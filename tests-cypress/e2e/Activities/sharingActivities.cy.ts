@@ -1,3 +1,5 @@
+import { UserInfo } from "@doenet-tools/client/src/types";
+
 describe("Share Activities Tests", function () {
   it("create, share, and copy public activity", () => {
     const code = Date.now().toString();
@@ -79,5 +81,83 @@ describe("Share Activities Tests", function () {
 
     cy.wait(100);
     cy.iframe().find(".doenet-viewer").should("contain.text", `Hello there!`);
+  });
+
+  it("Share activity with particular person", () => {
+    const code = Date.now().toString();
+    const scrappyEmail = `scrappy${code}@doo.org`;
+    const scoobyEmail = `scooby${code}@doo.org`;
+
+    let user1: UserInfo | null = null;
+    let user2: UserInfo | null = null;
+
+    cy.loginAsTestUser({
+      email: scoobyEmail,
+      firstNames: "Scooby",
+      lastNames: "Doo",
+    });
+
+    cy.getUserInfo().then((userInfo) => {
+      user1 = userInfo;
+    });
+    cy.loginAsTestUser({
+      email: scrappyEmail,
+      firstNames: "Scrappy",
+      lastNames: "Doo",
+    });
+
+    cy.getUserInfo().then((userInfo) => {
+      user2 = userInfo;
+    });
+
+    cy.createContent({
+      name: "Shared Activity",
+      contentType: "singleDoc",
+      doenetML: `<p>This is a shared activity.</p>`,
+    }).then((activityId) => {
+      cy.visit(`/documentEditor/${activityId}/edit`);
+
+      cy.get('[data-test="Share Button"]').click();
+
+      cy.get('[data-test="Email address').type(`${scoobyEmail}{enter}`);
+
+      cy.get('[data-test="Share Table"]').should(
+        "contain.text",
+        `${scoobyEmail}`,
+      );
+      cy.get('[data-test="Share Table"]').should("contain.text", `Scooby Doo`);
+
+      cy.get('[data-test="Share Close Button"]').click();
+
+      // User the activity is shared with can see it
+      cy.loginAsTestUser({
+        email: scoobyEmail,
+      });
+
+      cy.visit("/");
+
+      cy.get('[data-test="Activities"]').click();
+
+      cy.get('[data-test="Shared With Me Button"]').click();
+
+      cy.get('[data-test="Content Card"]')
+        .should("contain.text", `Shared Activity`)
+        .click();
+
+      cy.iframe()
+        .find(".doenet-viewer")
+        .should("contain.text", `This is a shared activity.`);
+
+      // Other user cannot see shared activity
+      cy.loginAsTestUser();
+      cy.visit("/");
+      cy.get('[data-test="Activities"]').click();
+      cy.get('[data-test="Shared With Me Button"]').click();
+      cy.get('[data-test="Folder Title"]').should(
+        "have.text",
+        "Shared with me",
+      );
+      cy.get('[data-test="Content Card"]').should("not.exist");
+    });
   });
 });
