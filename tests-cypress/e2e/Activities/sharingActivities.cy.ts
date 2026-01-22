@@ -1,5 +1,3 @@
-import { UserInfo } from "@doenet-tools/client/src/types";
-
 describe("Share Activities Tests", function () {
   it("create, share, and copy public activity", () => {
     const code = Date.now().toString();
