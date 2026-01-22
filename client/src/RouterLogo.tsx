@@ -20,11 +20,15 @@ const LogoButton = styled.button`
   border-style: none;
   // border-radius: 50%;
   margin-top: 2px;
-  margin-left: 10px;
+  margin-left: 0;
   cursor: pointer;
 `;
 
-export default function RouterLogo() {
+export default function RouterLogo({
+  paddingRight = "0px",
+}: {
+  paddingRight?: string;
+}) {
   return (
     <ChakraLink
       as={ReactRouterLink}
@@ -35,6 +39,7 @@ export default function RouterLogo() {
       alignItems="center"
       aria-label="Home"
       data-test="Home"
+      pr={paddingRight}
     >
       <LogoButton />
     </ChakraLink>
