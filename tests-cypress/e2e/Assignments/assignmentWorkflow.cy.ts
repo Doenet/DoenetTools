@@ -341,7 +341,7 @@ describe("Assignment workflow Tests", function () {
       });
 
       // Get new attempt of first question
-      cy.get("[data-test='New Item Attempt Button']").eq(0).click();
+      cy.get("[data-test='New Item Attempt']").eq(0).click();
       cy.get("[data-test='Confirm Create New Attempt']").click();
 
       cy.wait(500);
@@ -368,7 +368,7 @@ describe("Assignment workflow Tests", function () {
       });
 
       // Get new attempt of second question
-      cy.get("[data-test='New Item Attempt Button']").eq(1).click();
+      cy.get("[data-test='New Item Attempt']").eq(1).click();
       cy.get("[data-test='Confirm Create New Attempt']").click();
 
       cy.wait(500);
