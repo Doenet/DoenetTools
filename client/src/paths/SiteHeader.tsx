@@ -142,10 +142,11 @@ export function SiteHeader() {
   ];
 
   const navSectionRole: NavItem[] = [
-    {
-      label: "Instructors",
-      subItems: [{ label: "Get support", href: discussHref }],
-    },
+    // TODO: Add Instructors link on header once we have pages for them.
+    // {
+    //   label: "Instructors",
+    //   subItems: [{ label: "Get support", href: ?? }],
+    // },
     {
       label: "Authors",
       subItems: [
@@ -195,10 +196,9 @@ export function SiteHeader() {
         }
       });
 
-      // Add divider after general section (first section)
-      if (sectionIndex === 0) {
+      // Add divider if not first section
+      if (sectionIndex !== 0) {
         return [
-          ...items,
           <Box
             key={`divider-${sectionIndex}`}
             w="1px"
@@ -207,6 +207,7 @@ export function SiteHeader() {
             alignSelf="center"
             mx="16px"
           />,
+          ...items,
         ];
       }
 
@@ -247,7 +248,7 @@ export function SiteHeader() {
       <RouterLogo />
       <HStack spacing="1rem">
         {user && <AccountIconAndCard user={user} />}
-        <MobileNavbar sections={navSections} user={user} />
+        <MobileNavAll sections={navSections} user={user} />
       </HStack>
     </HStack>
   );
@@ -427,7 +428,7 @@ function DesktopNavMenu({ navItem }: { navItem: NavItem }) {
  * When a parent item is clicked, the drawer transitions to show its children
  * with a back button. Only visible below md breakpoint.
  */
-function MobileNavbar({
+function MobileNavAll({
   sections,
   user,
 }: {
