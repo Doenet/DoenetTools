@@ -720,7 +720,7 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
   );
 }
 
-function WithSideBanners({
+export function WithSideBanners({
   children,
   bgColor = "white",
   padding = "0px",
