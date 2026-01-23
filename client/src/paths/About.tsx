@@ -26,20 +26,22 @@ export function About() {
   return (
     <>
       <WithSideBanners bgColor="background" padding="-10px">
-        <Box p="40px" w="100%">
+        <Box
+          p="40px"
+          w="100%"
+          // Hack: ensure background color extends full height
+          // Remove once we implement background color globally
+          minH="calc(100vh - 40px)"
+        >
           <Flex
             direction={{ base: "column", md: "row" }}
-            align="flex-start"
+            align={{ base: "center", md: "flex-start" }}
             justify="flex-start"
             gap={{ base: "16px", md: "32px" }}
             w="100%"
           >
-            <Box flex="1 1 0" maxW={{ md: "780px" }}>
+            <Box flex="1 1 0" maxW={{ md: "780px" }} order={{ base: 2, md: 1 }}>
               <Heading size="lg">About Doenet</Heading>
-              <Text fontStyle="italic">
-                The <Strong>D</Strong>istributed <Strong>O</Strong>
-                pen <Strong>E</Strong>ducation <Strong>Net</Strong>work
-              </Text>
 
               <Text fontSize="1.3rem" lineHeight="1.3" mt="16px">
                 Doenet is a community of STEM instructors and authors who strive
@@ -65,7 +67,10 @@ export function About() {
                     label="How to get involved"
                     href="https://pages.doenet.org"
                   />
-                  <CustomButton label="Start authoring" to="/scratchPad" />
+                  <CustomButton
+                    label="Start authoring"
+                    href="https://docs.doenet.org"
+                  />
                 </Box>
               </VStack>
 
@@ -80,7 +85,7 @@ export function About() {
                 </Box>
               </VStack>
             </Box>
-            <Box flex="0 0 auto">
+            <Box flex="0 0 auto" order={{ base: 1, md: 2 }}>
               <Image
                 src="/Doenet_Logo_Frontpage.png"
                 alt="Doenet Logo"
@@ -144,12 +149,4 @@ function CustomButton({
   } else {
     throw new Error("CustomButton requires either 'to' or 'href' prop");
   }
-}
-
-function Strong({ children }: { children: React.ReactNode }) {
-  return (
-    <Text as="strong" display="inline" fontSize="1.1rem">
-      {children}
-    </Text>
-  );
 }
