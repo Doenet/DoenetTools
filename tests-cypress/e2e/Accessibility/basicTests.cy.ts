@@ -4,9 +4,14 @@ describe("Basic accessibility tests", function () {
 
     cy.get("body").should("contain.text", "Doenet");
 
-    cy.checkAccessibility(undefined, {
-      //   // @ts-expect-error - wick-a11y extends cypress-axe options
-      //   onlyWarnImpacts: ["moderate", "minor"],
-    });
+    cy.checkAccessibility(undefined);
+  });
+
+  it("Check accessibility of explore page", () => {
+    cy.visit("/explore");
+
+    cy.get("body").should("contain.text", "Community");
+
+    cy.checkAccessibility(undefined);
   });
 });
