@@ -1,9 +1,8 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Description: zone within a VPC template
 Parameters:
-
   EnvironmentName:
-    Description: The name of the environment 
+    Description: The name of the environment
     Type: String
 
   S3TemplateBucket:
@@ -45,61 +44,59 @@ Parameters:
     AllowedValues: [true, false]
 
 Conditions:
-  ShouldCreateNatGateway:
-    !Equals [true, !Ref 'CreateNatGateway']
+  ShouldCreateNatGateway: !Equals [true, !Ref "CreateNatGateway"]
 
 Resources:
-
   Subnets:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Join
         - /
-        - - !Sub 'https://s3.${AWS::Region}.amazonaws.com/${S3TemplateBucket}'
+        - - !Sub "https://s3.${AWS::Region}.amazonaws.com/${S3TemplateBucket}"
           - subnets.yml
       Parameters:
-        EnvironmentName: !Ref 'EnvironmentName'
-        VPC: !Ref 'VPC'
+        EnvironmentName: !Ref "EnvironmentName"
+        VPC: !Ref "VPC"
         VpcCidrBlock: !Ref VpcCidrBlock
-        AvailabilityZone: !Ref 'AvailabilityZone'
-        CreateNatGateway: !Ref 'CreateNatGateway'
+        AvailabilityZone: !Ref "AvailabilityZone"
+        CreateNatGateway: !Ref "CreateNatGateway"
 
   Routes:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Join
         - /
-        - - !Sub 'https://s3.${AWS::Region}.amazonaws.com/${S3TemplateBucket}'
+        - - !Sub "https://s3.${AWS::Region}.amazonaws.com/${S3TemplateBucket}"
           - routes.yml
       Parameters:
-        EnvironmentName: !Ref 'EnvironmentName'
-        VPC: !Ref 'VPC'
-        InternetGateway: !Ref 'InternetGateway'
-        PublicSubnet: !GetAtt 'Subnets.Outputs.PublicSubnet'
-        PrivateSubnet: !GetAtt 'Subnets.Outputs.PrivateSubnet'
-        NatGateway: !If [ShouldCreateNatGateway, !GetAtt 'Subnets.Outputs.NatGateway', ""]
-        AvailabilityZone: !Ref 'AvailabilityZone'
-        CreateNatGateway: !Ref 'CreateNatGateway'
+        EnvironmentName: !Ref "EnvironmentName"
+        VPC: !Ref "VPC"
+        InternetGateway: !Ref "InternetGateway"
+        PublicSubnet: !GetAtt "Subnets.Outputs.PublicSubnet"
+        PrivateSubnet: !GetAtt "Subnets.Outputs.PrivateSubnet"
+        NatGateway:
+          !If [ShouldCreateNatGateway, !GetAtt "Subnets.Outputs.NatGateway", ""]
+        AvailabilityZone: !Ref "AvailabilityZone"
+        CreateNatGateway: !Ref "CreateNatGateway"
 
   PublicSubnetNetworkAclAssociation:
     Type: AWS::EC2::SubnetNetworkAclAssociation
     Properties:
-      SubnetId: !GetAtt 'Subnets.Outputs.PublicSubnet'
-      NetworkAclId: !Ref 'PublicNetworkAcl'
+      SubnetId: !GetAtt "Subnets.Outputs.PublicSubnet"
+      NetworkAclId: !Ref "PublicNetworkAcl"
 
   PrivateSubnetNetworkAclAssociation:
     Type: AWS::EC2::SubnetNetworkAclAssociation
     Properties:
-      SubnetId: !GetAtt 'Subnets.Outputs.PrivateSubnet'
-      NetworkAclId: !Ref 'PrivateNetworkAcl'
+      SubnetId: !GetAtt "Subnets.Outputs.PrivateSubnet"
+      NetworkAclId: !Ref "PrivateNetworkAcl"
 
 Outputs:
-
   PrivateSubnet:
-    Value: !GetAtt 'Subnets.Outputs.PrivateSubnet'
+    Value: !GetAtt "Subnets.Outputs.PrivateSubnet"
 
   PublicSubnet:
-    Value: !GetAtt 'Subnets.Outputs.PublicSubnet'
+    Value: !GetAtt "Subnets.Outputs.PublicSubnet"
 
   RouteTable:
-    Value: !GetAtt 'Routes.Outputs.RouteTable'
+    Value: !GetAtt "Routes.Outputs.RouteTable"

@@ -1,9 +1,8 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Description: IAM VPC routes template
 Parameters:
-
   EnvironmentName:
-    Description: The name of the environment 
+    Description: The name of the environment
     Type: String
 
   AvailabilityZone:
@@ -42,72 +41,69 @@ Parameters:
     AllowedValues: [true, false]
 
 Conditions:
-  ShouldCreateNatGateway:
-    !Equals [true, !Ref 'CreateNatGateway']
+  ShouldCreateNatGateway: !Equals [true, !Ref "CreateNatGateway"]
 
 Resources:
-
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
-      VpcId: !Ref 'VPC'
+      VpcId: !Ref "VPC"
       Tags:
         - Key: Name
           Value: !Join
-            - '-'
-            - - !Ref 'EnvironmentName'
+            - "-"
+            - - !Ref "EnvironmentName"
               - public-route-table-zone
-              - !Ref 'AvailabilityZone'
+              - !Ref "AvailabilityZone"
         - Key: Application
-          Value: !Ref 'AWS::StackId'
+          Value: !Ref "AWS::StackId"
 
   PublicRoute:
     Type: AWS::EC2::Route
     Properties:
-      RouteTableId: !Ref 'PublicRouteTable'
-      DestinationCidrBlock: '0.0.0.0/0'
-      GatewayId: !Ref 'InternetGateway'
+      RouteTableId: !Ref "PublicRouteTable"
+      DestinationCidrBlock: "0.0.0.0/0"
+      GatewayId: !Ref "InternetGateway"
 
   PublicRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      SubnetId: !Ref 'PublicSubnet'
-      RouteTableId: !Ref 'PublicRouteTable'
+      SubnetId: !Ref "PublicSubnet"
+      RouteTableId: !Ref "PublicRouteTable"
 
   RouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
-      VpcId: !Ref 'VPC'
+      VpcId: !Ref "VPC"
       Tags:
         - Key: Name
           Value: !Join
-            - '-'
-            - - !Ref 'EnvironmentName'
+            - "-"
+            - - !Ref "EnvironmentName"
               - route-table-zone
-              - !Ref 'AvailabilityZone'
+              - !Ref "AvailabilityZone"
         - Key: Application
-          Value: !Ref 'AWS::StackId'
+          Value: !Ref "AWS::StackId"
 
   Route:
     Type: AWS::EC2::Route
     Condition: ShouldCreateNatGateway
     Properties:
-      RouteTableId: !Ref 'RouteTable'
-      DestinationCidrBlock: '0.0.0.0/0'
-      NatGatewayId: !Ref 'NatGateway'
+      RouteTableId: !Ref "RouteTable"
+      DestinationCidrBlock: "0.0.0.0/0"
+      NatGatewayId: !Ref "NatGateway"
 
   PrivateSubnetRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      SubnetId: !Ref 'PrivateSubnet'
-      RouteTableId: !Ref 'RouteTable'
+      SubnetId: !Ref "PrivateSubnet"
+      RouteTableId: !Ref "RouteTable"
 
 Outputs:
-
   PublicRouteTable:
     Description: The public route table ID
-    Value: !Ref 'PublicRouteTable'
+    Value: !Ref "PublicRouteTable"
 
   RouteTable:
     Description: The internal route table ID
-    Value: !Ref 'RouteTable'
+    Value: !Ref "RouteTable"

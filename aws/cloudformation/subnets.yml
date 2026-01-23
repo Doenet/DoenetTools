@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Description: VPC subnets template
 Parameters:
   EnvironmentName:
@@ -23,69 +23,68 @@ Parameters:
     AllowedValues: [true, false]
 
 Conditions:
-  ShouldCreateNatGateway:
-    !Equals [true, !Ref 'CreateNatGateway']
+  ShouldCreateNatGateway: !Equals [true, !Ref "CreateNatGateway"]
 
 Mappings:
   CidrDivision:
     a:
-      public: '0'
-      private: '1'
+      public: "0"
+      private: "1"
     b:
-      public: '2'
-      private: '3'
+      public: "2"
+      private: "3"
     c:
-      public: '4'
-      private: '5'
+      public: "4"
+      private: "5"
 Resources:
   PublicSubnet:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !Ref 'VPC'
+      VpcId: !Ref "VPC"
       AvailabilityZone: !Join
-        - ''
-        - - !Ref 'AWS::Region'
-          - !Ref 'AvailabilityZone'
-      CidrBlock: !Select 
+        - ""
+        - - !Ref "AWS::Region"
+          - !Ref "AvailabilityZone"
+      CidrBlock: !Select
         - !FindInMap
           - CidrDivision
-          - !Ref 'AvailabilityZone'
+          - !Ref "AvailabilityZone"
           - public
-        - !Cidr [ !Ref VpcCidrBlock, 8, 8 ]
+        - !Cidr [!Ref VpcCidrBlock, 8, 8]
       Tags:
         - Key: Name
           Value: !Join
-            - '-'
-            - - !Ref 'EnvironmentName'
+            - "-"
+            - - !Ref "EnvironmentName"
               - public-subnet-zone
-              - !Ref 'AvailabilityZone'
+              - !Ref "AvailabilityZone"
   PrivateSubnet:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !Ref 'VPC'
+      VpcId: !Ref "VPC"
       AvailabilityZone: !Join
-        - ''
-        - - !Ref 'AWS::Region'
-          - !Ref 'AvailabilityZone'
-      CidrBlock: !Select 
+        - ""
+        - - !Ref "AWS::Region"
+          - !Ref "AvailabilityZone"
+      CidrBlock: !Select
         - !FindInMap
           - CidrDivision
-          - !Ref 'AvailabilityZone'
+          - !Ref "AvailabilityZone"
           - private
-        - !Cidr [ !Ref VpcCidrBlock, 8, 8 ]
+        - !Cidr [!Ref VpcCidrBlock, 8, 8]
       Tags:
         - Key: Name
           Value: !Join
-            - '-'
-            - - !Ref 'EnvironmentName'
+            - "-"
+            - - !Ref "EnvironmentName"
               - private-subnet-zone
-              - !Ref 'AvailabilityZone'
+              - !Ref "AvailabilityZone"
   NatGateway:
     Type: AWS::EC2::NatGateway
     Condition: ShouldCreateNatGateway
     Properties:
-      AllocationId: !GetAtt 'NatIP.AllocationId'
-      SubnetId: !Ref 'PublicSubnet'
+      AllocationId: !GetAtt "NatIP.AllocationId"
+      SubnetId: !Ref "PublicSubnet"
   NatIP:
     Type: AWS::EC2::EIP
     Condition: ShouldCreateNatGateway
@@ -94,14 +93,14 @@ Resources:
 Outputs:
   VPCId:
     Description: VPCId of the newly created VPC
-    Value: !Ref 'VPC'
+    Value: !Ref "VPC"
   PrivateSubnet:
     Description: SubnetId of private subnet
-    Value: !Ref 'PrivateSubnet'
+    Value: !Ref "PrivateSubnet"
   PublicSubnet:
     Description: SubnetId of public subnet
-    Value: !Ref 'PublicSubnet'
+    Value: !Ref "PublicSubnet"
   NatGateway:
     Description: NatGatewayId of the connected NAT Gateway
     Condition: ShouldCreateNatGateway
-    Value: !Ref 'NatGateway'
+    Value: !Ref "NatGateway"

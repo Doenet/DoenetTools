@@ -3,11 +3,11 @@ Environment:
     Value: DEBUG
 #Secrets:
 #  - Name: DATABASE_HOST
-#    ValueFrom: 
+#    ValueFrom:
 #      Fn::Sub: "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${EnvironmentName}/DbHost"
 #  - Name: DATABASE_USERNAME
-#    ValueFrom: 
+#    ValueFrom:
 #      Fn::Sub: "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${EnvironmentName}/${ServiceName}/AppUser"
 #  - Name: DATABASE_PASSWORD
-#    ValueFrom: 
+#    ValueFrom:
 #      Fn::Sub: "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${EnvironmentName}/${ServiceName}/AppPassword"

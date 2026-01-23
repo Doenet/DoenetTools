@@ -1,5 +1,5 @@
-AWSTemplateFormatVersion: '2010-09-09'
-Description: 'S3 website hosting with CloudFront distribution and custom DNS'
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "S3 website hosting with CloudFront distribution and custom DNS"
 
 Parameters:
   EnvironmentName:
@@ -10,15 +10,15 @@ Parameters:
   PublicHostedZoneName:
     Type: String
     Description: The hosted zone name (e.g., example.com)
-  
+
   PublicHostedZoneId:
     Type: String
     Description: The Route 53 hosted zone ID
-  
+
   ServiceName:
     Type: String
     Description: Service name to include in bucket name
-  
+
   LoadBalancerDnsName:
     Type: String
     Description: DNS name of the Application Load Balancer
@@ -27,7 +27,7 @@ Resources:
   WebsiteBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub '${EnvironmentName}-${ServiceName}-${AWS::AccountId}-${AWS::Region}'
+      BucketName: !Sub "${EnvironmentName}-${ServiceName}-${AWS::AccountId}-${AWS::Region}"
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
@@ -38,7 +38,7 @@ Resources:
     Type: AWS::CloudFront::OriginAccessControl
     Properties:
       OriginAccessControlConfig:
-        Name: !Sub '${EnvironmentName}-${ServiceName}-oac'
+        Name: !Sub "${EnvironmentName}-${ServiceName}-oac"
         OriginAccessControlOriginType: s3
         SigningBehavior: always
         SigningProtocol: sigv4
@@ -53,10 +53,10 @@ Resources:
             Principal:
               Service: cloudfront.amazonaws.com
             Action: s3:GetObject
-            Resource: !Sub 'arn:aws:s3:::${WebsiteBucket}/*'
+            Resource: !Sub "arn:aws:s3:::${WebsiteBucket}/*"
             Condition:
               StringEquals:
-                'AWS:SourceArn': !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}'
+                "AWS:SourceArn": !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}"
 
   CloudFrontDistribution:
     Type: AWS::CloudFront::Distribution
@@ -66,7 +66,7 @@ Resources:
           - Id: S3Origin
             DomainName: !GetAtt WebsiteBucket.RegionalDomainName
             S3OriginConfig:
-              OriginAccessIdentity: ''
+              OriginAccessIdentity: ""
             OriginAccessControlId: !GetAtt OriginAccessControl.Id
           - Id: ALBOrigin
             DomainName: !Ref LoadBalancerDnsName
@@ -92,7 +92,7 @@ Resources:
             ForwardedValues:
               QueryString: true
               Headers:
-                - '*'
+                - "*"
               Cookies:
                 Forward: all
         DefaultCacheBehavior:
@@ -124,8 +124,7 @@ Resources:
           SslSupportMethod: sni-only
       Tags:
         - Key: Name
-          Value: !Sub '${EnvironmentName}-${ServiceName}-cloudfront'
-
+          Value: !Sub "${EnvironmentName}-${ServiceName}-cloudfront"
 
   SSLCertificate:
     Type: AWS::CertificateManager::Certificate
@@ -158,15 +157,15 @@ Outputs:
   BucketName:
     Description: Name of the S3 bucket
     Value: !Ref WebsiteBucket
-  
+
   WebsiteURL:
     Description: Website URL
     Value: !GetAtt WebsiteBucket.WebsiteURL
-  
+
   CloudFrontURL:
     Description: CloudFront distribution URL
     Value: !GetAtt CloudFrontDistribution.DomainName
-  
+
   CustomDomainURL:
     Description: Custom domain URL
-    Value: !Sub 'https://${PublicHostedZoneName}'
+    Value: !Sub "https://${PublicHostedZoneName}"
