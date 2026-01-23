@@ -13,7 +13,6 @@ async function main() {
   const { count: changedItems } = await prisma.content.updateMany({
     where: {
       isPublic: true,
-      isDeletedOn: null,
       publiclySharedAt: null,
     },
     data: {

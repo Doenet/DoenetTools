@@ -18,14 +18,24 @@ describe("getWeeklyUsersJoined()", () => {
     const start = DateTime.now().minus({ days: 5 });
     const end = start.plus({ days: 10 });
 
-    await createTestUser();
-    const result = await getWeeklyUsersJoined({
+    const before = await getWeeklyUsersJoined({
       start: start.toJSDate(),
       end: end.toJSDate(),
     });
 
-    expect(result.data.length).toBeGreaterThan(0);
-    expect(result.data.some((entry) => entry.count > 0)).toBe(true);
+    await createTestUser();
+
+    const after = await getWeeklyUsersJoined({
+      start: start.toJSDate(),
+      end: end.toJSDate(),
+    });
+
+    expect(after.data.length).toBeGreaterThan(0);
+    expect(after.data.length).toBe(before.data.length);
+    // Expect there to be at least one week where the user count increased
+    expect(
+      after.data.some((entry, i) => entry.count > before.data[i].count),
+    ).toBe(true);
   });
 });
 
@@ -34,6 +44,11 @@ describe("getWeeklyContentCreated()", () => {
     const start = DateTime.now().minus({ days: 5 });
     const end = start.plus({ days: 10 });
 
+    const before = await getWeeklyContentCreated({
+      start: start.toJSDate(),
+      end: end.toJSDate(),
+    });
+
     const { userId } = await createTestUser();
     await createContent({
       loggedInUserId: userId,
@@ -41,12 +56,16 @@ describe("getWeeklyContentCreated()", () => {
       contentType: "singleDoc",
       parentId: null,
     });
-    const result = await getWeeklyContentCreated({
+    const after = await getWeeklyContentCreated({
       start: start.toJSDate(),
       end: end.toJSDate(),
     });
-    expect(result.data.length).toBeGreaterThan(0);
-    expect(result.data.some((entry) => entry.count > 0)).toBe(true);
+    expect(after.data.length).toBeGreaterThan(0);
+    expect(after.data.length).toBe(before.data.length);
+    // Expect there to be at least one week where the content count increased
+    expect(
+      after.data.some((entry, i) => entry.count > before.data[i].count),
+    ).toBe(true);
   });
 });
 
@@ -54,6 +73,11 @@ describe("getWeeklyContentSharedPublicly()", () => {
   test("picks up on newly shared public content", async () => {
     const start = DateTime.now().minus({ days: 5 });
     const end = start.plus({ days: 10 });
+
+    const before = await getWeeklyContentSharedPublicly({
+      start: start.toJSDate(),
+      end: end.toJSDate(),
+    });
 
     const { userId } = await createTestUser();
     const { contentId } = await createContent({
@@ -67,11 +91,16 @@ describe("getWeeklyContentSharedPublicly()", () => {
       contentId: contentId,
       isPublic: true,
     });
-    const result = await getWeeklyContentSharedPublicly({
+
+    const after = await getWeeklyContentSharedPublicly({
       start: start.toJSDate(),
       end: end.toJSDate(),
     });
-    expect(result.data.length).toBeGreaterThan(0);
-    expect(result.data.some((entry) => entry.count > 0)).toBe(true);
+    expect(after.data.length).toBeGreaterThan(0);
+    expect(after.data.length).toBe(before.data.length);
+    // Expect there to be at least one week where the public share count increased
+    expect(
+      after.data.some((entry, i) => entry.count > before.data[i].count),
+    ).toBe(true);
   });
 });

@@ -14,7 +14,7 @@ type Metric = {
 };
 
 /**
- * Get users joined from `start` to `end` weekly.
+ * Get users joined between `start` and `end`, tabulated weekly.
  * Does not include anonymous users.
  */
 export async function getWeeklyUsersJoined({
@@ -50,7 +50,7 @@ export async function getWeeklyUsersJoined({
 }
 
 /**
- * Get content created between `start` to `end` weekly.
+ * Get content created between `start` and `end`, tabulated weekly.
  * Does not include deleted content or assignments.
  */
 export async function getWeeklyContentCreated({
@@ -85,7 +85,7 @@ export async function getWeeklyContentCreated({
 }
 
 /**
- * Get content shared publicly between `start` to `end` weekly.
+ * Get content shared publicly between `start` and `end`, tabulated weekly.
  * Does not include deleted content that was public.
  */
 export async function getWeeklyContentSharedPublicly({
