@@ -1,6 +1,31 @@
-import { extendTheme } from "@chakra-ui/react";
+import { extendTheme, defineStyleConfig } from "@chakra-ui/react";
+
+const Button = defineStyleConfig({
+  variants: {
+    solid: (props) => {
+      if (props.colorScheme === "blue") {
+        return {
+          bg: "blue.600",
+          color: "white",
+          _hover: {
+            bg: "blue.700",
+            _disabled: {
+              bg: "blue.600",
+            },
+          },
+        };
+      }
+      // Return undefined to fall back to default behavior for other color schemes
+      return {};
+    },
+  },
+});
 
 const theme = extendTheme({
+  components: {
+    Button,
+    IconButton: Button,
+  },
   fonts: {
     body: "Jost",
   },
