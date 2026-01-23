@@ -41,6 +41,18 @@ Resources:
           Value: !Ref "EnvironmentName"
         - Key: Application
           Value: !Ref "AWS::StackId"
+
+  VPCIpv6CidrBlock:
+    Type: AWS::EC2::VPCCidrBlock
+    Properties:
+      VpcId: !Ref VPC
+      AmazonProvidedIpv6CidrBlock: true
+
+  EgressOnlyInternetGateway:
+    Type: AWS::EC2::EgressOnlyInternetGateway
+    DependsOn: VPCIpv6CidrBlock
+    Properties:
+      VpcId: !Ref "VPC"
   DHCPOptionSet:
     Type: AWS::EC2::DHCPOptions
     Condition: OverrideDNS
@@ -310,6 +322,12 @@ Outputs:
   VpcCidrBlock:
     Description: The CIDR block of the newly created VPC
     Value: !GetAtt "VPC.CidrBlock"
+  VpcIpv6CidrBlock:
+    Description: The IPv6 CIDR block of the newly created VPC
+    Value: !Select [0, !GetAtt VPC.Ipv6CidrBlocks]
+  EgressOnlyInternetGateway:
+    Description: The EgressOnlyInternetGateway id
+    Value: !Ref "EgressOnlyInternetGateway"
   AdminSecurityGroup:
     Description: The admin security group id
     Value: !Ref "AdminSecurityGroup"

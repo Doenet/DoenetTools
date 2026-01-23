@@ -40,6 +40,10 @@ Parameters:
     Default: false
     AllowedValues: [true, false]
 
+  EgressOnlyInternetGateway:
+    Description: The EgressOnlyInternetGateway id
+    Type: String
+
 Conditions:
   ShouldCreateNatGateway: !Equals [true, !Ref "CreateNatGateway"]
 
@@ -64,6 +68,13 @@ Resources:
       RouteTableId: !Ref "PublicRouteTable"
       DestinationCidrBlock: "0.0.0.0/0"
       GatewayId: !Ref "InternetGateway"
+
+  PublicRouteIpv6:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref 'PublicRouteTable'
+      DestinationIpv6CidrBlock: '::/0'
+      GatewayId: !Ref 'InternetGateway'
 
   PublicRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
@@ -92,6 +103,13 @@ Resources:
       RouteTableId: !Ref "RouteTable"
       DestinationCidrBlock: "0.0.0.0/0"
       NatGatewayId: !Ref "NatGateway"
+
+  RouteIpv6:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref 'RouteTable'
+      DestinationIpv6CidrBlock: '::/0'
+      EgressOnlyInternetGatewayId: !Ref 'EgressOnlyInternetGateway'
 
   PrivateSubnetRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation

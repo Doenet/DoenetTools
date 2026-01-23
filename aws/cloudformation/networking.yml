@@ -185,7 +185,9 @@ Resources:
         S3TemplateBucket: !Ref "S3TemplateBucket"
         VPC: !GetAtt "VPC.Outputs.VPCId"
         VpcCidrBlock: !GetAtt "VPC.Outputs.VpcCidrBlock"
+        VpcIpv6CidrBlock: !GetAtt "VPC.Outputs.VpcIpv6CidrBlock"
         InternetGateway: !GetAtt "VPC.Outputs.InternetGatewayId"
+        EgressOnlyInternetGateway: !GetAtt "VPC.Outputs.EgressOnlyInternetGateway"
         PublicNetworkAcl: !GetAtt "NetworkAcls.Outputs.PublicNetworkAcl"
         PrivateNetworkAcl: !GetAtt "NetworkAcls.Outputs.PrivateNetworkAcl"
         AvailabilityZone: a
@@ -204,7 +206,9 @@ Resources:
         S3TemplateBucket: !Ref "S3TemplateBucket"
         VPC: !GetAtt "VPC.Outputs.VPCId"
         VpcCidrBlock: !GetAtt "VPC.Outputs.VpcCidrBlock"
+        VpcIpv6CidrBlock: !GetAtt "VPC.Outputs.VpcIpv6CidrBlock"
         InternetGateway: !GetAtt "VPC.Outputs.InternetGatewayId"
+        EgressOnlyInternetGateway: !GetAtt "VPC.Outputs.EgressOnlyInternetGateway"
         PublicNetworkAcl: !GetAtt "NetworkAcls.Outputs.PublicNetworkAcl"
         PrivateNetworkAcl: !GetAtt "NetworkAcls.Outputs.PrivateNetworkAcl"
         AvailabilityZone: b
@@ -223,7 +227,9 @@ Resources:
         S3TemplateBucket: !Ref "S3TemplateBucket"
         VPC: !GetAtt "VPC.Outputs.VPCId"
         VpcCidrBlock: !GetAtt "VPC.Outputs.VpcCidrBlock"
+        VpcIpv6CidrBlock: !GetAtt "VPC.Outputs.VpcIpv6CidrBlock"
         InternetGateway: !GetAtt "VPC.Outputs.InternetGatewayId"
+        EgressOnlyInternetGateway: !GetAtt "VPC.Outputs.EgressOnlyInternetGateway"
         PublicNetworkAcl: !GetAtt "NetworkAcls.Outputs.PublicNetworkAcl"
         PrivateNetworkAcl: !GetAtt "NetworkAcls.Outputs.PrivateNetworkAcl"
         AvailabilityZone: c

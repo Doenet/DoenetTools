@@ -17,8 +17,16 @@ Parameters:
     Description: The VPC CIDR block
     Type: String
 
+  VpcIpv6CidrBlock:
+    Description: The VPC IPv6 CIDR block
+    Type: String
+
   InternetGateway:
     Description: The InternetGateway id
+    Type: String
+
+  EgressOnlyInternetGateway:
+    Description: The EgressOnlyInternetGateway id
     Type: String
 
   AvailabilityZone:
@@ -58,6 +66,7 @@ Resources:
         EnvironmentName: !Ref "EnvironmentName"
         VPC: !Ref "VPC"
         VpcCidrBlock: !Ref VpcCidrBlock
+        VpcIpv6CidrBlock: !Ref VpcIpv6CidrBlock
         AvailabilityZone: !Ref "AvailabilityZone"
         CreateNatGateway: !Ref "CreateNatGateway"
 
@@ -78,6 +87,7 @@ Resources:
           !If [ShouldCreateNatGateway, !GetAtt "Subnets.Outputs.NatGateway", ""]
         AvailabilityZone: !Ref "AvailabilityZone"
         CreateNatGateway: !Ref "CreateNatGateway"
+        EgressOnlyInternetGateway: !Ref "EgressOnlyInternetGateway"
 
   PublicSubnetNetworkAclAssociation:
     Type: AWS::EC2::SubnetNetworkAclAssociation
