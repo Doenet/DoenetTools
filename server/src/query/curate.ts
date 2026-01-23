@@ -349,6 +349,7 @@ export async function suggestToBeCurated({
       librarySourceInfo: {
         select: {
           status: true,
+          contentId: true,
         },
       },
     },
@@ -357,9 +358,38 @@ export async function suggestToBeCurated({
     ? isEqualUUID(loggedInUserId, content.ownerId)
     : false;
 
-  // If this activity is already pending or under review, we will silently do nothing. No need to update the database.
+  // If this activity is already pending or under review, we won't update the database,
+  // but we will still return the corresponding contentIdInLibrary.
 
-  if (content.librarySourceInfo?.status === LibraryStatus.REJECTED) {
+  let contentIdInLibrary = content.librarySourceInfo?.contentId;
+
+  if (contentIdInLibrary === undefined) {
+    const libraryId = await getLibraryAccountId();
+
+    const { newContentIds } = await copyContent({
+      contentIds: [contentId],
+      loggedInUserId: libraryId,
+      parentId: null,
+    });
+
+    contentIdInLibrary = newContentIds[0];
+    await prisma.libraryActivityInfos.create({
+      data: {
+        sourceId: contentId,
+        contentId: contentIdInLibrary,
+        status: LibraryStatus.PENDING,
+        ownerRequested,
+        requestedOn: new Date(),
+        events: {
+          create: {
+            dateTime: new Date(),
+            eventType: LibraryEventType.SUGGEST_REVIEW,
+            userId: loggedInUserId,
+          },
+        },
+      },
+    });
+  } else if (content.librarySourceInfo?.status === LibraryStatus.REJECTED) {
     await prisma.libraryActivityInfos.update({
       where: {
         sourceId: contentId,
@@ -378,34 +408,9 @@ export async function suggestToBeCurated({
         },
       },
     });
-  } else if (!content.librarySourceInfo) {
-    const libraryId = await getLibraryAccountId();
-
-    const {
-      newContentIds: [remixedId],
-    } = await copyContent({
-      contentIds: [contentId],
-      loggedInUserId: libraryId,
-      parentId: null,
-    });
-
-    await prisma.libraryActivityInfos.create({
-      data: {
-        sourceId: contentId,
-        contentId: remixedId,
-        status: LibraryStatus.PENDING,
-        ownerRequested,
-        requestedOn: new Date(),
-        events: {
-          create: {
-            dateTime: new Date(),
-            eventType: LibraryEventType.SUGGEST_REVIEW,
-            userId: loggedInUserId,
-          },
-        },
-      },
-    });
   }
+
+  return { contentIdInLibrary };
 }
 
 /**

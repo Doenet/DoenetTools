@@ -1,7 +1,8 @@
-import { useNavigate } from "react-router";
 import styled from "styled-components";
+import { Link as ChakraLink } from "@chakra-ui/react";
+import { Link as ReactRouterLink } from "react-router-dom";
 
-const LogoButton = styled.button<{ $hasLink: boolean }>`
+const LogoButton = styled.button`
   background-image:
     linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
     url("/Doenet_Logo_Frontpage_color_small_text.png");
@@ -20,24 +21,22 @@ const LogoButton = styled.button<{ $hasLink: boolean }>`
   // border-radius: 50%;
   margin-top: 2px;
   margin-left: 10px;
-  cursor: ${(props) => (props.$hasLink ? "pointer" : "default")};
-  &:focus {
-    outline: 2px solid var(--canvastext);
-    outline-offset: 2px;
-  }
+  cursor: pointer;
 `;
 
-export default function RouterLogo({ hasLink = true }: { hasLink?: boolean }) {
-  const navigate = useNavigate();
-
+export default function RouterLogo() {
   return (
-    <LogoButton
-      $hasLink={hasLink}
-      onClick={() => {
-        if (hasLink) {
-          navigate("/");
-        }
-      }}
-    />
+    <ChakraLink
+      as={ReactRouterLink}
+      to="/"
+      _hover={{ textDecoration: "none" }}
+      justifyContent="center"
+      height="100%"
+      alignItems="center"
+      aria-label="Home"
+      data-test="Home"
+    >
+      <LogoButton />
+    </ChakraLink>
   );
 }

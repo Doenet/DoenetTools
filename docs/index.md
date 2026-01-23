@@ -45,7 +45,7 @@ Communication group members: Melissa Lynn, Charles Nykamp, Jon Rogness
 The software group developes the software for the Doenet website and the language used to write Doenet activities, called DoenetML (Doenet Markup Language).
 You can help the software group by creating bug reports (called Issues) on our [GitHub site](https://github.com/Doenet/DoenetTools/issues) or finding an issue that you can help fix.
 
-To get involved, check out the [software discussions](https://community.doenet.org/tag/software) or email [dev@doenet.org](mailto:dev@doenet.org).
+To get involved, check out our [GitHub](https://github.com/orgs/Doenet/discussions) or email [dev@doenet.org](mailto:dev@doenet.org).
 
 Software group members: Melissa Lynn, Charles Nykamp, Duane Nykamp, Jason Siefken
 

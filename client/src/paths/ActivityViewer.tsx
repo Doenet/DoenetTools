@@ -31,6 +31,7 @@ import {
   PopoverBody,
   PopoverArrow,
   PopoverCloseButton,
+  Hide,
   Show,
   Text,
   Tooltip,
@@ -38,7 +39,12 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { BsPlayBtnFill } from "react-icons/bs";
-import { MdOutlineAdd, MdOutlineEditOff, MdOutlineInfo } from "react-icons/md";
+import {
+  MdEditNote,
+  MdOutlineAdd,
+  MdOutlineEditOff,
+  MdOutlineInfo,
+} from "react-icons/md";
 import { useFetcher } from "react-router";
 
 import axios from "axios";
@@ -235,19 +241,23 @@ export function ActivityViewer() {
     ) : null;
 
   let editLabel: string;
+  let editLabelLong: string;
   let editTooltip: string;
 
   const editIcon = <MdOutlineEditOff size={20} />;
   if (authorMode) {
     if (data.type === "singleDoc") {
-      editLabel = "See source code";
+      editLabel = "See source";
+      editLabelLong = "See source code";
       editTooltip = "See read-only view of source code";
     } else {
       editLabel = "See list";
+      editLabelLong = "See list";
       editTooltip = `See read-only view of documents ${data.type === "sequence" ? "and question banks in the problem set" : "in the question bank"}`;
     }
   } else {
-    editLabel = "See source code";
+    editLabel = "See source";
+    editLabelLong = "See source code";
     editTooltip = "Turn on author mode to see read-only view of source code";
   }
 
@@ -512,7 +522,7 @@ export function ActivityViewer() {
                           setMode("View");
                         }}
                       >
-                        <Show above="md">View</Show>
+                        <Show breakpoint="(min-width: 835px)">View</Show>
                       </Button>
                     </Tooltip>
                     <Tooltip hasArrow label={editTooltip}>
@@ -527,7 +537,10 @@ export function ActivityViewer() {
                           setMode("Edit");
                         }}
                       >
-                        <Show above="md">{editLabel}</Show>
+                        <Hide breakpoint="(max-width: 835px)">
+                          <Show below="xl">{editLabel}</Show>
+                          <Hide below="xl">{editLabelLong}</Hide>
+                        </Hide>
                       </Button>
                     </Tooltip>
                   </ButtonGroup>
@@ -601,16 +614,46 @@ export function ActivityViewer() {
                     {user ? (
                       addToMenu
                     ) : (
-                      <Button
-                        data-test="Nav to signIn"
-                        colorScheme="blue"
-                        size="sm"
-                        onClick={() => {
-                          navigate("/signIn");
-                        }}
-                      >
-                        Sign In To Use Content
-                      </Button>
+                      <>
+                        <Show above="xl">
+                          <Button
+                            data-test="Nav to signIn"
+                            colorScheme="blue"
+                            size="sm"
+                            onClick={() => {
+                              navigate("/signIn");
+                            }}
+                          >
+                            Sign In To Use Content
+                          </Button>
+                        </Show>
+                        {activityData.type === "singleDoc" &&
+                          activityData.doenetmlVersion.default && (
+                            <Tooltip
+                              hasArrow
+                              label={`Load into Scratch Pad`}
+                              placement="bottom-end"
+                            >
+                              <Button
+                                data-test="Load into Scratch Pad"
+                                pr={{ base: "0px", md: "10px" }}
+                                colorScheme="blue"
+                                size="sm"
+                                onClick={() => {
+                                  navigate(
+                                    `/scratchPad?contentId=${activityData.contentId}`,
+                                  );
+                                }}
+                                leftIcon={<MdEditNote size={20} />}
+                              >
+                                <Show breakpoint="(min-width: 1030px)">
+                                  Load into{" "}
+                                </Show>
+                                <Show above="md">Scratch Pad</Show>
+                              </Button>
+                            </Tooltip>
+                          )}
+                      </>
                     )}
 
                     <Tooltip
