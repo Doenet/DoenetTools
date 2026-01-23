@@ -1,4 +1,5 @@
 import { defineConfig } from "cypress";
+import addAccessibilityTasks from "wick-a11y/accessibility-tasks";
 
 // // This is for db data testing/checking (CANNOT GET DATA AND CHECK VIA CYPRESS)
 // //For connecting to SQL Server
@@ -36,6 +37,9 @@ export default defineConfig({
 
         return launchOptions;
       });
+
+      addAccessibilityTasks(on);
+
       // on("task", {
       //   queryDb: (query) => {
       //     return queryTestDb(query, config);

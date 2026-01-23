@@ -34,6 +34,7 @@ yarn-error.log*
 # dist/main.js
 **/dist_local/*
 
+**/cypress/accessibility
 **/cypress/videos
 **/cypress/screenshots
 **/runner-results
