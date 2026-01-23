@@ -333,7 +333,10 @@ export function Home() {
           </ChakraLink>
 
           <ChakraLink href="http://creativecommons.org/licenses/by/4.0/">
-            <Image src="https://i.creativecommons.org/l/by/4.0/88x31.png" />
+            <Image
+              src="https://i.creativecommons.org/l/by/4.0/88x31.png"
+              alt="Creative Commons CC-BYLicense"
+            />
           </ChakraLink>
         </Flex>
         <Text
@@ -346,7 +349,7 @@ export function Home() {
           <Text color="white">
             This work is licensed under a{" "}
             <ChakraLink
-              color="doenet.mainBlue"
+              color="doenet.lightBlue"
               href="http://creativecommons.org/licenses/by/4.0/"
             >
               Creative Commons Attribution 4.0 International License
@@ -554,10 +557,10 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
             right="10px"
             zIndex={3}
             colorScheme="orange"
-            bg="#ff8c00"
+            bg="#a84c00"
             color="white"
             _hover={{
-              bg: "#ff7a00",
+              bg: "#923d00",
               boxShadow: "0 10px 24px rgba(0,0,0,0.28)",
               textDecoration: "none",
             }}
@@ -651,10 +654,10 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
             right="10px"
             zIndex={3}
             colorScheme="orange"
-            bg="#ff8c00"
+            bg="#a84c00"
             color="white"
             _hover={{
-              bg: "#ff7a00",
+              bg: "#923d00",
               boxShadow: "0 10px 24px rgba(0,0,0,0.28)",
               textDecoration: "none",
             }}
