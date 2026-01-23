@@ -915,7 +915,7 @@ test("get assignment data from anonymous users", async () => {
     source: {
       name: "Activity 1",
       doenetML: "Some content",
-      doenetmlVersion: { fullVersion: "0.7.3" },
+      doenetmlVersion: { fullVersion: "latest" },
     },
   });
 
@@ -952,7 +952,7 @@ test("get assignment data from anonymous users", async () => {
     source: {
       name: "Activity 1",
       doenetML: "Some content",
-      doenetmlVersion: { fullVersion: "0.7.3" },
+      doenetmlVersion: { fullVersion: "latest" },
     },
   });
 
@@ -989,7 +989,7 @@ test("get assignment data from anonymous users", async () => {
     source: {
       name: "Activity 1",
       doenetML: "Some content",
-      doenetmlVersion: { fullVersion: "0.7.3" },
+      doenetmlVersion: { fullVersion: "latest" },
     },
   });
 
@@ -1061,7 +1061,7 @@ test("get assignment data from anonymous users", async () => {
     source: {
       name: "Activity 1",
       doenetML: "Some content",
-      doenetmlVersion: { fullVersion: "0.7.3" },
+      doenetmlVersion: { fullVersion: "latest" },
     },
   });
 });

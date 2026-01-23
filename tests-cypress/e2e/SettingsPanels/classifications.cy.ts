@@ -28,10 +28,10 @@ describe("Classification panel tests", function () {
       cy.get('[data-test="Add A.REI.4 b."]').should("exist");
       cy.get('[data-test="Remove 9.2.4.1"]').should("exist");
 
-      cy.get('[data-test="Filter By System').select("Common Core Math");
+      cy.get('[data-test="Filter By System"]').select("Common Core Math");
       cy.get('[data-test="Add A.REI.4 b."]').should("exist");
 
-      cy.get('[data-test="Filter By Category').select("Grade 6");
+      cy.get('[data-test="Filter By Category"]').select("Grade 6");
       cy.get('[data-test="Add A.REI.4 b."]').should("not.exist");
 
       cy.get('[data-test="Filter By Subcategory').select(2);
@@ -40,17 +40,17 @@ describe("Classification panel tests", function () {
         "No matching classifications",
       );
 
-      cy.get('[data-test="Stop Filter By Subcategory').click();
+      cy.get('[data-test="Stop Filter By Subcategory"]').click();
 
       cy.get('[data-test="Add 6.EE.2 b."]').click();
       cy.get('[data-test="Remove 6.EE.2 b."]').should("exist");
 
       cy.get('[data-test="Add A.REI.4 b."]').should("not.exist");
-      cy.get('[data-test="Stop Filter By Category').click();
+      cy.get('[data-test="Stop Filter By Category"]').click();
       cy.get('[data-test="Add A.REI.4 b."]').should("be.visible");
 
       cy.get('[data-test="Add 9.2.3.3"]').should("not.exist");
-      cy.get('[data-test="Stop Filter By System').click();
+      cy.get('[data-test="Stop Filter By System"]').click();
       cy.get('[data-test="Add 9.2.3.3"]').scrollIntoView().should("be.visible");
 
       cy.get('button[aria-label="Close"]').click();

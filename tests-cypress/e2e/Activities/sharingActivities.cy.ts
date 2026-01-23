@@ -1,8 +1,4 @@
 describe("Share Activities Tests", function () {
-  before(() => {});
-
-  beforeEach(() => {});
-
   it("create, share, and copy public activity", () => {
     const code = Date.now().toString();
     const scrappyEmail = `scrappy${code}@doo`;
@@ -25,10 +21,17 @@ describe("Share Activities Tests", function () {
       `My new activity${code}{enter}`,
     );
 
-    cy.iframe().find(".cm-activeLine").invoke("text", "Hello there!");
+    // Edit content - wait for editor to be ready before typing
+    cy.iframe().find(".cm-activeLine", { timeout: 10000 });
+    cy.iframe().find(".cm-activeLine").type("Hello there!");
+    cy.wait(500); // Wait for text to be set
+    cy.iframe().find(".cm-editor").click(); // Click to ensure focus
+    cy.wait(300);
     cy.iframe().find(".cm-activeLine").type("{enter}");
+    cy.wait(300);
     cy.iframe().find(".cm-activeLine").type("{ctrl+S}");
 
+    // Verify viewer shows content
     cy.iframe().find(".doenet-viewer").should("contain.text", `Hello there!`);
 
     cy.get('[data-test="Share Button"]').click();
@@ -59,18 +62,90 @@ describe("Share Activities Tests", function () {
 
     cy.get('[data-test="Community Tab"]').click();
 
-    cy.get(
-      '[data-test="Community Results"] [data-test="Content Card"]',
-    ).click();
+    // Click on the content card
+    cy.get('[data-test="Community Results"]')
+      .find('[data-test="Content Card"]')
+      .click();
 
     cy.get('[data-test="Add To"]').click();
     cy.get('[data-test="Add To My Activities"]').click();
 
-    // Note: get a typesetting error from MathJax without cy.wait here
+    // Wait for MathJax to finish typesetting before navigating
     cy.wait(500);
     cy.get('[data-test="Go to Destination"]').click();
 
+    // Click the first content card - use eq() on a fresh query
     cy.get(`[data-test="Content Card"]`).eq(0).click();
+
+    cy.wait(100);
     cy.iframe().find(".doenet-viewer").should("contain.text", `Hello there!`);
+  });
+
+  it("Share activity with particular person", () => {
+    const code = Date.now().toString();
+    const scrappyEmail = `scrappy${code}@doo.org`;
+    const scoobyEmail = `scooby${code}@doo.org`;
+
+    cy.loginAsTestUser({
+      email: scoobyEmail,
+      firstNames: "Scooby",
+      lastNames: "Doo",
+    });
+
+    cy.loginAsTestUser({
+      email: scrappyEmail,
+      firstNames: "Scrappy",
+      lastNames: "Doo",
+    });
+
+    cy.createContent({
+      name: "Shared Activity",
+      contentType: "singleDoc",
+      doenetML: `<p>This is a shared activity.</p>`,
+    }).then((activityId) => {
+      cy.visit(`/documentEditor/${activityId}/edit`);
+
+      cy.get('[data-test="Share Button"]').click();
+
+      cy.get('[data-test="Email address"]').type(`${scoobyEmail}{enter}`);
+
+      cy.get('[data-test="Share Table"]').should(
+        "contain.text",
+        `${scoobyEmail}`,
+      );
+      cy.get('[data-test="Share Table"]').should("contain.text", `Scooby Doo`);
+
+      cy.get('[data-test="Share Close Button"]').click();
+
+      // User the activity is shared with can see it
+      cy.loginAsTestUser({
+        email: scoobyEmail,
+      });
+
+      cy.visit("/");
+
+      cy.get('[data-test="Activities"]').click();
+
+      cy.get('[data-test="Shared With Me Button"]').click();
+
+      cy.get('[data-test="Content Card"]')
+        .should("contain.text", `Shared Activity`)
+        .click();
+
+      cy.iframe()
+        .find(".doenet-viewer")
+        .should("contain.text", `This is a shared activity.`);
+
+      // Other user cannot see shared activity
+      cy.loginAsTestUser();
+      cy.visit("/");
+      cy.get('[data-test="Activities"]').click();
+      cy.get('[data-test="Shared With Me Button"]').click();
+      cy.get('[data-test="Folder Title"]').should(
+        "have.text",
+        "Shared with me",
+      );
+      cy.get('[data-test="Content Card"]').should("not.exist");
+    });
   });
 });

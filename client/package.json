@@ -3,12 +3,16 @@
   "version": "1.0.1",
   "type": "module",
   "private": true,
+  "exports": {
+    "./src/types": "./src/types.ts"
+  },
   "scripts": {
     "build": "wireit",
     "dev": "cross-env NODE_ENV=production vite",
     "lint": "eslint --fix",
     "lint:check": "eslint",
-    "test-cypress": "cypress open"
+    "test": "cypress open",
+    "test:all": "cypress run --component -b 'chrome' --config video=false --headless"
   },
   "wireit": {
     "build": {

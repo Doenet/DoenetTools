@@ -228,6 +228,7 @@ describe("Trash tests", () => {
 
     // Go to Activities and check that Folder 1 and Document 1 are there
     cy.get('[data-test="My Activities Link"]').click();
+    cy.get('[data-test="Folder Title"]').should("have.text", "My Activities");
 
     cy.get(`[data-test="Content Card"]`).should("have.length", 1);
     cy.get(`[data-test="Content Card"]`)

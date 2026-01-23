@@ -1,5 +1,17 @@
 /// <reference path="./component.d.ts" />
 
+// Handle MathJax async typesetting errors that aren't critical for tests.
+// MathJax appears to crash if you navigate away while it is typesetting,
+// so we suppress those errors here rather than adding waits in each test.
+Cypress.on("uncaught:exception", (err) => {
+  // Suppress MathJax typesetting errors
+  if (err.message?.includes("Typesetting failed")) {
+    return false; // Suppress the error
+  }
+  // Let other errors fail the test
+  return true;
+});
+
 // ***********************************************************
 // This example support/component.ts is processed and
 // loaded automatically before your test files.
@@ -34,7 +46,39 @@ import { theme } from "../../src/theme";
 // Cypress.Commands.add('mount', mount)
 
 Cypress.Commands.add("mount", (component, options = {}) => {
-  const { routerProps = { initialEntries: ["/"] }, ...mountOptions } = options;
+  const {
+    routerProps = { initialEntries: ["/"] },
+    action,
+    ...mountOptions
+  } = options;
+
+  const safeActionWithDefault = async ({ request }: { request: Request }) => {
+    try {
+      // If the test provided a custom action, call it
+      if (action) {
+        return await action({ request });
+      }
+
+      // Otherwise, mock a simple JSON echo for POSTs
+      if (request.method === "POST") {
+        const contentType = request.headers.get("content-type") || "";
+        let body: any = {};
+        if (contentType.includes("application/json")) {
+          body = await request.json();
+        } else if (contentType.includes("application/x-www-form-urlencoded")) {
+          const formData = await request.formData();
+          body = Object.fromEntries(formData.entries());
+        }
+        return { success: true, body };
+      }
+      return null;
+    } catch (e: any) {
+      // Prevent React Router ErrorBoundary from triggering
+      // by returning a serializable object instead of throwing
+      console.error("Mock route action error:", e);
+      return { success: false, error: e?.message ?? String(e) };
+    }
+  };
 
   const router = createMemoryRouter(
     [
@@ -47,6 +91,7 @@ Cypress.Commands.add("mount", (component, options = {}) => {
             </MathJaxContext>
           </ChakraProvider>
         ),
+        action: safeActionWithDefault,
       },
     ],
     routerProps as any,

@@ -37,7 +37,6 @@ describe("Navigate Explore Tests", function () {
       );
 
       cy.get('[data-test="Home"]').click();
-      cy.get('[data-test="Home"]').should("have.attr", "aria-current", "page");
       cy.get('[data-test="Explore"]').should("not.have.attr", "aria-current");
 
       cy.get('[data-test="Explore"]').click();
@@ -46,7 +45,6 @@ describe("Navigate Explore Tests", function () {
         "aria-current",
         "page",
       );
-      cy.get('[data-test="Home"]').should("not.have.attr", "aria-current");
 
       // community tab is still selected
       cy.get('[data-test="Community Tab"]').should(
@@ -76,7 +74,6 @@ describe("Navigate Explore Tests", function () {
       );
 
       cy.get('[data-test="Home"]').click();
-      cy.get('[data-test="Home"]').should("have.attr", "aria-current", "page");
       cy.get('[data-test="Explore"]').should("not.have.attr", "aria-current");
 
       // if go back, query is still active and authors tab is still selected
@@ -86,7 +83,6 @@ describe("Navigate Explore Tests", function () {
         "aria-current",
         "page",
       );
-      cy.get('[data-test="Home"]').should("not.have.attr", "aria-current");
       cy.get('[data-test="Authors Tab"]').should(
         "have.attr",
         "aria-selected",
@@ -94,7 +90,6 @@ describe("Navigate Explore Tests", function () {
       );
 
       cy.get('[data-test="Home"]').click();
-      cy.get('[data-test="Home"]').should("have.attr", "aria-current", "page");
       cy.get('[data-test="Explore"]').should("not.have.attr", "aria-current");
 
       // if click on "Explore" tab, the query, and hence the author tab, is gone, which means curated tab should be open
@@ -104,7 +99,6 @@ describe("Navigate Explore Tests", function () {
         "aria-current",
         "page",
       );
-      cy.get('[data-test="Home"]').should("not.have.attr", "aria-current");
       cy.get('[data-test="Curated Tab"]').should(
         "have.attr",
         "aria-selected",

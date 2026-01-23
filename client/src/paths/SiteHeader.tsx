@@ -229,9 +229,6 @@ export function SiteHeader() {
             <Show above="md">
               <GridItem area="menus">
                 <HStack spacing={8}>
-                  <NavLinkTab to="/" dataTest="Home">
-                    Home
-                  </NavLinkTab>
                   <NavLinkTab to="explore" dataTest="Explore">
                     Explore
                   </NavLinkTab>
