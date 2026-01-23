@@ -425,6 +425,7 @@ export default function Card({
           data-test="Card Menu Button"
           _focus={{ boxShadow: "outline" }}
           ref={cardContent.menuRef}
+          aria-label="Options Menu"
         >
           <Flex alignItems="center">
             <Icon color="#949494" as={FaEllipsisVertical} />
