@@ -183,6 +183,45 @@ Cypress.Commands.add(
   },
 );
 
+Cypress.Commands.add(
+  "createAssignment",
+  ({
+    contentId,
+    closedOn,
+    parentId,
+    maxAttempts = 1,
+  }: {
+    contentId: string;
+    closedOn: string;
+    parentId?: string;
+    maxAttempts?: number;
+  }) => {
+    cy.request({
+      method: "POST",
+      url: "/api/assign/createAssignment",
+      body: {
+        contentId,
+        closedOn,
+        destinationParentId: parentId ?? null,
+      },
+    }).then((resp) => {
+      const assignmentId: string = resp.body.assignmentId;
+      const classCode: number = resp.body.classCode;
+
+      cy.request({
+        method: "POST",
+        url: "/api/assign/updateAssignmentMaxAttempts",
+        body: {
+          contentId: assignmentId,
+          maxAttempts,
+        },
+      }).then(() => {
+        return { assignmentId, classCode };
+      });
+    });
+  },
+);
+
 Cypress.Commands.add("getUserInfo", () => {
   cy.request({
     method: "GET",

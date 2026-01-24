@@ -54,6 +54,21 @@ declare global {
       }): Chainable<string>;
 
       /**
+       * Custom command to create an assignment from an activity
+       */
+      createAssignment({
+        contentId,
+        closedOn,
+        parentId,
+        maxAttempts,
+      }: {
+        contentId: string;
+        closedOn: string;
+        parentId?: string;
+        maxAttempts?: number;
+      }): Chainable<{ assignmentId: string; classCode: number }>;
+
+      /**
        * Custom command to get info on logged in user
        */
       getUserInfo(): Chainable<UserInfo>;
