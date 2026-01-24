@@ -208,7 +208,7 @@ Cypress.Commands.add(
       },
     }).then((resp) => {
       const assignmentId: string = resp.body.assignmentId;
-      const classCode: number = resp.body.classCode;
+      const classCode: number | null = resp.body.classCode ?? null;
 
       cy.request({
         method: "POST",
