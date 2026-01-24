@@ -30,6 +30,7 @@ declare global {
         contentType,
         doenetML,
         classifications,
+        categories,
         makePublic,
         publishInLibrary,
         parentId,
@@ -43,6 +44,7 @@ declare global {
           subCategory: string;
           code: string;
         }[];
+        categories?: Record<string, boolean>;
         makePublic?: boolean;
         /**
          * Publish the content in the library.

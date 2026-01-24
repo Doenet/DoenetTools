@@ -47,9 +47,11 @@ Cypress.Commands.add(
     isAuthor?: boolean;
     isAnonymous?: boolean;
   } = {}) => {
+    const code = Date.now().toString();
     if (!email) {
-      const code = Date.now().toString();
       email = `test${code}@doenet.org`;
+    }
+    if (!firstNames && !lastNames) {
       firstNames = `Test`;
       lastNames = `User${code}`;
     }
@@ -71,6 +73,7 @@ Cypress.Commands.add(
     doenetML,
     contentType = "singleDoc",
     classifications,
+    categories,
     makePublic = false,
     publishInLibrary = false,
     parentId,
@@ -84,6 +87,7 @@ Cypress.Commands.add(
       subCategory: string;
       code: string;
     }[];
+    categories?: Record<string, boolean>;
     makePublic?: boolean;
     publishInLibrary?: boolean;
     parentId?: string;
@@ -105,6 +109,17 @@ Cypress.Commands.add(
           body: {
             contentId,
             classifications,
+          },
+        });
+      }
+
+      if (categories) {
+        cy.request({
+          method: "POST",
+          url: "/api/updateContent/updateCategories",
+          body: {
+            contentId,
+            categories,
           },
         });
       }
@@ -193,7 +208,7 @@ Cypress.Commands.add(
       },
     }).then((resp) => {
       const assignmentId: string = resp.body.assignmentId;
-      const classCode: number = resp.body.classCode;
+      const classCode: number | null = resp.body.classCode ?? null;
 
       cy.request({
         method: "POST",
