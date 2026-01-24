@@ -147,6 +147,7 @@ export default function Card({
           idx,
         });
       }}
+      aria-label={`Select item ${idx + 1}: ${title}`}
     ></Checkbox>
   );
 
@@ -428,7 +429,7 @@ export default function Card({
           data-test="Card Menu Button"
           _focus={{ boxShadow: "outline" }}
           ref={cardContent.menuRef}
-          aria-label="Options Menu"
+          aria-label={`Options menu for item ${idx + 1}: ${title}`}
         >
           <Flex alignItems="center">
             <Icon color="#949494" as={FaEllipsisVertical} />
