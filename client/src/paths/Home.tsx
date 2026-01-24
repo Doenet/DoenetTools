@@ -335,7 +335,7 @@ export function Home() {
           <ChakraLink href="http://creativecommons.org/licenses/by/4.0/">
             <Image
               src="https://i.creativecommons.org/l/by/4.0/88x31.png"
-              alt="Creative Commons CC-BYLicense"
+              alt="Creative Commons CC-BY License"
             />
           </ChakraLink>
         </Flex>
