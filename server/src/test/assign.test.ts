@@ -874,7 +874,6 @@ test("get assignment data from anonymous users", async () => {
     userId: newUser1.userId,
     firstNames: newUser1.firstNames,
     lastNames: newUser1.lastNames,
-    username: newUser1.username,
   };
 
   await createNewAttempt({
@@ -1000,7 +999,6 @@ test("get assignment data from anonymous users", async () => {
     userId: newUser2.userId,
     firstNames: newUser2.firstNames,
     lastNames: newUser2.lastNames,
-    username: newUser2.username,
   };
 
   // save state for second user
@@ -1493,7 +1491,6 @@ test("getAllAssignmentScores retrieves ordered assignments, ordered students, an
     userId: newUser1.userId,
     firstNames: newUser1.firstNames,
     lastNames: newUser1.lastNames,
-    username: newUser1.username,
   };
   await createNewAttempt({
     contentId: assignmentId,
@@ -1525,7 +1522,6 @@ test("getAllAssignmentScores retrieves ordered assignments, ordered students, an
     userId: newUser2.userId,
     firstNames: newUser2.firstNames,
     lastNames: newUser2.lastNames,
-    username: newUser2.username,
   };
 
   await createNewAttempt({

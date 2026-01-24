@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE `content` ADD COLUMN `publiclySharedAt` DATETIME(3) NULL;
+
+-- AlterTable
+ALTER TABLE `users` ADD COLUMN `joinedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3);

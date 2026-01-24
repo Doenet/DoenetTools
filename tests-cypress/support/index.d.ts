@@ -12,12 +12,14 @@ declare global {
         lastNames,
         isEditor,
         isAuthor,
+        isAnonymous,
       }?: {
         email?: string;
         firstNames?: string;
         lastNames?: string;
         isEditor?: boolean;
         isAuthor?: boolean;
+        isAnonymous?: boolean;
       }): Chainable<null>;
 
       /**
@@ -72,6 +74,14 @@ declare global {
        * Custom command to get info on logged in user
        */
       getUserInfo(): Chainable<UserInfo>;
+
+      /**
+       * Custom command to get the body of an iframe and wait for it to load
+       */
+      getIframeBody(
+        iframeSelector: string,
+        waitSelector?: string | null,
+      ): Chainable<HTMLBodyElement>;
     }
   }
 }

@@ -47,6 +47,7 @@ import passportLib from "passport";
 import bcrypt from "bcryptjs";
 import { generateHandle } from "./utils/names";
 import { codeRouter } from "./routes/code";
+import { metricsRouter } from "./routes/metricsRoutes";
 
 // Type assertion to work around passport type declaration issues
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -385,6 +386,7 @@ app.use("/api/curate", curateRouter);
 app.use("/api/compare", compareRouter);
 app.use("/api/editor", editorRouter);
 app.use("/api/code", codeRouter);
+app.use("/api/metrics", metricsRouter);
 
 // Discourse uses this endpoint to sign on
 app.use("/api/discourse", discourseRouter);
