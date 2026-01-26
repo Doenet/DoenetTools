@@ -23,7 +23,7 @@ export function About() {
 
   return (
     <>
-      <WithSideBanners bgColor="background" padding="-10px">
+      <WithSideBanners bgColor="background">
         <Box
           p="40px"
           w="100%"
