@@ -538,6 +538,7 @@ export function Activities() {
               onInput={(e) => {
                 setSearchString((e.target as HTMLInputElement).value);
               }}
+              data-test="Search Input"
             />
             <Tooltip
               label={parent ? `Search in folder` : `Search my activities`}
@@ -551,6 +552,7 @@ export function Activities() {
                   parent ? `Search in folder` : `Search my activities`
                 }
                 type="submit"
+                data-test="Search Button"
               />
             </Tooltip>
           </HStack>
