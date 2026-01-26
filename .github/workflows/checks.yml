@@ -146,11 +146,7 @@ jobs:
 
       # Run Cypress e2e tests (excluding brittle tests)
       - name: Run Cypress e2e tests
-        uses: nick-fields/retry@v3
-        with:
-          timeout_minutes: 30
-          max_attempts: 3
-          command: npm run test:skip-brittle --workspace tests-cypress
+        run: npm run test:skip-brittle --workspace tests-cypress
 
       # Upload screenshots and videos on failure
       - uses: actions/upload-artifact@v4
