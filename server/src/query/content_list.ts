@@ -276,7 +276,7 @@ export async function searchMyContentOrLibraryContent({
     }),
   });
 
-  // Compute the relevance fo all results.
+  // Compute the relevance for all results.
   // If a problem set contains multiple matched items,
   // take the highest relevance of those items as the relevance of the problem set.
   const relevance: Record<string, number> = {};
