@@ -21,11 +21,13 @@ export async function findOrCreateUser({
   isAuthor?: boolean;
   isAnonymous?: boolean;
   isPremium?: boolean;
-}) {
+}): Promise<UserInfoWithEmail> {
   // For now, make any non-anonymous user a premium user
   // We'll change this once we have the UI for non-premium users working
   // by deleting this line and by defaulting isPremium to false in the function signature
   isPremium = isPremium ?? !isAnonymous;
+
+  const username = email;
 
   let user = await prisma.users.upsert({
     where: { email },
@@ -34,7 +36,7 @@ export async function findOrCreateUser({
       email,
       firstNames,
       lastNames,
-      username: email,
+      username,
       isEditor,
       isAnonymous,
       isPremium,
@@ -49,8 +51,15 @@ export async function findOrCreateUser({
     });
   }
 
-  const { isLibrary: _isLibrary, ...userNoLibrary } = user;
-  return userNoLibrary;
+  return {
+    userId: user.userId,
+    email: user.email,
+    firstNames: user.firstNames,
+    lastNames: user.lastNames,
+    isAnonymous: user.isAnonymous,
+    isAuthor: user.isAuthor,
+    isEditor: user.isEditor,
+  };
 }
 
 export function getUserInfoIfLoggedIn({
@@ -139,7 +148,7 @@ export async function updateUser({
   loggedInUserId: Uint8Array;
   firstNames?: string;
   lastNames?: string;
-}) {
+}): Promise<UserInfoWithEmail> {
   const { isAnonymous } = await prisma.users.findUniqueOrThrow({
     where: { userId: loggedInUserId },
     select: { isAnonymous: true },
@@ -152,8 +161,15 @@ export async function updateUser({
     where: { userId: loggedInUserId },
     data: { firstNames, lastNames },
   });
-  const { isLibrary: _isLibrary, ...userNoLibrary } = user;
-  return userNoLibrary;
+  return {
+    userId: user.userId,
+    email: user.email,
+    firstNames: user.firstNames,
+    lastNames: user.lastNames,
+    isAnonymous: user.isAnonymous,
+    isAuthor: user.isAuthor,
+    isEditor: user.isEditor,
+  };
 }
 
 export async function setIsAuthor({

@@ -37,6 +37,8 @@ model content {
   // ========== Sharing ==========
   isPublic               Boolean                  @default(false)
   sharedWith             contentShares[]
+  // `publiclySharedAt`: when the content was made public, including through parent folder sharing
+  publiclySharedAt       DateTime?
   // 
   // ====== Documents =========
   source                 String?                  @db.MediumText
@@ -348,6 +350,7 @@ model users {
   // This field should be true for any account that is scoped to an instructor's folder
   scopedToClassId    Bytes?                 @db.Binary(16)
   isAnonymous        Boolean                @default(false)
+  joinedAt           DateTime               @default(now())
   content            content[]
   contentState       contentState[]
   submittedResponses submittedResponses[]

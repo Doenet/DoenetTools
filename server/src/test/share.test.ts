@@ -20,6 +20,7 @@ import { getSharedWithMe } from "../query/content_list";
 import { isEqualUUID } from "../utils/uuid";
 import { createAssignment } from "../query/assign";
 import { DateTime } from "luxon";
+import { prisma } from "../model";
 
 describe("Share tests", () => {
   test("content in public folder is created as public", async () => {
@@ -82,13 +83,9 @@ describe("Share tests", () => {
     const user = await createTestUser();
     const userId = user.userId;
     const {
-      isEditor,
-      isAnonymous,
-      isAuthor,
-      isPremium: _isPremium,
-      passwordHash: _passwordHash,
-      scopedToClassId: _scopedToClassId,
-      username: _username,
+      isAnonymous: _isAnonymous,
+      isAuthor: _isAuthor,
+      isEditor: _isEditor,
       ...userFields
     } = user;
 
@@ -394,13 +391,9 @@ describe("Share tests", () => {
         lastNames: "Zaborowski",
       });
       const {
-        isEditor: _isEditor1,
         isAnonymous: _isAnonymous1,
         isAuthor: _isAuthor1,
-        isPremium: _isPremium1,
-        passwordHash: _passwordHash,
-        scopedToClassId: _scopedToClassId,
-        username: _username,
+        isEditor: _isEditor1,
         ...userFields1
       } = user1;
       let user2 = await createTestUser();
@@ -411,13 +404,9 @@ describe("Share tests", () => {
         lastNames: "Abbas",
       });
       const {
-        isEditor: _isEditor2,
         isAnonymous: _isAnonymous2,
         isAuthor: _isAuthor2,
-        isPremium: _isPremium2,
-        passwordHash: _passwordHash2,
-        scopedToClassId: _scopedToClassId2,
-        username: _username2,
+        isEditor: _isEditor2,
         ...userFields2
       } = user2;
       let user3 = await createTestUser();
@@ -428,13 +417,9 @@ describe("Share tests", () => {
         lastNames: "Nyquist",
       });
       const {
-        isEditor: _isEditor3,
         isAnonymous: _isAnonymous3,
         isAuthor: _isAuthor3,
-        isPremium: _isPremium3,
-        passwordHash: _passwordHash3,
-        scopedToClassId: _scopedToClassId3,
-        username: _username3,
+        isEditor: _isEditor3,
         ...userFields3
       } = user3;
 
@@ -938,13 +923,9 @@ describe("Share tests", () => {
     const user = await createTestUser();
     const userId = user.userId;
     const {
-      isEditor: _isEditor,
       isAnonymous: _isAnonymous,
       isAuthor: _isAuthor,
-      isPremium: _isPremium,
-      passwordHash: _passwordHash,
-      scopedToClassId: _scopedToClassId,
-      username: _username,
+      isEditor: _isEditor,
       ...userFields
     } = user;
 
@@ -1934,4 +1915,113 @@ describe("shareContent()", () => {
       expect(results.content[1].contentId).toEqual(folder1);
     });
   });
+});
+
+describe("setContentIsPublic()", () => {
+  test("publicly sharing content sets `publiclySharedAt` of itself and descendants", async () => {
+    const { userId } = await createTestUser();
+    const [folderId, _folder2Id, childContentId] = await setupTestContent(
+      userId,
+      {
+        folder1: fold({
+          folder2: fold({
+            doc1: doc(""),
+          }),
+        }),
+      },
+    );
+
+    const beforeShare = DateTime.now().minus({ seconds: 1 });
+    await setContentIsPublic({
+      contentId: folderId,
+      loggedInUserId: userId,
+      isPublic: true,
+    });
+
+    const { publiclySharedAt: folderMetric } =
+      await prisma.content.findUniqueOrThrow({
+        where: { id: folderId },
+        select: { publiclySharedAt: true },
+      });
+
+    const { publiclySharedAt: childMetric } =
+      await prisma.content.findUniqueOrThrow({
+        where: { id: childContentId },
+        select: { publiclySharedAt: true },
+      });
+
+    expect(folderMetric).not.toBeNull();
+    expect(folderMetric!.getTime()).toBeGreaterThan(beforeShare.toMillis());
+    expect(childMetric).not.toBeNull();
+    expect(childMetric!.getTime()).toBeGreaterThan(beforeShare.toMillis());
+    expect(folderMetric!.getTime()).toEqual(childMetric!.getTime());
+  });
+
+  test("publicly unsharing content removes `publiclySharedAt` of itself and descendants", async () => {
+    const { userId } = await createTestUser();
+    const [folderId, _folder2Id, childContentId] = await setupTestContent(
+      userId,
+      {
+        folder1: fold({
+          folder2: fold({
+            doc1: doc(""),
+          }),
+        }),
+      },
+    );
+
+    await setContentIsPublic({
+      contentId: folderId,
+      loggedInUserId: userId,
+      isPublic: true,
+    });
+
+    await setContentIsPublic({
+      contentId: folderId,
+      loggedInUserId: userId,
+      isPublic: false,
+    });
+
+    const { publiclySharedAt: folderMetric } =
+      await prisma.content.findUniqueOrThrow({
+        where: { id: folderId },
+        select: { publiclySharedAt: true },
+      });
+
+    const { publiclySharedAt: childMetric } =
+      await prisma.content.findUniqueOrThrow({
+        where: { id: childContentId },
+        select: { publiclySharedAt: true },
+      });
+
+    expect(folderMetric).toBeNull();
+    expect(childMetric).toBeNull();
+  });
+});
+
+test("new content does not have publiclySharedAt date", async () => {
+  const { userId } = await createTestUser();
+  const [folderId, _folder2Id, childContentId] = await setupTestContent(
+    userId,
+    {
+      folder1: fold({
+        folder2: fold({
+          doc1: doc(""),
+        }),
+      }),
+    },
+  );
+  const { publiclySharedAt: folderMetric } =
+    await prisma.content.findUniqueOrThrow({
+      where: { id: folderId },
+      select: { publiclySharedAt: true },
+    });
+
+  const { publiclySharedAt: childMetric } =
+    await prisma.content.findUniqueOrThrow({
+      where: { id: childContentId },
+      select: { publiclySharedAt: true },
+    });
+  expect(folderMetric).toBeNull();
+  expect(childMetric).toBeNull();
 });

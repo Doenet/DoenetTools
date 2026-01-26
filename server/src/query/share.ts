@@ -39,13 +39,28 @@ export async function setContentIsPublic({
   }
 
   const descendantIds = await getDescendantIds(contentId);
-  await prisma.content.updateMany({
+
+  // Update share timestamp for those whose share status is changing
+  const updateTimestamp = prisma.content.updateMany({
+    where: {
+      id: { in: [contentId, ...descendantIds] },
+      isPublic: !isPublic,
+      ...filterExcludeAssignments,
+    },
+    data: { publiclySharedAt: isPublic ? new Date() : null },
+  });
+
+  // Make public/private
+  const updateContent = prisma.content.updateMany({
     where: {
       id: { in: [contentId, ...descendantIds] },
       ...filterExcludeAssignments,
     },
     data: { isPublic },
   });
+
+  // Note: updateTimestamp first because it checks `isPublic` status
+  await prisma.$transaction([updateTimestamp, updateContent]);
 }
 
 export function unshareContent({

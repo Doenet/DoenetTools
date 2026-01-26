@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { RefObject, useRef } from "react";
 import { FetcherWithComponents } from "react-router";
-import { AssignmentStatus, UserInfo } from "../types";
+import { AssignmentStatus, UserInfoWithEmail } from "../types";
 
 export function ActivateAuthorMode({
   isOpen,
@@ -27,7 +27,7 @@ export function ActivateAuthorMode({
   onClose: () => void;
   desiredAction: "edit" | "create doc";
   assignmentStatus?: AssignmentStatus;
-  user: UserInfo;
+  user: UserInfoWithEmail;
   proceedCallback: () => void;
   allowNo?: boolean;
   finalFocusRef?: RefObject<HTMLElement | null>;

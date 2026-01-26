@@ -32,23 +32,16 @@ import RouterLogo from "../RouterLogo";
 import { ExternalLinkIcon, HamburgerIcon } from "@chakra-ui/icons";
 import axios from "axios";
 import { createNameNoTag } from "../utils/names";
-import { ContentDescription, DoenetmlVersion, License } from "../types";
+import {
+  ContentDescription,
+  DoenetmlVersion,
+  License,
+  UserInfoWithEmail,
+} from "../types";
 import { getDiscourseUrl } from "../utils/discourse";
 
-export type User =
-  | {
-      email: string;
-      userId: string;
-      firstNames: string | null;
-      lastNames: string;
-      isAnonymous: boolean;
-      isEditor: boolean;
-      isAuthor: boolean;
-    }
-  | undefined;
-
 export type SiteContext = {
-  user?: User;
+  user?: UserInfoWithEmail;
   exploreTab: number | null;
   setExploreTab: (_: number | null) => void;
   addTo: ContentDescription | null;
@@ -163,7 +156,7 @@ function NavLinkDropdownTab({
 
 export function SiteHeader() {
   const { user, allLicenses, allDoenetmlVersions } = useLoaderData() as {
-    user?: User;
+    user?: UserInfoWithEmail;
     allLicenses: License[];
     allDoenetmlVersions: DoenetmlVersion[];
   };
