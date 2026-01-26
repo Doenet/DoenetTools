@@ -38,7 +38,12 @@ import RouterLogo from "../RouterLogo";
 import { HamburgerIcon, ChevronLeftIcon } from "@chakra-ui/icons";
 import axios from "axios";
 import { createNameNoTag } from "../utils/names";
-import { ContentDescription, DoenetmlVersion, License } from "../types";
+import {
+  ContentDescription,
+  DoenetmlVersion,
+  License,
+  UserInfoWithEmail,
+} from "../types";
 import { WithSideBanners } from "../layout/WithSideBanners";
 
 // Match the logo's rounded bold lettering with heavier nav text for consistency.
@@ -47,20 +52,8 @@ const navBarHeight = "40px";
 const navItemPaddingX = "1rem";
 const navItemHoverBg = "doenet.lightGray";
 
-export type User =
-  | {
-      email: string;
-      userId: string;
-      firstNames: string | null;
-      lastNames: string;
-      isAnonymous: boolean;
-      isEditor: boolean;
-      isAuthor: boolean;
-    }
-  | undefined;
-
 export type SiteContext = {
-  user?: User;
+  user?: UserInfoWithEmail;
   exploreTab: number | null;
   setExploreTab: (_: number | null) => void;
   addTo: ContentDescription | null;
@@ -105,7 +98,7 @@ type NavSection = {
  */
 export function SiteHeader() {
   const { user, allLicenses, allDoenetmlVersions } = useLoaderData() as {
-    user?: User;
+    user?: UserInfoWithEmail;
     allLicenses: License[];
     allDoenetmlVersions: DoenetmlVersion[];
   };
@@ -433,7 +426,7 @@ function MobileNavAll({
   user,
 }: {
   sections: NavSection[];
-  user?: User;
+  user?: UserInfoWithEmail;
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [activeSubmenu, setActiveSubmenu] = useState<NavItem | null>(null);
@@ -601,7 +594,7 @@ function MobileNavLeaf({
  * settings (author mode toggle), and sign out option. Shows different options
  * for anonymous vs authenticated users.
  */
-function AccountIconAndCard({ user }: { user: NonNullable<User> }) {
+function AccountIconAndCard({ user }: { user: UserInfoWithEmail }) {
   const currentPath = useLocation().pathname;
   const fetcher = useFetcher();
 

@@ -47,6 +47,7 @@ import passportLib from "passport";
 import bcrypt from "bcryptjs";
 import { generateHandle } from "./utils/names";
 import { codeRouter } from "./routes/code";
+import { metricsRouter } from "./routes/metricsRoutes";
 
 // Type assertion to work around passport type declaration issues
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -301,7 +302,7 @@ passport.serializeUser(async (req: any, user: any, done: any) => {
       process.env.ALLOW_TEST_LOGIN &&
       process.env.ALLOW_TEST_LOGIN.toLocaleLowerCase() !== "false"
     ) {
-      if (req.body.email) {
+      if (req.body.email && !req.body.isAnonymous) {
         email = req.body.email;
         if (req.body.firstNames) {
           firstNames = req.body.firstNames;
@@ -309,12 +310,9 @@ passport.serializeUser(async (req: any, user: any, done: any) => {
         if (req.body.lastNames) {
           lastNames = req.body.lastNames;
         }
-        if (req.body.isEditor) {
-          isEditor = true;
-        }
-        if (req.body.isAuthor) {
-          isAuthor = true;
-        }
+
+        isEditor = Boolean(req.body.isEditor);
+        isAuthor = Boolean(req.body.isAuthor);
         isAnonymous = false;
       }
     }
@@ -385,6 +383,7 @@ app.use("/api/curate", curateRouter);
 app.use("/api/compare", compareRouter);
 app.use("/api/editor", editorRouter);
 app.use("/api/code", codeRouter);
+app.use("/api/metrics", metricsRouter);
 
 // Discourse uses this endpoint to sign on
 app.use("/api/discourse", discourseRouter);

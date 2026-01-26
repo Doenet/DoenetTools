@@ -280,11 +280,16 @@ export function AssignmentStudentResponseSummary({
             </Tr>
           </Thead>
           <Tbody>
-            {attemptScores.map((attempt) => {
+            {attemptScores.map((attempt, i) => {
               return (
                 <Tr key={attempt.attemptNumber}>
-                  <Td textAlign="center">{attempt.attemptNumber}</Td>
-                  <Td justifyItems="center">
+                  <Td textAlign="center" data-test={`Attempt Number ${i + 1}`}>
+                    {attempt.attemptNumber}
+                  </Td>
+                  <Td
+                    justifyItems="center"
+                    data-test={`Attempt Total ${i + 1}`}
+                  >
                     <Text>
                       <Tooltip
                         label={`Attempt ${attempt.attemptNumber} total`}
@@ -345,6 +350,7 @@ export function AssignmentStudentResponseSummary({
               maxWidth="350px"
               marginLeft="5px"
               id="student-select"
+              data-test="Student Select"
               size="lg"
               value={user.userId}
               onChange={(e) => {
@@ -399,7 +405,7 @@ export function AssignmentStudentResponseSummary({
           </Flex>
         ) : null}
       </Flex>
-      <Box marginTop="20px">
+      <Box marginTop="20px" data-test="Overall Score">
         Overall score: {Math.round(overallScores.score * 1000) / 10}
       </Box>
       <Box marginTop="20px">{scoreTable}</Box>
