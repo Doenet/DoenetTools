@@ -238,9 +238,37 @@ export async function searchMyContentOrLibraryContent({
 
   // TODO: combine queries
 
-  const preliminaryResults = await prisma.content.findMany({
+  // If any of the content is in a problem set, return the problem set instead
+  const docsInProblemSets = await prisma.content.findMany({
     where: {
       id: { in: matches.map((m) => m.id) },
+      type: "singleDoc",
+      parent: {
+        type: "sequence",
+        ownerId,
+      },
+    },
+    select: {
+      id: true,
+      parentId: true,
+    },
+  });
+
+  /** Map content ids to either themselves or their enclosing problem set */
+  const mappedIds = Object.fromEntries(
+    matches.map((m) => {
+      const docInPset = docsInProblemSets.find((d) => isEqualUUID(d.id, m.id));
+      if (docInPset) {
+        return [fromUUID(m.id), docInPset.parentId!];
+      } else {
+        return [fromUUID(m.id), m.id];
+      }
+    }),
+  );
+
+  const preliminaryResults = await prisma.content.findMany({
+    where: {
+      id: { in: Object.values(mappedIds) },
     },
     select: returnContentSelect({
       includeAssignInfo: true,
@@ -248,10 +276,14 @@ export async function searchMyContentOrLibraryContent({
     }),
   });
 
-  // TODO: better way to sort! (For free if combine queries)
-  const relevance = Object.fromEntries(
-    matches.map((m) => [fromUUID(m.id), m.relevance]),
-  );
+  // Compute the relevance fo all results.
+  // If a problem set contains multiple matched items,
+  // take the highest relevance of those items as the relevance of the problem set.
+  const relevance: Record<string, number> = {};
+  for (const m of matches) {
+    const contentId = fromUUID(mappedIds[fromUUID(m.id)]);
+    relevance[contentId] = Math.max(relevance[contentId] ?? 0, m.relevance);
+  }
 
   const content: Content[] = preliminaryResults
     .sort((a, b) => relevance[fromUUID(b.id)] - relevance[fromUUID(a.id)])
