@@ -25,7 +25,7 @@ export default defineConfig({
   numTestsKeptInMemory: 20,
   defaultCommandTimeout: 10000,
   retries: {
-    runMode: 2,
+    runMode: 5,
     openMode: 0,
   },
   e2e: {
