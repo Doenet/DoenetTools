@@ -525,6 +525,7 @@ export function EditorHeader() {
           colorScheme="blue"
           isDisabled={inLibrary || contentDescription.hasBadVersion}
           onClick={confirmAssignOnOpen}
+          data-test="Create Assignment"
         >
           Create assignment
         </Button>
