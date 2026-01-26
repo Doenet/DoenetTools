@@ -1,4 +1,4 @@
-import { toMathJaxString } from "shared/dist/index.js";
+import { toMathJaxString } from "@doenet-tools/shared";
 
 describe("Share Activities Tests", function () {
   it("create, share, and copy public activity", () => {
