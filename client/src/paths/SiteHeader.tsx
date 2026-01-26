@@ -9,7 +9,6 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  Avatar,
   VStack,
   SkipNavLink,
   SkipNavContent,
@@ -34,6 +33,7 @@ import {
   useLocation,
   Link as RouterLink,
 } from "react-router";
+import { AccessibleAvatar } from "../widgets/AccessibleAvatar";
 import RouterLogo from "../RouterLogo";
 import { HamburgerIcon, ChevronLeftIcon } from "@chakra-ui/icons";
 import axios from "axios";
@@ -220,8 +220,9 @@ export function SiteHeader() {
       // Only show on larger screens
       display={{ base: "none", lg: "flex" }}
       spacing="0px"
+      pr="0.5rem"
     >
-      <RouterLogo paddingRight="0.5rem" />
+      <RouterLogo />
       {renderDesktopSections([navSections[0], navSections[1]])}
       <Spacer />
       {navSectionAccount.length > 0 &&
@@ -601,14 +602,14 @@ function AccountIconAndCard({ user }: { user: UserInfoWithEmail }) {
   return (
     <Menu>
       <MenuButton ml="0.5rem">
-        <Avatar
+        <AccessibleAvatar
           size="sm"
           name={`${user.isAnonymous ? "?" : createNameNoTag(user)}`}
         />
       </MenuButton>
       <MenuList>
         <VStack mb="20px">
-          <Avatar
+          <AccessibleAvatar
             size="xl"
             name={`${user.isAnonymous ? "?" : createNameNoTag(user)}`}
           />
