@@ -1,5 +1,8 @@
 // TODO: these are just front-end tests.
 // They don't need the full e2e setup with the database
+
+import { DateTime } from "luxon";
+
 describe("Basic accessibility tests", function () {
   it("Check accessibility of home page", () => {
     cy.visit("/");
@@ -65,7 +68,7 @@ describe("Basic accessibility tests", function () {
   });
 
   it("Check accessibility of my activities", () => {
-    // Make sure there is at least one public document with a Calculus classification
+    // Create a document, assignment, and problem set to test all icons
     cy.loginAsTestUser();
     cy.createContent({
       name: "Test Document",
@@ -80,7 +83,7 @@ describe("Basic accessibility tests", function () {
     }).then((contentId) => {
       cy.createAssignment({
         contentId,
-        closedOn: "2099-12-31T23:59:59Z",
+        closedOn: DateTime.now().plus({ days: 10 }).toISO(),
       });
     });
     cy.createContent({
@@ -90,7 +93,7 @@ describe("Basic accessibility tests", function () {
     }).then((contentId) => {
       cy.createAssignment({
         contentId,
-        closedOn: "1999-12-31T23:59:59Z",
+        closedOn: DateTime.now().plus({ days: -10 }).toISO(),
       });
     });
 
@@ -100,5 +103,81 @@ describe("Basic accessibility tests", function () {
     cy.get('[data-test="Folder Title"]').should("have.text", "My Activities");
 
     cy.checkAccessibility(undefined);
+  });
+
+  it("Check accessibility of my activities with search open", () => {
+    cy.loginAsTestUser();
+    cy.createContent({
+      name: "Test Document",
+    });
+
+    cy.getUserInfo().then((user) => {
+      cy.visit(`/activities/${user.userId}?q=Test`);
+
+      cy.get('[data-test="Folder Title"]').should("have.text", "My Activities");
+
+      cy.checkAccessibility(undefined);
+    });
+  });
+
+  it("Check accessibility of my activities with item checked", () => {
+    cy.loginAsTestUser();
+    cy.createContent({
+      name: "Test Document",
+    });
+
+    cy.getUserInfo().then((user) => {
+      cy.visit(`/activities/${user.userId}`);
+
+      cy.get('[data-test="Card Select"]').eq(0).click();
+      cy.get('[data-test="Create From Selected Button"]').should("be.visible");
+
+      cy.checkAccessibility(undefined);
+    });
+  });
+
+  it("Check accessibility of assigned to me page", () => {
+    cy.loginAsTestUser();
+    cy.createContent({
+      name: "Test Document",
+      doenetML: "1+1 = <answer name='ans'>2</answer>",
+    }).then((contentId) => {
+      cy.createAssignment({
+        contentId,
+        closedOn: DateTime.now().plus({ days: 10 }).toISO(),
+      }).then(({ classCode }) => {
+        cy.loginAsTestUser();
+
+        cy.visit(`/code/${classCode}`);
+
+        cy.getIframeBody("iframe", ".doenet-viewer").within(() => {
+          cy.get("#ans textarea").type("2{enter}", { force: true });
+        });
+
+        cy.get('[data-test="Assigned"]').click();
+
+        cy.get('[data-test="Assigned Activities"]').should("be.visible");
+
+        cy.checkAccessibility(undefined);
+      });
+    });
+  });
+
+  it("Check accessibility of activity viewer", () => {
+    cy.loginAsTestUser();
+    cy.createContent({
+      name: "Test Document",
+      doenetML: "1+1 = <answer name='ans'>2</answer>",
+      makePublic: true,
+    }).then((contentId) => {
+      cy.visit(`/activityViewer/${contentId}`);
+
+      cy.get('[data-test="Activity Name"]').should(
+        "have.text",
+        "Test Document",
+      );
+
+      cy.checkAccessibility(undefined);
+    });
   });
 });

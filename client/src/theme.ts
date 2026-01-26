@@ -18,6 +18,21 @@ const Button = defineStyleConfig({
       // Return undefined to fall back to default behavior for other color schemes
       return {};
     },
+    outline: (props) => {
+      if (props.colorScheme === "blue") {
+        return {
+          color: "blue.700",
+          borderColor: "blue.700",
+          _hover: {
+            bg: "blue.50",
+            _disabled: {
+              bg: "transparent",
+            },
+          },
+        };
+      }
+      return {};
+    },
   },
 });
 

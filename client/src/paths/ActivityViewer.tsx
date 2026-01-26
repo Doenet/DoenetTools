@@ -474,7 +474,7 @@ export function ActivityViewer() {
         <GridItem
           area="header"
           height="100px"
-          background="doenet.mainGray"
+          background="doenet.lightGray"
           width="100%"
         >
           <Flex flexDirection="column" alignItems="flex-start" mt="10px">
@@ -709,7 +709,7 @@ export function ActivityViewer() {
             />
             <Flex
               hidden={mode === "Edit"}
-              background="gray"
+              background="gray.600"
               maxWidth="850px"
               width="100%"
               color="var(--canvas)"
