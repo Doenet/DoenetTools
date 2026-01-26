@@ -92,7 +92,7 @@ type NavSection = {
 
 /**
  * Main site header component that provides responsive navigation.
- * Renders a horizontal navbar on desktop (md+) with dropdown menus,
+ * Renders a horizontal navbar on desktop (lg+) with dropdown menus,
  * and a hamburger menu with drill-down navigation on mobile.
  * Includes skip navigation link for accessibility.
  */
@@ -281,7 +281,7 @@ export function SiteHeader() {
 /**
  * Desktop navigation item for direct links.
  * Renders as a styled link in the horizontal navbar with hover effects.
- * Only visible on md breakpoint and above.
+ * Only visible on lg breakpoint and above.
  */
 function DesktopNavLeaf({ navItem }: { navItem: NavItem }) {
   const { to, href, label } = navItem;
@@ -350,7 +350,7 @@ function DesktopNavLeaf({ navItem }: { navItem: NavItem }) {
 /**
  * Desktop dropdown menu for navigation items with children.
  * Displays a menu button that reveals a dropdown list on hover/click.
- * Only visible on md breakpoint and above.
+ * Only visible on lg breakpoint and above.
  */
 function DesktopNavMenu({ navItem }: { navItem: NavItem }) {
   const { label, subItems } = navItem;
@@ -368,7 +368,7 @@ function DesktopNavMenu({ navItem }: { navItem: NavItem }) {
     </MenuButton>
   );
   return (
-    // Hack: setting gutter to -5 aligns dropdown with header bar
+    // Hack: setting gutter to this negative number aligns dropdown with header bar
     <Menu gutter={-4}>
       {button}
       <MenuList borderRadius="0">
@@ -420,7 +420,7 @@ function DesktopNavMenu({ navItem }: { navItem: NavItem }) {
  * Mobile navigation with hamburger menu and drawer.
  * Uses a right-side drawer with drill-down pattern for nested navigation.
  * When a parent item is clicked, the drawer transitions to show its children
- * with a back button. Only visible below md breakpoint.
+ * with a back button. Only visible below lg breakpoint.
  */
 function MobileNavAll({
   sections,
@@ -654,7 +654,7 @@ function AccountIconAndCard({ user }: { user: UserInfoWithEmail }) {
             </Box>
           ) : null}
         </VStack>
-        {user.isAnonymous && (
+        {!user.isAnonymous && (
           <MenuItem
             as={ChakraLink}
             // When name change complete, redirect back to current page
