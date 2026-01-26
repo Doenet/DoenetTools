@@ -432,12 +432,16 @@ function MobileNavAll({
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [activeSubmenu, setActiveSubmenu] = useState<NavItem | null>(null);
 
+  const handleClose = () => {
+    setActiveSubmenu(null);
+    onClose();
+  };
+
   const handleItemClick = (navItem: NavItem) => {
     if (navItem.subItems) {
       setActiveSubmenu(navItem);
     } else {
-      onClose();
-      setActiveSubmenu(null);
+      handleClose();
     }
   };
 
@@ -455,7 +459,7 @@ function MobileNavAll({
         width={navBarHeight}
         height={navBarHeight}
       />
-      <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
+      <Drawer isOpen={isOpen} placement="right" onClose={handleClose}>
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
