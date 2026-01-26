@@ -243,7 +243,7 @@ jobs:
         uses: nick-fields/retry@v3
         with:
           timeout_minutes: 30
-          max_attempts: 5
+          max_attempts: 3
           command: npm run test:assignment-workflow --workspace tests-cypress
 
       # Run sharing activities test with aggressive retry
@@ -251,7 +251,7 @@ jobs:
         uses: nick-fields/retry@v3
         with:
           timeout_minutes: 30
-          max_attempts: 5
+          max_attempts: 3
           command: npm run test:sharing-activities --workspace tests-cypress
 
       # Upload screenshots and videos on failure
