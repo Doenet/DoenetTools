@@ -159,6 +159,7 @@ export function ConfirmAssignModal({
               onClick={() => {
                 moveCopyContentOnOpen();
               }}
+              data-test="Confirm Create Assignment"
             >
               Create assignment
             </Button>

@@ -37,6 +37,7 @@ yarn-error.log*
 **/cypress/accessibility
 **/cypress/videos
 **/cypress/screenshots
+**/cypress/downloads
 **/runner-results
 parallel-weights.json
 
