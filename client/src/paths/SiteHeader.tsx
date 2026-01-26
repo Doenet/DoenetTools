@@ -457,7 +457,7 @@ function MobileNavAll({
         aria-label="Open navigation menu"
         icon={<HamburgerIcon width="full" height="full" p="5px" />}
         onClick={onOpen}
-        variant="ghost"
+        variant="unstyled"
         width={navBarHeight}
         height={navBarHeight}
       />
