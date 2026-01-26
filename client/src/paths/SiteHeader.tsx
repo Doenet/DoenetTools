@@ -33,6 +33,7 @@ import { ExternalLinkIcon, HamburgerIcon } from "@chakra-ui/icons";
 import axios from "axios";
 import { createNameNoTag } from "../utils/names";
 import { ContentDescription, DoenetmlVersion, License } from "../types";
+import { getDiscourseUrl } from "../utils/discourse";
 
 export type User =
   | {
@@ -183,9 +184,7 @@ export function SiteHeader() {
     allDoenetmlVersions,
   };
 
-  const discussHref = `${import.meta.env.VITE_DISCOURSE_URL}${
-    user && user?.isAnonymous === false ? "/session/sso" : ""
-  }`;
+  const discussHref = getDiscourseUrl(user);
 
   const helpMenuShouldFocusFirst = useBreakpointValue(
     { base: false, md: true },

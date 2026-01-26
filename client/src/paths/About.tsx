@@ -11,6 +11,7 @@ import {
 import { Link as ReactRouterLink, useOutletContext } from "react-router";
 import { WithSideBanners } from "./Home";
 import { SiteContext } from "./SiteHeader";
+import { getDiscourseUrl } from "../utils/discourse";
 
 export function About() {
   useEffect(() => {
@@ -18,10 +19,7 @@ export function About() {
   }, []);
 
   const { user } = useOutletContext<SiteContext>();
-
-  const discussHref = `${import.meta.env.VITE_DISCOURSE_URL}${
-    user && user?.isAnonymous === false ? "/session/sso" : ""
-  }`;
+  const discussHref = getDiscourseUrl(user);
 
   return (
     <>
