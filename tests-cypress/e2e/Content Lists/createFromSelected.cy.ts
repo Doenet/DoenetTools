@@ -68,7 +68,7 @@ describe("Create from selected tests", () => {
 
     cy.visit("/");
 
-    cy.get('[data-test="Activities"]').click();
+    cy.get('[data-test="My Activities"]').click();
 
     // Create problem set from Document 1
     cy.log("Create problem set from Document 1");
@@ -115,7 +115,7 @@ describe("Create from selected tests", () => {
 
     cy.visit("/");
 
-    cy.get('[data-test="Activities"]').click();
+    cy.get('[data-test="My Activities"]').click();
 
     cy.get('[data-test="Card Select"]').eq(2).click();
     cy.get('[data-test="Card Select"]').eq(1).click();
@@ -180,7 +180,7 @@ describe("Create from selected tests", () => {
 
     cy.visit("/");
 
-    cy.get('[data-test="Activities"]').click();
+    cy.get('[data-test="My Activities"]').click();
 
     cy.get(`[data-test="Content Card"]`)
       .eq(1)
