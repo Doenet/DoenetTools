@@ -9,6 +9,8 @@
     "lint:check": "eslint",
     "test": "cypress open",
     "test:all": "cypress run -b 'chrome' --config video=false --headless",
+    "test:skip-assignment-workflow": "cypress run -b 'chrome' --config video=false --headless --spec 'e2e/**/!(assignmentWorkflow).cy.ts'",
+    "test:assignment-workflow": "cypress run -b 'chrome' --config video=false --headless --spec 'e2e/**/assignmentWorkflow.cy.ts'",
     "test:app": "cypress run -b 'electron' --config video=false,excludeSpecPattern=cypress/e2e/DoenetML/** --headless",
     "test:parallel": "cypress-parallel -s test:all -t 4 -d cypress/e2e/DoenetML"
   },
