@@ -30,6 +30,18 @@ Cypress.on("uncaught:exception", (err) => {
 // Import commands.js using ES2015 syntax:
 import { ChakraProvider } from "@chakra-ui/react";
 import "./commands";
+import "cypress-axe";
+import "wick-a11y";
+
+// Configure cypress-axe to use the correct path for axe-core in monorepo
+// axe-core is installed in the root node_modules, not in client/node_modules
+Cypress.Commands.overwrite("injectAxe", () => {
+  cy.readFile("../node_modules/axe-core/axe.min.js").then((source) => {
+    return cy.window({ log: false }).then((window) => {
+      window.eval(source);
+    });
+  });
+});
 
 import { mount } from "cypress/react";
 
