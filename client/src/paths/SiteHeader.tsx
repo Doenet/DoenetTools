@@ -25,6 +25,7 @@ import {
   IconButton,
   Divider,
   useDisclosure,
+  Show,
 } from "@chakra-ui/react";
 import {
   Outlet,
@@ -164,6 +165,13 @@ export function SiteHeader() {
         ]
       : [];
 
+  if (user && user.isEditor) {
+    navSectionAccount.push({
+      label: "Curate",
+      to: `/curate`,
+    });
+  }
+
   // Group navigation into sections
   const navSections: NavSection[] = [
     { items: navSectionGeneral },
@@ -215,36 +223,30 @@ export function SiteHeader() {
   );
 
   const desktopNav = (
-    <HStack
-      h="100%"
-      // Only show on larger screens
-      display={{ base: "none", lg: "flex" }}
-      spacing="0px"
-      pr="0.5rem"
-    >
-      <RouterLogo />
-      {renderDesktopSections([navSections[0], navSections[1]])}
-      <Spacer />
-      {navSectionAccount.length > 0 &&
-        renderDesktopSections([{ items: navSectionAccount }])}
-      {account}
-    </HStack>
+    // Only show on larger screens
+    <Show above="lg">
+      <HStack h="100%" spacing="0px" pr="0.5rem">
+        <RouterLogo paddingRight="0.5rem" />
+        {renderDesktopSections([navSections[0], navSections[1]])}
+        <Spacer />
+        {navSectionAccount.length > 0 &&
+          renderDesktopSections([{ items: navSectionAccount }])}
+        {account}
+      </HStack>
+    </Show>
   );
 
   const mobileNav = (
-    <HStack
-      // Only show on small screens
-      display={{ base: "flex", lg: "none" }}
-      h="100%"
-      spacing="0px"
-      justifyContent="space-between"
-    >
-      <RouterLogo />
-      <HStack spacing="1rem">
-        {user && <AccountIconAndCard user={user} />}
-        <MobileNavAll sections={navSections} user={user} />
+    // Only show on small screens
+    <Show below="lg">
+      <HStack h="100%" spacing="0px" justifyContent="space-between">
+        <RouterLogo />
+        <HStack spacing="1rem">
+          {user && <AccountIconAndCard user={user} />}
+          <MobileNavAll sections={navSections} user={user} />
+        </HStack>
       </HStack>
-    </HStack>
+    </Show>
   );
 
   const header = (
@@ -264,12 +266,16 @@ export function SiteHeader() {
         width="100vw"
         height="100vh"
       >
-        <GridItem area="siteHeader" width="100vw" m="0" h={navBarHeight}>
-          <WithSideBanners gutterColumns={1} padding="0px">
-            {header}
-          </WithSideBanners>
+        <GridItem
+          as="header"
+          area="siteHeader"
+          width="100vw"
+          m="0"
+          h={navBarHeight}
+        >
+          {header}
         </GridItem>
-        <GridItem area="main" margin="0" overflowY="auto">
+        <GridItem as="main" area="main" margin="0" overflowY="auto">
           <SkipNavContent />
           <Outlet context={siteContext} />
         </GridItem>
@@ -574,19 +580,31 @@ function MobileNavLeaf({
 
   if (navItem.to) {
     return (
-      <Box as={RouterLink} to={navItem.to} onClick={onClick} {...boxStyles}>
+      <Box
+        as={RouterLink}
+        data-test={navItem.label}
+        to={navItem.to}
+        onClick={onClick}
+        {...boxStyles}
+      >
         {content}
       </Box>
     );
   } else if (navItem.href) {
     return (
-      <Box as="a" href={navItem.href} onClick={onClick} {...boxStyles}>
+      <Box
+        as="a"
+        data-test={navItem.label}
+        href={navItem.href}
+        onClick={onClick}
+        {...boxStyles}
+      >
         {content}
       </Box>
     );
   } else {
     return (
-      <Box onClick={onClick} {...boxStyles}>
+      <Box data-test={navItem.label} onClick={onClick} {...boxStyles}>
         {content}
       </Box>
     );
