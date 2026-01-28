@@ -22,10 +22,10 @@ import {
   AlertTitle,
   Box,
   Button,
+  FormControl,
+  FormLabel,
   Heading,
-  HStack,
   Select,
-  Text,
   VStack,
 } from "@chakra-ui/react";
 import { BlueBanner } from "../../widgets/BlueBanner";
@@ -218,7 +218,7 @@ export function EditorSettingsMode() {
   );
 }
 
-function DoenetMLSelectionBox({
+export function DoenetMLSelectionBox({
   contentId,
   versionId,
   allVersions,
@@ -253,10 +253,14 @@ function DoenetMLSelectionBox({
           </AlertDescription>
         </Alert>
       )}
-      <HStack>
-        <Text size="sm" color={fetcher.state !== "idle" ? "gray" : "black"}>
+      <FormControl display="flex" alignItems="center" gap={1}>
+        <FormLabel
+          size="sm"
+          color={fetcher.state !== "idle" ? "gray" : "black"}
+          mb={0}
+        >
           Use DoenetML version
-        </Text>
+        </FormLabel>
         <Select
           width="6rem"
           value={optimisticVersionId}
@@ -279,7 +283,7 @@ function DoenetMLSelectionBox({
             </option>
           ))}
         </Select>
-      </HStack>
+      </FormControl>
 
       {isAssigned && (
         <p>
@@ -291,7 +295,7 @@ function DoenetMLSelectionBox({
   );
 }
 
-function UpgradeSyntax({
+export function UpgradeSyntax({
   contentId,
   allVersions,
 }: {
