@@ -1,7 +1,10 @@
-import { DoenetMLSelectionBox, UpgradeSyntax } from "./EditorSettingsMode";
+import {
+  DoenetMLSelectionBox,
+  UpgradeSyntax,
+} from "./DoenetMLVersionComponents";
 import { DoenetmlVersion } from "../../types";
 
-describe("EditorSettingsMode Custom Components", () => {
+describe("DoenetML Version Components", () => {
   const mockVersions: DoenetmlVersion[] = [
     {
       id: 1,
