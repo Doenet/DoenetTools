@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import {
   Box,
+  FormControl,
+  FormLabel,
   HStack,
   NumberInput,
   NumberInputField,
@@ -117,10 +119,10 @@ export function MaxAttemptsSelectionBox({
 
   return (
     <Box>
-      <HStack>
-        <Text color={unlimitedUpdating ? "gray" : "black"}>
+      <FormControl display="flex" alignItems="center">
+        <FormLabel color={unlimitedUpdating ? "gray" : "black"} mb={0}>
           Allow unlimited attempts
-        </Text>
+        </FormLabel>
         <Switch
           isChecked={isUnlimited}
           onChange={(e) => {
@@ -129,11 +131,11 @@ export function MaxAttemptsSelectionBox({
           }}
           data-test="unlimited-attempts-switch"
         />
-      </HStack>
-      <HStack>
-        <Text color={finiteMaxUpdating ? "gray" : "black"}>
+      </FormControl>
+      <FormControl display="flex" alignItems="center" gap={1}>
+        <FormLabel color={finiteMaxUpdating ? "gray" : "black"} mb={0}>
           Maximum number of attempts allowed
-        </Text>
+        </FormLabel>
         <NumberInput
           isDisabled={isUnlimited}
           width="80px"
@@ -162,7 +164,7 @@ export function MaxAttemptsSelectionBox({
             <NumberDecrementStepper />
           </NumberInputStepper>
         </NumberInput>
-      </HStack>
+      </FormControl>
     </Box>
   );
 
@@ -201,10 +203,14 @@ function VariantSelectionBox({
 
   return (
     <Box>
-      <HStack>
-        <Text size="sm" color={fetcher.state === "idle" ? "black" : "gray"}>
+      <FormControl display="flex" alignItems="center">
+        <FormLabel
+          size="sm"
+          color={fetcher.state === "idle" ? "black" : "gray"}
+          mb={0}
+        >
           Assign the same variant of this activity to all students
-        </Text>
+        </FormLabel>
         <Switch
           isChecked={!optimisticIsIndividualized}
           isDisabled={!editable}
@@ -219,7 +225,7 @@ function VariantSelectionBox({
             );
           }}
         />
-      </HStack>
+      </FormControl>
     </Box>
   );
 }
