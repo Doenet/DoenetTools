@@ -9,6 +9,18 @@ import {
 } from "../../types";
 
 describe("EditorSettingsModeContent", () => {
+  beforeEach(() => {
+    // Mock the classifications API to prevent ECONNREFUSED errors
+    cy.intercept("GET", "/api/classifications/getClassificationCategories", {
+      statusCode: 200,
+      body: [],
+    }).as("getClassificationCategories");
+    cy.intercept("GET", "/api/classifications/searchPossibleClassifications*", {
+      statusCode: 200,
+      body: [],
+    }).as("searchClassifications");
+  });
+
   const mockDoenetmlVersions: DoenetmlVersion[] = [
     {
       id: 1,

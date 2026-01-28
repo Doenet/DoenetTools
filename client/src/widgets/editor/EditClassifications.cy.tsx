@@ -2,6 +2,18 @@ import { EditClassifications } from "./EditClassifications";
 import { ContentClassification } from "../../types";
 
 describe("EditClassifications Component", () => {
+  beforeEach(() => {
+    // Mock the classifications API to prevent ECONNREFUSED errors
+    cy.intercept("GET", "/api/classifications/getClassificationCategories", {
+      statusCode: 200,
+      body: [],
+    }).as("getClassificationCategories");
+    cy.intercept("GET", "/api/classifications/searchPossibleClassifications*", {
+      statusCode: 200,
+      body: [],
+    }).as("searchClassifications");
+  });
+
   const mockClassification: ContentClassification = {
     id: 1,
     code: "A1.B.C",
