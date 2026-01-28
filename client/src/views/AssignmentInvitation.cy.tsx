@@ -31,7 +31,7 @@ describe("Assignment Invitation Modal", () => {
     cy.get("#react-qrcode-logo").should("have.attr", "width", "400");
     cy.get("#react-qrcode-logo").should("have.attr", "height", "400");
 
-    cy.wait(0); // Wait for a tick, otherwise a11y check gets the wrong contrast on the text
+    cy.wait(100); // Wait, otherwise a11y check gets the wrong contrast on the text
 
     cy.checkAccessibility(".chakra-portal");
   });
