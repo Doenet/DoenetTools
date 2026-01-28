@@ -193,4 +193,27 @@ describe("MaxAttemptsSelectionBox Component", () => {
       .find("input")
       .should("have.value", "4");
   });
+
+  it("should show the number input as enabled and display the value when attempts is finite", () => {
+    cy.mount(<MaxAttemptsSelectionBox contentId="test-id" attempts={5} />);
+    cy.get('[data-test="max-attempts-input"] input').should("not.be.disabled");
+    cy.get('[data-test="max-attempts-input"] input').should("have.value", "5");
+    cy.get('[data-test="unlimited-attempts-switch"]').should(
+      "not.have.attr",
+      "data-checked",
+    );
+  });
+
+  it("should show the number input as disabled and display --- when unlimited (attempts = 0)", () => {
+    cy.mount(<MaxAttemptsSelectionBox contentId="test-id" attempts={0} />);
+    cy.get('[data-test="max-attempts-input"] input').should("be.disabled");
+    cy.get('[data-test="max-attempts-input"] input').should(
+      "have.value",
+      "---",
+    );
+    cy.get('[data-test="unlimited-attempts-switch"]').should(
+      "have.attr",
+      "data-checked",
+    );
+  });
 });

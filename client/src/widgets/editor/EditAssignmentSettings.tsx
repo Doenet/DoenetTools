@@ -127,6 +127,7 @@ export function MaxAttemptsSelectionBox({
             const val = typeof numberInputVal === "number" ? numberInputVal : 1;
             fetcherUpdate(e.target.checked ? 0 : val);
           }}
+          data-test="unlimited-attempts-switch"
         />
       </HStack>
       <HStack>
