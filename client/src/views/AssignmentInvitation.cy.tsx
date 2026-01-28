@@ -50,7 +50,7 @@ describe("Assignment Invitation Modal", () => {
         });
       }
 
-      expectedUrl = `https://${win.location.protocol}//${win.location.host}/code/${classCode}`;
+      expectedUrl = `${win.location.protocol}//${win.location.host}/code/${classCode}`;
       cy.wrap(expectedUrl).as("expectedUrl");
     });
 

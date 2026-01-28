@@ -39,7 +39,7 @@ export function DoenetMLSelectionBox({
 
   return (
     <>
-      {optimisticVersion.deprecated && (
+      {optimisticVersion?.deprecated && (
         <Alert status="warning">
           <AlertIcon />
           <AlertTitle>
@@ -103,9 +103,17 @@ export function UpgradeSyntax({
 
   const [upgradeInitiated, setUpgradeInitiated] = useState(false);
 
-  const newVersionId = allVersions.find(
-    (v) => v.displayedVersion === "0.7",
-  )!.id;
+  const targetVersion = allVersions.find((v) => v.displayedVersion === "0.7");
+
+  if (!targetVersion) {
+    console.warn('No DoenetML version "0.7" found in available versions.', {
+      contentId,
+      allVersions,
+    });
+    return null;
+  }
+
+  const newVersionId = targetVersion.id;
 
   return (
     <Button

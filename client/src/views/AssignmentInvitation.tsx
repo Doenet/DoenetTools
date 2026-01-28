@@ -90,9 +90,7 @@ export function AssignmentInvitation({
             leftIcon={<MdOutlineContentCopy />}
             marginRight="10px"
             onClick={() => {
-              navigator.clipboard.writeText(
-                `https://${baseUrl}/code/${classCode}`,
-              );
+              navigator.clipboard.writeText(`${baseUrl}/code/${classCode}`);
               setUrlCopied(true);
             }}
           >

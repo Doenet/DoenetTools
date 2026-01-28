@@ -36,9 +36,15 @@ import "wick-a11y";
 // Configure cypress-axe to use the correct path for axe-core in monorepo
 // axe-core is installed in the root node_modules, not in client/node_modules
 Cypress.Commands.overwrite("injectAxe", () => {
+  // Load the trusted axe-core bundle from disk and inject it via a <script> tag
+  // instead of using window.eval. This keeps the standard cypress-axe behavior
+  // while avoiding eval and clearly scopes execution to this window.
   cy.readFile("../node_modules/axe-core/axe.min.js").then((source) => {
     return cy.window({ log: false }).then((window) => {
-      window.eval(source);
+      const script = window.document.createElement("script");
+      script.type = "text/javascript";
+      script.textContent = source;
+      window.document.head.appendChild(script);
     });
   });
 });
