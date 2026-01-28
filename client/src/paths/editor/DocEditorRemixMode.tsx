@@ -31,24 +31,27 @@ export async function loader({ params }: { params: any }) {
   return { remixes, sources };
 }
 
+export interface DocEditorRemixModeContentProps {
+  remixes: ActivityRemixItem[];
+  sources: ActivityRemixItem[];
+  contentName: string;
+  onClose: () => void;
+}
+
 /**
- * This page allows you to view your remix sources and remixes.
- * Context: `documentEditor`
+ * Presentational component for displaying remix sources and remixes.
+ * This component is separated from React Router for testing purposes.
  */
-export function DocEditorRemixMode() {
-  const { remixes, sources } = useLoaderData() as {
-    remixes: ActivityRemixItem[];
-    sources: ActivityRemixItem[];
-  };
-
-  const { contentName } = useOutletContext<EditorContext>();
-
+export function DocEditorRemixModeContent({
+  remixes,
+  sources,
+  contentName,
+  onClose,
+}: DocEditorRemixModeContentProps) {
   const haveChangedSource = sources.some(
     (source) => source.originContent.changed,
   );
   const haveChangedRemix = remixes.some((remix) => remix.remixContent.changed);
-
-  const navigate = useNavigate();
 
   const sourcesPanel = (
     <Box margin="1rem">
@@ -71,14 +74,7 @@ export function DocEditorRemixMode() {
   );
 
   return (
-    <Modal
-      size="full"
-      motionPreset="none"
-      isOpen={true}
-      onClose={() => {
-        navigate(-1);
-      }}
-    >
+    <Modal size="full" motionPreset="none" isOpen={true} onClose={onClose}>
       <ModalContent>
         <ModalHeader>
           <Center>{contentName} - Remixes</Center>
@@ -95,5 +91,29 @@ export function DocEditorRemixMode() {
         </ModalBody>
       </ModalContent>
     </Modal>
+  );
+}
+
+/**
+ * Container component that handles React Router integration.
+ * This page allows you to view your remix sources and remixes.
+ * Context: `documentEditor`
+ */
+export function DocEditorRemixMode() {
+  const { remixes, sources } = useLoaderData() as {
+    remixes: ActivityRemixItem[];
+    sources: ActivityRemixItem[];
+  };
+
+  const { contentName } = useOutletContext<EditorContext>();
+  const navigate = useNavigate();
+
+  return (
+    <DocEditorRemixModeContent
+      remixes={remixes}
+      sources={sources}
+      contentName={contentName}
+      onClose={() => navigate(-1)}
+    />
   );
 }
