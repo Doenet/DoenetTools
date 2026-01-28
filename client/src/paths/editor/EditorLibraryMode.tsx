@@ -1,4 +1,5 @@
 import {
+  FetcherWithComponents,
   useFetcher,
   useLoaderData,
   useNavigate,
@@ -28,7 +29,7 @@ import {
 import { DateTime } from "luxon";
 import { createNameNoTag } from "../../utils/names";
 import { ChatConversation } from "../../widgets/ChatConversation";
-import { LibraryComment, LibraryRelations } from "../../types";
+import { ContentType, LibraryComment, LibraryRelations } from "../../types";
 import { contentTypeToName } from "../../utils/activity";
 
 export async function loader({ params }: { params: any }) {
@@ -46,21 +47,31 @@ export async function loader({ params }: { params: any }) {
   };
 }
 
+export interface EditorLibraryModeContentProps {
+  libraryRelations: LibraryRelations;
+  libraryComments: LibraryComment[];
+  contentId: string;
+  isPublic: boolean;
+  contentType: ContentType;
+  contentName: string;
+  fetcher: FetcherWithComponents<any>;
+  onClose: () => void;
+}
+
 /**
- * This page allows you to suggest your document for the library, track its status in the review process, and communicate with library editors.
- * Context: `documentEditor`
+ * Presentational component for library status and curation.
+ * This component is separated from React Router for testing purposes.
  */
-export function EditorLibraryMode() {
-  const { libraryRelations, libraryComments } = useLoaderData() as {
-    libraryRelations: LibraryRelations;
-    libraryComments: LibraryComment[];
-  };
-
-  const { contentId, isPublic, contentType, contentName } =
-    useOutletContext<EditorContext>();
-  const fetcher = useFetcher();
-  const navigate = useNavigate();
-
+export function EditorLibraryModeContent({
+  libraryRelations,
+  libraryComments,
+  contentId,
+  isPublic,
+  contentType,
+  contentName,
+  fetcher,
+  onClose,
+}: EditorLibraryModeContentProps) {
   const suggestCuration = () => {
     fetcher.submit(
       {
@@ -155,14 +166,7 @@ export function EditorLibraryMode() {
   }
 
   return (
-    <Modal
-      size="full"
-      motionPreset="none"
-      isOpen={true}
-      onClose={() => {
-        navigate(-1);
-      }}
-    >
+    <Modal size="full" motionPreset="none" isOpen={true} onClose={onClose}>
       <ModalContent>
         <ModalHeader>
           <Center>{contentName} - Library status</Center>
@@ -171,5 +175,35 @@ export function EditorLibraryMode() {
         <ModalBody>{contents}</ModalBody>
       </ModalContent>
     </Modal>
+  );
+}
+
+/**
+ * Container component that handles React Router integration.
+ * This page allows you to suggest your document for the library, track its status in the review process, and communicate with library editors.
+ * Context: `documentEditor`
+ */
+export function EditorLibraryMode() {
+  const { libraryRelations, libraryComments } = useLoaderData() as {
+    libraryRelations: LibraryRelations;
+    libraryComments: LibraryComment[];
+  };
+
+  const { contentId, isPublic, contentType, contentName } =
+    useOutletContext<EditorContext>();
+  const fetcher = useFetcher();
+  const navigate = useNavigate();
+
+  return (
+    <EditorLibraryModeContent
+      libraryRelations={libraryRelations}
+      libraryComments={libraryComments}
+      contentId={contentId}
+      isPublic={isPublic}
+      contentType={contentType}
+      contentName={contentName}
+      fetcher={fetcher}
+      onClose={() => navigate(-1)}
+    />
   );
 }

@@ -12,7 +12,7 @@ export function getLibraryStatusStylized(status: LibraryStatus) {
       );
     case "UNDER_REVIEW":
       return (
-        <Text fontWeight="bold" as="span" color="orange">
+        <Text fontWeight="bold" as="span" color="orange.600">
           under review
         </Text>
       );
