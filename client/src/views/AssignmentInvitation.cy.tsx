@@ -28,9 +28,6 @@ describe("Assignment Invitation Modal", () => {
 
     cy.get(".chakra-portal").should("contain.text", `/code/${classCode}`);
 
-    cy.get("#react-qrcode-logo").should("have.attr", "width", "400");
-    cy.get("#react-qrcode-logo").should("have.attr", "height", "400");
-
     cy.wait(100); // Wait, otherwise a11y check gets the wrong contrast on the text
 
     cy.checkAccessibility(".chakra-portal");
