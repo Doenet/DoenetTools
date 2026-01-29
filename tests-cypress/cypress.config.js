@@ -25,7 +25,7 @@ export default defineConfig({
   numTestsKeptInMemory: 20,
   defaultCommandTimeout: 10000,
   retries: {
-    runMode: 5,
+    runMode: 2, // Retry failed tests 2 times (3 total attempts) in CI
     openMode: 0,
   },
   e2e: {
