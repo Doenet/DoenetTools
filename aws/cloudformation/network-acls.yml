@@ -59,6 +59,24 @@ Resources:
       RuleAction: allow
       Egress: true
       CidrBlock: !Ref "VpcCidrBlock"
+  PrivateInboundFromAllIPv6:
+    Type: AWS::EC2::NetworkAclEntry
+    Properties:
+      NetworkAclId: !Ref "PrivateNetworkAcl"
+      RuleNumber: 120
+      Protocol: -1
+      RuleAction: allow
+      Egress: false
+      Ipv6CidrBlock: "::/0"
+  PrivateOutboundToAllIPv6:
+    Type: AWS::EC2::NetworkAclEntry
+    Properties:
+      NetworkAclId: !Ref "PrivateNetworkAcl"
+      RuleNumber: 120
+      Protocol: -1
+      RuleAction: allow
+      Egress: true
+      Ipv6CidrBlock: "::/0"
   PublicNetworkAcl:
     Type: AWS::EC2::NetworkAcl
     Properties:
@@ -107,6 +125,24 @@ Resources:
       RuleAction: allow
       Egress: true
       CidrBlock: !Ref "VpcCidrBlock"
+  PublicInboundFromAllIPv6:
+    Type: AWS::EC2::NetworkAclEntry
+    Properties:
+      NetworkAclId: !Ref "PublicNetworkAcl"
+      RuleNumber: 120
+      Protocol: -1
+      RuleAction: allow
+      Egress: false
+      Ipv6CidrBlock: "::/0"
+  PublicOutboundToAllIPv6:
+    Type: AWS::EC2::NetworkAclEntry
+    Properties:
+      NetworkAclId: !Ref "PublicNetworkAcl"
+      RuleNumber: 120
+      Protocol: -1
+      RuleAction: allow
+      Egress: true
+      Ipv6CidrBlock: "::/0"
 Outputs:
   PrivateNetworkAcl:
     Description: The private network ACL list ID
