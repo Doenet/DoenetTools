@@ -462,6 +462,7 @@ describe("CopyContentAndReportFinish component tests", () => {
 
       cy.get('[data-test="Copy Header"]').should("have.text", "Copying");
       cy.get('[data-test="Copy Header"]').should("be.visible");
+      cy.wait(100);
       cy.checkAccessibility("body");
     });
 
@@ -490,6 +491,7 @@ describe("CopyContentAndReportFinish component tests", () => {
 
       cy.get('[data-test="Copy Header"]').should("have.text", "Copy finished");
       cy.get('[data-test="Copy Header"]').should("be.visible");
+      cy.wait(100);
       cy.checkAccessibility("body");
     });
 
@@ -521,6 +523,7 @@ describe("CopyContentAndReportFinish component tests", () => {
         "An error occurred",
       );
       cy.get('[data-test="Copy Header"]').should("be.visible");
+      cy.wait(100);
       cy.checkAccessibility("body");
     });
   });
