@@ -64,3 +64,136 @@ jobs:
 
       - name: Test server
         run: npm test --workspace server
+
+  # -----------------------------
+  # E2E Tests
+  # -----------------------------
+  e2e-tests:
+    runs-on: ubuntu-latest
+
+    env:
+      DATABASE_URL: mysql://root:root@localhost:3306/db
+      # OAuth environment variables for CI (dummy values for testing)
+      GOOGLE_CLIENT_ID: ci-test-client-id
+      GOOGLE_CLIENT_SECRET: ci-test-client-secret
+      GITHUB_CLIENT_ID: ci-test-client-id
+      GITHUB_CLIENT_SECRET: ci-test-client-secret
+      SESSION_SECRET: ci-test-session-secret
+      MAGIC_LINK_SECRET: ci-test-magic-link-secret
+      LOGIN_CALLBACK_ROOT: http://localhost:8000/
+      CONFIRM_SIGNIN_URL: http://localhost:8000/signIn
+      CONSOLE_LOG_EMAIL: "true"
+      # Enable test features for CI
+      ALLOW_TEST_LOGIN: "true"
+      ADD_TEST_APIS: "true"
+
+    steps:
+      # Checkout repo
+      - uses: actions/checkout@v4
+
+      # Setup Node with caching
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      # Install dependencies
+      - run: npm ci
+
+      # Generate TS types for Prisma
+      - run: npm run prisma:generate --workspace server
+
+      # Start MySQL
+      - name: Start MySQL
+        run: |
+          sudo /etc/init.d/mysql start
+          mysql -e "CREATE DATABASE IF NOT EXISTS db;" -uroot -proot
+
+      - run: npm run prisma:migrate-dev --workspace server
+      - run: npm run prisma:seed --workspace server
+
+      # Build shared workspace (required dependency for client and server)
+      - name: Build shared
+        run: npm run build --workspace shared
+
+      # Start server in background (port 3000)
+      - name: Start server
+        run: |
+          npm run dev --workspace server > /tmp/server.log 2>&1 &
+          echo $! > /tmp/server.pid
+        env:
+          NODE_ENV: development
+
+      # Start client dev server in background (port 8000)
+      - name: Start client
+        run: |
+          npm run dev --workspace client > /tmp/client.log 2>&1 &
+          echo $! > /tmp/client.pid
+        env:
+          NODE_ENV: production
+
+      # Wait for servers to be ready
+      - name: Wait for servers
+        run: |
+          npx wait-on http://localhost:3000 http://localhost:8000 --timeout 60000
+
+      - name: Check server logs if wait-on fails
+        if: failure()
+        run: |
+          echo "=== Server Log ===" && cat /tmp/server.log || true
+          echo "=== Client Log ===" && cat /tmp/client.log || true
+          echo "=== Server processes ===" && ps aux | grep "node\|npm" || true
+
+      # Run Cypress e2e tests
+      - name: Run Cypress e2e tests
+        run: npm run test:all --workspace tests-cypress
+
+      # Upload screenshots and videos on failure
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: tests-cypress/cypress/screenshots
+          if-no-files-found: ignore
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-videos
+          path: tests-cypress/cypress/videos
+          if-no-files-found: ignore
+
+  component-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout repo
+      - uses: actions/checkout@v4
+
+      # Setup Node with caching
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      # Install dependencies
+      - run: npm ci
+
+      # Build shared workspace (required by client)
+      - name: Build shared workspace
+        run: npm run build --workspace shared
+
+      # Run component tests
+      - name: Run component tests
+        run: npm run test:all --workspace client
+
+      # Upload artifacts on failure
+      - name: Upload test artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: component-test-artifacts
+          path: |
+            client/cypress/screenshots/
+            client/cypress/videos/
+          retention-days: 7

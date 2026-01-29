@@ -36,16 +36,22 @@ Cypress.Commands.add(
     email,
     firstNames,
     lastNames,
-    isAdmin = false,
+    isEditor = false,
+    isAuthor = false,
+    isAnonymous = false,
   }: {
     email?: string;
     firstNames?: string;
     lastNames?: string;
-    isAdmin?: boolean;
+    isEditor?: boolean;
+    isAuthor?: boolean;
+    isAnonymous?: boolean;
   } = {}) => {
+    const code = Date.now().toString();
     if (!email) {
-      const code = Date.now().toString();
       email = `test${code}@doenet.org`;
+    }
+    if (!firstNames && !lastNames) {
       firstNames = `Test`;
       lastNames = `User${code}`;
     }
@@ -54,7 +60,7 @@ Cypress.Commands.add(
       cy.request({
         method: "POST",
         url: "/api/login/createOrLoginAsTest",
-        body: { email, firstNames, lastNames, isAdmin },
+        body: { email, firstNames, lastNames, isEditor, isAuthor, isAnonymous },
       });
     });
   },
@@ -67,6 +73,7 @@ Cypress.Commands.add(
     doenetML,
     contentType = "singleDoc",
     classifications,
+    categories,
     makePublic = false,
     publishInLibrary = false,
     parentId,
@@ -80,6 +87,7 @@ Cypress.Commands.add(
       subCategory: string;
       code: string;
     }[];
+    categories?: Record<string, boolean>;
     makePublic?: boolean;
     publishInLibrary?: boolean;
     parentId?: string;
@@ -89,7 +97,7 @@ Cypress.Commands.add(
       url: "/api/updateContent/createContent",
       body: {
         contentType,
-        parentId,
+        parentId: parentId ?? null,
       },
     }).then((resp) => {
       const contentId: string = resp.body.contentId;
@@ -105,13 +113,24 @@ Cypress.Commands.add(
         });
       }
 
-      if (makePublic) {
+      if (categories) {
         cy.request({
           method: "POST",
-          url: "/api/share/makeContentPublic",
+          url: "/api/updateContent/updateCategories",
           body: {
             contentId,
-            licenseCode: "CCDUAL",
+            categories,
+          },
+        });
+      }
+
+      if (makePublic || publishInLibrary) {
+        cy.request({
+          method: "POST",
+          url: "/api/share/setContentIsPublic",
+          body: {
+            contentId,
+            isPublic: true,
           },
         });
       }
@@ -119,19 +138,26 @@ Cypress.Commands.add(
       if (publishInLibrary) {
         cy.request({
           method: "POST",
-          url: "/api/addDraftToLibrary",
+          url: "/api/curate/suggestToBeCurated",
           body: {
             contentId: contentId,
-            type: "singleDoc",
           },
         }).then((resp) => {
+          const contentIdInLibrary = resp.body.contentIdInLibrary;
           cy.request({
             method: "POST",
-            url: "/api/publishActivityToLibrary",
+            url: "/api/curate/claimOwnershipOfReview",
             body: {
-              id: resp.body.newContentId,
-              comment: "Publish it!",
+              contentId: contentIdInLibrary,
             },
+          }).then(() => {
+            cy.request({
+              method: "POST",
+              url: "/api/curate/publishActivityToLibrary",
+              body: {
+                contentId: contentIdInLibrary,
+              },
+            });
           });
         });
       }
@@ -159,6 +185,45 @@ Cypress.Commands.add(
   },
 );
 
+Cypress.Commands.add(
+  "createAssignment",
+  ({
+    contentId,
+    closedOn,
+    parentId,
+    maxAttempts = 1,
+  }: {
+    contentId: string;
+    closedOn: string;
+    parentId?: string;
+    maxAttempts?: number;
+  }) => {
+    cy.request({
+      method: "POST",
+      url: "/api/assign/createAssignment",
+      body: {
+        contentId,
+        closedOn,
+        destinationParentId: parentId ?? null,
+      },
+    }).then((resp) => {
+      const assignmentId: string = resp.body.assignmentId;
+      const classCode: number | null = resp.body.classCode ?? null;
+
+      cy.request({
+        method: "POST",
+        url: "/api/assign/updateAssignmentMaxAttempts",
+        body: {
+          contentId: assignmentId,
+          maxAttempts,
+        },
+      }).then(() => {
+        return { assignmentId, classCode };
+      });
+    });
+  },
+);
+
 Cypress.Commands.add("getUserInfo", () => {
   cy.request({
     method: "GET",
@@ -167,4 +232,30 @@ Cypress.Commands.add("getUserInfo", () => {
     const user = resp.body.user;
     return user;
   });
+});
+
+Cypress.Commands.add("getIframeBody", (iframeSelector, waitSelector = null) => {
+  return (
+    cy
+      .get(iframeSelector, { log: false })
+      // 1. ANCHOR: We keep the subject as the <iframe> element, not the body.
+      // The .should() will retry against the iframe element until the callback passes.
+      .should(($iframe) => {
+        // We use jQuery to look inside the iframe without changing the Cypress subject
+        const $body = $iframe.contents().find("body");
+
+        // Check 1: Body must exist
+        if ($body.length === 0) {
+          throw new Error("Iframe body is empty or not yet loaded");
+        }
+
+        // Check 2: If we are waiting for a specific element, it must exist
+        if (waitSelector && $body.find(waitSelector).length === 0) {
+          throw new Error(`Element "${waitSelector}" not yet found in iframe`);
+        }
+      })
+      // 2. FETCH: Only once the above passes (stable), do we grab the body
+      .its("0.contentDocument.body", { log: false })
+      .then(cy.wrap) as Cypress.Chainable<HTMLBodyElement>
+  );
 });

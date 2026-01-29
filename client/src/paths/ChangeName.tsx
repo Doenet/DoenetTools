@@ -1,15 +1,23 @@
 import {
   Box,
   Button,
+  Center,
   Flex,
   FormControl,
   FormLabel,
   Heading,
   Input,
   Spinner,
+  Text,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { Form, replace, useLoaderData, useOutletContext } from "react-router";
+import {
+  Form,
+  replace,
+  useLoaderData,
+  useNavigate,
+  useOutletContext,
+} from "react-router";
 import axios from "axios";
 import { SiteContext } from "./SiteHeader";
 
@@ -27,10 +35,12 @@ export async function action({
   const formObj = Object.fromEntries(formData);
 
   if (formObj._action === "change user name") {
-    await axios.post(`/api/user/updateUser`, {
-      firstNames: formObj.firstNames,
-      lastNames: formObj.lastNames,
-    });
+    if (formObj._isEditable === "true") {
+      await axios.post(`/api/user/updateUser`, {
+        firstNames: formObj.firstNames,
+        lastNames: formObj.lastNames,
+      });
+    }
     return replace(formObj.redirectTo);
   }
 
@@ -54,70 +64,97 @@ export async function loader({ request }: { request: any }) {
 export function ChangeName() {
   const { redirectTo } = useLoaderData();
 
+  const navigate = useNavigate();
+
   const { user } = useOutletContext<SiteContext>();
   if (user === undefined) {
     throw Error("No user logged in.");
   }
 
+  const isEditable = !user.isAnonymous;
+
   const [firstNames, setFirstNames] = useState(user?.firstNames ?? "");
   const [lastNames, setLastNames] = useState(user?.lastNames ?? "");
   const [submitted, setSubmitted] = useState(false);
 
-  return (
-    <Box margin="20px">
-      <Heading size="lg">Enter your name</Heading>
-
-      <Form
-        method="post"
-        onSubmit={() => {
-          setSubmitted(true);
-        }}
-      >
-        <input type="hidden" name="_action" value="change user name" />
-        <input type="hidden" name="redirectTo" value={redirectTo ?? "/"} />
-
-        <Flex wrap="wrap">
-          <FormControl width="13rem">
-            <FormLabel mt="16px">First name(s):</FormLabel>
-            <Input
-              placeholder="First Name(s)"
-              name="firstNames"
-              size="sm"
-              width="11rem"
-              marginRight="5px"
-              value={firstNames ?? ""}
-              onChange={(e) => {
-                setFirstNames(e.target.value);
-              }}
-            />
-          </FormControl>
-          <FormControl isRequired width="13rem">
-            <FormLabel mt="16px">Last name(s):</FormLabel>
-            <Input
-              placeholder="Last Names"
-              name="lastNames"
-              size="sm"
-              width="11rem"
-              value={lastNames}
-              onChange={(e) => {
-                setLastNames(e.target.value);
-              }}
-            />
-          </FormControl>
-        </Flex>
-        <Flex marginTop="8px">
-          <Button
-            type="submit"
-            colorScheme="blue"
-            mr="12px"
-            size="xs"
-            isDisabled={submitted}
-          >
-            Submit
+  if (user.isAnonymous) {
+    return (
+      <Center>
+        <Box margin="50px">
+          <Heading size="md">Taking assignment as an anonymous user</Heading>
+          <Text mt="20px">
+            Your nickname is <strong>{user.lastNames}</strong>.
+          </Text>
+          <Button mt="20px" onClick={() => navigate(redirectTo ?? "/")}>
+            Continue
           </Button>
-          <Spinner hidden={!submitted} />
-        </Flex>
-      </Form>
-    </Box>
-  );
+        </Box>
+      </Center>
+    );
+  } else {
+    return (
+      <Box margin="20px">
+        <Heading size="lg">Enter your name</Heading>
+
+        <Form
+          method="post"
+          onSubmit={() => {
+            setSubmitted(true);
+          }}
+        >
+          <input type="hidden" name="_action" value="change user name" />
+          <input type="hidden" name="redirectTo" value={redirectTo ?? "/"} />
+          <input
+            type="hidden"
+            name="_isEditable"
+            value={isEditable ? "true" : "false"}
+          />
+
+          <Flex wrap="wrap">
+            <FormControl width="13rem">
+              <FormLabel mt="16px">First name(s):</FormLabel>
+              <Input
+                placeholder="First Name(s)"
+                name="firstNames"
+                size="sm"
+                width="11rem"
+                marginRight="5px"
+                value={firstNames ?? ""}
+                isDisabled={!isEditable}
+                onChange={(e) => {
+                  setFirstNames(e.target.value);
+                }}
+              />
+            </FormControl>
+            <FormControl isRequired width="13rem">
+              <FormLabel mt="16px">Last name(s):</FormLabel>
+              <Input
+                placeholder="Last Names"
+                name="lastNames"
+                size="sm"
+                width="11rem"
+                value={lastNames}
+                isDisabled={!isEditable}
+                onChange={(e) => {
+                  setLastNames(e.target.value);
+                }}
+              />
+            </FormControl>
+          </Flex>
+          <Flex marginTop="8px">
+            <Button
+              type="submit"
+              colorScheme="blue"
+              mr="12px"
+              size="xs"
+              isDisabled={submitted}
+            >
+              Submit
+            </Button>
+            <Spinner hidden={!submitted} />
+          </Flex>
+        </Form>
+      </Box>
+    );
+  }
 }

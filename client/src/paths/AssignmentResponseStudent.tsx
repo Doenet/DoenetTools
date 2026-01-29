@@ -326,15 +326,23 @@ export function AssignmentResponseStudent() {
                   e.preventDefault();
                   navigate(-1);
                 }}
+                data-test="Back Link"
               >
                 {" "}
                 &lt; Back
               </ChakraLink>
             </GridItem>
             <GridItem area="label">
-              <Flex justifyContent="center" alignItems="center">
+              <Flex
+                justifyContent="center"
+                alignItems="center"
+                data-test="Title"
+              >
                 {typeIcon}
-                <Text noOfLines={1}>{assignment.name}</Text> &mdash;{" "}
+                <Text noOfLines={1} marginRight="0.5em">
+                  {assignment.name}
+                </Text>{" "}
+                &mdash;{" "}
                 {data.singleItemAttempt ? "Item Details" : "Student Summary"}
               </Flex>
             </GridItem>

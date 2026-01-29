@@ -59,7 +59,7 @@ import { EditAssignmentSettings } from "../widgets/editor/EditAssignmentSettings
 import { DateTime } from "luxon";
 import { NameBar } from "../widgets/NameBar";
 import { AssignmentInvitation } from "../views/AssignmentInvitation";
-import { downloadScoresToCsv } from "../utils/scores";
+import { downloadScoresToCsv } from "../utils/csv";
 
 type ScoreItem = {
   score: number;
@@ -402,7 +402,10 @@ export function AssignmentData() {
               const studentName = createNameNoTag(assignmentScore.user);
               const bestAttemptNumber = assignmentScore.bestAttemptNumber;
               return (
-                <Tr key={`user${assignmentScore.user.userId}`}>
+                <Tr
+                  key={`user${assignmentScore.user.userId}`}
+                  data-test={`Student Row ${assignmentScore.user.userId}`}
+                >
                   <Td>
                     <HStack>
                       <ChakraLink
@@ -414,7 +417,7 @@ export function AssignmentData() {
                       </ChakraLink>
                     </HStack>
                   </Td>
-                  <Td justifyItems="center">
+                  <Td justifyItems="center" data-test="Total Score">
                     <Text>
                       <Tooltip
                         label={`Total for ${studentName}`}
@@ -438,7 +441,11 @@ export function AssignmentData() {
                         ? bestAttemptNumber
                         : item.itemAttemptNumber;
                     return (
-                      <Td key={i} justifyItems="center">
+                      <Td
+                        key={i}
+                        justifyItems="center"
+                        data-test={`Item ${i + 1} Score`}
+                      >
                         <Text>
                           <Tooltip
                             label={`Item ${i + 1} for ${studentName}`}
@@ -598,34 +605,28 @@ export function AssignmentData() {
     </Tooltip>
   );
 
-  const localValidUntil = DateTime.fromISO(info.codeValidUntil!).toISO({
+  const localValidUntil = DateTime.fromISO(info.assignmentClosedOn!).toISO({
     includeOffset: false,
   })!;
 
   const downloadScores = () => {
-    downloadScoresToCsv(
-      `Scores for ${assignment.name}`,
-      scores.map((score) => {
-        const assignmentScores: Record<string, number> = {};
-        assignmentScores[assignment.name] = score.score;
-
-        return {
-          firstNames: score.user.firstNames,
-          lastNames: score.user.lastNames,
-          email: score.user.email,
-          studentId: score.user.userId,
-          assignmentScores,
-        };
-      }),
-    );
+    downloadScoresToCsv({
+      title: `Scores for ${assignment.name}`,
+      orderedStudents: scores.map((s) => s.user),
+      // [s.score] indicates we only have one assignment here
+      scores: scores.map((s) => [s.score]),
+      orderedAssignments: [assignment.name],
+    });
   };
+
+  const classCode = String(info.classCode!).padStart(6, "0");
 
   return (
     <>
       <AssignmentInvitation
         isOpen={inviteIsOpen}
         onClose={inviteOnClose}
-        classCode={info.classCode}
+        classCode={classCode}
         assignmentStatus={info.assignmentStatus}
         assignmentName={assignment.name}
       />
@@ -699,7 +700,7 @@ export function AssignmentData() {
               width="220px"
               value={localValidUntil}
               onChange={(e) => {
-                const closeAt = DateTime.fromISO(e.target.value)
+                const closedOn = DateTime.fromISO(e.target.value)
                   .set({ second: 0, millisecond: 0 })
                   .toISO({
                     suppressSeconds: true,
@@ -707,16 +708,18 @@ export function AssignmentData() {
                   });
                 fetcher.submit(
                   {
-                    path: "assign/updateAssignmentCloseAt",
+                    path: "assign/updateAssignmentClosedOn",
                     contentId,
-                    closeAt,
+                    closedOn,
                   },
                   { method: "post", encType: "application/json" },
                 );
               }}
             />
           </Text>
-          <Text>Class code: {info.classCode}</Text>
+          <Text>
+            Class code: <span data-test="Class Code">{classCode}</span>
+          </Text>
           <Button
             onClick={inviteOnOpen}
             colorScheme="blue"
@@ -728,7 +731,12 @@ export function AssignmentData() {
             label="Download scores for this assignment as a CSV file"
             openDelay={50}
           >
-            <Button colorScheme="blue" onClick={downloadScores}>
+            <Button
+              colorScheme="blue"
+              onClick={downloadScores}
+              data-test="Download Scores Button"
+              disabled={numStudents === 0}
+            >
               Download assignment scores
             </Button>
           </Tooltip>

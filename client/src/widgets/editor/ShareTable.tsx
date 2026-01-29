@@ -76,6 +76,10 @@ export function ShareTable({
           );
         };
 
+    if (user.email === null) {
+      throw new Error("User email is null in ShareTable");
+    }
+
     rows.push(
       <ShareTableRow
         key={user.userId}
@@ -94,7 +98,7 @@ export function ShareTable({
       marginTop="20px"
       position="relative"
     >
-      <Table size="sm">
+      <Table size="sm" data-test="Share Table">
         <Thead position="sticky" top={0} backgroundColor="var(--canvas)">
           <Tr>
             <Th

@@ -1,6 +1,5 @@
 import express from "express";
 import {
-  closeAssignmentWithCode,
   getAllAssignmentScores,
   getAssignedScores,
   getAssignmentResponseOverview,
@@ -10,15 +9,15 @@ import {
   listUserAssigned,
   createAssignment,
   recordSubmittedEvent,
-  updateAssignmentCloseAt,
+  updateAssignmentClosedOn,
   updateAssignmentMaxAttempts,
   updateAssignmentSettings,
-  getAssignmentViewerDataFromCode,
+  getAssignmentData,
 } from "../query/assign";
 import { contentIdSchema } from "../schemas/contentSchema";
 import {
   assignmentParentSchema,
-  assignmentCloseAtSchema,
+  assignmentClosedOnSchema,
   getStudentAssignmentScoresSchema,
   recordSubmittedEventSchema,
   assignmentMaxAttemptsSchema,
@@ -26,7 +25,7 @@ import {
   getAssignmentResponseStudentSchema,
   getStudentSubmittedResponsesSchema,
   createAssignmentSchema,
-  codeSchema,
+  assignmentIdSchema,
 } from "../schemas/assignSchema";
 import {
   queryLoggedIn,
@@ -41,8 +40,8 @@ assignRouter.post(
 );
 
 assignRouter.post(
-  "/updateAssignmentCloseAt",
-  queryLoggedIn(updateAssignmentCloseAt, assignmentCloseAtSchema),
+  "/updateAssignmentClosedOn",
+  queryLoggedIn(updateAssignmentClosedOn, assignmentClosedOnSchema),
 );
 
 assignRouter.post(
@@ -55,26 +54,16 @@ assignRouter.post(
   queryLoggedIn(updateAssignmentSettings, assignmentSettingsSchema),
 );
 
-assignRouter.post(
-  "/closeAssignmentWithCode",
-  queryLoggedIn(closeAssignmentWithCode, contentIdSchema),
-);
-
 assignRouter.get("/getAssigned", queryLoggedInNoArguments(listUserAssigned));
 
 assignRouter.get(
-  "/getAssignmentViewerDataFromCode/:code",
-  queryLoggedIn(getAssignmentViewerDataFromCode, codeSchema),
+  "/getAssignmentData/:assignmentId",
+  queryLoggedIn(getAssignmentData, assignmentIdSchema),
 );
 
 assignRouter.get(
   "/getAssignedScores",
   queryLoggedInNoArguments(getAssignedScores),
-);
-
-assignRouter.get(
-  "/getAllAssignmentScores",
-  queryLoggedIn(getAllAssignmentScores, assignmentParentSchema),
 );
 
 assignRouter.get(

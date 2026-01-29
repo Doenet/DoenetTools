@@ -1,16 +1,9 @@
-import { expect, test, vi } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 
 import { DateTime } from "luxon";
 
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import {
-  createTestUser,
-  doc,
-  fold,
-  pset,
-  qbank,
-  setupTestContent,
-} from "./utils";
+import { createTestUser, doc, fold, pset, setupTestContent } from "./utils";
 import {
   createContent,
   deleteContent,
@@ -22,14 +15,15 @@ import {
   restoreDeletedContent,
   getContentSource,
   getDescendantIds,
+  getDefaultDoenetmlVersion,
 } from "../query/activity";
 import { getActivityViewerData, getContent } from "../query/activity_edit_view";
 import { getMyContent, getMyTrash } from "../query/content_list";
 import { modifyContentSharedWith, setContentIsPublic } from "../query/share";
 import {
-  closeAssignmentWithCode,
+  closeAssignment,
   createAssignment,
-  updateAssignmentCloseAt,
+  updateAssignmentClosedOn,
 } from "../query/assign";
 import { createNewAttempt, saveScoreAndState } from "../query/scores";
 import { moveContent } from "../query/copy_move";
@@ -54,12 +48,18 @@ import {
 const currentDoenetmlVersion = {
   id: 2,
   displayedVersion: "0.7",
-  fullVersion: "0.7.0-rc-5",
+  fullVersion: "latest",
   default: true,
   deprecated: false,
   removed: false,
   deprecationMessage: "",
 };
+
+test("Get default DoenetML version", async () => {
+  const { defaultDoenetmlVersion } = await getDefaultDoenetmlVersion();
+
+  expect(defaultDoenetmlVersion).eqls(currentDoenetmlVersion);
+});
 
 test("New activity starts out private, then delete it", async () => {
   const user = await createTestUser();
@@ -94,8 +94,6 @@ test("New activity starts out private, then delete it", async () => {
     inLibrary: false,
     remixSourceHasChanged: false,
     assignmentStatus: "Unassigned",
-    assignmentClassCode: "",
-    assignmentHasScoreData: false,
   });
   //TODO: include assignment settings when they are part of `content` table
 
@@ -170,7 +168,7 @@ test("Cannot create new content inside assigned content", async () => {
     contentId: sequenceId,
     loggedInUserId: userId,
     destinationParentId: null,
-    closeAt: DateTime.now(),
+    closedOn: DateTime.now(),
   });
 
   await expect(
@@ -368,7 +366,7 @@ test("Cannot delete content from inside assigned content", async () => {
     contentId: sequenceId,
     loggedInUserId: userId,
     destinationParentId: null,
-    closeAt: DateTime.now(),
+    closedOn: DateTime.now(),
   });
 
   const childIds = await getDescendantIds(assignmentId);
@@ -555,11 +553,9 @@ test("updateContent does not update properties when passed undefined values", as
 
 test("Cannot update most content settings when assigned", async () => {
   const { userId } = await createTestUser();
-  const [sequenceId, selectId, docId] = await setupTestContent(userId, {
+  const [sequenceId, docId] = await setupTestContent(userId, {
     "sequence 1": pset({
-      "Select 1": qbank({
-        "Doc 1": doc("Doc source"),
-      }),
+      "Doc 1": doc("Doc source"),
     }),
   });
 
@@ -576,14 +572,6 @@ test("Cannot update most content settings when assigned", async () => {
   });
 
   await updateContent({
-    contentId: selectId,
-    loggedInUserId: userId,
-    name: "Select 1",
-    numToSelect: 2,
-    selectByVariant: true,
-  });
-
-  await updateContent({
     contentId: sequenceId,
     loggedInUserId: userId,
     name: "Sequence 1",
@@ -595,29 +583,16 @@ test("Cannot update most content settings when assigned", async () => {
     contentId: sequenceId,
     loggedInUserId: userId,
     destinationParentId: null,
-    closeAt: DateTime.now(),
+    closedOn: DateTime.now(),
   });
 
   const childIds = await getDescendantIds(assignmentId);
-  expect(childIds.length).eqls(2);
+  expect(childIds.length).eqls(1);
   const child1 = await getContentDescription({
     contentId: childIds[0],
     loggedInUserId: userId,
   });
-  const child2 = await getContentDescription({
-    contentId: childIds[1],
-    loggedInUserId: userId,
-  });
-  let assignedDocId, assignedSelectId: Uint8Array;
-  if (child1.type === "singleDoc") {
-    assignedDocId = child1.contentId;
-    assignedSelectId = child2.contentId;
-  } else {
-    assignedDocId = child2.contentId;
-    assignedSelectId = child1.contentId;
-  }
-
-  // const assignedDocId = childIds.find(c => c)
+  const assignedDocId = child1.contentId;
 
   // can change name
   await updateContent({
@@ -653,21 +628,20 @@ test("Cannot update most content settings when assigned", async () => {
     }),
   ).rejects.toThrow("Cannot change assigned content");
 
-  // cannot change number to select
+  // cannot change number to repeat in problem set
   await expect(
     updateContent({
-      contentId: assignedSelectId,
+      contentId: assignedDocId,
       loggedInUserId: userId,
-      numToSelect: 3,
+      repeatInProblemSet: 3,
     }),
   ).rejects.toThrow("Cannot change assigned content");
 
   // cannot change select by variant
   await expect(
     updateContent({
-      contentId: assignedSelectId,
+      contentId: assignedDocId,
       loggedInUserId: userId,
-      name: "Select 1",
       numToSelect: 2,
       selectByVariant: false,
     }),
@@ -929,10 +903,10 @@ test.skip("activity editor data and my folder contents before and after assigned
   });
 
   // Opening assignment also assigns the activity
-  let closeAt = DateTime.now().plus({ days: 1 });
+  let closedOn = DateTime.now().plus({ days: 1 });
   const { assignmentId, classCode } = await createAssignment({
     contentId: contentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
     destinationParentId: null,
   });
@@ -956,8 +930,6 @@ test.skip("activity editor data and my folder contents before and after assigned
     mode: "formative",
   });
   expect(header2.assignmentStatus).eqls("Open");
-  expect(header2.assignmentHasScoreData).eqls(false);
-  expect(header2.assignmentClassCode).eqls(classCode);
 
   // get my folder content returns same data, with differences in some optional fields
   folderData = await getMyContent({
@@ -987,7 +959,7 @@ test.skip("activity editor data and my folder contents before and after assigned
     assignmentInfo: {
       assignmentStatus: "Open",
       classCode,
-      codeValidUntil: closeAt.toJSDate(),
+      assignmentClosedOn: closedOn.toJSDate(),
       hasScoreData: false,
       maxAttempts: 1,
       mode: "formative",
@@ -995,7 +967,7 @@ test.skip("activity editor data and my folder contents before and after assigned
     },
   });
 
-  await closeAssignmentWithCode({
+  await closeAssignment({
     contentId: assignmentId,
     loggedInUserId: ownerId,
   });
@@ -1005,8 +977,6 @@ test.skip("activity editor data and my folder contents before and after assigned
     loggedInUserId: ownerId,
   });
   expect(header3.assignmentStatus).eqls("Closed");
-  expect(header3.assignmentHasScoreData).eqls(false);
-  expect(header3.assignmentClassCode).eqls(classCode);
 
   // get my folder content returns same data
   folderData = await getMyContent({
@@ -1036,7 +1006,7 @@ test.skip("activity editor data and my folder contents before and after assigned
     assignmentInfo: {
       assignmentStatus: "Closed",
       classCode,
-      codeValidUntil: null,
+      assignmentClosedOn: null,
       hasScoreData: false,
       maxAttempts: 1,
       mode: "formative",
@@ -1045,10 +1015,10 @@ test.skip("activity editor data and my folder contents before and after assigned
   });
 
   // re-opening, re-assigns with same code
-  closeAt = DateTime.now().plus({ days: 1 });
-  await updateAssignmentCloseAt({
+  closedOn = DateTime.now().plus({ days: 1 });
+  await updateAssignmentClosedOn({
     contentId: assignmentId,
-    closeAt: closeAt,
+    closedOn: closedOn,
     loggedInUserId: ownerId,
   });
 
@@ -1057,8 +1027,6 @@ test.skip("activity editor data and my folder contents before and after assigned
     loggedInUserId: ownerId,
   });
   expect(header4.assignmentStatus).eqls("Open");
-  expect(header4.assignmentHasScoreData).eqls(false);
-  expect(header4.assignmentClassCode).eqls(classCode);
 
   // get my folder content returns same data, with differences in some optional fields
   folderData = await getMyContent({
@@ -1088,7 +1056,7 @@ test.skip("activity editor data and my folder contents before and after assigned
     assignmentInfo: {
       assignmentStatus: "Open",
       classCode,
-      codeValidUntil: closeAt.toJSDate(),
+      assignmentClosedOn: closedOn.toJSDate(),
       hasScoreData: false,
       maxAttempts: 1,
       mode: "formative",
@@ -1100,7 +1068,6 @@ test.skip("activity editor data and my folder contents before and after assigned
   await createNewAttempt({
     contentId: assignmentId,
     loggedInUserId: ownerId,
-    code: classCode,
     variant: 1,
     state: null,
   });
@@ -1112,7 +1079,6 @@ test.skip("activity editor data and my folder contents before and after assigned
     attemptNumber: 1,
     score: 0.5,
     state: "document state 1",
-    code: classCode,
     variant: 1,
   });
 
@@ -1121,8 +1087,6 @@ test.skip("activity editor data and my folder contents before and after assigned
     loggedInUserId: ownerId,
   });
   expect(header5.assignmentStatus).eqls("Open");
-  expect(header5.assignmentHasScoreData).eqls(true);
-  expect(header5.assignmentClassCode).eqls(classCode);
 
   // get my folder content returns same data, with differences in some optional fields
   folderData = await getMyContent({
@@ -1152,7 +1116,7 @@ test.skip("activity editor data and my folder contents before and after assigned
     assignmentInfo: {
       assignmentStatus: "Open",
       classCode,
-      codeValidUntil: closeAt.toJSDate(),
+      assignmentClosedOn: closedOn.toJSDate(),
       hasScoreData: true,
       maxAttempts: 1,
       mode: "formative",
@@ -1161,7 +1125,7 @@ test.skip("activity editor data and my folder contents before and after assigned
   });
 
   // now closing does not unassign
-  await closeAssignmentWithCode({
+  await closeAssignment({
     contentId: assignmentId,
     loggedInUserId: ownerId,
   });
@@ -1170,8 +1134,6 @@ test.skip("activity editor data and my folder contents before and after assigned
     loggedInUserId: ownerId,
   });
   expect(header6.assignmentStatus).eqls("Closed");
-  expect(header6.assignmentHasScoreData).eqls(true);
-  expect(header6.assignmentClassCode).eqls(classCode);
 
   // get my folder content returns same data, with differences in some optional fields
   folderData = await getMyContent({
@@ -1201,7 +1163,7 @@ test.skip("activity editor data and my folder contents before and after assigned
     assignmentInfo: {
       assignmentStatus: "Closed",
       classCode,
-      codeValidUntil: null,
+      assignmentClosedOn: null,
       hasScoreData: true,
       maxAttempts: 1,
       mode: "formative",
@@ -2090,4 +2052,42 @@ test("getContent does not provide email", async () => {
     includeOwnerDetails: true,
   });
   expect(result.owner).not.toHaveProperty("email");
+});
+
+test("Create new activity with DoenetML", async () => {
+  const user = await createTestUser();
+  const userId = user.userId;
+  const { contentId: contentId } = await createContent({
+    loggedInUserId: userId,
+    contentType: "singleDoc",
+    parentId: null,
+    doenetml: "My DoenetML source",
+    name: "The new document",
+  });
+
+  const data = await getMyContent({
+    ownerId: userId,
+    loggedInUserId: userId,
+    parentId: null,
+  });
+
+  if (data.notMe) {
+    throw Error("shouldn't happen");
+  }
+  expect(data.content).toBeDefined();
+  expect(data.content.length).toBe(1);
+
+  const newDoc = data.content[0];
+
+  if (newDoc.type !== "singleDoc") {
+    throw Error("shouldn't happen");
+  }
+
+  expect(newDoc.contentId).toStrictEqual(contentId);
+  expect(newDoc.name).toBe("The new document");
+  expect(newDoc.doenetML).toBe("My DoenetML source");
+});
+
+describe("createContent", () => {
+  test.todo("make course and then create content inside it");
 });

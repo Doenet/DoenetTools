@@ -64,7 +64,7 @@ export async function getActivityIdFromSourceId(sourceId: Uint8Array) {
 export async function getAssignmentNonRootIds(rootAssignmentId: Uint8Array) {
   const ids = await prisma.content.findMany({
     where: {
-      nonRootAssignmentId: rootAssignmentId,
+      parentId: rootAssignmentId,
     },
     select: {
       id: true,

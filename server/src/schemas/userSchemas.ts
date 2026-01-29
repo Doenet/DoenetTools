@@ -13,3 +13,8 @@ export const setIsAuthorSchema = z.object({
 export const userIdSchema = z.object({
   userId: uuidSchema,
 });
+
+export const createHandleSchema = z.object({
+  folderId: uuidSchema,
+  numAccounts: z.number().min(1).max(1000),
+});

@@ -3,6 +3,7 @@ import { getAllCategories } from "../query/classification";
 import {
   getAllDoenetmlVersions,
   getContentDescription,
+  getDefaultDoenetmlVersion,
 } from "../query/activity";
 import {
   queryLoggedIn,
@@ -24,6 +25,11 @@ infoRouter.get(
 infoRouter.get(
   "/getAllDoenetmlVersions",
   queryOptionalLoggedInNoArguments(getAllDoenetmlVersions),
+);
+
+infoRouter.get(
+  "/getDefaultDoenetmlVersion",
+  queryOptionalLoggedInNoArguments(getDefaultDoenetmlVersion),
 );
 
 infoRouter.get(

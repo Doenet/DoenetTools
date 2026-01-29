@@ -19,11 +19,12 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import {
+  Form,
+  Link as ReactRouterLink,
   redirect,
   useLoaderData,
   useNavigate,
   useFetcher,
-  Form,
   useOutletContext,
 } from "react-router";
 
@@ -131,18 +132,9 @@ export function Activities() {
 
   const [haveContentSpinner, setHaveContentSpinner] = useState(false);
 
-  const [focusSearch, setFocusSearch] = useState(false);
   const [searchString, setSearchString] = useState(query ?? "");
   const searchRef = useRef<HTMLInputElement>(null);
-  const searchBlurTimeout = useRef<NodeJS.Timeout | undefined>(undefined);
   const haveQuery = Boolean(query);
-  const searchOpen = focusSearch || haveQuery;
-
-  useEffect(() => {
-    if (focusSearch) {
-      searchRef.current?.focus();
-    }
-  }, [focusSearch]);
 
   useEffect(() => {
     setHaveContentSpinner(false);
@@ -546,11 +538,7 @@ export function Activities() {
               onInput={(e) => {
                 setSearchString((e.target as HTMLInputElement).value);
               }}
-              onBlur={() => {
-                searchBlurTimeout.current = setTimeout(() => {
-                  setFocusSearch(false);
-                }, 200);
-              }}
+              data-test="Search Input"
             />
             <Tooltip
               label={parent ? `Search in folder` : `Search my activities`}
@@ -564,39 +552,34 @@ export function Activities() {
                   parent ? `Search in folder` : `Search my activities`
                 }
                 type="submit"
-                onClick={(e) => {
-                  if (focusSearch) {
-                    clearTimeout(searchBlurTimeout.current);
-                    searchRef.current?.focus();
-                  } else {
-                    setFocusSearch(true);
-                  }
-                  if (!searchOpen) {
-                    e.preventDefault();
-                  }
-                }}
+                data-test="Search Button"
               />
             </Tooltip>
           </HStack>
         </Form>
 
-        <HStack gap="5px">
-          {parent && (
-            <Button size="sm" colorScheme="blue" onClick={shareFolderOnOpen}>
-              Share
-            </Button>
-          )}
-          <Button
-            colorScheme="blue"
-            size="sm"
-            onClick={() =>
-              navigate(`/allAssignmentScores${parentId ? "/" + parentId : ""}`)
-            }
-          >
-            Scores
-          </Button>
-
+        <HStack gap="7px">
           {createNewButton}
+          {parent && (
+            <>
+              <Button
+                size="sm"
+                colorScheme="blue"
+                onClick={shareFolderOnOpen}
+                data-test="Share Folder Button"
+              >
+                Share
+              </Button>
+              <Button
+                as={ReactRouterLink}
+                to={`/students/${parentId}`}
+                colorScheme="blue"
+                size="sm"
+              >
+                Students
+              </Button>
+            </>
+          )}
         </HStack>
       </HStack>
     </Flex>
@@ -771,6 +754,7 @@ export function Activities() {
       {heading}
       {searchResultsHeading}
       {selectedItemsActions}
+
       {mainPanel}
     </Box>
   );

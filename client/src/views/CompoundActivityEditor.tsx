@@ -70,8 +70,14 @@ export function CompoundActivityEditor({
   const { user, addTo, setAddTo, headerHeight } =
     useOutletContext<EditorContext>();
 
+  // `selectedCards` is a sparse array where the index is the index in the CardList.
+  // When a card is selected, any entries corresponding to unselected cards above it
+  // will be empty.
   const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
+
+  // `selectedCardsFiltered` removes any undefined entries from `selectedCards`
   const selectedCardsFiltered = selectedCards.filter((c) => c);
+
   const numSelected = selectedCardsFiltered.length;
 
   const [disableAsSelected, setDisableAsSelected] = useState<string[]>([]);
@@ -87,6 +93,7 @@ export function CompoundActivityEditor({
 
   useEffect(() => {
     setHaveContentSpinner(false);
+    setSelectedCards([]);
   }, [activity]);
 
   const [moveCopyData, setMoveCopyData] = useState<{

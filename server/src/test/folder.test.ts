@@ -375,9 +375,9 @@ test(
       lastNames: "Zaborowski",
     });
     const {
-      isEditor: _isEditor1,
       isAnonymous: _isAnonymous1,
       isAuthor: _isAuthor1,
+      isEditor: _isEditor1,
       ...userFields1
     } = user1;
     let user2 = await createTestUser();
@@ -388,13 +388,17 @@ test(
       lastNames: "Abbas",
     });
     const {
-      isEditor: _isEditor2,
       isAnonymous: _isAnonymous2,
       isAuthor: _isAuthor2,
+      isEditor: _isEditor2,
       ...userFields2
     } = user2;
     const user3 = await createTestUser();
     const user3Id = user3.userId;
+
+    if (user1.email === null || user2.email === null) {
+      throw Error("Email shouldn't be null");
+    }
 
     const { contentId: sharedActivity1Id } = await createContent({
       loggedInUserId: ownerId,

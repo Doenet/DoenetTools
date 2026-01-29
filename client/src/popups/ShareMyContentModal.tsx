@@ -80,7 +80,7 @@ export function ShareMyContentModal({
             Share {contentTypeToName[contentType].toLocaleLowerCase()}
           </Heading>
         </ModalHeader>
-        <ModalCloseButton />
+        <ModalCloseButton data-test="Share Close Button" />
         <ModalBody m="1rem">
           <VStack spacing="3rem" align="flex-start">
             <Box>
@@ -133,26 +133,24 @@ function ShareWithPeople({
   const [emailInput, setEmailInput] = useState("");
   const [inputHasChanged, setInputHasChanged] = useState(false);
 
-  // TODO: This is hack to display a more understandable error message
-  // when the user inputs a value that is not in an email format.
-  // The better way to do this is to ensure the _server_ is always sending
-  // understandable error messages (along with more details only meant for developers)
-  let addEmailError: string | null;
-  if (addEmailFetcher.data && typeof addEmailFetcher.data === "string") {
-    if (addEmailFetcher.data.includes("Invalid email address")) {
-      addEmailError = "Invalid email address";
-    } else {
-      addEmailError = addEmailFetcher.data;
-    }
-  } else {
-    addEmailError = null;
-  }
+  const [addEmailError, setAddEmailError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!addEmailError) {
+    // TODO: This is hack to display a more understandable error message
+    // when the user inputs a value that is not in an email format.
+    // The better way to do this is to ensure the _server_ is always sending
+    // understandable error messages (along with more details only meant for developers)
+    if (addEmailFetcher.data && typeof addEmailFetcher.data === "string") {
+      if (addEmailFetcher.data.includes("Invalid email address")) {
+        setAddEmailError("Invalid email address");
+      } else {
+        setAddEmailError(addEmailFetcher.data);
+      }
+    } else {
+      setAddEmailError(null);
       setEmailInput("");
     }
-  }, [addEmailError]);
+  }, [addEmailFetcher.data]);
 
   function addEmail() {
     addEmailFetcher.submit(
@@ -257,13 +255,13 @@ function SharePublicly({
   );
 
   if (parentIsPublic) {
-    return <p>Parent is public.</p>;
+    return <p data-test="Public Status">Parent is public.</p>;
   } else if (isPublic) {
     return (
       <VStack justify="flex-start" align="flex-start" spacing="1rem" pt="1rem">
         {browseWarning}
 
-        <Text>Content is public.</Text>
+        <Text data-test="Public Status">Content is public.</Text>
 
         <Button
           size="sm"
@@ -304,7 +302,7 @@ function SharePublicly({
       <VStack justify="flex-start" align="flex-start" spacing="1rem" pt="1rem">
         {browseWarning}
 
-        <Text>
+        <Text data-test="Public Status">
           Content is not public. Allow others to find and use your content.
         </Text>
         <Button
@@ -320,6 +318,7 @@ function SharePublicly({
               { method: "post", encType: "application/json" },
             );
           }}
+          data-test="Share Publicly Button"
         >
           Share publicly
         </Button>

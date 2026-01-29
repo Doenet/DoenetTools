@@ -3,11 +3,16 @@
   "version": "1.0.1",
   "type": "module",
   "private": true,
+  "exports": {
+    "./src/types": "./src/types.ts"
+  },
   "scripts": {
     "build": "wireit",
     "dev": "cross-env NODE_ENV=production vite",
     "lint": "eslint --fix",
-    "lint:check": "eslint"
+    "lint:check": "eslint",
+    "test": "cypress open",
+    "test:all": "cypress run --component -b 'chrome' --config video=false --headless"
   },
   "wireit": {
     "build": {
@@ -15,9 +20,11 @@
       "files": [
         "src/**/*.ts",
         "src/**/*.js",
+        "src/**/*.tsx",
+        "src/**/*.jsx",
+        "src/**/*.css",
         "vite.config.ts",
-        "tsconfig.json",
-        ".env.production"
+        "tsconfig.json"
       ],
       "output": [
         "dist/**/*.js",
@@ -31,13 +38,13 @@
   "dependencies": {
     "@chakra-ui/icons": "^2.2.4",
     "@chakra-ui/react": "^2.10.9",
-    "@doenet/assignment-viewer": "^0.1.0-alpha-12",
-    "@doenet/doenetml-iframe": "^0.7.0-rc-5",
-    "@doenet/v06-to-v07": "^0.7.0-rc-5",
     "@doenet-tools/shared": "*",
+    "@doenet/assignment-viewer": "^0.1.0-alpha-14",
+    "@doenet/doenetml-iframe": "^0.7.3",
+    "@doenet/v06-to-v07": "^0.7.3",
     "@fontsource/jost": "^5.2.6",
     "axios": "^1.11.0",
-    "better-react-mathjax": "^2.1.0",
+    "better-react-mathjax": "^2.4.0-beta-1",
     "browser-image-resizer": "^2.4.1",
     "cssesc": "^3.0.0",
     "export-to-csv": "^1.4.0",
@@ -54,7 +61,6 @@
     "react-router": "^7.7.1",
     "react-select": "^5.10.2",
     "recharts": "^2.15.4",
-    "styled-components": "6.1.19",
     "swiper": "^9.4.1"
   },
   "devDependencies": {

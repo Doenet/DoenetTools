@@ -10,6 +10,7 @@ import { createRoot } from "react-dom/client";
 import "@doenet/doenetml-iframe/style.css";
 
 import { MathJaxContext } from "better-react-mathjax";
+import { theme } from "./theme";
 import { loader as exploreLoader, Explore } from "./paths/Explore";
 
 import { loader as curateLoader, Curate } from "./paths/Curate";
@@ -44,17 +45,14 @@ import {
   action as assignmentViewerAction,
   AssignmentViewer,
 } from "./paths/AssignmentViewer";
-import {
-  loader as allAssignmentScoresLoader,
-  AllAssignmentScores,
-} from "./paths/AllAssignmentScores";
+import { loader as studentsLoader, Students } from "./paths/Students";
 import {
   loader as studentAssignmentScoresLoader,
   StudentAssignmentScores,
   assignedDataloader,
 } from "./paths/StudentAssignmentScores";
 import { loader as trashLoader, Trash } from "./paths/Trash";
-import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+import { ChakraProvider } from "@chakra-ui/react";
 import { FolderContext } from "./paths/FolderContext";
 
 import ErrorPage from "./paths/ErrorPage";
@@ -123,54 +121,7 @@ import {
   loader as sharedWithMeLoader,
 } from "./paths/SharedWithMe";
 import { editorUrl } from "./utils/url";
-
-const theme = extendTheme({
-  fonts: {
-    body: "Jost",
-  },
-  textStyles: {
-    primary: {
-      fontFamily: "Jost",
-    },
-  },
-  config: {
-    initialColorMode: "light",
-    useSystemColorMode: false,
-  },
-  colors: {
-    doenet_blue: {
-      100: "#a6f19f", //Ghost/Outline Click
-      200: "#c1292e", //Normal Button - Dark Mode - Background
-      300: "#f5ed85", //Normal Button - Dark Mode - Hover
-      400: "#949494", //Normal Button - Dark Mode - Click
-      500: "#1a5a99", //Normal Button - Light Mode - Background
-      600: "#757c0d", //Normal Button - Light Mode - Hover //Ghost/Outline BG
-      700: "#d1e6f9", //Normal Button - Light Mode - Click
-      800: "#6d4445",
-      900: "#4a03d9",
-    },
-    doenet: {
-      mainBlue: "#1a5a99",
-      lightBlue: "#b8d2ea",
-      solidLightBlue: "#8fb8de",
-      mainGray: "#e3e3e3",
-      mediumGray: "#949494",
-      lightGray: "#e7e7e7",
-      donutBody: "#eea177",
-      donutTopping: "#6d4445",
-      mainRed: "#c1292e",
-      lightRed: "#eab8b8",
-      mainGreen: "#459152",
-      canvas: "#ffffff",
-      canvastext: "#000000",
-      lightGreen: "#a6f19f",
-      lightYellow: "#f5ed85",
-      whiteBlankLink: "#6d4445",
-      mainYellow: "#94610a",
-      mainPurple: "#4a03d9",
-    },
-  },
-});
+import { ScratchPad, loader as scratchPadLoader } from "./paths/ScratchPad";
 
 const router = createBrowserRouter([
   {
@@ -179,11 +130,7 @@ const router = createBrowserRouter([
     element: (
       <>
         <ChakraProvider theme={theme}>
-          <MathJaxContext
-            version={3}
-            config={mathjaxConfig}
-            // onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-          >
+          <MathJaxContext version={4} config={mathjaxConfig}>
             <SiteHeader />
           </MathJaxContext>
         </ChakraProvider>
@@ -249,9 +196,10 @@ const router = createBrowserRouter([
             errorElement: <ErrorPage />,
           },
           {
-            path: "allAssignmentScores/:parentId?",
-            loader: allAssignmentScoresLoader,
-            element: <AllAssignmentScores />,
+            path: "students/:parentId",
+            loader: studentsLoader,
+            action: genericAction,
+            element: <Students />,
             errorElement: <ErrorPage />,
           },
         ],
@@ -437,6 +385,13 @@ const router = createBrowserRouter([
         path: "loadShareStatus/:contentId",
         loader: loadShareStatus,
       },
+      {
+        path: "scratchPad",
+        loader: scratchPadLoader,
+        action: genericAction,
+        errorElement: <ErrorPage />,
+        element: <ScratchPad />,
+      },
     ],
   },
 ]);
@@ -481,19 +436,34 @@ async function genericAction({ request }: ActionFunctionArgs) {
       return results;
     }
   } catch (e) {
-    /**
-     * Special case: sharing content with specific people by email address
-     * Normally, when the server returns an error, we want to go the error page.
-     * However, in this case, it might mean that the owner entered an invalid email address.
-     * If that's the case, catch it and let the route deal with it (handled in component EditorHeader).
-     */
     if (path === "share/shareContent" && e instanceof AxiosError) {
+      /**
+       * Special case: sharing content with specific people by email address
+       * Normally, when the server returns an error, we want to go the error page.
+       * However, in this case, it might mean that the owner entered an invalid email address.
+       * If that's the case, catch it and let the route deal with it (handled in component EditorHeader).
+       */
       const error = e.response!.data!.error;
       const details = e.response!.data!.details;
       if (error === "Invalid data" && details[0]?.message === "Invalid email") {
         return "Invalid email";
       } else {
         return details;
+      }
+    } else if (path === "copyMove/copyContent" && e instanceof AxiosError) {
+      /**
+       * Special case: copying content into a descendant of itself.
+       * This could occur when copying a selected folder into the list of recent destinations.
+       * We don't want to go to the error page in this case but show a message in the copy modal instead.
+       */
+      const error = e.response!.data!.error;
+      const details = e.response!.data!.details;
+
+      if (
+        error === "Invalid request" &&
+        details === "Cannot copy content into a descendant of itself"
+      ) {
+        return { success: false, message: details };
       }
     }
 

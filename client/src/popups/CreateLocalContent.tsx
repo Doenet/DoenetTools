@@ -53,13 +53,6 @@ export function CreateLocalContent({
   }, [contentType, isOpen]);
 
   useEffect(() => {
-    if (isOpen) {
-      inputRef.current?.focus();
-      inputRef.current?.select();
-    }
-  }, [isOpen]);
-
-  useEffect(() => {
     if (fetcher.data?.contentCreated) {
       document.body.style.cursor = "default";
       onClose();
@@ -102,6 +95,7 @@ export function CreateLocalContent({
       isOpen={isOpen}
       onClose={onClose}
       finalFocusRef={finalFocusRef}
+      initialFocusRef={inputRef}
       size="md"
     >
       <ModalOverlay />
@@ -122,6 +116,7 @@ export function CreateLocalContent({
                   createContent();
                 }
               }}
+              onFocus={(e) => e.target.select()}
               isDisabled={errMsg !== ""}
             />
             {submitted && errMsg === "" ? <Spinner /> : null}

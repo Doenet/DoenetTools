@@ -10,12 +10,16 @@ declare global {
         email,
         firstNames,
         lastNames,
-        isAdmin,
+        isEditor,
+        isAuthor,
+        isAnonymous,
       }?: {
         email?: string;
         firstNames?: string;
         lastNames?: string;
-        isAdmin?: boolean;
+        isEditor?: boolean;
+        isAuthor?: boolean;
+        isAnonymous?: boolean;
       }): Chainable<null>;
 
       /**
@@ -26,6 +30,7 @@ declare global {
         contentType,
         doenetML,
         classifications,
+        categories,
         makePublic,
         publishInLibrary,
         parentId,
@@ -39,15 +44,44 @@ declare global {
           subCategory: string;
           code: string;
         }[];
+        categories?: Record<string, boolean>;
         makePublic?: boolean;
+        /**
+         * Publish the content in the library.
+         * Automatically make content public even if `makePublic` is false.
+         * Requires that the logged in user is an editor.
+         */
         publishInLibrary?: boolean;
         parentId?: string;
       }): Chainable<string>;
 
       /**
+       * Custom command to create an assignment from an activity
+       */
+      createAssignment({
+        contentId,
+        closedOn,
+        parentId,
+        maxAttempts,
+      }: {
+        contentId: string;
+        closedOn: string;
+        parentId?: string;
+        maxAttempts?: number;
+      }): Chainable<{ assignmentId: string; classCode: number }>;
+
+      /**
        * Custom command to get info on logged in user
        */
       getUserInfo(): Chainable<UserInfo>;
+
+      /**
+       * Custom command to get the body of an iframe and wait for it to load
+       */
+      getIframeBody(
+        iframeSelector: string,
+        waitSelector?: string | null,
+      ): Chainable<HTMLBodyElement>;
     }
   }
 }

@@ -8,14 +8,32 @@ import {
   stringAsRangedNumberIncludingZero,
 } from "./rangedNumber";
 
-export const assignmentCloseAtSchema = z.object({
+/**
+ * Schema for validating assignment closed-on data.
+ * Validates that the assignment has a unique content identifier and a closed-on timestamp.
+ *
+ * @property {string} contentId - A UUID that uniquely identifies the assignment content
+ * @property {DateTime} closedOn - An ISO 8601 datetime string with timezone information
+ *                                 (e.g., "2024-01-15T10:30:00+05:00" or "2024-01-15T10:30:00Z" for UTC).
+ *                                 The `{offset: true}` requirement ensures the datetime includes a timezone
+ *                                 indicator (a numeric offset or "Z" for UTC), rejecting values with no timezone.
+ *                                 The string is transformed into a Luxon DateTime object for server-side processing.
+ *
+ * @example
+ * // Valid input
+ * { contentId: "550e8400-e29b-41d4-a716-446655440000", closedOn: "2024-01-15T10:30:00+05:00" }
+ *
+ * // Invalid - no timezone indicator
+ * { contentId: "550e8400-e29b-41d4-a716-446655440000", closedOn: "2024-01-15T10:30:00" }
+ */
+export const assignmentClosedOnSchema = z.object({
   contentId: uuidSchema,
-  closeAt: z.iso
+  closedOn: z.iso
     .datetime({ offset: true })
     .transform((val) => DateTime.fromISO(val)),
 });
 
-export const createAssignmentSchema = assignmentCloseAtSchema.extend({
+export const createAssignmentSchema = assignmentClosedOnSchema.extend({
   destinationParentId: uuidOrNullSchema,
 });
 
@@ -31,7 +49,7 @@ export const assignmentSettingsSchema = z.object({
 });
 
 export const assignmentParentSchema = z.object({
-  parentId: optionalUuidSchema,
+  parentId: uuidSchema,
 });
 
 export const getStudentAssignmentScoresSchema = z.object({
@@ -54,7 +72,7 @@ export const recordSubmittedEventSchema = z.object({
   itemCreditAchieved: z.number(),
 });
 
-export const codeSchema = z.object({ code: z.string() });
+export const assignmentIdSchema = z.object({ assignmentId: uuidSchema });
 
 export const getAssignmentResponseStudentSchema = z.object({
   contentId: uuidSchema,

@@ -13,7 +13,6 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  Avatar,
   VStack,
   Show,
   useBreakpointValue,
@@ -28,26 +27,20 @@ import { HiOutlineMail } from "react-icons/hi";
 import { BsDiscord } from "react-icons/bs";
 import { Outlet, useFetcher, useLoaderData, useLocation } from "react-router";
 import { NavLink } from "react-router";
+import { AccessibleAvatar } from "../widgets/AccessibleAvatar";
 import RouterLogo from "../RouterLogo";
 import { ExternalLinkIcon, HamburgerIcon } from "@chakra-ui/icons";
 import axios from "axios";
 import { createNameNoTag } from "../utils/names";
-import { ContentDescription, DoenetmlVersion, License } from "../types";
-
-export type User =
-  | {
-      email: string;
-      userId: string;
-      firstNames: string | null;
-      lastNames: string;
-      isAnonymous: boolean;
-      isEditor: boolean;
-      isAuthor: boolean;
-    }
-  | undefined;
+import {
+  ContentDescription,
+  DoenetmlVersion,
+  License,
+  UserInfoWithEmail,
+} from "../types";
 
 export type SiteContext = {
-  user?: User;
+  user?: UserInfoWithEmail;
   exploreTab: number | null;
   setExploreTab: (_: number | null) => void;
   addTo: ContentDescription | null;
@@ -162,7 +155,7 @@ function NavLinkDropdownTab({
 
 export function SiteHeader() {
   const { user, allLicenses, allDoenetmlVersions } = useLoaderData() as {
-    user?: User;
+    user?: UserInfoWithEmail;
     allLicenses: License[];
     allDoenetmlVersions: DoenetmlVersion[];
   };
@@ -236,9 +229,6 @@ export function SiteHeader() {
             <Show above="md">
               <GridItem area="menus">
                 <HStack spacing={8}>
-                  <NavLinkTab to="/" dataTest="Home">
-                    Home
-                  </NavLinkTab>
                   <NavLinkTab to="explore" dataTest="Explore">
                     Explore
                   </NavLinkTab>
@@ -332,14 +322,14 @@ export function SiteHeader() {
                   <Center h="40px" mr="10px">
                     <Menu>
                       <MenuButton>
-                        <Avatar
+                        <AccessibleAvatar
                           size="sm"
                           name={`${user.isAnonymous ? "?" : createNameNoTag(user)}`}
                         />
                       </MenuButton>
                       <MenuList>
                         <VStack mb="20px">
-                          <Avatar
+                          <AccessibleAvatar
                             size="xl"
                             name={`${user.isAnonymous ? "?" : createNameNoTag(user)}`}
                           />
@@ -350,7 +340,7 @@ export function SiteHeader() {
                           </Text>
                           <Text>
                             {user.isAnonymous
-                              ? `Pseudonym: ${createNameNoTag(user)}`
+                              ? `Nickname: ${createNameNoTag(user)}`
                               : user.email}
                           </Text>
                           {user.isAnonymous ? (
@@ -392,14 +382,22 @@ export function SiteHeader() {
                             </Box>
                           ) : null}
                         </VStack>
+                        {!user.isAnonymous && (
+                          <MenuItem
+                            as={ChakraLink}
+                            // When name change complete, redirect back to current page
+                            href={`/changeName?redirect=${currentPath}`}
+                          >
+                            Update name
+                          </MenuItem>
+                        )}
                         <MenuItem
-                          as={ChakraLink}
-                          // When name change complete, redirect back to current page
-                          href={`/changeName?redirect=${currentPath}`}
+                          as="a"
+                          href="/api/login/logout"
+                          onClick={() => {
+                            localStorage.removeItem("scratchPad");
+                          }}
                         >
-                          Update {user.isAnonymous ? "pseudonym" : "name"}
-                        </MenuItem>
-                        <MenuItem as="a" href="/api/login/logout">
                           {user.isAnonymous
                             ? "Clear anonymous data"
                             : "Log Out"}

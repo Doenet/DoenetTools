@@ -19,7 +19,7 @@ import { returnClassificationsAccordionPanel } from "../../utils/classification"
 import { optimistic } from "../../utils/optimistic_ui";
 
 /**
- * This widget allows an owner to view and edit their classifcations.
+ * This widget allows an owner to view and edit their classifications.
  * Uses `AddClassificationModal`.
  */
 export function EditClassifications({
@@ -104,6 +104,7 @@ export function EditClassifications({
         onClick={addOnOpen}
         ml="10px"
         mt="15px"
+        data-test="Add Classification Button"
       >
         Add a classification
       </Button>

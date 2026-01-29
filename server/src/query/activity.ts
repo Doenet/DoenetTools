@@ -17,6 +17,7 @@ import { getContent } from "./activity_edit_view";
 import { compileActivityFromContent } from "../utils/contentStructure";
 import { InvalidRequestError } from "../utils/error";
 import { ContentDescription } from "../types";
+import { isEqualUUID } from "../utils/uuid";
 
 /**
  * Creates a new content of type `contentType` in `parentId` of `ownerId`,
@@ -30,12 +31,14 @@ export async function createContent({
   parentId,
   inLibrary = false,
   name,
+  doenetml = "",
 }: {
   loggedInUserId: Uint8Array;
   contentType: ContentType;
   parentId: Uint8Array | null;
   inLibrary?: boolean;
   name?: string;
+  doenetml?: string;
 }) {
   // TODO: Eventually, when we are sure we do not want question banks,
   // we will remove them entirely from the codebase. For now, just
@@ -54,15 +57,12 @@ export async function createContent({
 
   const sortIndex = await getNextSortIndexForParent(ownerId, parentId);
 
-  const defaultDoenetmlVersion = await prisma.doenetmlVersions.findFirstOrThrow(
-    {
-      where: { default: true },
-    },
-  );
+  const { defaultDoenetmlVersion } = await getDefaultDoenetmlVersion();
 
   let isPublic = false;
   let licenseCode = undefined;
   let sharedWith: Uint8Array[] = [];
+  let courseRootId: Uint8Array | null = null;
 
   // If parent isn't `null`, check if it is shared and get its license,
   // and make sure it isn't assigned
@@ -78,16 +78,19 @@ export async function createContent({
         isPublic: true,
         licenseCode: true,
         sharedWith: { select: { userId: true } },
-        rootAssignment: { select: { rootContentId: true } },
-        nonRootAssignment: { select: { rootContentId: true } },
+        isAssignmentRoot: true,
+        courseRootId: true,
+        parent: { select: { isAssignmentRoot: true } },
       },
     });
 
-    if (parent.rootAssignment || parent.nonRootAssignment) {
+    if (parent.isAssignmentRoot || parent.parent?.isAssignmentRoot) {
       throw new InvalidRequestError(
         "Cannot add content to an assigned activity",
       );
     }
+
+    courseRootId = parent.courseRootId;
 
     if (parent.isPublic) {
       isPublic = true;
@@ -134,7 +137,8 @@ export async function createContent({
       isPublic,
       licenseCode,
       sortIndex,
-      source: contentType === "singleDoc" ? "" : null,
+      courseRootId,
+      source: contentType === "singleDoc" ? doenetml : null,
       doenetmlVersionId:
         contentType === "singleDoc" ? defaultDoenetmlVersion.id : null,
       sharedWith: {
@@ -174,14 +178,13 @@ export async function deleteContent({
       id: true,
       parent: {
         select: {
-          rootAssignment: { select: { rootContentId: true } },
-          nonRootAssignment: { select: { rootContentId: true } },
+          isAssignmentRoot: true,
         },
       },
     },
   });
 
-  if (content.parent?.rootAssignment || content.parent?.nonRootAssignment) {
+  if (content.parent?.isAssignmentRoot) {
     throw new InvalidRequestError(
       "Cannot delete content from an assigned activity",
     );
@@ -203,6 +206,7 @@ export async function deleteContent({
   await prisma.$transaction([deleteDescendants, deleteRoot]);
 }
 
+// TODO: Test this function
 /**
  * Return the content ids of the descendants on `contentId`. (No permission checks are performed.)
  *
@@ -255,6 +259,38 @@ export async function getDescendantIds(
   }
 }
 
+// TODO: Test this function
+/**
+ * Return the content ids of the ancestors of `contentId`. (No permission checks are performed.)
+ *
+ * Returns a promise resulting to an array of content ids,
+ * or an empty array if `contentId` doesn't exist or isn't owned by `loggedInUserId`.
+ *
+ * One use is to avoid deadlocks from recursive update queries that update all the ancestors.
+ * Instead, one can get all the ids with this function and then run an update query using the ids.
+ */
+export async function getAncestorIds(contentId: Uint8Array) {
+  const idsRaw = await prisma.$queryRaw<
+    {
+      parentId: Uint8Array;
+    }[]
+  >(Prisma.sql`
+    WITH RECURSIVE content_tree(parentId) AS (
+      SELECT parentId FROM content
+      WHERE id = ${contentId} AND isDeletedOn IS NULL AND parentId IS NOT NULL
+      UNION ALL
+      SELECT content.parentId FROM content
+      INNER JOIN content_tree AS ct
+      ON content.id = ct.parentId
+      WHERE content.isDeletedOn IS NULL AND content.parentId IS NOT NULL
+    )
+    SELECT parentId from content_tree;
+  `);
+
+  const ids = idsRaw.map((x) => x.parentId);
+  return ids;
+}
+
 export async function restoreDeletedContent({
   contentId,
   loggedInUserId,
@@ -263,7 +299,7 @@ export async function restoreDeletedContent({
   loggedInUserId: Uint8Array;
 }) {
   // Verify content is owned by `loggedInUserId`, is recoverable, and is the root of a deletion.
-  const checkForParent = await prisma.content.findUniqueOrThrow({
+  const { courseRootId, parent } = await prisma.content.findUniqueOrThrow({
     where: {
       ownerId: loggedInUserId,
       id: contentId,
@@ -271,44 +307,95 @@ export async function restoreDeletedContent({
       isDeletedOn: { not: null, gte: getEarliestRecoverableDate().toJSDate() },
     },
     select: {
+      courseRootId: true,
       parent: {
         select: {
           id: true,
           isDeletedOn: true,
+          courseRootId: true,
         },
       },
     },
   });
 
-  // Figure out where to put the restored root. If the parent is not deleted we'll put it back where it was.
-  // If the parent is deleted or there was no parent, we're just going to put it in the base folder of the owner.
-  const parentId =
-    checkForParent.parent && checkForParent.parent.isDeletedOn === null
-      ? checkForParent.parent.id
-      : null;
+  // For `newCourseRootId`: `null` indicates removing course association, `undefined` indicates no change
+  let newCourseRootId: Uint8Array | null | undefined = undefined;
+  // For `newParentId`: `null` indicates base folder, `undefined` indicates no change
+  let newParentId: null | undefined = undefined;
+  let newSortIndex: number | undefined = undefined;
 
-  const updateRoot = prisma.content.update({
-    where: {
-      id: contentId,
-    },
-    data: {
-      isDeletedOn: null,
-      deletionRootId: null,
-      parentId,
-    },
-  });
+  const updateQueries = [];
 
-  const updateDescendants = prisma.content.updateMany({
-    where: {
-      deletionRootId: contentId,
-    },
-    data: {
-      isDeletedOn: null,
-      deletionRootId: null,
-    },
-  });
+  if (parent) {
+    // Figure out where to put the restored root. If the parent is not deleted we'll put it back where it was.
+    // If the parent is deleted, we're just going to put it in the base folder of the owner.
+    // We also have to deal with course references.
 
-  await prisma.$transaction([updateRoot, updateDescendants]);
+    // Special cases:
+    // 1) My existing parent is in a course
+    //    -> set me and all my descendants to be in that course
+    // 2) My existing parent is not a course, but I am part of a course (not course root)
+    //    -> remove any course association from me and all descendants
+    // 3) My parent was deleted and was not in a course
+    //    -> put me in base folder
+    // 4) My parent was deleted and was in a course
+    //    -> put me in base folder and remove course association from me and all descendants
+    // TODO: Test these special cases
+
+    const parentIsDeleted = parent.isDeletedOn !== null;
+    const iAmCourseNonroot =
+      courseRootId !== null && !isEqualUUID(courseRootId, contentId);
+
+    if (!parentIsDeleted && parent.courseRootId !== null) {
+      // Special case #1
+      newCourseRootId = parent.courseRootId;
+    } else if (
+      !parentIsDeleted &&
+      parent.courseRootId === null &&
+      iAmCourseNonroot
+    ) {
+      // Special case #2
+      newCourseRootId = null;
+    } else if (parentIsDeleted) {
+      // Special case #3 or #4
+
+      // Put in base folder and modify sort index to be last child of base folder
+      newParentId = null;
+      newSortIndex = await getNextSortIndexForParent(loggedInUserId, null);
+      updateQueries.push(
+        prisma.content.update({
+          where: {
+            id: contentId,
+          },
+          data: {
+            parentId: newParentId,
+            sortIndex: newSortIndex,
+          },
+        }),
+      );
+
+      if (parent.courseRootId) {
+        // Special case #4
+        newCourseRootId = null;
+      }
+    }
+  }
+
+  // Now restore the content and its descendants, changing courseRootId as needed
+  updateQueries.push(
+    prisma.content.updateMany({
+      where: {
+        OR: [{ id: contentId }, { deletionRootId: contentId }],
+      },
+      data: {
+        isDeletedOn: null,
+        deletionRootId: null,
+        courseRootId: newCourseRootId,
+      },
+    }),
+  );
+
+  await prisma.$transaction(updateQueries);
 }
 
 /**
@@ -377,13 +464,13 @@ export async function updateContent({
       ...filterEditableContent(loggedInUserId, isEditor),
     },
     select: {
-      rootAssignment: { select: { rootContentId: true } },
-      nonRootAssignment: { select: { rootContentId: true } },
+      isAssignmentRoot: true,
+      parent: { select: { isAssignmentRoot: true } },
     },
   });
 
   const isAssigned = Boolean(
-    content.rootAssignment || content.nonRootAssignment,
+    content.isAssignmentRoot || content.parent?.isAssignmentRoot,
   );
 
   if (isAssigned) {
@@ -405,7 +492,6 @@ export async function updateContent({
       throw new InvalidRequestError("Cannot change assigned content");
     }
   }
-
   if (repeatInProblemSet) {
     // Make sure this content is a document and the parent is a problem set
     const check = await prisma.content.findUniqueOrThrow({
@@ -519,17 +605,13 @@ export async function getContentDescription({
       type: true,
       doenetmlVersionId: true,
       parent: {
-        where: {
-          ...filterViewableContent(loggedInUserId, isEditor),
-        },
+        where: filterViewableContent(loggedInUserId, isEditor),
         select: {
           type: true,
           id: true,
           name: true,
           parent: {
-            where: {
-              ...filterViewableContent(loggedInUserId, isEditor),
-            },
+            where: filterViewableContent(loggedInUserId, isEditor),
             select: {
               id: true,
               name: true,
@@ -615,6 +697,16 @@ export async function getAllDoenetmlVersions() {
     },
   });
   return { allDoenetmlVersions };
+}
+
+export async function getDefaultDoenetmlVersion() {
+  const defaultDoenetmlVersion = await prisma.doenetmlVersions.findFirstOrThrow(
+    {
+      where: { default: true },
+    },
+  );
+
+  return { defaultDoenetmlVersion };
 }
 
 /**

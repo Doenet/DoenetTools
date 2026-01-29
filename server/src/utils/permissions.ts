@@ -21,12 +21,55 @@ export async function mustBeEditor(
  * Query whether user is editor or not.
  */
 export async function getIsEditor(userId: Uint8Array) {
-  const user = await prisma.users.findUnique({ where: { userId } });
+  const user = await prisma.users.findUnique({
+    where: { userId },
+    select: { isEditor: true },
+  });
   let isEditor = false;
   if (user) {
     isEditor = user.isEditor;
   }
   return isEditor;
+}
+
+export async function getScopedStudentCourseId(userId: Uint8Array) {
+  const user = await prisma.users.findUnique({
+    where: { userId },
+    select: { scopedToClassId: true },
+  });
+  let courseId = null;
+  if (user) {
+    courseId = user.scopedToClassId;
+  }
+  return courseId;
+}
+
+export async function getIsAnonymous(userId: Uint8Array) {
+  const user = await prisma.users.findUnique({
+    where: { userId },
+    select: { isAnonymous: true },
+  });
+  let isAnonymous = false;
+  if (user) {
+    isAnonymous = user.isAnonymous;
+  }
+  return isAnonymous;
+}
+
+export async function getOwnerIsPremium(contentId: Uint8Array) {
+  const owner = await prisma.users.findFirst({
+    where: {
+      content: {
+        some: {
+          id: contentId,
+        },
+      },
+    },
+    select: { isPremium: true },
+  });
+
+  const isPremium = owner?.isPremium ?? false;
+  return isPremium;
 }
 
 /**
@@ -53,34 +96,33 @@ export async function isInLibrary(contentId: Uint8Array) {
 }
 
 /**
- * Use this in Prisma's `where` clause to filter for only activities (exclude folders and assignments).
- * Use on table `contents`.
- */
-const filterActivity = {
-  type: { not: "folder" as const },
-  nonRootAssignmentId: null,
-  rootAssignment: {
-    is: null,
-  },
-};
-
-/**
  * Use this in Prisma's `where` clause to filter for only root assignments.
  * Use on table `contents`.
  */
 const filterRootAssignment = {
-  rootAssignment: {
-    isNot: null,
-  },
-  nonRootAssignmentId: null,
+  isAssignmentRoot: true,
+  isDeletedOn: null,
 };
 
 /**
  * Filter Prisma's `where` clause to exclude both root and non-root assignments.
+ * Use on table `contents`.
  */
 export const filterExcludeAssignments = {
-  rootAssignment: null,
-  nonRootAssignmentId: null,
+  isAssignmentRoot: false,
+  OR: [{ parent: null }, { parent: { isAssignmentRoot: false } }],
+  isDeletedOn: null,
+};
+
+/**
+ * Use this in Prisma's `where` clause to filter for only activities (exclude folders and assignments).
+ * Use on table `contents`.
+ */
+const filterActivity = {
+  AND: [
+    { type: { not: "folder" as const }, isDeletedOn: null },
+    filterExcludeAssignments,
+  ],
 };
 
 /**
@@ -101,44 +143,85 @@ export function filterViewableActivity(
   isEditor: boolean = false,
 ) {
   return {
-    ...filterViewableContent(loggedInUserId, isEditor),
-    ...filterActivity,
+    AND: [filterViewableContent(loggedInUserId, isEditor), filterActivity],
   };
 }
 
 /**
  * Filter Prisma's `where` clause to viewable root assignments for `loggedInUserId`
  *
- * For an assignment to be viewable, one of these conditions must be true:
- * 1. The assignment is open
- * 2. `loggedInUserId` has score data for this assignment
+ * If `loggedInUserId` is scoped to a course, then an assignment is viewable if it is in that course.
+ *
+ * If `loggedInUserId` is not scoped to a course, then an assignment is viewable if any of these are true:
+ * 1. `loggedInUserId` is anonymous and the assignment is an open one-off assignment
+ * 2. The assignment owner is premium and the assignment is an open one-off assignment
+ * 3. `loggedInUserId` has score data for this assignment
+ * 4. `loggedInUserId` is the owner
  *
  * For content to be a root assignment, it must be attached to an entry in the assignments table.
  */
-export function filterViewableRootAssignment(loggedInUserId: Uint8Array) {
-  return {
-    ...filterRootAssignment,
-    rootAssignment: {
-      OR: [
-        {
-          codeValidStarting: {
-            lte: DateTime.now().toISO(), // TODO - confirm this works with timezone stuff
-          },
-          codeValidUntil: {
-            gte: DateTime.now().toISO(), // TODO - confirm this works with timezone stuff
-          },
-        },
-        {
-          assignmentScores: {
-            some: {
-              userId: loggedInUserId,
+export function filterViewableRootAssignment({
+  loggedInUserId,
+  courseRootIdOfScopedUser,
+  isAnonymous,
+  ownerIsPremium,
+}: {
+  loggedInUserId: Uint8Array;
+  courseRootIdOfScopedUser: Uint8Array | null;
+  isAnonymous: boolean;
+  ownerIsPremium: boolean;
+}) {
+  // TODO: if owner is premium, allow regular accounts to take assignment in course
+  // TODO: Once we change the user-roster relationship to be many-to-many (to allow premium instructors to roster regular accounts), make this logic clearer!
+  // Suggestion: first determine if assignment is in course or not
+
+  if (courseRootIdOfScopedUser === null) {
+    const studentCondition =
+      isAnonymous || ownerIsPremium
+        ? {
+            // TODO - confirm this works with timezone stuff
+            assignmentOpenOn: {
+              lte: DateTime.now().toISO(),
             },
-          },
+            assignmentClosedOn: {
+              gte: DateTime.now().toISO(),
+            },
+            courseRootId: null,
+          }
+        : {};
+
+    return {
+      AND: [
+        filterRootAssignment,
+        {
+          OR: [
+            studentCondition,
+            {
+              assignmentScores: {
+                some: {
+                  userId: loggedInUserId,
+                },
+              },
+            },
+            {
+              ownerId: loggedInUserId,
+            },
+          ],
+          isDeletedOn: null,
         },
       ],
-    },
-    isDeletedOn: null,
-  };
+    };
+  } else {
+    return {
+      AND: [
+        filterRootAssignment,
+        {
+          courseRootId: courseRootIdOfScopedUser,
+          isDeletedOn: null,
+        },
+      ],
+    };
+  }
 }
 
 /**
@@ -223,9 +306,9 @@ export function viewableContentWhere(
  *
  * For content to be editable, one of these conditions must be true:
  * 1. `loggedInUserId` is the owner
- * 4. `loggedInUserId` is an editor and the content is in the library.
+ * 2. `loggedInUserId` is an editor and the content is in the library.
  *
- * For content to be an activity, it must not be a folder and must not be attached to an assignment.
+ * For content to be an activity, it must not be a folder or an assignment.
  *
  * NOTE: This function does not verify editor privileges. You must pass in the correct `isEditor` flag.
  */
@@ -234,8 +317,7 @@ export function filterEditableActivity(
   isEditor: boolean = false,
 ) {
   return {
-    ...filterActivity,
-    ...filterEditableContent(loggedInUserId, isEditor),
+    AND: [filterActivity, filterEditableContent(loggedInUserId, isEditor)],
   };
 }
 
@@ -249,8 +331,7 @@ export function filterEditableActivity(
  */
 export function filterEditableRootAssignment(loggedInUserId: Uint8Array) {
   return {
-    ...filterEditableContent(loggedInUserId),
-    ...filterRootAssignment,
+    AND: [filterEditableContent(loggedInUserId), filterRootAssignment],
   };
 }
 
