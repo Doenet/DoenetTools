@@ -72,79 +72,72 @@ export function Home() {
 
   const heroSection = (
     <Box width="100%">
-      <WithSideBanners
-        bgColor="#282a3aff"
-        padding="40px"
-        leftGutterColumns={1}
-        rightGutterColumns={1}
-      >
-        <Box px={{ base: "16px", md: "0px" }}>
-          <Grid
-            templateColumns={{ base: "1fr", md: "1fr auto" }}
-            w="100%"
-            gap={{ base: "0px", md: "20px" }}
-            alignItems="stretch"
+      <WithSideBanners bgColor="#282a3aff" padding="40px">
+        <Grid
+          templateColumns={{ base: "1fr", lg: "1fr auto" }}
+          w="100%"
+          gap={{ base: "0px", lg: "20px" }}
+          alignItems="stretch"
+        >
+          <GridItem
+            position="relative"
+            display="flex"
+            flexDirection="column"
+            justifyContent="center"
+            h="100%"
+            order={{ base: 2, md: 1 }}
           >
-            <GridItem
-              position="relative"
-              display="flex"
-              flexDirection="column"
-              justifyContent="center"
-              h="100%"
-              order={{ base: 2, md: 1 }}
+            <Heading
+              color="white"
+              fontSize={{ base: "28px", sm: "34px", md: "44px", lg: "56px" }}
+              fontWeight="700"
+              mb={{ base: "24px", md: "40px", lg: "60px" }}
             >
-              <Heading
-                color="white"
-                fontSize={{ base: "28px", sm: "34px", md: "44px", lg: "56px" }}
-                fontWeight="700"
-                mb={{ base: "24px", md: "40px", lg: "60px" }}
-              >
-                Richly interactive classroom activities
-              </Heading>
+              Richly interactive classroom activities
+            </Heading>
 
-              <Heading
-                color="white"
-                fontSize={{
-                  base: "16px",
-                  sm: "18px",
-                  md: "20px",
-                  lg: "24px",
-                  xl: "28px",
-                }}
-                fontWeight="400"
-                mb={{ base: "12px", md: "16px", lg: "20px" }}
-                lineHeight={{ base: "1.3", md: "1.4" }}
-                maxW={{ base: "100%", md: "680px", lg: "800px" }}
-              >
-                Find, create, and share meaningfully interactive content using a
-                free community-driven tool
-                {/* TODO: Find spot to mention AI, such as:
+            <Heading
+              color="white"
+              fontSize={{
+                base: "16px",
+                sm: "18px",
+                md: "20px",
+                lg: "24px",
+                xl: "28px",
+              }}
+              fontWeight="400"
+              mb={{ base: "12px", md: "16px", lg: "20px" }}
+              lineHeight={{ base: "1.3", md: "1.4" }}
+              maxW={{ base: "100%", md: "680px", lg: "800px" }}
+            >
+              Find, create, and share meaningfully interactive content using a
+              free community-driven tool
+              {/* TODO: Find spot to mention AI, such as:
                 "Human-crafted activities in the age of AI" */}
-              </Heading>
+            </Heading>
 
-              {/* Mobile video directly under text */}
-              <Box
-                display={{ base: "block", md: "none" }}
-                mt="40px"
-                mx={{ base: "-16px", md: "0" }}
-              >
-                <VideoCarousel videos={heroVideos} />
-              </Box>
-            </GridItem>
-
-            <GridItem
-              mr={{ base: "0px", md: "65px" }}
-              pt="0px"
-              pb="40px"
-              display={{ base: "none", md: "flex" }}
-              justifyContent="flex-end"
-              order={{ base: 1, md: 2 }}
-              colSpan={{ base: 1, md: "auto" }}
+            {/* Mobile video directly under text */}
+            <Box
+              display={{ base: "block", lg: "none" }}
+              mt="40px"
+              mx={{ base: "-16px", lg: "0" }}
             >
               <VideoCarousel videos={heroVideos} />
-            </GridItem>
-          </Grid>
-        </Box>
+            </Box>
+          </GridItem>
+
+          <GridItem
+            mr={{ base: "0px", lg: "65px" }}
+            pt="0px"
+            pb="40px"
+            display={{ base: "none", lg: "flex" }}
+            justifyContent="flex-end"
+            order={{ base: 1, lg: 2 }}
+            colSpan={{ base: 1, lg: "auto" }}
+          >
+            <VideoCarousel videos={heroVideos} />
+          </GridItem>
+        </Grid>
       </WithSideBanners>
     </Box>
   );
@@ -177,42 +170,40 @@ export function Home() {
 
   const featuresSection = (
     <WithSideBanners bgColor="#d3dff1ff" padding="70px">
-      <Box px={{ base: "16px", md: "0px" }}>
-        <Heading size="lg" mb="20px">
-          Customize or create your own activities
-        </Heading>
+      <Heading size="lg" mb="20px">
+        Customize or create your own activities
+      </Heading>
 
-        <VStack align="flex-start" fontSize="1.4rem">
-          <HStack spacing="20px">
-            {/* TODO: Instant feedback image */}
+      <VStack align="flex-start" fontSize="1.4rem">
+        <HStack spacing="20px">
+          {/* TODO: Instant feedback image */}
 
+          <p>
+            <strong>Instant feedback for students.</strong> Guide students with
+            immediate validation or hints based on their mistake
+          </p>
+        </HStack>
+
+        <HStack spacing="20px">
+          <p>
+            <strong>Interactive graphics.</strong> Construct gradable graphical
+            applets from points, lines, derivatives, etc.
+          </p>
+
+          {/* TODO: interactive graphics image */}
+        </HStack>
+
+        <Flex width="100%" alignItems="center">
+          {/* TODO: variant control image */}
+
+          <Flex flex="1 0 75%">
             <p>
-              <strong>Instant feedback for students.</strong> Guide students
-              with immediate validation or hints based on their mistake
+              <strong>Variant control.</strong> Generate multiple variants of
+              your activity
             </p>
-          </HStack>
-
-          <HStack spacing="20px">
-            <p>
-              <strong>Interactive graphics.</strong> Construct gradable
-              graphical applets from points, lines, derivatives, etc.
-            </p>
-
-            {/* TODO: interactive graphics image */}
-          </HStack>
-
-          <Flex width="100%" alignItems="center">
-            {/* TODO: variant control image */}
-
-            <Flex flex="1 0 75%">
-              <p>
-                <strong>Variant control.</strong> Generate multiple variants of
-                your activity
-              </p>
-            </Flex>
           </Flex>
-        </VStack>
-      </Box>
+        </Flex>
+      </VStack>
     </WithSideBanners>
   );
 
@@ -220,77 +211,69 @@ export function Home() {
 
   const communitySection = (
     <WithSideBanners bgColor="white" padding="70px">
-      <Box px={{ base: "16px", md: "0px" }}>
-        <Heading size="lg">
-          Join the community - get support, contribute
-        </Heading>
-        <Box marginTop="10px" fontSize="1.4rem">
-          Doenet—as a free and open-source platform—derives its value from its
-          community of authors and contributors.
-        </Box>
-        <Box marginTop="10px" fontSize="1.4rem">
-          To get support, check out our{" "}
-          <ChakraLink href={discussHref} textDecoration="underline">
-            community discussions
-          </ChakraLink>{" "}
-          or our{" "}
-          <ChakraLink
-            href="https://discord.gg/PUduwtKJ5h"
-            textDecoration="underline"
-          >
-            Discord server
-          </ChakraLink>
-          .
-        </Box>
-        <Box marginTop="10px" fontSize="1.4rem">
-          To learn how to get involved, check out{" "}
-          <ChakraLink
-            href="https://pages.doenet.org"
-            textDecoration="underline"
-          >
-            How to get involved with Doenet
-          </ChakraLink>
-          .
-        </Box>
-        <Box marginTop="10px" fontSize="1.4rem">
-          To experiment with writing Doenet activities, visit the{" "}
-          <ChakraLink href="/scratchPad" textDecoration="underline">
-            Scratch Pad
-          </ChakraLink>
-          .
-        </Box>
-        <Heading size="lg" marginTop="40px">
-          Events
-        </Heading>
-        <Stack direction={{ base: "column", md: "row" }}>
-          <Card>
-            <CardHeader>
-              <Heading size="sm">
-                <ChakraLink
-                  href="https://prose.runestone.academy/"
-                  textDecoration="underline"
-                >
-                  PROSE Consortium
-                </ChakraLink>{" "}
-                weekly drop-in hours, Tuesdays 1-3pm CST
-              </Heading>
-            </CardHeader>
-            <CardBody>
-              <Text fontSize={"18px"} fontWeight="500">
-                Drop in anytime during the two hours to ask questions. Join us
-                at{" "}
-                <ChakraLink
-                  href="https://prose.runestone.academy/dropin/"
-                  textDecoration="underline"
-                >
-                  this Zoom link
-                </ChakraLink>
-                .
-              </Text>
-            </CardBody>
-          </Card>
-        </Stack>
-      </Box>
+      <Heading size="lg">Join the community - get support, contribute</Heading>
+      <Text marginTop="10px" fontSize="1.4rem">
+        Doenet—as a free and open-source platform—derives its value from its
+        community of authors and contributors.
+      </Text>
+      <Text marginTop="10px" fontSize="1.4rem">
+        To get support, check out our{" "}
+        <ChakraLink href={discussHref} textDecoration="underline">
+          community discussions
+        </ChakraLink>{" "}
+        or our{" "}
+        <ChakraLink
+          href="https://discord.gg/PUduwtKJ5h"
+          textDecoration="underline"
+        >
+          Discord server
+        </ChakraLink>
+        .
+      </Text>
+      <Text marginTop="10px" fontSize="1.4rem">
+        To learn how to get involved, check out{" "}
+        <ChakraLink href="https://pages.doenet.org" textDecoration="underline">
+          How to get involved with Doenet
+        </ChakraLink>
+        .
+      </Text>
+      <Text marginTop="10px" fontSize="1.4rem">
+        To experiment with writing Doenet activities, visit the{" "}
+        <ChakraLink href="/scratchPad" textDecoration="underline">
+          Scratch Pad
+        </ChakraLink>
+        .
+      </Text>
+      <Heading size="lg" marginTop="40px">
+        Events
+      </Heading>
+      <Stack direction={{ base: "column", md: "row" }}>
+        <Card>
+          <CardHeader>
+            <Heading size="sm">
+              <ChakraLink
+                href="https://prose.runestone.academy/"
+                textDecoration="underline"
+              >
+                PROSE Consortium
+              </ChakraLink>{" "}
+              weekly drop-in hours, Tuesdays 1-3pm CST
+            </Heading>
+          </CardHeader>
+          <CardBody>
+            <Text fontSize={"18px"} fontWeight="500">
+              Drop in anytime during the two hours to ask questions. Join us at{" "}
+              <ChakraLink
+                href="https://prose.runestone.academy/dropin/"
+                textDecoration="underline"
+              >
+                this Zoom link
+              </ChakraLink>
+              .
+            </Text>
+          </CardBody>
+        </Card>
+      </Stack>
     </WithSideBanners>
   );
 
@@ -381,6 +364,15 @@ export function Home() {
 }
 
 function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
+  // SETTINGS
+  const VIDEO_WIDTH_PX = 500;
+  const VIDEO_HEIGHT_PX = 580;
+  // Single control for arrow-to-video proximity:
+  // arrowGap: px between the arrow button and the video edge.
+  const ARROW_BUTTON_PX = 24; // button size (px)
+  const iconSize = 36; // chevron svg size
+  const iconStroke = 3; // chevron stroke thickness
+
   const [index, setIndex] = useState(0);
   // const [isHovered, setIsHovered] = useState(false);
 
@@ -393,12 +385,6 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
   useEffect(() => {
     indexRef.current = index;
   }, [index]);
-
-  // Single control for arrow-to-video proximity:
-  // arrowGap: px between the arrow button and the video edge.
-  const ARROW_BUTTON_PX = 24; // button size (px)
-  const iconSize = 36; // chevron svg size
-  const iconStroke = 3; // chevron stroke thickness
 
   useEffect(() => {
     // Use the current video's 3rd tuple element as the delay (ms). Fallback to 10000ms.
@@ -485,7 +471,7 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
       <HStack
         alignItems="center"
         justifyContent="center"
-        display={{ base: "none", md: "flex" }}
+        display={{ base: "none", lg: "flex" }}
       >
         {/* Left arrow */}
         <IconButton
@@ -510,8 +496,8 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
         <Box
           position="relative"
           border="3px solid lightgray"
-          width="500px"
-          height="580px"
+          width={`${VIDEO_WIDTH_PX}px`}
+          aspectRatio={VIDEO_WIDTH_PX / VIDEO_HEIGHT_PX}
           overflow="hidden"
           flexShrink={0}
         >
@@ -602,13 +588,12 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
       </HStack>
 
       {/* Mobile layout: video with arrows underneath */}
-      <VStack spacing={4} display={{ base: "flex", md: "none" }} w="100%">
+      <VStack spacing={4} display={{ base: "flex", lg: "none" }}>
         <Box
           position="relative"
           border="3px solid lightgray"
-          w="100%"
-          height="calc(100vw * 580 / 500)"
-          maxHeight="580px"
+          width={`min(100vw, ${VIDEO_WIDTH_PX}px)`}
+          aspectRatio={VIDEO_WIDTH_PX / VIDEO_HEIGHT_PX}
           overflow="hidden"
           flexShrink={0}
         >
