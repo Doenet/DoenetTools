@@ -38,7 +38,12 @@ export function About() {
             gap={{ base: "16px", md: "32px" }}
             w="100%"
           >
-            <Box flex="1 1 0" maxW={{ md: "780px" }} order={{ base: 2, md: 1 }}>
+            <Box
+              flex="1 1 0"
+              maxW={{ md: "780px" }}
+              order={{ base: 2, md: 1 }}
+              mb="60px"
+            >
               <Heading size="lg">About Doenet</Heading>
 
               <Text fontSize="1.3rem" lineHeight="1.3" mt="16px">
@@ -63,7 +68,7 @@ export function About() {
             </Box>
           </Flex>
           {/* What You Can Do Section */}
-          <VStack align="flex-start" spacing="10px" w="100%" mt="60px">
+          <VStack align="flex-start" spacing="10px" w="100%">
             <Heading size="md">What you can do</Heading>
             <Box display="flex" gap="12px" flexWrap="wrap">
               <CustomButton label="Explore existing content" to="/explore" />
