@@ -38,6 +38,7 @@ import {
   License,
   UserInfoWithEmail,
 } from "../types";
+import { getDiscourseUrl } from "../utils/discourse";
 
 export type SiteContext = {
   user?: UserInfoWithEmail;
@@ -176,9 +177,7 @@ export function SiteHeader() {
     allDoenetmlVersions,
   };
 
-  const discussHref = `${import.meta.env.VITE_DISCOURSE_URL}${
-    user && user?.isAnonymous === false ? "/session/sso" : ""
-  }`;
+  const discussHref = getDiscourseUrl(user);
 
   const helpMenuShouldFocusFirst = useBreakpointValue(
     { base: false, md: true },
