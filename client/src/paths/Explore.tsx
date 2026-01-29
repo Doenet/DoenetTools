@@ -282,6 +282,10 @@ export function Explore() {
         contentIds={selectedCardsFiltered.map((sc) => sc.contentId)}
         desiredParent={addTo}
         action="Add"
+        setAddTo={setAddTo}
+        user={user ?? null}
+        fetcher={fetcher}
+        onNavigate={navigate}
       />
     ) : null;
 
@@ -809,6 +813,9 @@ export function Explore() {
                   size="xs"
                   colorScheme="blue"
                   label="Add selected to"
+                  user={user ?? null}
+                  onNavigate={(url) => navigate(url)}
+                  setAddTo={setAddTo}
                 />
                 <CreateContentMenu
                   sourceContent={selectedCardsFiltered}

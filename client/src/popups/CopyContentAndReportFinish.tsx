@@ -12,10 +12,9 @@ import {
   Text,
   Spinner,
 } from "@chakra-ui/react";
-import { useFetcher, useNavigate, useOutletContext } from "react-router";
-import { ContentDescription } from "../types";
+import { FetcherWithComponents } from "react-router";
+import { ContentDescription, UserInfo } from "../types";
 import { contentTypeToName } from "../utils/activity";
-import { SiteContext } from "../paths/SiteHeader";
 import { editorUrl } from "../utils/url";
 
 /**
@@ -32,6 +31,10 @@ export function CopyContentAndReportFinish({
   desiredParent,
   action,
   prependCopy = false,
+  fetcher,
+  user,
+  setAddTo,
+  onNavigate,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -40,18 +43,16 @@ export function CopyContentAndReportFinish({
   desiredParent: ContentDescription | null;
   action: "Copy" | "Add";
   prependCopy?: boolean;
+  fetcher: FetcherWithComponents<any>;
+  user: UserInfo | null;
+  setAddTo: (value: any) => void;
+  onNavigate: (url: string) => void;
 }) {
   const [newContentIds, setNewContentIds] = useState<string[] | null>(null);
-
-  const navigate = useNavigate();
 
   const [errMsg, setErrMsg] = useState("");
   const actionPastWord = action === "Add" ? "added" : "copied";
   const actionProgressiveWord = action === "Add" ? "Adding" : "Copying";
-
-  const fetcher = useFetcher();
-
-  const { user, setAddTo } = useOutletContext<SiteContext>();
 
   useEffect(() => {
     if (fetcher.data) {
@@ -169,7 +170,7 @@ export function CopyContentAndReportFinish({
             onClick={() => {
               onClose();
               setAddTo(null);
-              navigate(destinationUrl);
+              onNavigate(destinationUrl);
             }}
             isDisabled={newContentIds === null && errMsg === ""}
           >

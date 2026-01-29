@@ -30,12 +30,8 @@ import {
 import axios from "axios";
 import { MoveCopyContent } from "../popups/MoveCopyContent";
 import { CopyContentAndReportFinish } from "../popups/CopyContentAndReportFinish";
-import {
-  FetcherWithComponents,
-  useNavigate,
-  useOutletContext,
-} from "react-router";
-import { SiteContext } from "../paths/SiteHeader";
+import { FetcherWithComponents } from "react-router";
+import { UserInfo } from "../types";
 import { getAllowedParentTypes, menuIcons } from "../utils/activity";
 
 export function AddContentToMenu({
@@ -49,6 +45,9 @@ export function AddContentToMenu({
   restrictToAllowedParents = false,
   suggestToBeCuratedOption = false,
   fetcher,
+  user,
+  onNavigate,
+  setAddTo,
 }: {
   sourceContent: ContentDescription[];
   size?: ResponsiveValue<(string & {}) | "xs" | "sm" | "md" | "lg">;
@@ -73,9 +72,10 @@ export function AddContentToMenu({
   restrictToAllowedParents?: boolean;
   suggestToBeCuratedOption?: boolean;
   fetcher: FetcherWithComponents<any>;
+  user: UserInfo | null;
+  onNavigate: (url: string) => void;
+  setAddTo: (value: ContentDescription | null) => void;
 }) {
-  const { user } = useOutletContext<SiteContext>();
-
   const [recentContent, setRecentContent] = useState<ContentDescription[]>([]);
   const [addToType, setAddToType] = useState<ContentType>("folder");
   const [allowedParents, setAllowedParents] = useState<ContentType[]>([]);
@@ -83,8 +83,6 @@ export function AddContentToMenu({
     useState<ContentDescription | null>(null);
 
   const [baseContains, setBaseContains] = useState<ContentType[]>([]);
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     const allowedParents = getAllowedParentTypes(
@@ -139,6 +137,10 @@ export function AddContentToMenu({
       contentIds={sourceContent.map((sc) => sc.contentId)}
       desiredParent={copyDestination}
       action="Add"
+      fetcher={fetcher}
+      user={user}
+      setAddTo={setAddTo}
+      onNavigate={onNavigate}
     />
   );
 
@@ -152,6 +154,8 @@ export function AddContentToMenu({
     <MoveCopyContent
       isOpen={moveCopyContentIsOpen}
       onClose={moveCopyContentOnClose}
+      fetcher={fetcher}
+      onNavigate={onNavigate}
       sourceContent={sourceContent}
       userId={user.userId}
       currentParentId={null}
@@ -196,7 +200,7 @@ export function AddContentToMenu({
         data-test="Load into Scratch Pad"
         isDisabled={scratchPadDisabled}
         onClick={() => {
-          navigate(`/scratchPad?contentId=${sourceContent[0].contentId}`);
+          onNavigate(`/scratchPad?contentId=${sourceContent[0].contentId}`);
         }}
       >
         Load into Scratch Pad

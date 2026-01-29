@@ -237,6 +237,10 @@ export function ActivityViewer() {
         contentIds={[activityData.contentId]}
         desiredParent={addTo}
         action="Add"
+        setAddTo={setAddTo}
+        user={user ?? null}
+        fetcher={fetcher}
+        onNavigate={navigate}
       />
     ) : null;
 
@@ -452,6 +456,9 @@ export function ActivityViewer() {
         suggestToBeCuratedOption={
           activityData.type === "singleDoc" && !libraryRelations.activity
         }
+        user={user ?? null}
+        onNavigate={(url) => navigate(url)}
+        setAddTo={setAddTo}
       />
     );
   }

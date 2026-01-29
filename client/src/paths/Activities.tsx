@@ -381,6 +381,8 @@ export function Activities() {
     <MoveCopyContent
       isOpen={moveCopyContentIsOpen}
       onClose={moveCopyContentOnClose}
+      fetcher={fetcher}
+      onNavigate={(url) => navigate(url)}
       sourceContent={[moveCopyData]}
       userId={userId}
       currentParentId={parentId}
@@ -425,6 +427,10 @@ export function Activities() {
         contentIds={selectedCardsFiltered.map((sc) => sc.contentId)}
         desiredParent={addTo}
         action="Add"
+        setAddTo={setAddTo}
+        user={user ?? null}
+        fetcher={fetcher}
+        onNavigate={navigate}
       />
     ) : null;
 
@@ -625,6 +631,9 @@ export function Activities() {
                 size="xs"
                 colorScheme="blue"
                 label="Copy selected to"
+                user={user ?? null}
+                onNavigate={(url) => navigate(url)}
+                setAddTo={setAddTo}
               />
               <CreateContentMenu
                 sourceContent={selectedCardsFiltered}
