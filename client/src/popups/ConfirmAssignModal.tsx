@@ -39,6 +39,9 @@ export function ConfirmAssignModal({
   maxAttempts,
   individualizeByStudent,
   mode,
+  maxAttemptsFetcher,
+  variantFetcher,
+  modeFetcher,
 }: {
   contentDescription: ContentDescription;
   isOpen: boolean;
@@ -49,6 +52,9 @@ export function ConfirmAssignModal({
   maxAttempts?: number | null;
   individualizeByStudent?: boolean;
   mode?: AssignmentMode | null;
+  maxAttemptsFetcher: FetcherWithComponents<any>;
+  variantFetcher: FetcherWithComponents<any>;
+  modeFetcher: FetcherWithComponents<any>;
 }) {
   const { contentId, type: contentType } = contentDescription;
 
@@ -99,6 +105,9 @@ export function ConfirmAssignModal({
                 individualizeByStudent={individualizeByStudent}
                 mode={mode}
                 includeMode={contentType !== "singleDoc"}
+                maxAttemptsFetcher={maxAttemptsFetcher}
+                variantFetcher={variantFetcher}
+                modeFetcher={modeFetcher}
               />
             ) : (
               <p>Loading...</p>

@@ -210,6 +210,11 @@ export function EditorHeader() {
   // Used by ConfirmAssignModal to submit assignment creation
   const assignmentSubmitFetcher = useFetcher();
 
+  // Used by EditAssignmentSettings sub-components within ConfirmAssignModal
+  const assignmentMaxAttemptsFetcher = useFetcher();
+  const assignmentVariantFetcher = useFetcher();
+  const assignmentModeFetcher = useFetcher();
+
   const navigate = useNavigate();
 
   // Loads assignment settings when ConfirmAssignModal opens to populate the form
@@ -575,6 +580,9 @@ export function EditorHeader() {
           assignmentSettingsFetcher.data?.individualizeByStudent
         }
         mode={assignmentSettingsFetcher.data?.mode}
+        maxAttemptsFetcher={assignmentMaxAttemptsFetcher}
+        variantFetcher={assignmentVariantFetcher}
+        modeFetcher={assignmentModeFetcher}
       />
       <ShareMyContentModal
         contentId={contentId}

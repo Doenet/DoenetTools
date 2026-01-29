@@ -260,6 +260,11 @@ export function AssignmentData() {
     onClose: inviteOnClose,
   } = useDisclosure();
 
+  // Create fetchers for EditAssignmentSettings sub-components
+  const maxAttemptsFetcher = useFetcher();
+  const variantFetcher = useFetcher();
+  const modeFetcher = useFetcher();
+
   useEffect(() => {
     document.title = `${assignment.name} - Doenet`;
   }, [assignment.name]);
@@ -687,6 +692,9 @@ export function AssignmentData() {
             mode={assignment.assignmentInfo!.mode}
             includeMode={assignment.type !== "singleDoc"}
             isAssigned={true}
+            maxAttemptsFetcher={maxAttemptsFetcher}
+            variantFetcher={variantFetcher}
+            modeFetcher={modeFetcher}
           />
 
           <ChakraHeading size="sm">Availability</ChakraHeading>
