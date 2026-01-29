@@ -38,10 +38,10 @@
   "dependencies": {
     "@chakra-ui/icons": "^2.2.4",
     "@chakra-ui/react": "^2.10.9",
-    "@doenet/assignment-viewer": "^0.1.0-alpha-12",
+    "@doenet-tools/shared": "*",
+    "@doenet/assignment-viewer": "^0.1.0-alpha-14",
     "@doenet/doenetml-iframe": "^0.7.3",
     "@doenet/v06-to-v07": "^0.7.3",
-    "@doenet-tools/shared": "*",
     "@fontsource/jost": "^5.2.6",
     "axios": "^1.11.0",
     "better-react-mathjax": "^2.4.0-beta-1",
@@ -61,7 +61,6 @@
     "react-router": "^7.7.1",
     "react-select": "^5.10.2",
     "recharts": "^2.15.4",
-    "styled-components": "6.1.19",
     "swiper": "^9.4.1"
   },
   "devDependencies": {

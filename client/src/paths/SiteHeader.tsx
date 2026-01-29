@@ -13,7 +13,6 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  Avatar,
   VStack,
   Show,
   useBreakpointValue,
@@ -28,6 +27,7 @@ import { HiOutlineMail } from "react-icons/hi";
 import { BsDiscord } from "react-icons/bs";
 import { Outlet, useFetcher, useLoaderData, useLocation } from "react-router";
 import { NavLink } from "react-router";
+import { AccessibleAvatar } from "../widgets/AccessibleAvatar";
 import RouterLogo from "../RouterLogo";
 import { ExternalLinkIcon, HamburgerIcon } from "@chakra-ui/icons";
 import axios from "axios";
@@ -321,14 +321,14 @@ export function SiteHeader() {
                   <Center h="40px" mr="10px">
                     <Menu>
                       <MenuButton>
-                        <Avatar
+                        <AccessibleAvatar
                           size="sm"
                           name={`${user.isAnonymous ? "?" : createNameNoTag(user)}`}
                         />
                       </MenuButton>
                       <MenuList>
                         <VStack mb="20px">
-                          <Avatar
+                          <AccessibleAvatar
                             size="xl"
                             name={`${user.isAnonymous ? "?" : createNameNoTag(user)}`}
                           />

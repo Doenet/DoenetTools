@@ -132,18 +132,9 @@ export function Activities() {
 
   const [haveContentSpinner, setHaveContentSpinner] = useState(false);
 
-  const [focusSearch, setFocusSearch] = useState(false);
   const [searchString, setSearchString] = useState(query ?? "");
   const searchRef = useRef<HTMLInputElement>(null);
-  const searchBlurTimeout = useRef<NodeJS.Timeout | undefined>(undefined);
   const haveQuery = Boolean(query);
-  const searchOpen = focusSearch || haveQuery;
-
-  useEffect(() => {
-    if (focusSearch) {
-      searchRef.current?.focus();
-    }
-  }, [focusSearch]);
 
   useEffect(() => {
     setHaveContentSpinner(false);
@@ -547,11 +538,7 @@ export function Activities() {
               onInput={(e) => {
                 setSearchString((e.target as HTMLInputElement).value);
               }}
-              onBlur={() => {
-                searchBlurTimeout.current = setTimeout(() => {
-                  setFocusSearch(false);
-                }, 200);
-              }}
+              data-test="Search Input"
             />
             <Tooltip
               label={parent ? `Search in folder` : `Search my activities`}
@@ -565,17 +552,7 @@ export function Activities() {
                   parent ? `Search in folder` : `Search my activities`
                 }
                 type="submit"
-                onClick={(e) => {
-                  if (focusSearch) {
-                    clearTimeout(searchBlurTimeout.current);
-                    searchRef.current?.focus();
-                  } else {
-                    setFocusSearch(true);
-                  }
-                  if (!searchOpen) {
-                    e.preventDefault();
-                  }
-                }}
+                data-test="Search Button"
               />
             </Tooltip>
           </HStack>

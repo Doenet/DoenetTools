@@ -402,7 +402,10 @@ export function AssignmentData() {
               const studentName = createNameNoTag(assignmentScore.user);
               const bestAttemptNumber = assignmentScore.bestAttemptNumber;
               return (
-                <Tr key={`user${assignmentScore.user.userId}`}>
+                <Tr
+                  key={`user${assignmentScore.user.userId}`}
+                  data-test={`Student Row ${assignmentScore.user.userId}`}
+                >
                   <Td>
                     <HStack>
                       <ChakraLink
@@ -414,7 +417,7 @@ export function AssignmentData() {
                       </ChakraLink>
                     </HStack>
                   </Td>
-                  <Td justifyItems="center">
+                  <Td justifyItems="center" data-test="Total Score">
                     <Text>
                       <Tooltip
                         label={`Total for ${studentName}`}
@@ -438,7 +441,11 @@ export function AssignmentData() {
                         ? bestAttemptNumber
                         : item.itemAttemptNumber;
                     return (
-                      <Td key={i} justifyItems="center">
+                      <Td
+                        key={i}
+                        justifyItems="center"
+                        data-test={`Item ${i + 1} Score`}
+                      >
                         <Text>
                           <Tooltip
                             label={`Item ${i + 1} for ${studentName}`}
@@ -710,7 +717,9 @@ export function AssignmentData() {
               }}
             />
           </Text>
-          <Text>Class code: {classCode}</Text>
+          <Text>
+            Class code: <span data-test="Class Code">{classCode}</span>
+          </Text>
           <Button
             onClick={inviteOnOpen}
             colorScheme="blue"
@@ -722,7 +731,12 @@ export function AssignmentData() {
             label="Download scores for this assignment as a CSV file"
             openDelay={50}
           >
-            <Button colorScheme="blue" onClick={downloadScores}>
+            <Button
+              colorScheme="blue"
+              onClick={downloadScores}
+              data-test="Download Scores Button"
+              disabled={numStudents === 0}
+            >
               Download assignment scores
             </Button>
           </Tooltip>

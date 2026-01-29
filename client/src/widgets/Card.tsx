@@ -1,6 +1,5 @@
 import { ReactElement, useState } from "react";
 import {
-  Avatar,
   Text,
   Card as ChakraCard,
   CardBody,
@@ -36,6 +35,7 @@ import {
 import { SmallLicenseBadges } from "./Licenses";
 import { IoDiceOutline } from "react-icons/io5";
 import { SiteContext } from "../paths/SiteHeader";
+import { AccessibleAvatar } from "./AccessibleAvatar";
 
 export type CardContent = {
   menuRef?: (arg: HTMLButtonElement) => void;
@@ -147,6 +147,7 @@ export default function Card({
           idx,
         });
       }}
+      aria-label={`Select item ${idx + 1}: ${title}`}
     ></Checkbox>
   );
 
@@ -256,7 +257,10 @@ export default function Card({
         width={libraryEditorWidth}
       >
         <Text noOfLines={1}>Claimed by</Text>
-        <Avatar size="xs" name={libraryEditorAvatarName ?? libraryEditorName} />
+        <AccessibleAvatar
+          size="xs"
+          name={libraryEditorAvatarName ?? libraryEditorName}
+        />
         <Text noOfLines={1}>{libraryEditorName}</Text>
       </HStack>
     </Tooltip>
@@ -282,7 +286,7 @@ export default function Card({
   const ownerInfo = showOwnerName && (
     <Tooltip label={ownerAvatarName}>
       <HStack paddingLeft={[".1rem", "1rem"]} alignItems="center">
-        <Avatar size="xs" name={ownerAvatarName ?? ownerName} />
+        <AccessibleAvatar size="xs" name={ownerAvatarName ?? ownerName} />
         <Text noOfLines={1}>{ownerName}</Text>
       </HStack>
     </Tooltip>
@@ -425,6 +429,7 @@ export default function Card({
           data-test="Card Menu Button"
           _focus={{ boxShadow: "outline" }}
           ref={cardContent.menuRef}
+          aria-label={`Options menu for item ${idx + 1}: ${title}`}
         >
           <Flex alignItems="center">
             <Icon color="#949494" as={FaEllipsisVertical} />
