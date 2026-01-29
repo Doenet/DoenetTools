@@ -1,5 +1,17 @@
 import { MaxAttemptsSelectionBox } from "./EditAssignmentSettings";
+import { FetcherWithComponents } from "react-router";
 import { useState } from "react";
+
+function createMockFetcher() {
+  return {
+    state: "idle",
+    formData: undefined,
+    data: undefined,
+    Form: ({ children }: any) => <form>{children}</form>,
+    submit: cy.stub(),
+    load: () => {},
+  } as unknown as FetcherWithComponents<any>;
+}
 
 // Wrapper component that manages attempts state
 function MaxAttemptsWrapper({ initialAttempts }: { initialAttempts: number }) {
@@ -8,34 +20,33 @@ function MaxAttemptsWrapper({ initialAttempts }: { initialAttempts: number }) {
   // Store setter in window so action can access it
   (window as any).setAttempts = setAttempts;
 
-  return <MaxAttemptsSelectionBox contentId="test-123" attempts={attempts} />;
-}
-
-// Action that simulates server updating attempts
-const action = async ({ request }: { request: Request }) => {
-  if (request.method === "POST") {
-    const contentType = request.headers.get("content-type") || "";
-
-    if (contentType.includes("application/json")) {
-      const body = await request.json();
-      const maxAttempts = body.maxAttempts;
-
-      if (maxAttempts !== undefined) {
-        // Update the component's attempts prop
-        (window as any).setAttempts?.(maxAttempts);
+  // Create a fetcher with submit that actually updates the state
+  const fetcher = {
+    state: "idle",
+    formData: undefined,
+    data: undefined,
+    Form: ({ children }: any) => <form>{children}</form>,
+    submit: (data: any) => {
+      if (data.maxAttempts !== undefined) {
+        setAttempts(data.maxAttempts);
       }
-      return { success: true, maxAttempts };
-    }
-  }
-  return null;
-};
+    },
+    load: () => {},
+  } as unknown as FetcherWithComponents<any>;
+
+  return (
+    <MaxAttemptsSelectionBox
+      contentId="test-123"
+      attempts={attempts}
+      fetcher={fetcher}
+    />
+  );
+}
 
 describe("MaxAttemptsSelectionBox Component", () => {
   it("should restore the new value when user deletes input and presses enter", () => {
     // Mount the component with initial attempts of 5
-    cy.mount(<MaxAttemptsWrapper initialAttempts={5} />, {
-      action,
-    });
+    cy.mount(<MaxAttemptsWrapper initialAttempts={5} />);
 
     // Verify initial value is 5
     cy.get('[data-test="max-attempts-input"]')
@@ -72,9 +83,7 @@ describe("MaxAttemptsSelectionBox Component", () => {
   });
 
   it("should clear to blank when user deletes input, then restore on blur", () => {
-    cy.mount(<MaxAttemptsWrapper initialAttempts={3} />, {
-      action,
-    });
+    cy.mount(<MaxAttemptsWrapper initialAttempts={3} />);
 
     cy.get('[data-test="max-attempts-input"]')
       .find("input")
@@ -96,9 +105,7 @@ describe("MaxAttemptsSelectionBox Component", () => {
   });
 
   it("should allow entering and submitting a new valid value", () => {
-    cy.mount(<MaxAttemptsWrapper initialAttempts={2} />, {
-      action,
-    });
+    cy.mount(<MaxAttemptsWrapper initialAttempts={2} />);
 
     cy.get('[data-test="max-attempts-input"]')
       .find("input")
@@ -118,9 +125,7 @@ describe("MaxAttemptsSelectionBox Component", () => {
   });
 
   it("should allow unlimited attempts toggle", () => {
-    cy.mount(<MaxAttemptsWrapper initialAttempts={5} />, {
-      action,
-    });
+    cy.mount(<MaxAttemptsWrapper initialAttempts={5} />);
 
     // Input should be enabled initially
     cy.get('[data-test="max-attempts-input"]')
@@ -151,9 +156,7 @@ describe("MaxAttemptsSelectionBox Component", () => {
   });
 
   it("value should change when clicking the increment stepper button", () => {
-    cy.mount(<MaxAttemptsWrapper initialAttempts={5} />, {
-      action,
-    });
+    cy.mount(<MaxAttemptsWrapper initialAttempts={5} />);
 
     // Verify initial value is 5
     cy.get('[data-test="max-attempts-input"]')
@@ -173,9 +176,7 @@ describe("MaxAttemptsSelectionBox Component", () => {
   });
 
   it("value should change when clicking the decrement stepper button", () => {
-    cy.mount(<MaxAttemptsWrapper initialAttempts={5} />, {
-      action,
-    });
+    cy.mount(<MaxAttemptsWrapper initialAttempts={5} />);
 
     // Verify initial value is 5
     cy.get('[data-test="max-attempts-input"]')
@@ -195,7 +196,13 @@ describe("MaxAttemptsSelectionBox Component", () => {
   });
 
   it("should show the number input as enabled and display the value when attempts is finite", () => {
-    cy.mount(<MaxAttemptsSelectionBox contentId="test-id" attempts={5} />);
+    cy.mount(
+      <MaxAttemptsSelectionBox
+        contentId="test-id"
+        attempts={5}
+        fetcher={createMockFetcher()}
+      />,
+    );
     cy.get('[data-test="max-attempts-input"] input').should("not.be.disabled");
     cy.get('[data-test="max-attempts-input"] input').should("have.value", "5");
     cy.get('[data-test="unlimited-attempts-switch"]').should(
@@ -205,7 +212,13 @@ describe("MaxAttemptsSelectionBox Component", () => {
   });
 
   it("should show the number input as disabled and display --- when unlimited (attempts = 0)", () => {
-    cy.mount(<MaxAttemptsSelectionBox contentId="test-id" attempts={0} />);
+    cy.mount(
+      <MaxAttemptsSelectionBox
+        contentId="test-id"
+        attempts={0}
+        fetcher={createMockFetcher()}
+      />,
+    );
     cy.get('[data-test="max-attempts-input"] input').should("be.disabled");
     cy.get('[data-test="max-attempts-input"] input').should(
       "have.value",

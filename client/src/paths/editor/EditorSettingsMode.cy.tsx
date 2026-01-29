@@ -7,8 +7,20 @@ import {
   DoenetmlVersion,
   LicenseCode,
 } from "../../types";
+import { FetcherWithComponents } from "react-router";
 
-describe("EditorSettingsModeContent", () => {
+describe("EditorSettingsModeComponent", () => {
+  function createMockFetcher() {
+    return {
+      state: "idle",
+      formData: undefined,
+      data: undefined,
+      Form: ({ children }: any) => <form>{children}</form>,
+      submit: cy.stub(),
+      load: () => {},
+    } as unknown as FetcherWithComponents<any>;
+  }
+
   beforeEach(() => {
     // Mock the classifications API to prevent ECONNREFUSED errors
     cy.intercept("GET", "/api/classifications/getClassificationCategories", {
@@ -70,7 +82,7 @@ describe("EditorSettingsModeContent", () => {
     },
   ];
 
-  const defaultProps = {
+  const getDefaultProps = () => ({
     isPublic: false,
     isShared: false,
     assigned: false,
@@ -89,10 +101,13 @@ describe("EditorSettingsModeContent", () => {
     contentType: "activity",
     headerHeight: "80px",
     showRequired: false,
-  };
+    maxAttemptsFetcher: createMockFetcher(),
+    variantFetcher: createMockFetcher(),
+    modeFetcher: createMockFetcher(),
+  });
 
   it("renders correctly and is accessible", () => {
-    cy.mount(<EditorSettingsModeComponent {...defaultProps} />);
+    cy.mount(<EditorSettingsModeComponent {...getDefaultProps()} />);
 
     // Verify main sections are present
     cy.contains("h2", "Assignment").should("be.visible");
@@ -105,7 +120,10 @@ describe("EditorSettingsModeContent", () => {
 
   it("is accessible with doenetmlVersionId", () => {
     cy.mount(
-      <EditorSettingsModeComponent {...defaultProps} doenetmlVersionId={1} />,
+      <EditorSettingsModeComponent
+        {...getDefaultProps()}
+        doenetmlVersionId={1}
+      />,
     );
 
     cy.contains("h2", "Version").should("be.visible");
@@ -127,7 +145,7 @@ describe("EditorSettingsModeContent", () => {
 
     cy.mount(
       <EditorSettingsModeComponent
-        {...defaultProps}
+        {...getDefaultProps()}
         doenetmlVersionId={1}
         allDoenetmlVersions={[deprecatedVersion, mockDoenetmlVersions[1]]}
       />,
@@ -143,7 +161,7 @@ describe("EditorSettingsModeContent", () => {
 
   it("is accessible when in library showing AuthorLicenseBox", () => {
     cy.mount(
-      <EditorSettingsModeComponent {...defaultProps} inLibrary={true} />,
+      <EditorSettingsModeComponent {...getDefaultProps()} inLibrary={true} />,
     );
 
     cy.contains("This document will be shared using the license:").should(
@@ -156,7 +174,7 @@ describe("EditorSettingsModeContent", () => {
 
   it("is accessible when not in library showing EditLicense", () => {
     cy.mount(
-      <EditorSettingsModeComponent {...defaultProps} inLibrary={false} />,
+      <EditorSettingsModeComponent {...getDefaultProps()} inLibrary={false} />,
     );
 
     cy.contains(
@@ -167,7 +185,9 @@ describe("EditorSettingsModeContent", () => {
   });
 
   it("is accessible when content is assigned", () => {
-    cy.mount(<EditorSettingsModeComponent {...defaultProps} assigned={true} />);
+    cy.mount(
+      <EditorSettingsModeComponent {...getDefaultProps()} assigned={true} />,
+    );
 
     // Assignment settings should reflect assigned status
     cy.contains("Allow unlimited attempts").should("be.visible");
@@ -178,7 +198,7 @@ describe("EditorSettingsModeContent", () => {
   it("is accessible when content is public and shared", () => {
     cy.mount(
       <EditorSettingsModeComponent
-        {...defaultProps}
+        {...getDefaultProps()}
         isPublic={true}
         isShared={true}
       />,
@@ -192,7 +212,7 @@ describe("EditorSettingsModeContent", () => {
   it("is accessible with all sections visible", () => {
     cy.mount(
       <EditorSettingsModeComponent
-        {...defaultProps}
+        {...getDefaultProps()}
         doenetmlVersionId={1}
         isPublic={true}
         inLibrary={false}
@@ -210,7 +230,10 @@ describe("EditorSettingsModeContent", () => {
 
   it("is accessible with single doc content type", () => {
     cy.mount(
-      <EditorSettingsModeComponent {...defaultProps} contentType="singleDoc" />,
+      <EditorSettingsModeComponent
+        {...getDefaultProps()}
+        contentType="singleDoc"
+      />,
     );
 
     // EditAssignmentSettings should not include mode selection for single docs
@@ -221,7 +244,7 @@ describe("EditorSettingsModeContent", () => {
 
   it("is accessible with summative mode", () => {
     cy.mount(
-      <EditorSettingsModeComponent {...defaultProps} mode="summative" />,
+      <EditorSettingsModeComponent {...getDefaultProps()} mode="summative" />,
     );
 
     cy.contains(
