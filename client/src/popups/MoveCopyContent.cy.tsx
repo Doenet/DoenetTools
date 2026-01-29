@@ -1,4 +1,5 @@
 import { MoveCopyContent } from "./MoveCopyContent";
+import { FetcherWithComponents } from "react-router";
 
 describe("MoveCopyContent component tests", () => {
   const contentName = "A problem set";
@@ -36,6 +37,15 @@ describe("MoveCopyContent component tests", () => {
     },
   ];
 
+  const mockFetcher = {
+    state: "idle",
+    formData: undefined,
+    data: undefined,
+    Form: ({ children }: any) => <form>{children}</form>,
+    submit: () => {},
+    load: () => {},
+  } as unknown as FetcherWithComponents<any>;
+
   it("cancel and close buttons calls onClose", () => {
     cy.intercept("/api/copyMove/getMoveCopyContentData/*", {
       parent: null,
@@ -43,10 +53,13 @@ describe("MoveCopyContent component tests", () => {
     }).as("getData");
 
     const onCloseSpy = cy.spy().as("onClose");
+    const onNavigateSpy = cy.spy().as("onNavigate");
     cy.mount(
       <MoveCopyContent
         isOpen={true}
         onClose={onCloseSpy}
+        onNavigate={onNavigateSpy}
+        fetcher={mockFetcher}
         sourceContent={[
           {
             contentId,
@@ -79,10 +92,13 @@ describe("MoveCopyContent component tests", () => {
     }).as("getData");
 
     const onCloseSpy = cy.spy().as("onClose");
+    const onNavigateSpy = cy.spy().as("onNavigate");
     cy.mount(
       <MoveCopyContent
         isOpen={true}
         onClose={onCloseSpy}
+        onNavigate={onNavigateSpy}
+        fetcher={mockFetcher}
         sourceContent={[
           {
             contentId,
@@ -110,10 +126,13 @@ describe("MoveCopyContent component tests", () => {
     }).as("getData");
 
     const onCloseSpy = cy.spy().as("onClose");
+    const onNavigateSpy = cy.spy().as("onNavigate");
     cy.mount(
       <MoveCopyContent
         isOpen={true}
         onClose={onCloseSpy}
+        onNavigate={onNavigateSpy}
+        fetcher={mockFetcher}
         sourceContent={[
           {
             contentId,
@@ -144,9 +163,471 @@ describe("MoveCopyContent component tests", () => {
       .should("not.be.disabled");
   });
 
-  it.skip("Selecting an items gives appropriate response");
-  it.skip("Execute button is disabled appropriately");
-  it.skip("Clicking execute buttons does the right things");
-  it.skip("select parent folder does the right thing");
-  it.skip("different actions");
+  it("Selecting an item navigates to that item", () => {
+    const contentList2 = [
+      {
+        canOpen: true,
+        contentId: "hij",
+        isAssignment: false,
+        name: "Folder 1",
+        type: "folder",
+      },
+    ];
+
+    cy.intercept("/api/copyMove/getMoveCopyContentData/*", {
+      parent: null,
+      contents: contentList1,
+    }).as("getData");
+
+    cy.intercept("/api/copyMove/getMoveCopyContentData/hij*", {
+      parent: {
+        id: "hij",
+        name: "Folder 1",
+        type: "folder",
+        isPublic: false,
+        sharedWith: [],
+        parent: null,
+      },
+      contents: contentList2,
+    }).as("getFolder1Data");
+
+    const onCloseSpy = cy.spy().as("onClose");
+    const onNavigateSpy = cy.spy().as("onNavigate");
+    cy.mount(
+      <MoveCopyContent
+        isOpen={true}
+        onClose={onCloseSpy}
+        onNavigate={onNavigateSpy}
+        fetcher={mockFetcher}
+        sourceContent={[
+          {
+            contentId,
+            name: contentName,
+            type: contentType,
+          },
+        ]}
+        userId={"abc123"}
+        currentParentId={null}
+        allowedParentTypes={["folder"]}
+        action="Move"
+      />,
+    );
+
+    cy.wait("@getData");
+    cy.get('[data-test="Select Item Option"]').eq(3).click();
+    cy.wait("@getFolder1Data");
+
+    cy.get('[data-test="Current destination"]').should("have.text", "Folder 1");
+  });
+
+  it("Execute button is disabled when same null parent is selected", () => {
+    cy.intercept("/api/copyMove/getMoveCopyContentData/*", {
+      parent: null,
+      contents: contentList1,
+    }).as("getData");
+
+    const onCloseSpy = cy.spy().as("onClose");
+    const onNavigateSpy = cy.spy().as("onNavigate");
+    cy.mount(
+      <MoveCopyContent
+        isOpen={true}
+        onClose={onCloseSpy}
+        onNavigate={onNavigateSpy}
+        fetcher={mockFetcher}
+        sourceContent={[
+          {
+            contentId,
+            name: contentName,
+            type: contentType,
+          },
+        ]}
+        userId={"abc123"}
+        currentParentId={null}
+        allowedParentTypes={["folder"]}
+        action="Move"
+      />,
+    );
+
+    cy.wait("@getData");
+    // When currentParentId is null and we haven't navigated, parent is also null
+    // so actionIsDisabled = (null === null && null === null) = true
+    cy.get('[data-test="Execute MoveCopy Button"]').should("be.disabled");
+  });
+
+  it("Execute button is disabled when currently in same parent folder", () => {
+    const folderContents = [
+      {
+        canOpen: true,
+        contentId: "xyz",
+        isAssignment: false,
+        name: "Another item",
+        type: "folder",
+      },
+    ];
+
+    cy.intercept("/api/copyMove/getMoveCopyContentData/hij*", {
+      parent: {
+        id: "hij",
+        name: "Folder 1",
+        type: "folder",
+        isPublic: false,
+        sharedWith: [],
+        parent: null,
+      },
+      contents: folderContents,
+    }).as("getData");
+
+    const onCloseSpy = cy.spy().as("onClose");
+    const onNavigateSpy = cy.spy().as("onNavigate");
+    cy.mount(
+      <MoveCopyContent
+        isOpen={true}
+        onClose={onCloseSpy}
+        onNavigate={onNavigateSpy}
+        fetcher={mockFetcher}
+        sourceContent={[
+          {
+            contentId,
+            name: contentName,
+            type: contentType,
+          },
+        ]}
+        userId={"abc123"}
+        currentParentId="hij"
+        allowedParentTypes={["folder"]}
+        action="Move"
+      />,
+    );
+
+    cy.wait("@getData");
+    // When currentParentId is "hij" and parent.id is "hij", they match
+    // so actionIsDisabled = (parent.id === parentId) = true
+    cy.get('[data-test="Execute MoveCopy Button"]').should("be.disabled");
+  });
+
+  it("Execute button is enabled when different parent is selected", () => {
+    const folderContent = [
+      {
+        canOpen: true,
+        contentId: "hij",
+        isAssignment: false,
+        name: "Folder 1",
+        type: "folder",
+      },
+    ];
+
+    cy.intercept("/api/copyMove/getMoveCopyContentData/*", {
+      parent: null,
+      contents: contentList1,
+    }).as("getData");
+
+    cy.intercept("/api/copyMove/getMoveCopyContentData/hij*", {
+      parent: {
+        id: "hij",
+        name: "Folder 1",
+        type: "folder",
+        isPublic: false,
+        sharedWith: [],
+        parent: null,
+      },
+      contents: folderContent,
+    }).as("getFolder1Data");
+
+    const onCloseSpy = cy.spy().as("onClose");
+    const onNavigateSpy = cy.spy().as("onNavigate");
+    cy.mount(
+      <MoveCopyContent
+        isOpen={true}
+        onClose={onCloseSpy}
+        onNavigate={onNavigateSpy}
+        fetcher={mockFetcher}
+        sourceContent={[
+          {
+            contentId,
+            name: contentName,
+            type: contentType,
+          },
+        ]}
+        userId={"abc123"}
+        currentParentId={null}
+        allowedParentTypes={["folder"]}
+        action="Move"
+      />,
+    );
+
+    cy.wait("@getData");
+    cy.get('[data-test="Select Item Option"]').eq(3).click();
+    cy.wait("@getFolder1Data");
+    cy.get('[data-test="Execute MoveCopy Button"]').should("not.be.disabled");
+  });
+
+  it("Back button navigates to parent folder", () => {
+    const folderContent = [
+      {
+        canOpen: true,
+        contentId: "nested",
+        isAssignment: false,
+        name: "Nested Folder",
+        type: "folder",
+      },
+    ];
+
+    const nestedFolderContent: any[] = [];
+
+    cy.intercept("/api/copyMove/getMoveCopyContentData/*", {
+      parent: null,
+      contents: contentList1,
+    }).as("getData");
+
+    cy.intercept("/api/copyMove/getMoveCopyContentData/hij*", {
+      parent: {
+        id: "hij",
+        name: "Folder 1",
+        type: "folder",
+        isPublic: false,
+        sharedWith: [],
+        parent: null,
+      },
+      contents: folderContent,
+    }).as("getFolder1Data");
+
+    cy.intercept("/api/copyMove/getMoveCopyContentData/nested*", {
+      parent: {
+        id: "nested",
+        name: "Nested Folder",
+        type: "folder",
+        isPublic: false,
+        sharedWith: [],
+        parent: {
+          id: "hij",
+          type: "folder",
+        },
+      },
+      contents: nestedFolderContent,
+    }).as("getNestedFolderData");
+
+    const onCloseSpy = cy.spy().as("onClose");
+    const onNavigateSpy = cy.spy().as("onNavigate");
+    cy.mount(
+      <MoveCopyContent
+        isOpen={true}
+        onClose={onCloseSpy}
+        onNavigate={onNavigateSpy}
+        fetcher={mockFetcher}
+        sourceContent={[
+          {
+            contentId,
+            name: contentName,
+            type: contentType,
+          },
+        ]}
+        userId={"abc123"}
+        currentParentId={null}
+        allowedParentTypes={["folder"]}
+        action="Move"
+      />,
+    );
+
+    cy.wait("@getData");
+    cy.get('[data-test="Select Item Option"]').eq(3).click();
+    cy.wait("@getFolder1Data");
+    cy.get('[data-test="Current destination"]').should("have.text", "Folder 1");
+
+    cy.get('[data-test="Select Item Option"]').eq(0).click();
+    cy.wait("@getNestedFolderData");
+    cy.get('[data-test="Current destination"]').should(
+      "have.text",
+      "Nested Folder",
+    );
+
+    cy.get('[data-test="Back Arrow"]').click();
+    cy.get('[data-test="Current destination"]').should("have.text", "Folder 1");
+  });
+
+  it("different actions show correct heading text", () => {
+    cy.intercept("/api/copyMove/getMoveCopyContentData/*", {
+      parent: null,
+      contents: contentList1,
+    }).as("getData");
+
+    const onCloseSpy = cy.spy().as("onClose");
+    const onNavigateSpy = cy.spy().as("onNavigate");
+
+    // Test Move action
+    cy.mount(
+      <MoveCopyContent
+        isOpen={true}
+        onClose={onCloseSpy}
+        onNavigate={onNavigateSpy}
+        fetcher={mockFetcher}
+        sourceContent={[
+          {
+            contentId,
+            name: contentName,
+            type: contentType,
+          },
+        ]}
+        userId={"abc123"}
+        currentParentId={null}
+        allowedParentTypes={["folder"]}
+        action="Move"
+      />,
+    );
+
+    cy.wait("@getData");
+    cy.get('[data-test="MoveCopy Heading 1"]').should("contain", "Move");
+
+    cy.get('[data-test="Cancel Button"]').click();
+
+    // Test Copy action
+    cy.intercept("/api/copyMove/getMoveCopyContentData/*", {
+      parent: null,
+      contents: contentList1,
+    }).as("getData2");
+
+    cy.mount(
+      <MoveCopyContent
+        isOpen={true}
+        onClose={onCloseSpy}
+        onNavigate={onNavigateSpy}
+        fetcher={mockFetcher}
+        sourceContent={[
+          {
+            contentId,
+            name: contentName,
+            type: contentType,
+          },
+        ]}
+        userId={"abc123"}
+        currentParentId={null}
+        allowedParentTypes={["folder"]}
+        action="Copy"
+      />,
+    );
+
+    cy.wait("@getData2");
+    cy.get('[data-test="MoveCopy Heading 1"]').should("contain", "Copy");
+  });
+
+  describe("accessibility tests", () => {
+    it("is accessible with initial state (Move action)", () => {
+      cy.intercept("/api/copyMove/getMoveCopyContentData/*", {
+        parent: null,
+        contents: contentList1,
+      }).as("getData");
+
+      const onCloseSpy = cy.spy().as("onClose");
+      const onNavigateSpy = cy.spy().as("onNavigate");
+      cy.mount(
+        <MoveCopyContent
+          isOpen={true}
+          onClose={onCloseSpy}
+          onNavigate={onNavigateSpy}
+          fetcher={mockFetcher}
+          sourceContent={[
+            {
+              contentId,
+              name: contentName,
+              type: contentType,
+            },
+          ]}
+          userId={"abc123"}
+          currentParentId={null}
+          allowedParentTypes={["folder"]}
+          action="Move"
+        />,
+      );
+
+      cy.wait("@getData");
+      cy.checkAccessibility("body");
+    });
+
+    it("is accessible with Copy action", () => {
+      cy.intercept("/api/copyMove/getMoveCopyContentData/*", {
+        parent: null,
+        contents: contentList1,
+      }).as("getData");
+
+      const onCloseSpy = cy.spy().as("onClose");
+      const onNavigateSpy = cy.spy().as("onNavigate");
+      cy.mount(
+        <MoveCopyContent
+          isOpen={true}
+          onClose={onCloseSpy}
+          onNavigate={onNavigateSpy}
+          fetcher={mockFetcher}
+          sourceContent={[
+            {
+              contentId,
+              name: contentName,
+              type: contentType,
+            },
+          ]}
+          userId={"abc123"}
+          currentParentId={null}
+          allowedParentTypes={["folder"]}
+          action="Copy"
+        />,
+      );
+
+      cy.wait("@getData");
+      cy.checkAccessibility("body");
+    });
+
+    it("is accessible when navigated to a folder", () => {
+      const folderContent = [
+        {
+          canOpen: true,
+          contentId: "hij",
+          isAssignment: false,
+          name: "Folder 1",
+          type: "folder",
+        },
+      ];
+
+      cy.intercept("/api/copyMove/getMoveCopyContentData/*", {
+        parent: null,
+        contents: contentList1,
+      }).as("getData");
+
+      cy.intercept("/api/copyMove/getMoveCopyContentData/hij*", {
+        parent: {
+          id: "hij",
+          name: "Folder 1",
+          type: "folder",
+          isPublic: false,
+          sharedWith: [],
+          parent: null,
+        },
+        contents: folderContent,
+      }).as("getFolder1Data");
+
+      const onCloseSpy = cy.spy().as("onClose");
+      const onNavigateSpy = cy.spy().as("onNavigate");
+      cy.mount(
+        <MoveCopyContent
+          isOpen={true}
+          onClose={onCloseSpy}
+          onNavigate={onNavigateSpy}
+          fetcher={mockFetcher}
+          sourceContent={[
+            {
+              contentId,
+              name: contentName,
+              type: contentType,
+            },
+          ]}
+          userId={"abc123"}
+          currentParentId={null}
+          allowedParentTypes={["folder"]}
+          action="Move"
+        />,
+      );
+
+      cy.wait("@getData");
+      cy.get('[data-test="Select Item Option"]').eq(3).click();
+      cy.wait("@getFolder1Data");
+      cy.checkAccessibility("body");
+    });
+  });
 });
