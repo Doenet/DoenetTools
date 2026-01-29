@@ -45,7 +45,6 @@ import {
   License,
   UserInfoWithEmail,
 } from "../types";
-import { WithSideBanners } from "../layout/WithSideBanners";
 
 // Match the logo's rounded bold lettering with heavier nav text for consistency.
 const navTextStyles = { fontWeight: 500, letterSpacing: "0.01em" };
