@@ -8,24 +8,21 @@ import {
   ModalContent,
   Box,
   FormControl,
-  FormLabel,
   Input,
   Radio,
   RadioGroup,
   Stack,
-  Wrap,
+  HStack,
   Button,
   ModalFooter,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { contentTypeToName } from "../utils/activity";
 import { EditAssignmentSettings } from "../widgets/editor/EditAssignmentSettings";
-import { ContentDescription } from "../types";
-import { useFetcher } from "react-router";
+import { ContentDescription, AssignmentMode } from "../types";
+import { FetcherWithComponents } from "react-router";
 import { DateTime } from "luxon";
-import { editorUrl } from "../utils/url";
-import { loader as settingsLoader } from "../paths/editor/EditorSettingsMode";
 import { MoveCopyContent } from "./MoveCopyContent";
 
 /**
@@ -37,26 +34,23 @@ export function ConfirmAssignModal({
   isOpen,
   userId,
   onClose,
+  fetcher,
+  onNavigate,
+  maxAttempts,
+  individualizeByStudent,
+  mode,
 }: {
   contentDescription: ContentDescription;
   isOpen: boolean;
   userId: string;
   onClose: () => void;
+  fetcher: FetcherWithComponents<any>;
+  onNavigate: (url: string) => void;
+  maxAttempts?: number | null;
+  individualizeByStudent?: boolean;
+  mode?: AssignmentMode | null;
 }) {
   const { contentId, type: contentType } = contentDescription;
-
-  // ==== Load existing settings ====
-  // NOTE: Technically, we are loading more settings than we need to.
-  // In the future, we might want to make `getAssignmentSettings` its own api/route
-  // We're using a fetcher here so that it loads every time React Router revalidates the page
-  const fetcher = useFetcher<typeof settingsLoader>();
-  useEffect(() => {
-    if (isOpen && fetcher.state === "idle" && !fetcher.data) {
-      fetcher.load(editorUrl(contentId, contentType, "settings"));
-    }
-  }, [isOpen, fetcher, contentId, contentType]);
-
-  const submitFetcher = useFetcher();
 
   const [duration, setDuration] = useState(JSON.stringify({ hours: 48 }));
   const [customClosedOn, setCustomClosedOn] = useState(
@@ -94,12 +88,16 @@ export function ConfirmAssignModal({
           <ModalCloseButton />
           <ModalBody>
             <Heading size="sm">Review your assignment settings</Heading>
-            {fetcher.data ? (
+            {maxAttempts !== undefined &&
+            maxAttempts !== null &&
+            individualizeByStudent !== undefined &&
+            mode !== undefined &&
+            mode !== null ? (
               <EditAssignmentSettings
                 contentId={contentId}
-                maxAttempts={fetcher.data.maxAttempts}
-                individualizeByStudent={fetcher.data.individualizeByStudent}
-                mode={fetcher.data.mode}
+                maxAttempts={maxAttempts}
+                individualizeByStudent={individualizeByStudent}
+                mode={mode}
                 includeMode={contentType !== "singleDoc"}
               />
             ) : (
@@ -115,12 +113,12 @@ export function ConfirmAssignModal({
                 <Radio value={JSON.stringify({ hours: 48 })}>48 Hours</Radio>
                 <Radio value={JSON.stringify({ weeks: 2 })}>2 Weeks</Radio>
                 <Radio value={JSON.stringify({ years: 1 })}>1 Year</Radio>
-                <Wrap>
+                <HStack spacing={2}>
                   <Radio value={"custom"}>Custom</Radio>
                   <Box>
                     <FormControl isDisabled={duration !== "custom"}>
-                      <FormLabel hidden={true}>Custom close time</FormLabel>
                       <Input
+                        aria-label="Custom close time"
                         zIndex="overlay"
                         type="datetime-local"
                         size="sm"
@@ -146,7 +144,7 @@ export function ConfirmAssignModal({
                       />
                     </FormControl>
                   </Box>
-                </Wrap>
+                </HStack>
               </Stack>
             </RadioGroup>
           </ModalBody>
@@ -169,6 +167,8 @@ export function ConfirmAssignModal({
       <MoveCopyContent
         isOpen={moveCopyContentIsOpen}
         onClose={moveCopyContentOnClose}
+        fetcher={fetcher}
+        onNavigate={onNavigate}
         sourceContent={[contentDescription]}
         userId={userId}
         currentParentId={contentDescription.parent?.contentId ?? null}
@@ -193,7 +193,7 @@ export function ConfirmAssignModal({
             precision: "minutes",
           });
 
-          submitFetcher.submit(
+          fetcher.submit(
             {
               path: "assign/createAssignment",
               contentId,

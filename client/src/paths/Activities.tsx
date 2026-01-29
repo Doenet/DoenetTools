@@ -192,7 +192,26 @@ export function Activities() {
     document.title = `${parent?.name ?? "My Activities"} - Doenet`;
   }, [parent]);
 
-  const fetcher = useFetcher();
+  // Used for inline card actions (move up/down, duplicate)
+  const contentActionsFetcher = useFetcher();
+
+  // Used for creating new documents and problem sets
+  const createContentFetcher = useFetcher();
+
+  // Used by MoveCopyContent modal
+  const moveContentFetcher = useFetcher();
+
+  // Used by CreateLocalContent modal (folder creation)
+  const createFolderFetcher = useFetcher();
+
+  // Used by CopyContentAndReportFinish modal
+  const copyContentFetcher = useFetcher();
+
+  // Used by ActivateAuthorMode modal
+  const authorModeFetcher = useFetcher();
+
+  // Used by AddContentToMenu component
+  const addContentFetcher = useFetcher();
 
   function getCardMenuList({
     contentId,
@@ -223,7 +242,7 @@ export function Activities() {
           <MenuItem
             data-test="Move Up Menu Item"
             onClick={() => {
-              fetcher.submit(
+              contentActionsFetcher.submit(
                 {
                   path: "copyMove/moveContent",
                   contentId,
@@ -241,7 +260,7 @@ export function Activities() {
           <MenuItem
             data-test="Move Down Menu Item"
             onClick={() => {
-              fetcher.submit(
+              contentActionsFetcher.submit(
                 {
                   path: "copyMove/moveContent",
                   contentId,
@@ -277,7 +296,7 @@ export function Activities() {
         <MenuItem
           data-test={"Duplicate Content"}
           onClick={() => {
-            fetcher.submit(
+            contentActionsFetcher.submit(
               {
                 path: "copyMove/copyContent",
                 contentIds: [contentId],
@@ -366,7 +385,7 @@ export function Activities() {
 
   function createNewDocument() {
     setHaveContentSpinner(true);
-    fetcher.submit(
+    createContentFetcher.submit(
       {
         path: "updateContent/createContent",
         redirectNewContentId: true,
@@ -381,7 +400,7 @@ export function Activities() {
     <MoveCopyContent
       isOpen={moveCopyContentIsOpen}
       onClose={moveCopyContentOnClose}
-      fetcher={fetcher}
+      fetcher={moveContentFetcher}
       onNavigate={(url) => navigate(url)}
       sourceContent={[moveCopyData]}
       userId={userId}
@@ -398,7 +417,7 @@ export function Activities() {
       onClose={createFolderOnClose}
       contentType="folder"
       parentId={parentId}
-      fetcher={fetcher}
+      fetcher={createFolderFetcher}
       finalFocusRef={finalFocusRef}
     />
   );
@@ -429,7 +448,7 @@ export function Activities() {
         action="Add"
         setAddTo={setAddTo}
         user={user ?? null}
-        fetcher={fetcher}
+        fetcher={copyContentFetcher}
         onNavigate={navigate}
       />
     ) : null;
@@ -447,7 +466,7 @@ export function Activities() {
       desiredAction="create doc"
       user={user!}
       proceedCallback={createNewDocument}
-      fetcher={fetcher}
+      fetcher={authorModeFetcher}
     />
   );
 
@@ -494,7 +513,7 @@ export function Activities() {
           data-test="Add Problem Set Button"
           onClick={() => {
             setHaveContentSpinner(true);
-            fetcher.submit(
+            createContentFetcher.submit(
               {
                 path: "updateContent/createContent",
                 redirectNewContentId: true,
@@ -626,7 +645,7 @@ export function Activities() {
           {addTo === null && (
             <>
               <AddContentToMenu
-                fetcher={fetcher}
+                fetcher={addContentFetcher}
                 sourceContent={selectedCardsFiltered}
                 size="xs"
                 colorScheme="blue"
