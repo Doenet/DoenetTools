@@ -539,6 +539,7 @@ describe("MoveCopyContent component tests", () => {
       );
 
       cy.wait("@getData");
+      cy.wait(100);
       cy.checkAccessibility("body");
     });
 
@@ -571,6 +572,7 @@ describe("MoveCopyContent component tests", () => {
       );
 
       cy.wait("@getData");
+      cy.wait(100);
       cy.checkAccessibility("body");
     });
 
@@ -627,6 +629,7 @@ describe("MoveCopyContent component tests", () => {
       cy.wait("@getData");
       cy.get('[data-test="Select Item Option"]').eq(3).click();
       cy.wait("@getFolder1Data");
+      cy.wait(100);
       cy.checkAccessibility("body");
     });
   });
