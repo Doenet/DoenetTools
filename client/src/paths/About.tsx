@@ -9,9 +9,9 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink, useOutletContext } from "react-router";
-import { WithSideBanners } from "./Home";
 import { SiteContext } from "./SiteHeader";
 import { getDiscourseUrl } from "../utils/discourse";
+import { WithSideBanners } from "../layout/WithSideBanners";
 
 export function About() {
   useEffect(() => {
@@ -52,36 +52,6 @@ export function About() {
                 Doenet and content created with Doenet will always be freely
                 available.
               </Text>
-
-              {/* What You Can Do Section */}
-              <VStack align="flex-start" spacing="10px" w="100%" mt="60px">
-                <Heading size="md">What you can do</Heading>
-                <Box display="flex" gap="12px" flexWrap="wrap">
-                  <CustomButton
-                    label="Explore existing content"
-                    to="/explore"
-                  />
-                  <CustomButton
-                    label="How to get involved"
-                    href="https://pages.doenet.org"
-                  />
-                  <CustomButton
-                    label="Start authoring"
-                    href="https://docs.doenet.org"
-                  />
-                </Box>
-              </VStack>
-
-              <VStack align="flex-start" spacing="10px" w="100%" mt="40px">
-                <Heading size="md">Get in touch</Heading>
-                <Box display="flex" gap="12px" flexWrap="wrap">
-                  <CustomButton
-                    label="Community discussions"
-                    href={discussHref}
-                  />
-                  {/* <CustomButton label="Events" to="/events" /> */}
-                </Box>
-              </VStack>
             </Box>
             <Box flex="0 0 auto" order={{ base: 1, md: 2 }}>
               <Image
@@ -92,59 +62,52 @@ export function About() {
               />
             </Box>
           </Flex>
+          {/* What You Can Do Section */}
+          <VStack align="flex-start" spacing="10px" w="100%" mt="60px">
+            <Heading size="md">What you can do</Heading>
+            <Box display="flex" gap="12px" flexWrap="wrap">
+              <CustomButton label="Explore existing content" to="/explore" />
+              <CustomButton
+                label="How to get involved"
+                to="https://pages.doenet.org"
+              />
+              <CustomButton
+                label="Start authoring"
+                to="https://docs.doenet.org"
+              />
+            </Box>
+          </VStack>
+
+          <VStack align="flex-start" spacing="10px" w="100%" mt="40px">
+            <Heading size="md">Get in touch</Heading>
+            <Box display="flex" gap="12px" flexWrap="wrap">
+              <CustomButton label="Community discussions" to={discussHref} />
+              {/* <CustomButton label="Events" to="/events" /> */}
+            </Box>
+          </VStack>
         </Box>
       </WithSideBanners>
     </>
   );
 }
 
-function CustomButton({
-  label,
-  to,
-  href,
-}: {
-  label: string;
-  to?: string;
-  href?: string;
-}) {
-  if (to) {
-    return (
-      <ChakraLink
-        as={ReactRouterLink}
-        to={to}
-        fontSize="1.1rem"
-        textDecoration="none"
-        bg="surface"
-        borderColor="border"
-        borderWidth="1px"
-        borderStyle="solid"
-        px="12px"
-        py="8px"
-        borderRadius="md"
-        _hover={{ bg: "interact", boxShadow: "sm" }}
-      >
-        {label}
-      </ChakraLink>
-    );
-  } else if (href) {
-    return (
-      <ChakraLink
-        href={href}
-        fontSize="1.1rem"
-        textDecoration="none"
-        bg="surface"
-        borderColor="border"
-        borderWidth="1px"
-        borderStyle="solid"
-        px="12px"
-        py="8px"
-        borderRadius="md"
-        _hover={{ bg: "interact", boxShadow: "sm" }}
-      >
-        {label}
-      </ChakraLink>
-    );
-  } else {
-    throw new Error("CustomButton requires either 'to' or 'href' prop");
-  }
+function CustomButton({ label, to }: { label: string; to: string }) {
+  return (
+    <ChakraLink
+      as={ReactRouterLink}
+      to={to}
+      fontSize="1.1rem"
+      textDecoration="none"
+      bg="surface"
+      borderColor="border"
+      borderWidth="1px"
+      borderStyle="solid"
+      px="12px"
+      py="8px"
+      borderRadius="md"
+      _hover={{ bg: "interact", boxShadow: "sm" }}
+    >
+      {label}
+    </ChakraLink>
+  );
 }
