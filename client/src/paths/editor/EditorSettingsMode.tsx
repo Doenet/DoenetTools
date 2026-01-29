@@ -96,6 +96,8 @@ export function EditorSettingsModeComponent({
   maxAttemptsFetcher,
   variantFetcher,
   modeFetcher,
+  deleteClassificationFetcher,
+  addClassificationFetcher,
 }: {
   isPublic: boolean;
   isShared: boolean;
@@ -119,6 +121,8 @@ export function EditorSettingsModeComponent({
   maxAttemptsFetcher: any;
   variantFetcher: any;
   modeFetcher: any;
+  deleteClassificationFetcher: any;
+  addClassificationFetcher: any;
 }) {
   const showUpgradeSyntax = Boolean(
     doenetmlVersionId &&
@@ -159,6 +163,8 @@ export function EditorSettingsModeComponent({
             <EditClassifications
               contentId={contentId}
               classifications={classifications}
+              deleteClassificationFetcher={deleteClassificationFetcher}
+              addClassificationFetcher={addClassificationFetcher}
             />
           </Box>
         </Box>
@@ -266,6 +272,10 @@ export function EditorSettingsMode() {
   const variantFetcher = useFetcher();
   const modeFetcher = useFetcher();
 
+  // Create fetchers for EditClassifications
+  const deleteClassificationFetcher = useFetcher();
+  const addClassificationFetcher = useFetcher();
+
   return (
     <EditorSettingsModeComponent
       isPublic={isPublic}
@@ -290,6 +300,8 @@ export function EditorSettingsMode() {
       maxAttemptsFetcher={maxAttemptsFetcher}
       variantFetcher={variantFetcher}
       modeFetcher={modeFetcher}
+      deleteClassificationFetcher={deleteClassificationFetcher}
+      addClassificationFetcher={addClassificationFetcher}
     />
   );
 }

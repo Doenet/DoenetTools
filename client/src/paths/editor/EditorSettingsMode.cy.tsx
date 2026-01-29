@@ -104,6 +104,8 @@ describe("EditorSettingsModeComponent", () => {
     maxAttemptsFetcher: createMockFetcher(),
     variantFetcher: createMockFetcher(),
     modeFetcher: createMockFetcher(),
+    deleteClassificationFetcher: createMockFetcher(),
+    addClassificationFetcher: createMockFetcher(),
   });
 
   it("renders correctly and is accessible", () => {

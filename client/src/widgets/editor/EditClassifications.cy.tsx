@@ -1,4 +1,5 @@
 import { EditClassifications } from "./EditClassifications";
+import { FetcherWithComponents } from "react-router";
 import { ContentClassification } from "../../types";
 
 describe("EditClassifications Component", () => {
@@ -46,13 +47,26 @@ describe("EditClassifications Component", () => {
 
   const mockClassifications = [mockClassification];
 
-  const defaultProps = {
+  function createMockFetcher() {
+    return {
+      state: "idle",
+      formData: undefined,
+      data: undefined,
+      Form: ({ children }: any) => <form>{children}</form>,
+      submit: cy.stub(),
+      load: () => {},
+    } as unknown as FetcherWithComponents<any>;
+  }
+
+  const getDefaultProps = () => ({
     contentId: "test-content-123",
     classifications: mockClassifications,
-  };
+    deleteClassificationFetcher: createMockFetcher(),
+    addClassificationFetcher: createMockFetcher(),
+  });
 
   it("renders correctly and is accessible", () => {
-    cy.mount(<EditClassifications {...defaultProps} />);
+    cy.mount(<EditClassifications {...getDefaultProps()} />);
 
     // Verify the component renders with expected content
     cy.contains("button", "Add a classification").should("be.visible");
@@ -64,10 +78,7 @@ describe("EditClassifications Component", () => {
 
   it("is accessible with no classifications", () => {
     cy.mount(
-      <EditClassifications
-        contentId={defaultProps.contentId}
-        classifications={[]}
-      />,
+      <EditClassifications {...getDefaultProps()} classifications={[]} />,
     );
 
     cy.contains("None added yet.").should("be.visible");
@@ -112,7 +123,7 @@ describe("EditClassifications Component", () => {
 
     cy.mount(
       <EditClassifications
-        contentId={defaultProps.contentId}
+        {...getDefaultProps()}
         classifications={multipleClassifications}
       />,
     );
@@ -124,7 +135,7 @@ describe("EditClassifications Component", () => {
   });
 
   it("is accessible when expanded", () => {
-    cy.mount(<EditClassifications {...defaultProps} />);
+    cy.mount(<EditClassifications {...getDefaultProps()} />);
 
     // Expand the accordion
     cy.contains(mockClassification.code).click();
@@ -133,7 +144,7 @@ describe("EditClassifications Component", () => {
   });
 
   it("is accessible with remove button visible", () => {
-    cy.mount(<EditClassifications {...defaultProps} />);
+    cy.mount(<EditClassifications {...getDefaultProps()} />);
 
     // Close button should have proper aria-label
     cy.get("[aria-label*='Remove classification']").should("be.visible");
