@@ -45,6 +45,7 @@ import {
   License,
   UserInfoWithEmail,
 } from "../types";
+import { getDiscourseUrl } from "../utils/discourse";
 
 // Match the logo's rounded bold lettering with heavier nav text for consistency.
 const navTextStyles = { fontWeight: 500, letterSpacing: "0.01em" };
@@ -117,9 +118,7 @@ export function SiteHeader() {
     allDoenetmlVersions,
   };
 
-  const discussHref = `${import.meta.env.VITE_DISCOURSE_URL}${
-    user && user?.isAnonymous === false ? "/session/sso" : ""
-  }`;
+  const discussHref = getDiscourseUrl(user);
 
   const navSectionGeneral: NavItem[] = [
     { label: "Explore", to: "explore" },

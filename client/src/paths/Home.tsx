@@ -22,6 +22,7 @@ import {
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink, useOutletContext } from "react-router";
 import { SiteContext } from "./SiteHeader";
+import { getDiscourseUrl } from "../utils/discourse";
 import { WithSideBanners } from "../layout/WithSideBanners";
 
 export async function loader() {
@@ -207,7 +208,7 @@ export function Home() {
     </WithSideBanners>
   );
 
-  const discussHref = `${import.meta.env.VITE_DISCOURSE_URL}${user && user?.isAnonymous === false ? "/session/sso" : ""}`;
+  const discussHref = getDiscourseUrl(user);
 
   const communitySection = (
     <WithSideBanners bgColor="white" padding="70px">

@@ -122,6 +122,7 @@ import {
 } from "./paths/SharedWithMe";
 import { editorUrl } from "./utils/url";
 import { ScratchPad, loader as scratchPadLoader } from "./paths/ScratchPad";
+import { About } from "./paths/About";
 
 const router = createBrowserRouter([
   {
@@ -154,6 +155,11 @@ const router = createBrowserRouter([
         loader: exploreLoader,
         action: genericAction,
         element: <Explore />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "about",
+        element: <About />,
         errorElement: <ErrorPage />,
       },
       {
