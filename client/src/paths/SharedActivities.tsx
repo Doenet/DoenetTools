@@ -100,6 +100,10 @@ export function SharedActivities() {
 
   const fetcher = useFetcher();
 
+  // Used by CreateContentMenu component
+  const createContentMenuCreateFetcher = useFetcher();
+  const createContentMenuSaveNameFetcher = useFetcher();
+
   const [infoContentId, setInfoContentId] = useState<string | null>(null);
 
   const {
@@ -245,6 +249,10 @@ export function SharedActivities() {
                 size="xs"
                 colorScheme="blue"
                 label="Create from selected"
+                user={user ?? null}
+                navigate={navigate}
+                createFetcher={createContentMenuCreateFetcher}
+                saveNameFetcher={createContentMenuSaveNameFetcher}
               />
             </HStack>
             {addTo !== null ? (

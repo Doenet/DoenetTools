@@ -1,5 +1,5 @@
 import { ReactElement, useEffect, useState } from "react";
-import { ContentDescription, ContentType } from "../types";
+import { ContentDescription, ContentType, UserInfo } from "../types";
 import {
   Button,
   Menu,
@@ -12,6 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { getAllowedParentTypes, menuIcons } from "../utils/activity";
 import { CreateContentAndPromptName } from "../popups/CreateContentAndPromptName";
+import { FetcherWithComponents, NavigateFunction } from "react-router";
 
 export function CreateContentMenu({
   sourceContent,
@@ -19,6 +20,10 @@ export function CreateContentMenu({
   label,
   colorScheme,
   followAllowedParents = false,
+  user,
+  navigate,
+  createFetcher,
+  saveNameFetcher,
 }: {
   sourceContent: ContentDescription[];
   size?: ResponsiveValue<(string & {}) | "xs" | "sm" | "md" | "lg">;
@@ -38,6 +43,10 @@ export function CreateContentMenu({
     | "whiteAlpha"
     | "blackAlpha";
   followAllowedParents?: boolean;
+  user: UserInfo | null;
+  navigate: NavigateFunction;
+  createFetcher: FetcherWithComponents<any>;
+  saveNameFetcher: FetcherWithComponents<any>;
 }) {
   const [createNewType, setCreateNewType] = useState<ContentType>("folder");
   const [allowedParents, setAllowedParents] = useState<ContentType[]>([]);
@@ -62,6 +71,10 @@ export function CreateContentMenu({
       onClose={createDialogOnClose}
       contentIds={sourceContent.map((sc) => sc.contentId)}
       desiredType={createNewType}
+      user={user}
+      navigate={navigate}
+      createFetcher={createFetcher}
+      saveNameFetcher={saveNameFetcher}
     />
   );
 

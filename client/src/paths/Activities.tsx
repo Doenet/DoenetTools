@@ -213,6 +213,10 @@ export function Activities() {
   // Used by AddContentToMenu component
   const addContentFetcher = useFetcher();
 
+  // Used by CreateContentMenu component
+  const createContentMenuCreateFetcher = useFetcher();
+  const createContentMenuSaveNameFetcher = useFetcher();
+
   function getCardMenuList({
     contentId,
     name,
@@ -659,6 +663,10 @@ export function Activities() {
                 size="xs"
                 colorScheme="blue"
                 label="Create from selected"
+                user={user ?? null}
+                navigate={navigate}
+                createFetcher={createContentMenuCreateFetcher}
+                saveNameFetcher={createContentMenuSaveNameFetcher}
               />
             </>
           )}

@@ -203,6 +203,10 @@ export function Explore() {
 
   const fetcher = useFetcher();
 
+  // Used by CreateContentMenu component
+  const createContentMenuCreateFetcher = useFetcher();
+  const createContentMenuSaveNameFetcher = useFetcher();
+
   const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
   const selectedCardsFiltered = selectedCards.filter((c) => c);
   const numSelected = selectedCardsFiltered.length;
@@ -822,6 +826,10 @@ export function Explore() {
                   size="xs"
                   colorScheme="blue"
                   label="Create from selected"
+                  user={user ?? null}
+                  navigate={navigate}
+                  createFetcher={createContentMenuCreateFetcher}
+                  saveNameFetcher={createContentMenuSaveNameFetcher}
                 />
               </HStack>
               {addTo !== null ? (

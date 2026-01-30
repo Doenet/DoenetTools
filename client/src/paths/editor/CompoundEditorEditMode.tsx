@@ -17,6 +17,15 @@ export async function loader({ params }: { params: any }) {
 export function CompoundEditorEditMode() {
   const { content: activity } = useLoaderData() as { content: Content };
   const fetcher = useFetcher();
+  const createContentMenuCreateFetcher = useFetcher();
+  const createContentMenuSaveNameFetcher = useFetcher();
 
-  return <CompoundActivityEditor activity={activity} fetcher={fetcher} />;
+  return (
+    <CompoundActivityEditor
+      activity={activity}
+      fetcher={fetcher}
+      createContentMenuCreateFetcher={createContentMenuCreateFetcher}
+      createContentMenuSaveNameFetcher={createContentMenuSaveNameFetcher}
+    />
+  );
 }

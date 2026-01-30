@@ -49,12 +49,16 @@ export function CompoundActivityEditor({
   inLibrary = false,
   fetcher,
   finalFocusRef,
+  createContentMenuCreateFetcher,
+  createContentMenuSaveNameFetcher,
 }: {
   activity: Content;
   asViewer?: boolean;
   inLibrary?: boolean;
   fetcher: FetcherWithComponents<any>;
   finalFocusRef?: RefObject<HTMLElement | null>;
+  createContentMenuCreateFetcher: FetcherWithComponents<any>;
+  createContentMenuSaveNameFetcher: FetcherWithComponents<any>;
 }) {
   const contentTypeName = contentTypeToName[activity.type];
 
@@ -654,6 +658,10 @@ export function CompoundActivityEditor({
               size="xs"
               colorScheme="blue"
               label="Create from selected"
+              user={user ?? null}
+              navigate={navigate}
+              createFetcher={createContentMenuCreateFetcher}
+              saveNameFetcher={createContentMenuSaveNameFetcher}
             />
           </HStack>
           {addTo !== null ? (
