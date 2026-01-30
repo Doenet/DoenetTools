@@ -13,6 +13,10 @@ export default function CardList({
   showAddButton = false,
   showLibraryEditor = false,
   emptyMessage,
+  /**
+   * Sparse array of the selected cards, indexed by their index in `content`
+   * Ex: Second card of `content` is selected. Then `selectedCards` = [undefined, ContentDescription]
+   */
   selectedCards,
   setSelectedCards,
   disableSelectFor,
@@ -36,14 +40,16 @@ export default function CardList({
   showAddButton?: boolean;
   showLibraryEditor?: boolean;
   emptyMessage: string;
-  selectedCards?: ContentDescription[];
-  setSelectedCards?: Dispatch<SetStateAction<ContentDescription[]>>;
+  selectedCards?: (ContentDescription | undefined)[];
+  setSelectedCards?: Dispatch<
+    SetStateAction<(ContentDescription | undefined)[]>
+  >;
   disableSelectFor?: string[];
   disableAsSelectedFor?: string[];
   isAuthor?: boolean;
   addDocumentCallback?: (contentId: string) => void;
 }) {
-  const selectedCardsFiltered = selectedCards?.filter((s) => s);
+  const selectedCardsFiltered = selectedCards?.filter((s) => s !== undefined);
 
   if (content.length === 0) {
     return (
@@ -142,11 +148,7 @@ export default function CardList({
             showAddButton={showAddButton}
             showLibraryEditor={showLibraryEditor}
             indentLevel={cardContent.indentLevel}
-            selectedCards={
-              selectedCardsFiltered
-                ? selectedCardsFiltered.map((sc) => sc.contentId)
-                : undefined
-            }
+            selectedCards={selectedCardsFiltered?.map((sc) => sc.contentId)}
             selectCallback={selectCallback}
             isAuthor={isAuthor}
             addDocumentCallback={addDocumentCallback}

@@ -26,13 +26,15 @@ export function SharedWithMe() {
   // which should be given focus when drawers are closed
   const cardMenuRefs = useRef<HTMLButtonElement[]>([]);
 
-  const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
+  const [selectedCards, setSelectedCards] = useState<
+    (ContentDescription | undefined)[]
+  >([]);
 
   useEffect(() => {
     setSelectedCards((was) => {
       let foundMissing = false;
       const newList = content.map((c: Content) => c.contentId);
-      for (const c of was.filter((x) => x)) {
+      for (const c of was.filter((x) => x !== undefined)) {
         if (!newList.includes(c.contentId)) {
           foundMissing = true;
           break;

@@ -73,10 +73,12 @@ export function CompoundActivityEditor({
   // `selectedCards` is a sparse array where the index is the index in the CardList.
   // When a card is selected, any entries corresponding to unselected cards above it
   // will be empty.
-  const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
+  const [selectedCards, setSelectedCards] = useState<
+    (ContentDescription | undefined)[]
+  >([]);
 
   // `selectedCardsFiltered` removes any undefined entries from `selectedCards`
-  const selectedCardsFiltered = selectedCards.filter((c) => c);
+  const selectedCardsFiltered = selectedCards.filter((c) => c !== undefined);
 
   const numSelected = selectedCardsFiltered.length;
 
@@ -433,7 +435,7 @@ export function CompoundActivityEditor({
     setSelectedCards((was) => {
       let foundMissing = false;
       const newList = Object.keys(contentById);
-      for (const c of was.filter((x) => x)) {
+      for (const c of was.filter((x) => x !== undefined)) {
         if (!newList.includes(c.contentId)) {
           foundMissing = true;
           break;

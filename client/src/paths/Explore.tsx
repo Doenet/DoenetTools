@@ -203,8 +203,10 @@ export function Explore() {
 
   const fetcher = useFetcher();
 
-  const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
-  const selectedCardsFiltered = selectedCards.filter((c) => c);
+  const [selectedCards, setSelectedCards] = useState<
+    (ContentDescription | undefined)[]
+  >([]);
+  const selectedCardsFiltered = selectedCards.filter((c) => c !== undefined);
   const numSelected = selectedCardsFiltered.length;
 
   const { search } = useLocation();
@@ -292,7 +294,7 @@ export function Explore() {
       if (trendingContent) {
         newList.push(...trendingContent.map((c) => c.contentId));
       }
-      for (const c of was.filter((x) => x)) {
+      for (const c of was.filter((x) => x !== undefined)) {
         if (!newList.includes(c.contentId)) {
           foundMissing = true;
           break;

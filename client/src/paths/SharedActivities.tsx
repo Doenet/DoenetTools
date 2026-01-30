@@ -67,15 +67,17 @@ export function SharedActivities() {
     ? (allLicenses.find((l) => l.code === parent.licenseCode) ?? null)
     : null;
 
-  const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
-  const selectedCardsFiltered = selectedCards.filter((c) => c);
+  const [selectedCards, setSelectedCards] = useState<
+    (ContentDescription | undefined)[]
+  >([]);
+  const selectedCardsFiltered = selectedCards.filter((c) => c !== undefined);
   const numSelected = selectedCardsFiltered.length;
 
   useEffect(() => {
     setSelectedCards((was) => {
       let foundMissing = false;
       const newList = content.map((c) => c.contentId);
-      for (const c of was.filter((x) => x)) {
+      for (const c of was.filter((x) => x !== undefined)) {
         if (!newList.includes(c.contentId)) {
           foundMissing = true;
           break;
