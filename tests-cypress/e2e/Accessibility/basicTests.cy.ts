@@ -163,21 +163,93 @@ describe("Basic accessibility tests", function () {
     });
   });
 
-  it("Check accessibility of activity viewer", () => {
+  it("Check accessibility of activity viewer with document", () => {
     cy.loginAsTestUser();
     cy.createContent({
       name: "Test Document",
-      doenetML: "1+1 = <answer name='ans'>2</answer>",
+      doenetML:
+        "<m>1+1 =</m> <answer name='ans'>2</answer><p><selectFromSequence /></p>",
       makePublic: true,
     }).then((contentId) => {
       cy.visit(`/activityViewer/${contentId}`);
 
-      cy.get('[data-test="Activity Name"]').should(
-        "have.text",
-        "Test Document",
-      );
+      cy.getIframeBody("iframe", ".doenet-viewer").within(() => {
+        cy.get(".doenet-viewer").should("contain.text", "1 +1 =");
+      });
 
       cy.checkAccessibility(undefined);
     });
+  });
+
+  it("Check accessibility of activity viewer with problem set", () => {
+    cy.loginAsTestUser();
+    cy.createContent({
+      name: "Test Problem Set",
+      contentType: "sequence",
+      makePublic: true,
+    }).then((contentId) => {
+      cy.createContent({
+        name: "Test Document 1",
+        doenetML: "<m>1+1 =</m> <answer name='ans'>2</answer>",
+        parentId: contentId,
+      });
+      cy.createContent({
+        name: "Test Document 2",
+        doenetML: "<m>2+2 =</m> <answer name='ans'>4</answer>",
+        parentId: contentId,
+      });
+
+      cy.visit(`/activityViewer/${contentId}`);
+
+      cy.getIframeBody("iframe:eq(0)", ".doenet-viewer").within(() => {
+        cy.get(".doenet-viewer").should("contain.text", "1 +1 =");
+      });
+
+      cy.getIframeBody("iframe:eq(1)", ".doenet-viewer").within(() => {
+        cy.get(".doenet-viewer").should("contain.text", "2 +2 =");
+      });
+
+      cy.checkAccessibility(undefined);
+    });
+  });
+
+  it("Check accessibility of activity document editor", () => {
+    cy.loginAsTestUser();
+    cy.createContent({
+      name: "Test Document",
+      doenetML:
+        "<m>1+1 =</m> <answer name='ans'>2</answer><p><selectFromSequence /></p>",
+      makePublic: true,
+    }).then((contentId) => {
+      cy.visit(`/activityViewer/${contentId}`);
+
+      cy.getIframeBody("iframe", ".doenet-viewer").within(() => {
+        cy.get(".doenet-viewer").should("contain.text", "1 +1 =");
+      });
+
+      cy.get('[data-test="Edit Mode Button"]').click();
+
+      cy.getIframeBody("iframe", ".cm-content").within(() => {
+        cy.get(".cm-line").should(
+          "contain.text",
+          "<m>1+1 =</m> <answer name='ans'>2</answer>",
+        );
+      });
+      cy.getIframeBody("iframe", ".doenet-viewer").within(() => {
+        cy.get(".doenet-viewer").should("contain.text", "1 +1 =");
+      });
+
+      cy.checkAccessibility(undefined);
+    });
+  });
+
+  it("Check accessibility of scratch pad", () => {
+    cy.visit(`/scratchPad`);
+
+    cy.getIframeBody("iframe", ".doenet-viewer").within(() => {
+      cy.get(".doenet-viewer").should("contain.text", "scratch pad");
+    });
+
+    cy.checkAccessibility(undefined);
   });
 });

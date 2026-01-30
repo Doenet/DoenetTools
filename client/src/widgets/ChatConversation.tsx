@@ -10,7 +10,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { DateTime } from "luxon";
-import { useState } from "react";
+import React, { useState } from "react";
 import { AccessibleAvatar } from "./AccessibleAvatar";
 
 type ChatMessage = {
@@ -46,7 +46,7 @@ export function ChatConversation({
       ) : (
         <Grid templateColumns="repeat(5, 1fr)">
           {messages.map((msg, i) => (
-            <>
+            <React.Fragment key={i}>
               <GridItem>
                 <HStack>
                   <AccessibleAvatar
@@ -69,7 +69,7 @@ export function ChatConversation({
               <GridItem>
                 <Text>{msg.dateTime.toLocaleString(timeFormat)}</Text>
               </GridItem>
-            </>
+            </React.Fragment>
           ))}
         </Grid>
       )}
