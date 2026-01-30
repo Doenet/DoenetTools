@@ -3,7 +3,6 @@ import {
   Text,
   Textarea,
   Button,
-  Avatar,
   HStack,
   Heading,
   Grid,
@@ -12,6 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { DateTime } from "luxon";
 import { useState } from "react";
+import { AccessibleAvatar } from "./AccessibleAvatar";
 
 type ChatMessage = {
   user: string;
@@ -49,7 +49,7 @@ export function ChatConversation({
             <>
               <GridItem>
                 <HStack>
-                  <Avatar
+                  <AccessibleAvatar
                     key={`avatar${i}`}
                     marginBottom="5px"
                     border="0"

@@ -4,7 +4,6 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
-  Avatar,
   Flex,
   AvatarGroup,
   Text,
@@ -16,6 +15,7 @@ import { Link as ReactRouterLink } from "react-router";
 import { createNameNoTag, createNameCheckCurateTag } from "../utils/names";
 import { Content, ActivityRemixItem } from "../types";
 import { JSX } from "react";
+import { AccessibleAvatar } from "../widgets/AccessibleAvatar";
 
 export default function ContributorsMenu({
   contributorHistory,
@@ -73,7 +73,7 @@ export default function ContributorsMenu({
   }
 
   const avatars = [
-    <Avatar
+    <AccessibleAvatar
       key={`avatarauthor`}
       margin="6px 12px"
       border="0"
@@ -84,7 +84,7 @@ export default function ContributorsMenu({
 
   avatars.push(
     ...contributorHistory.map((contrib_hist, i) => (
-      <Avatar
+      <AccessibleAvatar
         key={`avatar${i}`}
         margin="6px 12px"
         border="0"
