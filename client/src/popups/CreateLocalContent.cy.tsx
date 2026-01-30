@@ -1,6 +1,5 @@
 import { CreateLocalContent } from "./CreateLocalContent";
 import { FetcherWithComponents } from "react-router";
-import { ContentType } from "../types";
 
 describe("CreateLocalContent component tests", () => {
   function createMockFetcher(state = "idle", data?: any, alias?: string) {
