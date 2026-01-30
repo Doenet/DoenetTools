@@ -68,7 +68,7 @@ describe("Add selected to tests", () => {
 
     cy.visit("/");
 
-    cy.get('[data-test="Activities"]').click();
+    cy.get('[data-test="My Activities"]').click();
 
     // Copy document 1 to problem set 1
     cy.log("Copy document 1 to problem set 1");
@@ -135,7 +135,7 @@ describe("Add selected to tests", () => {
 
     cy.visit("/");
 
-    cy.get('[data-test="Activities"]').click();
+    cy.get('[data-test="My Activities"]').click();
 
     // Copy Problem Set from My Activities to Problem Set F
     cy.log("Copy Problem Set from My Activities to Problem Set F");
@@ -209,7 +209,7 @@ describe("Add selected to tests", () => {
 
     cy.visit("/");
 
-    cy.get('[data-test="Activities"]').click();
+    cy.get('[data-test="My Activities"]').click();
 
     cy.log("Copy document 1, problem set 1 to problem set F");
 
@@ -263,7 +263,7 @@ describe("Add selected to tests", () => {
 
     cy.visit("/");
 
-    cy.get('[data-test="Activities"]').click();
+    cy.get('[data-test="My Activities"]').click();
     cy.get(`[data-test="Content Card"]`)
       .eq(2)
       .should("contain.text", "Folder 1")
@@ -304,7 +304,7 @@ describe("Add selected to tests", () => {
 
     cy.visit("/");
 
-    cy.get('[data-test="Activities"]').click();
+    cy.get('[data-test="My Activities"]').click();
     cy.get(`[data-test="Content Card"]`)
       .eq(1)
       .should("contain.text", "Problem Set 1")
@@ -333,7 +333,7 @@ describe("Add selected to tests", () => {
 
     cy.visit("/");
 
-    cy.get('[data-test="Activities"]').click();
+    cy.get('[data-test="My Activities"]').click();
 
     cy.log("Visit Folder 1");
     cy.get(`[data-test="Content Card"]`)
@@ -383,7 +383,7 @@ describe("Add selected to tests", () => {
 
     cy.visit("/");
 
-    cy.get('[data-test="Activities"]').click();
+    cy.get('[data-test="My Activities"]').click();
 
     cy.log("Visit Problem Set F in Folder 1");
     cy.get(`[data-test="Content Card"]`)
@@ -429,7 +429,7 @@ describe("Add selected to tests", () => {
 
     cy.visit("/");
 
-    cy.get('[data-test="Activities"]').click();
+    cy.get('[data-test="My Activities"]').click();
 
     cy.log("Copy Document P1 from Problem Set 1 to Problem Set 1");
     cy.get(`[data-test="Content Card"]`)
@@ -470,7 +470,7 @@ describe("Add selected to tests", () => {
 
     cy.visit("/");
 
-    cy.get('[data-test="Activities"]').click();
+    cy.get('[data-test="My Activities"]').click();
 
     cy.log("Copy Document P1 to My Activities");
 

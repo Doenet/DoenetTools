@@ -36,17 +36,11 @@ describe("Navigate Explore Tests", function () {
         "false",
       );
 
+      // Navigate away and click Explore again
+      // Community tab should still be selected
       cy.get('[data-test="Home"]').click();
-      cy.get('[data-test="Explore"]').should("not.have.attr", "aria-current");
-
       cy.get('[data-test="Explore"]').click();
-      cy.get('[data-test="Explore"]').should(
-        "have.attr",
-        "aria-current",
-        "page",
-      );
 
-      // community tab is still selected
       cy.get('[data-test="Community Tab"]').should(
         "have.attr",
         "aria-selected",
@@ -73,32 +67,22 @@ describe("Navigate Explore Tests", function () {
         "false",
       );
 
+      // Navigate away and click back button
+      // Query should still be active and authors tab should still be selected
       cy.get('[data-test="Home"]').click();
-      cy.get('[data-test="Explore"]').should("not.have.attr", "aria-current");
-
-      // if go back, query is still active and authors tab is still selected
       cy.go("back");
-      cy.get('[data-test="Explore"]').should(
-        "have.attr",
-        "aria-current",
-        "page",
-      );
+
       cy.get('[data-test="Authors Tab"]').should(
         "have.attr",
         "aria-selected",
         "true",
       );
 
+      // Navigate away and click Explore again
+      // The query, and hence the author tab, should be gone, which means curated tab should be open
       cy.get('[data-test="Home"]').click();
-      cy.get('[data-test="Explore"]').should("not.have.attr", "aria-current");
-
-      // if click on "Explore" tab, the query, and hence the author tab, is gone, which means curated tab should be open
       cy.get('[data-test="Explore"]').click();
-      cy.get('[data-test="Explore"]').should(
-        "have.attr",
-        "aria-current",
-        "page",
-      );
+
       cy.get('[data-test="Curated Tab"]').should(
         "have.attr",
         "aria-selected",

@@ -21,7 +21,7 @@ describe("Create Folders Tests", function () {
 
     cy.visit("/");
 
-    cy.get('[data-test="Activities"]').click();
+    cy.get('[data-test="My Activities"]').click();
     cy.get('[data-test="New Button"]').click();
     cy.get('[data-test="Add Folder Button"]').click();
     cy.get('[data-test="New Content Input"]').type("My new folder{enter}");
@@ -83,7 +83,7 @@ describe("Create Folders Tests", function () {
 
     cy.visit("/");
 
-    cy.get('[data-test="Activities"]').click();
+    cy.get('[data-test="My Activities"]').click();
     cy.get('[data-test="Shared With Me Button"]').click();
 
     cy.get('[data-test="Folder Title"]').should("have.text", "Shared with me");

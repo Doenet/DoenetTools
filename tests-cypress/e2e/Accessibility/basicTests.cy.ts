@@ -98,7 +98,7 @@ describe("Basic accessibility tests", function () {
     });
 
     cy.visit("/");
-    cy.get('[data-test="Activities"]').click();
+    cy.get('[data-test="My Activities"]').click();
 
     cy.get('[data-test="Folder Title"]').should("have.text", "My Activities");
 
@@ -154,7 +154,7 @@ describe("Basic accessibility tests", function () {
           cy.get("#ans textarea").type("2{enter}", { force: true });
         });
 
-        cy.get('[data-test="Assigned"]').click();
+        cy.get('[data-test="Assigned to Me"]').click();
 
         cy.get('[data-test="Assigned Activities"]').should("be.visible");
 

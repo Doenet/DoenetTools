@@ -4,7 +4,7 @@ describe("Create Content Tests", function () {
 
     cy.visit("/");
 
-    cy.get('[data-test="Activities"]').click();
+    cy.get('[data-test="My Activities"]').click();
     cy.get('[data-test="New Button').should("be.visible");
 
     cy.get(`[data-test="Content Card"]`).should("not.exist");

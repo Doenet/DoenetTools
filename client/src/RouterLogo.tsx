@@ -1,7 +1,11 @@
 import { Image, Link as ChakraLink } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router-dom";
 
-export default function RouterLogo() {
+export default function RouterLogo({
+  paddingRight = "0px",
+}: {
+  paddingRight?: string;
+}) {
   return (
     <ChakraLink
       as={ReactRouterLink}
@@ -12,13 +16,13 @@ export default function RouterLogo() {
       alignItems="center"
       aria-label="Home"
       data-test="Home"
+      paddingRight={paddingRight}
     >
       <Image
         alt="Doenet Logo"
         src="/Doenet_Logo_Frontpage_color_small_text.png"
         height="45px"
         width="130px"
-        marginLeft="10px"
         marginTop="-3px"
       />
     </ChakraLink>
