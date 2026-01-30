@@ -129,7 +129,9 @@ export function CreateDocumentSavePoint({
               }}
             />
             {revisionName === "" ? (
-              <FormErrorMessage>Save point name is required.</FormErrorMessage>
+              <FormErrorMessage color="red.700">
+                Save point name is required.
+              </FormErrorMessage>
             ) : null}
           </FormControl>
           <FormControl marginTop="10px">
