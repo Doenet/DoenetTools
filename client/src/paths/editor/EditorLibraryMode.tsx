@@ -62,7 +62,7 @@ export interface EditorLibraryModeContentProps {
  * Presentational component for library status and curation.
  * This component is separated from React Router for testing purposes.
  */
-export function EditorLibraryModeContent({
+export function EditorLibraryModeComponent({
   libraryRelations,
   libraryComments,
   contentId,
@@ -195,7 +195,7 @@ export function EditorLibraryMode() {
   const navigate = useNavigate();
 
   return (
-    <EditorLibraryModeContent
+    <EditorLibraryModeComponent
       libraryRelations={libraryRelations}
       libraryComments={libraryComments}
       contentId={contentId}

@@ -1,4 +1,4 @@
-import { DocEditorHistoryModeContent } from "./DocEditorHistoryMode";
+import { DocEditorHistoryModeComponent } from "./DocEditorHistoryMode";
 import { ContentRevision, DoenetmlVersion } from "../../types";
 import { FetcherWithComponents } from "react-router";
 
@@ -71,7 +71,7 @@ describe("DocEditorHistoryModeContent", () => {
   it("renders correctly and is accessible", () => {
     cy.mount(
       <div style={{ height: "100vh" }}>
-        <DocEditorHistoryModeContent {...defaultProps} />
+        <DocEditorHistoryModeComponent {...defaultProps} />
       </div>,
     );
 
@@ -87,7 +87,7 @@ describe("DocEditorHistoryModeContent", () => {
   it("is accessible with empty revisions", () => {
     cy.mount(
       <div style={{ height: "100vh" }}>
-        <DocEditorHistoryModeContent {...defaultProps} revisions={[]} />
+        <DocEditorHistoryModeComponent {...defaultProps} revisions={[]} />
       </div>,
     );
 
@@ -100,7 +100,7 @@ describe("DocEditorHistoryModeContent", () => {
   it("is accessible with single revision", () => {
     cy.mount(
       <div style={{ height: "100vh" }}>
-        <DocEditorHistoryModeContent
+        <DocEditorHistoryModeComponent
           {...defaultProps}
           revisions={[mockRevisions[0]]}
         />
@@ -117,7 +117,7 @@ describe("DocEditorHistoryModeContent", () => {
   it("is accessible with multiple revisions", () => {
     cy.mount(
       <div style={{ height: "100vh" }}>
-        <DocEditorHistoryModeContent {...defaultProps} />
+        <DocEditorHistoryModeComponent {...defaultProps} />
       </div>,
     );
 
@@ -134,7 +134,7 @@ describe("DocEditorHistoryModeContent", () => {
   it("is accessible when revision is selected", () => {
     cy.mount(
       <div style={{ height: "100vh" }}>
-        <DocEditorHistoryModeContent {...defaultProps} />
+        <DocEditorHistoryModeComponent {...defaultProps} />
       </div>,
     );
 
@@ -153,7 +153,7 @@ describe("DocEditorHistoryModeContent", () => {
   it("is accessible when create save point button is visible", () => {
     cy.mount(
       <div style={{ height: "100vh" }}>
-        <DocEditorHistoryModeContent {...defaultProps} />
+        <DocEditorHistoryModeComponent {...defaultProps} />
       </div>,
     );
 
@@ -167,7 +167,10 @@ describe("DocEditorHistoryModeContent", () => {
 
     cy.mount(
       <div style={{ height: "100vh" }}>
-        <DocEditorHistoryModeContent {...defaultProps} contentName={longName} />
+        <DocEditorHistoryModeComponent
+          {...defaultProps}
+          contentName={longName}
+        />
       </div>,
     );
 
@@ -189,7 +192,7 @@ describe("DocEditorHistoryModeContent", () => {
 
     cy.mount(
       <div style={{ height: "100vh" }}>
-        <DocEditorHistoryModeContent
+        <DocEditorHistoryModeComponent
           {...defaultProps}
           doenetmlVersion={v06Version}
         />
@@ -216,7 +219,7 @@ describe("DocEditorHistoryModeContent", () => {
 
     cy.mount(
       <div style={{ height: "100vh" }}>
-        <DocEditorHistoryModeContent
+        <DocEditorHistoryModeComponent
           {...defaultProps}
           revisions={specialRevisions}
         />

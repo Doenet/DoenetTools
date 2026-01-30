@@ -31,7 +31,7 @@ export async function loader({ params }: { params: any }) {
   return { remixes, sources };
 }
 
-export interface DocEditorRemixModeContentProps {
+export interface DocEditorRemixModeComponentProps {
   remixes: ActivityRemixItem[];
   sources: ActivityRemixItem[];
   contentName: string;
@@ -42,12 +42,12 @@ export interface DocEditorRemixModeContentProps {
  * Presentational component for displaying remix sources and remixes.
  * This component is separated from React Router for testing purposes.
  */
-export function DocEditorRemixModeContent({
+export function DocEditorRemixModeComponent({
   remixes,
   sources,
   contentName,
   onClose,
-}: DocEditorRemixModeContentProps) {
+}: DocEditorRemixModeComponentProps) {
   const haveChangedSource = sources.some(
     (source) => source.originContent.changed,
   );
@@ -109,7 +109,7 @@ export function DocEditorRemixMode() {
   const navigate = useNavigate();
 
   return (
-    <DocEditorRemixModeContent
+    <DocEditorRemixModeComponent
       remixes={remixes}
       sources={sources}
       contentName={contentName}

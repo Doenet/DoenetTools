@@ -1,4 +1,4 @@
-import { EditorLibraryModeContent } from "./EditorLibraryMode";
+import { EditorLibraryModeComponent } from "./EditorLibraryMode";
 import { ContentType, LibraryComment, LibraryRelations } from "../../types";
 import { FetcherWithComponents } from "react-router";
 
@@ -64,20 +64,20 @@ describe("EditorLibraryModeContent", () => {
   };
 
   it("renders the modal with correct title", () => {
-    cy.mount(<EditorLibraryModeContent {...defaultPropsNotSuggested} />);
+    cy.mount(<EditorLibraryModeComponent {...defaultPropsNotSuggested} />);
 
     cy.contains("Test Activity - Library status").should("be.visible");
   });
 
   it("displays library introduction text when not suggested", () => {
-    cy.mount(<EditorLibraryModeContent {...defaultPropsNotSuggested} />);
+    cy.mount(<EditorLibraryModeComponent {...defaultPropsNotSuggested} />);
 
     cy.contains("Doenet Library").should("be.visible");
     cy.contains("peer-reviewed").should("be.visible");
   });
 
   it("shows suggest button when public and not suggested", () => {
-    cy.mount(<EditorLibraryModeContent {...defaultPropsNotSuggested} />);
+    cy.mount(<EditorLibraryModeComponent {...defaultPropsNotSuggested} />);
 
     cy.get('button[data-test="Suggest this activity"]')
       .should("be.visible")
@@ -86,7 +86,7 @@ describe("EditorLibraryModeContent", () => {
 
   it("disables suggest button when not public", () => {
     cy.mount(
-      <EditorLibraryModeContent
+      <EditorLibraryModeComponent
         {...defaultPropsNotSuggested}
         isPublic={false}
       />,
@@ -101,7 +101,7 @@ describe("EditorLibraryModeContent", () => {
     const fetcherWithSpy = { ...mockFetcher, submit: submitSpy };
 
     cy.mount(
-      <EditorLibraryModeContent
+      <EditorLibraryModeComponent
         {...defaultPropsNotSuggested}
         fetcher={fetcherWithSpy}
       />,
@@ -112,14 +112,14 @@ describe("EditorLibraryModeContent", () => {
   });
 
   it("displays status when activity is suggested", () => {
-    cy.mount(<EditorLibraryModeContent {...defaultPropsPending} />);
+    cy.mount(<EditorLibraryModeComponent {...defaultPropsPending} />);
 
     cy.contains("Status is").should("be.visible");
     cy.contains("pending").should("be.visible");
   });
 
   it("displays chat conversation when activity is suggested", () => {
-    cy.mount(<EditorLibraryModeContent {...defaultPropsPending} />);
+    cy.mount(<EditorLibraryModeComponent {...defaultPropsPending} />);
 
     cy.contains("Conversation with editor(s)").should("be.visible");
     cy.contains("This is a great activity!").should("be.visible");
@@ -137,13 +137,13 @@ describe("EditorLibraryModeContent", () => {
       } as LibraryRelations,
     };
 
-    cy.mount(<EditorLibraryModeContent {...rejectedProps} />);
+    cy.mount(<EditorLibraryModeComponent {...rejectedProps} />);
 
     cy.get('button[data-test="Resubmit Library Request"]').should("be.visible");
   });
 
   it("does not show resubmit button when status is not rejected", () => {
-    cy.mount(<EditorLibraryModeContent {...defaultPropsPending} />);
+    cy.mount(<EditorLibraryModeComponent {...defaultPropsPending} />);
 
     cy.get('button[data-test="Resubmit Library Request"]').should("not.exist");
   });
@@ -152,7 +152,7 @@ describe("EditorLibraryModeContent", () => {
     const onCloseSpy = cy.stub();
 
     cy.mount(
-      <EditorLibraryModeContent
+      <EditorLibraryModeComponent
         {...defaultPropsNotSuggested}
         onClose={onCloseSpy}
       />,
@@ -163,14 +163,14 @@ describe("EditorLibraryModeContent", () => {
   });
 
   it("is accessible when not suggested and public", () => {
-    cy.mount(<EditorLibraryModeContent {...defaultPropsNotSuggested} />);
+    cy.mount(<EditorLibraryModeComponent {...defaultPropsNotSuggested} />);
 
     cy.checkAccessibility("body");
   });
 
   it("is accessible when not suggested and not public", () => {
     cy.mount(
-      <EditorLibraryModeContent
+      <EditorLibraryModeComponent
         {...defaultPropsNotSuggested}
         isPublic={false}
       />,
@@ -180,7 +180,7 @@ describe("EditorLibraryModeContent", () => {
   });
 
   it("is accessible with pending status", () => {
-    cy.mount(<EditorLibraryModeContent {...defaultPropsPending} />);
+    cy.mount(<EditorLibraryModeComponent {...defaultPropsPending} />);
 
     cy.checkAccessibility("body");
   });
@@ -196,7 +196,7 @@ describe("EditorLibraryModeContent", () => {
       } as LibraryRelations,
     };
 
-    cy.mount(<EditorLibraryModeContent {...underReviewProps} />);
+    cy.mount(<EditorLibraryModeComponent {...underReviewProps} />);
 
     cy.checkAccessibility("body");
   });
@@ -212,7 +212,7 @@ describe("EditorLibraryModeContent", () => {
       } as LibraryRelations,
     };
 
-    cy.mount(<EditorLibraryModeContent {...publishedProps} />);
+    cy.mount(<EditorLibraryModeComponent {...publishedProps} />);
 
     cy.checkAccessibility("body");
   });
@@ -228,7 +228,7 @@ describe("EditorLibraryModeContent", () => {
       } as LibraryRelations,
     };
 
-    cy.mount(<EditorLibraryModeContent {...rejectedProps} />);
+    cy.mount(<EditorLibraryModeComponent {...rejectedProps} />);
 
     cy.checkAccessibility("body");
   });
@@ -239,7 +239,7 @@ describe("EditorLibraryModeContent", () => {
       libraryComments: [],
     };
 
-    cy.mount(<EditorLibraryModeContent {...noCommentsProps} />);
+    cy.mount(<EditorLibraryModeComponent {...noCommentsProps} />);
 
     cy.checkAccessibility("body");
   });
@@ -251,7 +251,7 @@ describe("EditorLibraryModeContent", () => {
         "This is a very long activity name that should be tested for accessibility to ensure it displays properly in the modal header",
     };
 
-    cy.mount(<EditorLibraryModeContent {...longNameProps} />);
+    cy.mount(<EditorLibraryModeComponent {...longNameProps} />);
 
     cy.checkAccessibility("body");
   });

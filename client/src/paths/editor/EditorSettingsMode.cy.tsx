@@ -1,4 +1,4 @@
-import { EditorSettingsModeContent } from "./EditorSettingsMode";
+import { EditorSettingsModeComponent } from "./EditorSettingsMode";
 import {
   AssignmentMode,
   Category,
@@ -92,7 +92,7 @@ describe("EditorSettingsModeContent", () => {
   };
 
   it("renders correctly and is accessible", () => {
-    cy.mount(<EditorSettingsModeContent {...defaultProps} />);
+    cy.mount(<EditorSettingsModeComponent {...defaultProps} />);
 
     // Verify main sections are present
     cy.contains("h2", "Assignment").should("be.visible");
@@ -105,7 +105,7 @@ describe("EditorSettingsModeContent", () => {
 
   it("is accessible with doenetmlVersionId", () => {
     cy.mount(
-      <EditorSettingsModeContent {...defaultProps} doenetmlVersionId={1} />,
+      <EditorSettingsModeComponent {...defaultProps} doenetmlVersionId={1} />,
     );
 
     cy.contains("h2", "Version").should("be.visible");
@@ -126,7 +126,7 @@ describe("EditorSettingsModeContent", () => {
     };
 
     cy.mount(
-      <EditorSettingsModeContent
+      <EditorSettingsModeComponent
         {...defaultProps}
         doenetmlVersionId={1}
         allDoenetmlVersions={[deprecatedVersion, mockDoenetmlVersions[1]]}
@@ -142,7 +142,9 @@ describe("EditorSettingsModeContent", () => {
   });
 
   it("is accessible when in library showing AuthorLicenseBox", () => {
-    cy.mount(<EditorSettingsModeContent {...defaultProps} inLibrary={true} />);
+    cy.mount(
+      <EditorSettingsModeComponent {...defaultProps} inLibrary={true} />,
+    );
 
     cy.contains("This document will be shared using the license:").should(
       "be.visible",
@@ -153,7 +155,9 @@ describe("EditorSettingsModeContent", () => {
   });
 
   it("is accessible when not in library showing EditLicense", () => {
-    cy.mount(<EditorSettingsModeContent {...defaultProps} inLibrary={false} />);
+    cy.mount(
+      <EditorSettingsModeComponent {...defaultProps} inLibrary={false} />,
+    );
 
     cy.contains(
       "This document will be shared under the following license(s)",
@@ -163,7 +167,7 @@ describe("EditorSettingsModeContent", () => {
   });
 
   it("is accessible when content is assigned", () => {
-    cy.mount(<EditorSettingsModeContent {...defaultProps} assigned={true} />);
+    cy.mount(<EditorSettingsModeComponent {...defaultProps} assigned={true} />);
 
     // Assignment settings should reflect assigned status
     cy.contains("Allow unlimited attempts").should("be.visible");
@@ -173,7 +177,7 @@ describe("EditorSettingsModeContent", () => {
 
   it("is accessible when content is public and shared", () => {
     cy.mount(
-      <EditorSettingsModeContent
+      <EditorSettingsModeComponent
         {...defaultProps}
         isPublic={true}
         isShared={true}
@@ -187,7 +191,7 @@ describe("EditorSettingsModeContent", () => {
 
   it("is accessible with all sections visible", () => {
     cy.mount(
-      <EditorSettingsModeContent
+      <EditorSettingsModeComponent
         {...defaultProps}
         doenetmlVersionId={1}
         isPublic={true}
@@ -206,7 +210,7 @@ describe("EditorSettingsModeContent", () => {
 
   it("is accessible with single doc content type", () => {
     cy.mount(
-      <EditorSettingsModeContent {...defaultProps} contentType="singleDoc" />,
+      <EditorSettingsModeComponent {...defaultProps} contentType="singleDoc" />,
     );
 
     // EditAssignmentSettings should not include mode selection for single docs
@@ -216,7 +220,9 @@ describe("EditorSettingsModeContent", () => {
   });
 
   it("is accessible with summative mode", () => {
-    cy.mount(<EditorSettingsModeContent {...defaultProps} mode="summative" />);
+    cy.mount(
+      <EditorSettingsModeComponent {...defaultProps} mode="summative" />,
+    );
 
     cy.contains(
       "Assign the same variant of this activity to all students",

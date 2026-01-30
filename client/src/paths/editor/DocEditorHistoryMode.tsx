@@ -59,7 +59,7 @@ export interface DocEditorHistoryModeContentProps {
  * Presentational component for document history editor.
  * Allows you to create save points (revisions) of your document and revert back to them.
  */
-export function DocEditorHistoryModeContent({
+export function DocEditorHistoryModeComponent({
   doenetML,
   doenetmlVersion,
   revisions,
@@ -381,7 +381,7 @@ export function DocEditorHistoryMode() {
   const fetcher = useFetcher();
 
   return (
-    <DocEditorHistoryModeContent
+    <DocEditorHistoryModeComponent
       doenetML={doenetML}
       doenetmlVersion={doenetmlVersion}
       revisions={revisions}

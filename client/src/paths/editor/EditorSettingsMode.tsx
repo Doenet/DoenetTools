@@ -68,7 +68,7 @@ export async function loader({ params }: { params: any }) {
  * This component displays the settings for an activity.
  * It is a presentational component that accepts all data as props.
  */
-export function EditorSettingsModeContent({
+export function EditorSettingsModeComponent({
   isPublic,
   isShared,
   assigned,
@@ -248,7 +248,7 @@ export function EditorSettingsMode() {
   const showRequired = searchParams.get("showRequired") === null ? false : true;
 
   return (
-    <EditorSettingsModeContent
+    <EditorSettingsModeComponent
       isPublic={isPublic}
       isShared={isShared}
       assigned={assigned}

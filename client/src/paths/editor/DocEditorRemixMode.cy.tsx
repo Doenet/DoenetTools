@@ -1,4 +1,4 @@
-import { DocEditorRemixModeContent } from "./DocEditorRemixMode";
+import { DocEditorRemixModeComponent } from "./DocEditorRemixMode";
 import { ActivityRemixItem } from "../../types";
 
 describe("DocEditorRemixModeContent", () => {
@@ -83,19 +83,19 @@ describe("DocEditorRemixModeContent", () => {
   };
 
   it("renders the modal with correct title", () => {
-    cy.mount(<DocEditorRemixModeContent {...defaultProps} />);
+    cy.mount(<DocEditorRemixModeComponent {...defaultProps} />);
 
     cy.contains("Test Document - Remixes").should("be.visible");
   });
 
   it("displays remix sources heading", () => {
-    cy.mount(<DocEditorRemixModeContent {...defaultProps} />);
+    cy.mount(<DocEditorRemixModeComponent {...defaultProps} />);
 
     cy.contains("This document is remixed from:").should("be.visible");
   });
 
   it("displays remixes heading", () => {
-    cy.mount(<DocEditorRemixModeContent {...defaultProps} />);
+    cy.mount(<DocEditorRemixModeComponent {...defaultProps} />);
 
     cy.contains("Others have remixed this document:").should("be.visible");
   });
@@ -103,7 +103,7 @@ describe("DocEditorRemixModeContent", () => {
   it("calls onClose when close button is clicked", () => {
     const onCloseSpy = cy.stub();
     cy.mount(
-      <DocEditorRemixModeContent {...defaultProps} onClose={onCloseSpy} />,
+      <DocEditorRemixModeComponent {...defaultProps} onClose={onCloseSpy} />,
     );
 
     cy.get("button[aria-label='Close']").click();
@@ -111,19 +111,19 @@ describe("DocEditorRemixModeContent", () => {
   });
 
   it("is accessible with sources and remixes", () => {
-    cy.mount(<DocEditorRemixModeContent {...defaultProps} />);
+    cy.mount(<DocEditorRemixModeComponent {...defaultProps} />);
 
     cy.checkAccessibility("body");
   });
 
   it("is accessible with no sources", () => {
-    cy.mount(<DocEditorRemixModeContent {...defaultProps} sources={[]} />);
+    cy.mount(<DocEditorRemixModeComponent {...defaultProps} sources={[]} />);
 
     cy.checkAccessibility("body");
   });
 
   it("is accessible with no remixes", () => {
-    cy.mount(<DocEditorRemixModeContent {...defaultProps} remixes={[]} />);
+    cy.mount(<DocEditorRemixModeComponent {...defaultProps} remixes={[]} />);
 
     cy.checkAccessibility("body");
   });
@@ -140,7 +140,10 @@ describe("DocEditorRemixModeContent", () => {
     ];
 
     cy.mount(
-      <DocEditorRemixModeContent {...defaultProps} sources={changedSources} />,
+      <DocEditorRemixModeComponent
+        {...defaultProps}
+        sources={changedSources}
+      />,
     );
 
     cy.checkAccessibility("body");
@@ -158,7 +161,10 @@ describe("DocEditorRemixModeContent", () => {
     ];
 
     cy.mount(
-      <DocEditorRemixModeContent {...defaultProps} remixes={changedRemixes} />,
+      <DocEditorRemixModeComponent
+        {...defaultProps}
+        remixes={changedRemixes}
+      />,
     );
 
     cy.checkAccessibility("body");
@@ -190,7 +196,7 @@ describe("DocEditorRemixModeContent", () => {
     ];
 
     cy.mount(
-      <DocEditorRemixModeContent
+      <DocEditorRemixModeComponent
         {...defaultProps}
         sources={multipleSources}
         remixes={multipleRemixes}
@@ -205,7 +211,7 @@ describe("DocEditorRemixModeContent", () => {
       "This is a very long document name that should be tested for accessibility to ensure it displays properly in the modal header";
 
     cy.mount(
-      <DocEditorRemixModeContent {...defaultProps} contentName={longName} />,
+      <DocEditorRemixModeComponent {...defaultProps} contentName={longName} />,
     );
 
     cy.contains(longName).should("be.visible");
