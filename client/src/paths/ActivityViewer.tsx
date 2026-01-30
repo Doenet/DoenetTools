@@ -170,6 +170,7 @@ export function ActivityViewer() {
   const fetcher = useFetcher();
   const createContentMenuCreateFetcher = useFetcher();
   const createContentMenuSaveNameFetcher = useFetcher();
+  const deleteContentFetcher = useFetcher();
 
   useEffect(() => {
     document.title = `${activityData.name} - Doenet`;
@@ -343,6 +344,7 @@ export function ActivityViewer() {
           fetcher={fetcher}
           createContentMenuCreateFetcher={createContentMenuCreateFetcher}
           createContentMenuSaveNameFetcher={createContentMenuSaveNameFetcher}
+          deleteContentFetcher={deleteContentFetcher}
         />
       );
     } else {

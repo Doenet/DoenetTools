@@ -19,6 +19,7 @@ export function CompoundEditorEditMode() {
   const fetcher = useFetcher();
   const createContentMenuCreateFetcher = useFetcher();
   const createContentMenuSaveNameFetcher = useFetcher();
+  const deleteContentFetcher = useFetcher();
 
   return (
     <CompoundActivityEditor
@@ -26,6 +27,7 @@ export function CompoundEditorEditMode() {
       fetcher={fetcher}
       createContentMenuCreateFetcher={createContentMenuCreateFetcher}
       createContentMenuSaveNameFetcher={createContentMenuSaveNameFetcher}
+      deleteContentFetcher={deleteContentFetcher}
     />
   );
 }

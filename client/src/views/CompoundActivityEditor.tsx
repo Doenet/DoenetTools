@@ -51,6 +51,7 @@ export function CompoundActivityEditor({
   finalFocusRef,
   createContentMenuCreateFetcher,
   createContentMenuSaveNameFetcher,
+  deleteContentFetcher,
 }: {
   activity: Content;
   asViewer?: boolean;
@@ -59,6 +60,7 @@ export function CompoundActivityEditor({
   finalFocusRef?: RefObject<HTMLElement | null>;
   createContentMenuCreateFetcher: FetcherWithComponents<any>;
   createContentMenuSaveNameFetcher: FetcherWithComponents<any>;
+  deleteContentFetcher: FetcherWithComponents<any>;
 }) {
   const contentTypeName = contentTypeToName[activity.type];
 
@@ -177,6 +179,7 @@ export function CompoundActivityEditor({
       onClose={deleteContentOnClose}
       content={contentToDelete}
       finalFocusRef={finalFocusRef}
+      fetcher={deleteContentFetcher}
     />
   ) : null;
 

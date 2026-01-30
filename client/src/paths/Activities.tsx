@@ -217,6 +217,9 @@ export function Activities() {
   const createContentMenuCreateFetcher = useFetcher();
   const createContentMenuSaveNameFetcher = useFetcher();
 
+  // Used by DeleteContent modal
+  const deleteContentFetcher = useFetcher();
+
   function getCardMenuList({
     contentId,
     name,
@@ -433,6 +436,7 @@ export function Activities() {
         onClose={deleteContentOnClose}
         content={contentData}
         finalFocusRef={finalFocusRef}
+        fetcher={deleteContentFetcher}
       />
     ) : null;
 
