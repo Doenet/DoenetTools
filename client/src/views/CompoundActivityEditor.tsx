@@ -472,7 +472,7 @@ export function CompoundActivityEditor({
                   path: "copyMove/moveContent",
                   contentId,
                   desiredPosition: nextPositionUp.position,
-                  parentId: nextPositionUp.parent,
+                  changeParentIdTo: nextPositionUp.parent,
                 },
                 { method: "post", encType: "application/json" },
               );
@@ -491,7 +491,7 @@ export function CompoundActivityEditor({
                   path: "copyMove/moveContent",
                   contentId,
                   desiredPosition: nextPositionDown.position,
-                  parentId: nextPositionDown.parent,
+                  changeParentIdTo: nextPositionDown.parent,
                 },
                 { method: "post", encType: "application/json" },
               );

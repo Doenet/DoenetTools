@@ -1223,7 +1223,7 @@ test("activity editor data shows its parent folder is public", async () => {
   });
   await moveContent({
     contentId: contentId,
-    parentId: folderId,
+    changeParentIdTo: folderId,
     desiredPosition: 0,
     loggedInUserId: ownerId,
   });

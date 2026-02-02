@@ -43,7 +43,6 @@ export function useCardMovement({
         path: "copyMove/moveContent",
         contentId: id,
         desiredPosition: position - 1,
-        // parentId,
       },
       { method: "post", encType: "application/json" },
     );
@@ -59,7 +58,6 @@ export function useCardMovement({
         path: "copyMove/moveContent",
         contentId: id,
         desiredPosition: position + 1,
-        // parentId,
       },
       { method: "post", encType: "application/json" },
     );

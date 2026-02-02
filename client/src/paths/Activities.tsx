@@ -232,7 +232,6 @@ export function Activities() {
                   path: "copyMove/moveContent",
                   contentId,
                   desiredPosition: position - 1,
-                  parentId,
                 },
                 { method: "post", encType: "application/json" },
               );
@@ -250,7 +249,6 @@ export function Activities() {
                   path: "copyMove/moveContent",
                   contentId,
                   desiredPosition: position + 1,
-                  parentId,
                 },
                 { method: "post", encType: "application/json" },
               );
