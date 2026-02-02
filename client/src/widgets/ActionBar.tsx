@@ -4,7 +4,7 @@ type Action = {
   label: string;
   icon?: React.ReactElement;
   onClick: () => void;
-  disabled?: boolean;
+  isDisabled?: boolean;
 };
 
 type Context = {
@@ -55,7 +55,7 @@ export function ActionBar({
           <Button
             key={action.label}
             data-test={action.label}
-            isDisabled={action.disabled}
+            isDisabled={action.isDisabled}
             size="xs"
             colorScheme="blue"
             leftIcon={action.icon}

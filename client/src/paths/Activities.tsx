@@ -13,8 +13,6 @@ import {
   Input,
   HStack,
   Spinner,
-  CloseButton,
-  MenuDivider,
   Icon,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
@@ -23,35 +21,28 @@ import {
   Link as ReactRouterLink,
   redirect,
   useLoaderData,
-  useNavigate,
   useFetcher,
   useOutletContext,
 } from "react-router";
+import axios from "axios";
+import { FaArrowUp, FaArrowDown } from "react-icons/fa6";
+import {
+  MdClose,
+  MdOutlineSearch,
+  MdDriveFileMoveOutline,
+} from "react-icons/md";
+import { FaPlus } from "react-icons/fa";
+import { LuDessert } from "react-icons/lu";
+import { FiCopy, FiTrash2 } from "react-icons/fi";
 
 import { CardContent } from "../widgets/Card";
 import CardList from "../widgets/CardList";
-import axios from "axios";
 import { MoveCopyContent } from "../popups/MoveCopyContent";
-import {
-  ContentDescription,
-  Content,
-  ContentType,
-  LicenseCode,
-  UserInfo,
-} from "../types";
-import { MdClose, MdOutlineSearch } from "react-icons/md";
-import { FaPlus } from "react-icons/fa";
-import { LuDessert } from "react-icons/lu";
+import { Content, ContentType, LicenseCode, UserInfo } from "../types";
 
-import {
-  getAllowedParentTypes,
-  getIconInfo,
-  menuIcons,
-} from "../utils/activity";
+import { getAllowedParentTypes, getIconInfo } from "../utils/activity";
 import { CreateLocalContent } from "../popups/CreateLocalContent";
 import { DeleteContent } from "../popups/DeleteContent";
-import { AddContentToMenu } from "../popups/AddContentToMenu";
-import { CreateContentMenu } from "../dropdowns/CreateContentMenu";
 import { CopyContentAndReportFinish } from "../popups/CopyContentAndReportFinish";
 import { SiteContext } from "../paths/SiteHeader";
 import { ActivateAuthorMode } from "../popups/ActivateAuthorMode";
@@ -59,6 +50,9 @@ import { formatAssignmentBlurb } from "../utils/assignment";
 import { editorUrl } from "../utils/url";
 import { ShareMyContentModal } from "../popups/ShareMyContentModal";
 import { NameBar } from "../widgets/NameBar";
+import { ActionBar } from "../widgets/ActionBar";
+import { useCardSelections } from "../utils/cardSelections";
+import { useCardMovement } from "../utils/cardMovement";
 
 export async function loader({ params, request }: any) {
   const url = new URL(request.url);
@@ -140,33 +134,13 @@ export function Activities() {
     setHaveContentSpinner(false);
   }, [content]);
 
-  const navigate = useNavigate();
-
-  const [selectedCards, setSelectedCards] = useState<
-    (ContentDescription | undefined)[]
-  >([]);
-  const selectedCardsFiltered: ContentDescription[] = selectedCards.filter(
-    (c) => c !== undefined,
-  );
-  const numSelected = selectedCardsFiltered.length;
-
-  useEffect(() => {
-    setSelectedCards((was) => {
-      let foundMissing = false;
-      const newList = content.map((c: Content) => c.contentId);
-      for (const c of was.filter((x) => x !== undefined)) {
-        if (!newList.includes(c.contentId)) {
-          foundMissing = true;
-          break;
-        }
-      }
-      if (foundMissing) {
-        return [];
-      } else {
-        return was;
-      }
-    });
-  }, [content]);
+  const cardSelections = useCardSelections({
+    ids: content.map((c) => c.contentId),
+  });
+  const cardMovement = useCardMovement({
+    selectedCards: cardSelections.ids,
+    ids: content.map((c) => c.contentId),
+  });
 
   const [moveCopyData, setMoveCopyData] = useState<{
     contentId: string;
@@ -197,126 +171,6 @@ export function Activities() {
   }, [parent]);
 
   const fetcher = useFetcher();
-
-  function getCardMenuList({
-    contentId,
-    name,
-    position,
-    numCards,
-    contentType,
-    isPublic,
-    isShared,
-    sharedWith,
-    licenseCode,
-    parentId,
-  }: {
-    contentId: string;
-    name: string;
-    position: number;
-    numCards: number;
-    contentType: ContentType;
-    isPublic: boolean;
-    isShared: boolean;
-    sharedWith: UserInfo[];
-    licenseCode: LicenseCode | null;
-    parentId: string | null;
-  }) {
-    return (
-      <>
-        {position > 0 && !haveQuery ? (
-          <MenuItem
-            data-test="Move Up Menu Item"
-            onClick={() => {
-              fetcher.submit(
-                {
-                  path: "copyMove/moveContent",
-                  contentId,
-                  desiredPosition: position - 1,
-                },
-                { method: "post", encType: "application/json" },
-              );
-            }}
-          >
-            Move Up
-          </MenuItem>
-        ) : null}
-        {position < numCards - 1 && !haveQuery ? (
-          <MenuItem
-            data-test="Move Down Menu Item"
-            onClick={() => {
-              fetcher.submit(
-                {
-                  path: "copyMove/moveContent",
-                  contentId,
-                  desiredPosition: position + 1,
-                },
-                { method: "post", encType: "application/json" },
-              );
-            }}
-          >
-            Move Down
-          </MenuItem>
-        ) : null}
-        {haveQuery ? null : (
-          <MenuItem
-            data-test="Move to"
-            onClick={() => {
-              setMoveCopyData({
-                contentId,
-                name,
-                type: contentType,
-                isPublic,
-                isShared,
-                sharedWith,
-                licenseCode,
-              });
-              moveCopyContentOnOpen();
-            }}
-          >
-            Move to&hellip;
-          </MenuItem>
-        )}
-        <MenuItem
-          data-test={"Duplicate Content"}
-          onClick={() => {
-            fetcher.submit(
-              {
-                path: "copyMove/copyContent",
-                contentIds: [contentId],
-                parentId,
-                prependCopy: true,
-              },
-              { method: "post", encType: "application/json" },
-            );
-          }}
-        >
-          Make a copy
-        </MenuItem>
-        {haveQuery ? (
-          <MenuItem
-            data-test="Go to containing folder"
-            onClick={() => {
-              navigate(
-                `/activities/${userId}${parentId ? "/" + parentId : ""}`,
-              );
-            }}
-          >
-            Go to containing folder
-          </MenuItem>
-        ) : null}
-        <MenuDivider />
-        <MenuItem
-          data-test="Delete Menu Item"
-          onClick={() => {
-            setSettingsContentId(contentId);
-            deleteContentOnOpen();
-          }}
-        >
-          Move to trash
-        </MenuItem>
-      </>
-    );
-  }
 
   const { iconImage: folderIcon, iconColor: folderColor } = getIconInfo(
     "folder",
@@ -424,7 +278,7 @@ export function Activities() {
       <CopyContentAndReportFinish
         isOpen={copyDialogIsOpen}
         onClose={copyDialogOnClose}
-        contentIds={selectedCardsFiltered.map((sc) => sc.contentId)}
+        contentIds={[...cardSelections.ids]}
         desiredParent={addTo}
         action="Add"
       />
@@ -587,75 +441,6 @@ export function Activities() {
     </Flex>
   );
 
-  const selectedItemsActions = (
-    <HStack
-      spacing={3}
-      align="center"
-      justify="center"
-      backgroundColor={numSelected > 0 || addTo ? "gray.100" : undefined}
-      width="100%"
-      height="2.3rem"
-      mb="10px"
-    >
-      {addTo !== null && (
-        <>
-          <CloseButton
-            data-test="Stop Adding Items"
-            size="sm"
-            onClick={() => setAddTo(null)}
-          />
-          <Text noOfLines={1} data-test="Adding Items Message">
-            Adding items to: {menuIcons[addTo.type]}
-            <strong>{addTo.name}</strong>
-          </Text>
-        </>
-      )}
-
-      {numSelected > 0 && (
-        <HStack spacing={2} align="center">
-          <CloseButton
-            data-test="Clear Selection"
-            size="sm"
-            onClick={() => setSelectedCards([])}
-          />
-          <Text>{numSelected} selected</Text>
-          {addTo === null && (
-            <>
-              <AddContentToMenu
-                fetcher={fetcher}
-                sourceContent={selectedCardsFiltered}
-                size="xs"
-                colorScheme="blue"
-                label="Copy selected to"
-              />
-              <CreateContentMenu
-                sourceContent={selectedCardsFiltered}
-                size="xs"
-                colorScheme="blue"
-                label="Create from selected"
-              />
-            </>
-          )}
-
-          {addTo !== null && (
-            <Button
-              data-test="Add Selected To Button"
-              size="xs"
-              colorScheme="blue"
-              onClick={() => copyDialogOnOpen()}
-            >
-              Add selected to: {menuIcons[addTo.type]}
-              <strong>
-                {addTo.name.substring(0, 10)}
-                {addTo.name.length > 10 ? "..." : ""}
-              </strong>
-            </Button>
-          )}
-        </HStack>
-      )}
-    </HStack>
-  );
-
   const searchResultsHeading = haveQuery ? (
     <Flex
       width="100%"
@@ -686,6 +471,86 @@ export function Activities() {
     </Flex>
   ) : null;
 
+  const actions = addTo
+    ? []
+    : [
+        {
+          label: "Move up",
+          onClick: cardMovement.moveUp,
+          isDisabled: !cardMovement.canMoveUp || haveQuery,
+          icon: <FaArrowUp />,
+        },
+        {
+          label: "Move down",
+          onClick: cardMovement.moveDown,
+          isDisabled: !cardMovement.canMoveDown || haveQuery,
+          icon: <FaArrowDown />,
+        },
+        {
+          label: "Move to",
+          onClick: () => {
+            const selectedContent = content.find(
+              (c) => c.contentId === cardSelections.ids.values().next().value,
+            );
+            if (selectedContent) {
+              setMoveCopyData({
+                contentId: selectedContent.contentId,
+                name: selectedContent.name,
+                type: selectedContent.type,
+                isPublic: selectedContent.isPublic,
+                isShared: selectedContent.isShared,
+                sharedWith: selectedContent.sharedWith,
+                licenseCode: selectedContent.licenseCode ?? null,
+              });
+              moveCopyContentOnOpen();
+            }
+          },
+          isDisabled: cardSelections.count !== 1 || haveQuery,
+          icon: <MdDriveFileMoveOutline />,
+        },
+        {
+          label: "Make a copy",
+          onClick: () => {
+            fetcher.submit(
+              {
+                path: "copyMove/copyContent",
+                contentIds: [...cardSelections.ids],
+                parentId,
+                prependCopy: true,
+              },
+              { method: "post", encType: "application/json" },
+            );
+          },
+          isDisabled: cardSelections.count === 0 || haveQuery,
+          icon: <FiCopy />,
+        },
+        {
+          label: "Move to trash",
+          onClick: () => {
+            setSettingsContentId(
+              cardSelections.ids.values().next().value ?? null,
+            );
+            deleteContentOnOpen();
+          },
+          isDisabled: cardSelections.count !== 1 || haveQuery,
+          icon: <FiTrash2 />,
+        },
+      ];
+
+  const selectedItemsActions = (
+    <ActionBar
+      context={{
+        description: `${cardSelections.count} item${
+          cardSelections.count === 1 ? "" : "s"
+        } selected`,
+        closeLabel: "Deselect all",
+        onClose: cardSelections.clear,
+      }}
+      actions={actions}
+      isActive={cardSelections.areActive}
+    />
+  );
+
   const emptyMessage = haveQuery
     ? "No Results Found"
     : "Find activities from the Explore tab or create your own with the New button";
@@ -708,18 +573,6 @@ export function Activities() {
       menuRef: getCardMenuRef,
       content: activity,
       blurb: formatAssignmentBlurb(activity),
-      menuItems: getCardMenuList({
-        contentId: activity.contentId,
-        name: activity.name,
-        position,
-        numCards: content.length,
-        contentType: activity.type,
-        isPublic: activity.isPublic,
-        isShared: activity.isShared,
-        sharedWith: activity.sharedWith,
-        licenseCode: activity.licenseCode ?? null,
-        parentId: activity.parent?.contentId ?? null,
-      }),
       cardLink,
     };
   });
@@ -731,9 +584,11 @@ export function Activities() {
       showPublicStatus={true}
       showActivityCategories={true}
       emptyMessage={emptyMessage}
-      content={cardContent}
-      selectedCards={selectedCards}
-      setSelectedCards={setSelectedCards}
+      cardContent={cardContent}
+      includeSelectionBox={true}
+      selectedCards={cardSelections.ids}
+      onCardSelected={cardSelections.add}
+      onCardDeselected={cardSelections.remove}
       disableSelectFor={addTo ? [addTo.contentId] : undefined}
     />
   );
