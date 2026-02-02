@@ -3,7 +3,7 @@ import { HStack, CloseButton, Button, Text } from "@chakra-ui/react";
 type Action = {
   label: string;
   icon?: React.ReactElement;
-  onExecute: () => void;
+  onClick: () => void;
   disabled?: boolean;
 };
 
@@ -36,30 +36,34 @@ export function ActionBar({
       height="2.3rem"
       mb="10px"
     >
-      <CloseButton
-        data-test="Stop Adding Items"
-        size="sm"
-        onClick={context.onClose}
-      />
-      {context.description && (
+      {isActive && (
+        <CloseButton
+          data-test="Stop Adding Items"
+          size="sm"
+          onClick={context.onClose}
+        />
+      )}
+
+      {isActive && context.description && (
         <Text noOfLines={1} data-test="Action Bar Description">
           {context.description}
         </Text>
       )}
 
-      {actions.map((action) => (
-        <Button
-          key={action.label}
-          data-test={action.label}
-          isDisabled={action.disabled}
-          size="xs"
-          colorScheme="blue"
-          leftIcon={action.icon}
-          onClick={action.onExecute}
-        >
-          {action.label}
-        </Button>
-      ))}
+      {isActive &&
+        actions.map((action) => (
+          <Button
+            key={action.label}
+            data-test={action.label}
+            isDisabled={action.disabled}
+            size="xs"
+            colorScheme="blue"
+            leftIcon={action.icon}
+            onClick={action.onClick}
+          >
+            {action.label}
+          </Button>
+        ))}
     </HStack>
   );
 }
