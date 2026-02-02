@@ -7,6 +7,7 @@ import {
 import { isEqualUUID } from "../utils/uuid";
 import { InvalidRequestError } from "../utils/error";
 import { getDescendantIds } from "./activity";
+import { UserInfoWithEmail } from "../types";
 
 /**
  * Set the `isPublic` flag on a content `id` along with all of its children.
@@ -61,9 +62,11 @@ export async function setContentIsPublic({
 
   // Note: updateTimestamp first because it checks `isPublic` status
   await prisma.$transaction([updateTimestamp, updateContent]);
+
+  return { isPublic };
 }
 
-export function unshareContent({
+export async function unshareContent({
   contentId,
   loggedInUserId,
   userId,
@@ -72,12 +75,14 @@ export function unshareContent({
   loggedInUserId: Uint8Array;
   userId: Uint8Array;
 }) {
-  return modifyContentSharedWith({
+  await modifyContentSharedWith({
     action: "unshare",
     contentId,
     loggedInUserId,
     users: [userId],
   });
+
+  return { userId }; // Return the userId that was unshared
 }
 
 /**
@@ -173,16 +178,14 @@ export async function shareContentWithEmail({
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
   email: string;
-}) {
-  let userId;
+}): Promise<UserInfoWithEmail> {
+  let user: UserInfoWithEmail;
 
   try {
-    userId = (
-      await prisma.users.findUniqueOrThrow({
-        where: { email, isAnonymous: false },
-        select: { userId: true },
-      })
-    ).userId;
+    user = await prisma.users.findUniqueOrThrow({
+      where: { email, isAnonymous: false },
+      select: { userId: true, email: true, firstNames: true, lastNames: true },
+    });
   } catch (e) {
     if (
       e instanceof Prisma.PrismaClientKnownRequestError &&
@@ -194,7 +197,7 @@ export async function shareContentWithEmail({
     }
   }
 
-  if (isEqualUUID(userId, loggedInUserId)) {
+  if (isEqualUUID(user.userId, loggedInUserId)) {
     throw new InvalidRequestError("Cannot share with self");
   }
 
@@ -202,6 +205,8 @@ export async function shareContentWithEmail({
     action: "share",
     contentId: contentId,
     loggedInUserId,
-    users: [userId],
+    users: [user.userId],
   });
+
+  return user;
 }
