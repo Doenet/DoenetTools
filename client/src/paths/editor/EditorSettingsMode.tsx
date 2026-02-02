@@ -1,11 +1,4 @@
-import { useState } from "react";
-import {
-  FetcherWithComponents,
-  useFetcher,
-  useLoaderData,
-  useOutletContext,
-  useSearchParams,
-} from "react-router";
+import { useLoaderData, useOutletContext, useSearchParams } from "react-router";
 import {
   AssignmentMode,
   ContentClassification,
@@ -15,21 +8,8 @@ import {
   CategoryGroup,
 } from "../../types";
 import axios from "axios";
-import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
-  Box,
-  Button,
-  Heading,
-  HStack,
-  Select,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, Heading, VStack } from "@chakra-ui/react";
 import { BlueBanner } from "../../widgets/BlueBanner";
-import { optimistic } from "../../utils/optimistic_ui";
 import { processRemixes } from "../../utils/processRemixes";
 import { EditorContext } from "./EditorHeader";
 import { EditAssignmentSettings } from "../../widgets/editor/EditAssignmentSettings";
@@ -37,7 +17,10 @@ import { EditCategories } from "../../widgets/editor/EditCategories";
 import { EditClassifications } from "../../widgets/editor/EditClassifications";
 import { EditLicense } from "../../widgets/editor/EditLicense";
 import { AuthorLicenseBox } from "../../widgets/Licenses";
-import { updateSyntaxFromV06toV07 } from "@doenet/v06-to-v07";
+import {
+  DoenetMLSelectionBox,
+  UpgradeSyntax,
+} from "./DoenetMLVersionComponents";
 
 export async function loader({ params }: { params: any }) {
   const { data } = await axios.get(
@@ -82,51 +65,50 @@ export async function loader({ params }: { params: any }) {
 }
 
 /**
- * This page allows you to view and change the settings for your activity.
- * Context: `documentEditor` and `compoundEditor`
+ * This component displays the settings for an activity.
+ * It is a presentational component that accepts all data as props.
  */
-export function EditorSettingsMode() {
-  const {
-    isPublic,
-    isShared,
-    assigned,
-    mode,
-    maxAttempts,
-    individualizeByStudent,
-    licenseCode,
-    categories,
-    classifications,
-    remixSourceLicenseCode,
-    allCategories,
-    doenetmlVersionId,
-    contentId,
-  } = useLoaderData() as {
-    isPublic: boolean;
-    isShared: boolean;
-    assigned: boolean;
-    mode: AssignmentMode;
-    maxAttempts: number;
-    individualizeByStudent: boolean;
-    licenseCode: LicenseCode | null;
-    categories: Category[];
-    classifications: ContentClassification[];
-    remixSourceLicenseCode: LicenseCode | null;
-    allCategories: CategoryGroup[];
-    doenetmlVersionId?: number;
-    contentId: string;
-  };
-
-  const {
-    allLicenses,
-    allDoenetmlVersions,
-    inLibrary,
-    contentType,
-    headerHeight,
-  } = useOutletContext<EditorContext>();
-
-  const [searchParams, _] = useSearchParams();
-  const showRequired = searchParams.get("showRequired") === null ? false : true;
-
+export function EditorSettingsModeComponent({
+  isPublic,
+  isShared,
+  assigned,
+  mode,
+  maxAttempts,
+  individualizeByStudent,
+  licenseCode,
+  categories,
+  classifications,
+  remixSourceLicenseCode,
+  allCategories,
+  doenetmlVersionId,
+  contentId,
+  allLicenses,
+  allDoenetmlVersions,
+  inLibrary,
+  contentType,
+  headerHeight,
+  showRequired,
+}: {
+  isPublic: boolean;
+  isShared: boolean;
+  assigned: boolean;
+  mode: AssignmentMode;
+  maxAttempts: number;
+  individualizeByStudent: boolean;
+  licenseCode: LicenseCode | null;
+  categories: Category[];
+  classifications: ContentClassification[];
+  remixSourceLicenseCode: LicenseCode | null;
+  allCategories: CategoryGroup[];
+  doenetmlVersionId?: number;
+  contentId: string;
+  allLicenses: any[];
+  allDoenetmlVersions: DoenetmlVersion[];
+  inLibrary: boolean;
+  contentType: string;
+  headerHeight: string;
+  showRequired: boolean;
+}) {
   const showUpgradeSyntax = Boolean(
     doenetmlVersionId &&
     allDoenetmlVersions.find((v) => v.id === doenetmlVersionId)?.deprecated,
@@ -218,139 +200,74 @@ export function EditorSettingsMode() {
   );
 }
 
-function DoenetMLSelectionBox({
-  contentId,
-  versionId,
-  allVersions,
-  isAssigned,
-}: {
-  contentId: string;
-  versionId: number;
-  allVersions: DoenetmlVersion[];
-  isAssigned: boolean;
-}) {
-  const fetcher = useFetcher();
+/**
+ * This page allows you to view and change the settings for your activity.
+ * Container component that handles React Router integration.
+ * Context: `documentEditor` and `compoundEditor`
+ */
+export function EditorSettingsMode() {
+  const {
+    isPublic,
+    isShared,
+    assigned,
+    mode,
+    maxAttempts,
+    individualizeByStudent,
+    licenseCode,
+    categories,
+    classifications,
+    remixSourceLicenseCode,
+    allCategories,
+    doenetmlVersionId,
+    contentId,
+  } = useLoaderData() as {
+    isPublic: boolean;
+    isShared: boolean;
+    assigned: boolean;
+    mode: AssignmentMode;
+    maxAttempts: number;
+    individualizeByStudent: boolean;
+    licenseCode: LicenseCode | null;
+    categories: Category[];
+    classifications: ContentClassification[];
+    remixSourceLicenseCode: LicenseCode | null;
+    allCategories: CategoryGroup[];
+    doenetmlVersionId?: number;
+    contentId: string;
+  };
 
-  const optimisticVersionId = optimistic(
-    fetcher,
-    "doenetmlVersionId",
-    versionId,
-  );
-  const optimisticVersion = allVersions.find(
-    (v) => v.id === optimisticVersionId,
-  )!;
+  const {
+    allLicenses,
+    allDoenetmlVersions,
+    inLibrary,
+    contentType,
+    headerHeight,
+  } = useOutletContext<EditorContext>();
 
-  return (
-    <>
-      {optimisticVersion.deprecated && (
-        <Alert status="warning">
-          <AlertIcon />
-          <AlertTitle>
-            DoenetML version {optimisticVersion.displayedVersion} is deprecated.
-          </AlertTitle>
-          <AlertDescription>
-            {optimisticVersion.deprecationMessage}
-          </AlertDescription>
-        </Alert>
-      )}
-      <HStack>
-        <Text size="sm" color={fetcher.state !== "idle" ? "gray" : "black"}>
-          Use DoenetML version
-        </Text>
-        <Select
-          width="6rem"
-          value={optimisticVersionId}
-          isDisabled={isAssigned}
-          onChange={(e) => {
-            const newVersionId = Number(e.target.value);
-            fetcher.submit(
-              {
-                path: "updateContent/updateContentSettings",
-                contentId,
-                doenetmlVersionId: newVersionId,
-              },
-              { method: "post", encType: "application/json" },
-            );
-          }}
-        >
-          {allVersions.map((version) => (
-            <option value={version.id} key={version.id}>
-              {version.displayedVersion}
-            </option>
-          ))}
-        </Select>
-      </HStack>
-
-      {isAssigned && (
-        <p>
-          <strong>Note</strong>: Cannot modify DoenetML version since activity
-          is assigned.
-        </p>
-      )}
-    </>
-  );
-}
-
-function UpgradeSyntax({
-  contentId,
-  allVersions,
-}: {
-  contentId: string;
-  allVersions: DoenetmlVersion[];
-}) {
-  const fetcher = useFetcher();
-
-  const [upgradeInitiated, setUpgradeInitiated] = useState(false);
-
-  const newVersionId = allVersions.find(
-    (v) => v.displayedVersion === "0.7",
-  )!.id;
+  const [searchParams, _] = useSearchParams();
+  const showRequired = searchParams.get("showRequired") === null ? false : true;
 
   return (
-    <Button
-      colorScheme="blue"
-      size="sm"
-      onClick={() => {
-        setUpgradeInitiated(true);
-        performSyntaxUpgrade(contentId, fetcher, newVersionId);
-      }}
-      ml="10px"
-      mt="15px"
-      disabled={upgradeInitiated}
-    >
-      Upgrade to version 0.7
-    </Button>
-  );
-}
-
-async function performSyntaxUpgrade(
-  contentId: string,
-  fetcher: FetcherWithComponents<any>,
-  newVersionId: number,
-) {
-  const { data } = await axios.get(
-    `/api/activityEditView/getContentSource/${contentId}`,
-  );
-
-  const source: string = data.source;
-
-  const update = await updateSyntaxFromV06toV07(source);
-  const upgraded = update.xml;
-
-  if (update.vfile.messages.length > 0) {
-    console.warn(
-      "There were warnings during syntax update:",
-      update.vfile.messages,
-    );
-  }
-
-  fetcher.submit(
-    {
-      path: "updateContent/saveSyntaxUpdate",
-      contentId,
-      updatedDoenetmlVersionId: newVersionId,
-      updatedSource: upgraded,
-    },
-    { method: "post", encType: "application/json" },
+    <EditorSettingsModeComponent
+      isPublic={isPublic}
+      isShared={isShared}
+      assigned={assigned}
+      mode={mode}
+      maxAttempts={maxAttempts}
+      individualizeByStudent={individualizeByStudent}
+      licenseCode={licenseCode}
+      categories={categories}
+      classifications={classifications}
+      remixSourceLicenseCode={remixSourceLicenseCode}
+      allCategories={allCategories}
+      doenetmlVersionId={doenetmlVersionId}
+      contentId={contentId}
+      allLicenses={allLicenses}
+      allDoenetmlVersions={allDoenetmlVersions}
+      inLibrary={inLibrary}
+      contentType={contentType}
+      headerHeight={headerHeight}
+      showRequired={showRequired}
+    />
   );
 }

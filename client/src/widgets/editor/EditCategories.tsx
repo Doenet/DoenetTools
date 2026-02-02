@@ -36,7 +36,7 @@ export function EditCategories({
     const groupBox = [];
     if (showRequired && group.isRequired) {
       groupBox.push(
-        <Alert status="warning">
+        <Alert status="warning" key={`Required Alert ${group.name}`}>
           <AlertIcon />
           <AlertTitle>Required</AlertTitle>
         </Alert>,
