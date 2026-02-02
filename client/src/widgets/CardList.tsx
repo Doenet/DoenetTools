@@ -1,11 +1,10 @@
-import { Dispatch, ReactElement, SetStateAction } from "react";
+import { ReactElement } from "react";
 import { Text, Icon, Box, Flex } from "@chakra-ui/react";
 import Card, { CardContent } from "./Card";
 import { MdInfoOutline } from "react-icons/md";
-import { ContentDescription } from "../types";
 
 export default function CardList({
-  content,
+  cardContent,
   showOwnerName = false,
   showBlurb = false,
   showPublicStatus = false,
@@ -13,26 +12,21 @@ export default function CardList({
   showAddButton = false,
   showLibraryEditor = false,
   emptyMessage,
+  includeSelectionBox = false,
   /**
-   * Sparse array of the selected cards, indexed by their index in `content`
-   * Ex: Second card of `content` is selected. Then `selectedCards` = [undefined, ContentDescription]
+   * The set of contentIds of selected cards
+   * The contentIds may or may not be included in `cardContent`
    */
   selectedCards,
-  setSelectedCards,
+  onCardSelected,
+  onCardDeselected,
+
   disableSelectFor,
   disableAsSelectedFor,
   isAuthor = false,
   addDocumentCallback,
 }: {
-  content: (
-    | CardContent
-    | {
-        cardType: "afterParent";
-        parentId: string;
-        indentLevel: number;
-        empty: boolean;
-      }
-  )[];
+  cardContent: CardContent[];
   showOwnerName?: boolean;
   showBlurb?: boolean;
   showPublicStatus?: boolean;
@@ -40,18 +34,16 @@ export default function CardList({
   showAddButton?: boolean;
   showLibraryEditor?: boolean;
   emptyMessage: string;
-  selectedCards?: (ContentDescription | undefined)[];
-  setSelectedCards?: Dispatch<
-    SetStateAction<(ContentDescription | undefined)[]>
-  >;
+  includeSelectionBox?: boolean;
+  selectedCards?: Set<string>;
+  onCardSelected?: (contentId: string) => void;
+  onCardDeselected?: (contentId: string) => void;
   disableSelectFor?: string[];
   disableAsSelectedFor?: string[];
   isAuthor?: boolean;
   addDocumentCallback?: (contentId: string) => void;
 }) {
-  const selectedCardsFiltered = selectedCards?.filter((s) => s !== undefined);
-
-  if (content.length === 0) {
+  if (cardContent.length === 0) {
     return (
       <Flex
         flexDirection="column"
@@ -91,77 +83,36 @@ export default function CardList({
   //     </Flex>
   //   );
 
-  const selectCallback = setSelectedCards
-    ? function ({
-        contentId,
-        name,
-        checked,
-        type,
-        parent,
-        idx,
-      }: ContentDescription & {
-        checked: boolean;
-        idx: number;
-      }) {
-        setSelectedCards((was) => {
-          const arr = [...was];
-          if (checked) {
-            arr[idx] = { contentId, name, type, parent };
-          } else {
-            delete arr[idx];
-          }
-          return arr;
-        });
-      }
-    : undefined;
-
-  let cards: ReactElement<any> | ReactElement<any>[] = content.map(
+  let cards: ReactElement<any> | ReactElement<any>[] = cardContent.map(
     (cardContent, idx) => {
-      if ("cardType" in cardContent) {
-        const indentLevel = cardContent.indentLevel;
-        return (
-          <Box
-            key={`afterParent${cardContent.parentId}`}
-            width={`calc(100% - ${30 * indentLevel}px)`}
-            marginLeft={`${30 * indentLevel}px`}
-            height={cardContent.empty ? "30px" : "10px"}
-            borderBottom="2px solid gray"
-            alignContent="center"
-            paddingLeft="20px"
-            fontStyle="italic"
-            color="GrayText"
-          >
-            {cardContent.empty
-              ? "(Add documents to above empty question bank. Or, move documents up or down to this slot.)"
-              : null}
-          </Box>
-        );
-      } else {
-        return (
-          <Card
-            key={`Card${cardContent.content.contentId}`}
-            cardContent={cardContent}
-            showOwnerName={showOwnerName}
-            showBlurb={showBlurb}
-            showPublicStatus={showPublicStatus}
-            showActivityCategories={showActivityCategories}
-            showAddButton={showAddButton}
-            showLibraryEditor={showLibraryEditor}
-            indentLevel={cardContent.indentLevel}
-            selectedCards={selectedCardsFiltered?.map((sc) => sc.contentId)}
-            selectCallback={selectCallback}
-            isAuthor={isAuthor}
-            addDocumentCallback={addDocumentCallback}
-            disableSelect={disableSelectFor?.includes(
-              cardContent.content.contentId,
-            )}
-            disableAsSelected={disableAsSelectedFor?.includes(
-              cardContent.content.contentId,
-            )}
-            idx={idx}
-          />
-        );
-      }
+      return (
+        <Card
+          key={`Card${cardContent.content.contentId}`}
+          cardContent={cardContent}
+          showOwnerName={showOwnerName}
+          showBlurb={showBlurb}
+          showPublicStatus={showPublicStatus}
+          showActivityCategories={showActivityCategories}
+          showAddButton={showAddButton}
+          showLibraryEditor={showLibraryEditor}
+          indentLevel={cardContent.indentLevel}
+          includeSelectionBox={includeSelectionBox}
+          isSelected={
+            selectedCards?.has(cardContent.content.contentId) || false
+          }
+          onSelected={() => onCardSelected?.(cardContent.content.contentId)}
+          onDeselected={() => onCardDeselected?.(cardContent.content.contentId)}
+          isAuthor={isAuthor}
+          addDocumentCallback={addDocumentCallback}
+          disableSelect={disableSelectFor?.includes(
+            cardContent.content.contentId,
+          )}
+          disableAsSelected={disableAsSelectedFor?.includes(
+            cardContent.content.contentId,
+          )}
+          idx={idx}
+        />
+      );
     },
   );
 

@@ -16,7 +16,7 @@ type Context = {
 /**
  * ActionBar component that displays a horizontal stack of action buttons
  * along with a close button and an optional description.
- * Meant to be at the page of a page or panel where actions can be taken.
+ * Meant to be at the top of a page or panel where actions can be taken.
  */
 export function ActionBar({
   context,
