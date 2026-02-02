@@ -16,7 +16,7 @@ import {
   Tbody,
   HStack,
 } from "@chakra-ui/react";
-import { useFetcher } from "react-router";
+import { FetcherWithComponents } from "react-router";
 import { createNameNoTag } from "../../utils/names";
 import { SpinnerWhileFetching } from "../../utils/optimistic_ui";
 
@@ -32,21 +32,22 @@ export function ShareTable({
   parentIsPublic,
   sharedWith,
   parentSharedWith,
+  unshareFetcher,
 }: {
   contentId: string;
   isPublic: boolean;
   parentIsPublic: boolean;
   sharedWith: UserInfoWithEmail[];
   parentSharedWith: UserInfoWithEmail[];
+  unshareFetcher: FetcherWithComponents<any>;
 }) {
-  const fetcher = useFetcher();
   const rows: ReactNode[] = [];
 
   if (isPublic) {
     const onClose = parentIsPublic
       ? undefined
       : () => {
-          fetcher.submit(
+          unshareFetcher.submit(
             { path: "share/setContentIsPublic", contentId, isPublic: false },
             { method: "post", encType: "application/json" },
           );
@@ -70,7 +71,7 @@ export function ShareTable({
     const onClose = sharedViaFolder
       ? undefined
       : () => {
-          fetcher.submit(
+          unshareFetcher.submit(
             { path: "share/unshareContent", contentId, userId: user.userId },
             { method: "post", encType: "application/json" },
           );
@@ -113,7 +114,7 @@ export function ShareTable({
             >
               <HStack>
                 <Text>People with access</Text>
-                <SpinnerWhileFetching state={fetcher.state} />
+                <SpinnerWhileFetching state={unshareFetcher.state} />
               </HStack>
             </Th>
           </Tr>

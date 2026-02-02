@@ -21,56 +21,66 @@ import {
   AlertTitle,
   Link as ChakraLink,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { contentTypeToName } from "../utils/activity";
 import { ContentType, UserInfoWithEmail } from "../types";
-import { Link as ReactRouterLink, useFetcher } from "react-router";
+import { Link as ReactRouterLink, FetcherWithComponents } from "react-router";
 import { SpinnerWhileFetching } from "../utils/optimistic_ui";
 import { ShareTable } from "../widgets/editor/ShareTable";
-import axios from "axios";
 import { IoMdLink, IoMdCheckmark } from "react-icons/io";
 
 import { loader as settingsLoader } from "../paths/editor/EditorSettingsMode";
 import { editorUrl } from "../utils/url";
 import { isActivityFullyCategorized } from "../utils/classification";
 
-export async function loadShareStatus({ params }: { params: any }) {
-  const { data } = await axios.get(
-    `/api/editor/getEditorShareStatus/${params.contentId}`,
-  );
-  return data;
+export interface ShareStatusData {
+  isPublic: boolean;
+  parentIsPublic: boolean;
+  sharedWith: UserInfoWithEmail[];
+  parentSharedWith: UserInfoWithEmail[];
 }
 
 /**
  * A modal to manage the sharing status of your activity.
  * Two tabs: sharing with specific people and sharing publicly.
+ *
+ * @param contentId - The ID of the content being shared
+ * @param contentType - The type of content (doc, sequence, etc.)
+ * @param isOpen - Whether the modal is open
+ * @param onClose - Callback to close the modal
+ * @param shareStatusData - Share status data (fetched from API)
+ * @param settingsData - Settings data (for categorization)
+ * @param isLoadingShareStatus - Whether share status is loading
+ * @param isLoadingSettings - Whether settings are loading
+ * @param addEmailFetcher - Fetcher for adding email to share with
+ * @param publicShareFetcher - Fetcher for toggling public share status
+ * @param unshareFetcher - Fetcher for removing shared users
  */
 export function ShareMyContentModal({
   contentId,
   contentType,
   isOpen,
   onClose,
+  shareStatusData,
+  settingsData,
+  isLoadingShareStatus,
+  isLoadingSettings,
+  addEmailFetcher,
+  publicShareFetcher,
+  unshareFetcher,
 }: {
   contentId: string;
   contentType: ContentType;
   isOpen: boolean;
   onClose: () => void;
+  shareStatusData: ShareStatusData | null;
+  settingsData: Awaited<ReturnType<typeof settingsLoader>> | null;
+  isLoadingShareStatus: boolean;
+  isLoadingSettings: boolean;
+  addEmailFetcher: FetcherWithComponents<any>;
+  publicShareFetcher: FetcherWithComponents<any>;
+  unshareFetcher: FetcherWithComponents<any>;
 }) {
-  // ==== Load share data
-  // We're using a fetcher here so that it loads every time React Router revalidates the page
-  const fetcher = useFetcher<typeof loadShareStatus>();
-  const settingsFetcher = useFetcher<typeof settingsLoader>();
-
-  useEffect(() => {
-    if (isOpen && fetcher.state === "idle" && !fetcher.data) {
-      fetcher.load(`/loadShareStatus/${contentId}`);
-
-      if (contentType !== "folder") {
-        settingsFetcher.load(editorUrl(contentId, contentType, "settings"));
-      }
-    }
-  }, [isOpen, fetcher, settingsFetcher, contentId, contentType]);
-
   return (
     <Modal isOpen={isOpen} onClose={onClose} scrollBehavior="inside" size="4xl">
       <ModalOverlay />
@@ -87,27 +97,34 @@ export function ShareMyContentModal({
               <Heading size="sm">With the public</Heading>
               {contentType === "folder" ? (
                 <p>Not implemented yet for folders.</p>
-              ) : fetcher.data && settingsFetcher.data ? (
+              ) : shareStatusData && settingsData && !isLoadingSettings ? (
                 <SharePublicly
-                  isPublic={fetcher.data.isPublic}
-                  parentIsPublic={fetcher.data.parentIsPublic}
+                  isPublic={shareStatusData.isPublic}
+                  parentIsPublic={shareStatusData.parentIsPublic}
                   contentId={contentId}
                   contentType={contentType}
-                  settings={settingsFetcher.data}
+                  settings={settingsData}
                   closeModal={onClose}
+                  fetcher={publicShareFetcher}
                 />
               ) : (
-                <p>Loading...</p>
+                <p>
+                  {isLoadingShareStatus || isLoadingSettings
+                    ? "Loading..."
+                    : "Error loading data"}
+                </p>
               )}
             </Box>
 
             <Box>
               <Heading size="sm">With specific people</Heading>
-              {fetcher.data ? (
+              {shareStatusData && !isLoadingShareStatus ? (
                 <ShareWithPeople
                   contentId={contentId}
-                  sharedWith={fetcher.data.sharedWith}
-                  parentSharedWith={fetcher.data.parentSharedWith}
+                  sharedWith={shareStatusData.sharedWith}
+                  parentSharedWith={shareStatusData.parentSharedWith}
+                  addEmailFetcher={addEmailFetcher}
+                  unshareFetcher={unshareFetcher}
                 />
               ) : (
                 <p>Loading...</p>
@@ -124,33 +141,76 @@ function ShareWithPeople({
   contentId,
   sharedWith,
   parentSharedWith,
+  addEmailFetcher,
+  unshareFetcher,
 }: {
   contentId: string;
   sharedWith: UserInfoWithEmail[];
   parentSharedWith: UserInfoWithEmail[];
+  addEmailFetcher: FetcherWithComponents<any>;
+  unshareFetcher: FetcherWithComponents<any>;
 }) {
-  const addEmailFetcher = useFetcher();
   const [emailInput, setEmailInput] = useState("");
   const [inputHasChanged, setInputHasChanged] = useState(false);
-
   const [addEmailError, setAddEmailError] = useState<string | null>(null);
+  const [localSharedWith, setLocalSharedWith] = useState(sharedWith);
 
+  // Update local state when props change (when modal opens with new data)
   useEffect(() => {
-    // TODO: This is hack to display a more understandable error message
-    // when the user inputs a value that is not in an email format.
-    // The better way to do this is to ensure the _server_ is always sending
-    // understandable error messages (along with more details only meant for developers)
-    if (addEmailFetcher.data && typeof addEmailFetcher.data === "string") {
+    setLocalSharedWith(sharedWith);
+  }, [sharedWith]);
+
+  // Handle successful email share
+  useEffect(() => {
+    if (
+      addEmailFetcher.state === "idle" &&
+      addEmailFetcher.data &&
+      typeof addEmailFetcher.data !== "string"
+    ) {
+      // Backend returns the new user that was shared with
+      // genericAction returns the full axios response, so we need to access .data
+      const newUser = (addEmailFetcher.data as any).data as UserInfoWithEmail;
+      setLocalSharedWith((prev) => {
+        const exists = prev.some((u) => u.userId === newUser.userId);
+        return exists ? prev : [...prev, newUser];
+      });
+      setEmailInput("");
+      setInputHasChanged(false);
+      setAddEmailError(null);
+    }
+  }, [addEmailFetcher.state, addEmailFetcher.data]);
+
+  // Handle successful removal
+  useEffect(() => {
+    if (unshareFetcher.state === "idle" && unshareFetcher.data) {
+      // Backend returns the userId that was removed
+      // genericAction returns the full axios response, so we need to access .data
+      const removedUserId = (unshareFetcher.data as any)?.data?.userId;
+      if (removedUserId) {
+        setLocalSharedWith((prev) =>
+          prev.filter((u) => u.userId !== removedUserId),
+        );
+      }
+    }
+  }, [unshareFetcher.state, unshareFetcher.data]);
+
+  // Handle fetcher response for email errors
+  if (addEmailFetcher.data && typeof addEmailFetcher.data === "string") {
+    if (addEmailError !== addEmailFetcher.data) {
       if (addEmailFetcher.data.includes("Invalid email address")) {
         setAddEmailError("Invalid email address");
       } else {
         setAddEmailError(addEmailFetcher.data);
       }
-    } else {
-      setAddEmailError(null);
-      setEmailInput("");
     }
-  }, [addEmailFetcher.data]);
+  } else if (
+    addEmailFetcher.state === "idle" &&
+    addEmailFetcher.data === null &&
+    addEmailError
+  ) {
+    setAddEmailError(null);
+    setEmailInput("");
+  }
 
   function addEmail() {
     addEmailFetcher.submit(
@@ -162,13 +222,14 @@ function ShareWithPeople({
 
   return (
     <>
-      {sharedWith.length > 0 && (
+      {localSharedWith.length > 0 && (
         <ShareTable
           contentId={contentId}
           isPublic={false}
           parentIsPublic={false}
-          sharedWith={sharedWith}
+          sharedWith={localSharedWith}
           parentSharedWith={parentSharedWith}
+          unshareFetcher={unshareFetcher}
         />
       )}
 
@@ -216,6 +277,7 @@ function SharePublicly({
   contentType,
   settings,
   closeModal,
+  fetcher,
 }: {
   isPublic: boolean;
   parentIsPublic: boolean;
@@ -223,12 +285,33 @@ function SharePublicly({
   contentType: ContentType;
   settings: Awaited<ReturnType<typeof settingsLoader>>;
   closeModal: () => void;
+  fetcher: FetcherWithComponents<any>;
 }) {
-  const fetcher = useFetcher();
-
   const shareableLink = `${window.location.host}/activityViewer/${contentId}`;
 
   const [copiedLink, setCopiedLink] = useState(false);
+  const [localIsPublic, setLocalIsPublic] = useState(isPublic);
+
+  // Update local state when props change
+  useEffect(() => {
+    setLocalIsPublic(isPublic);
+  }, [isPublic]);
+
+  // Handle successful public share toggle
+  useEffect(() => {
+    if (
+      fetcher.state === "idle" &&
+      fetcher.data &&
+      typeof fetcher.data !== "string"
+    ) {
+      // Backend returns the new isPublic status
+      // genericAction returns the full axios response, so we need to access .data
+      const newIsPublic = (fetcher.data as any).data?.isPublic;
+      if (typeof newIsPublic === "boolean") {
+        setLocalIsPublic(newIsPublic);
+      }
+    }
+  }, [fetcher.state, fetcher.data]);
 
   const unspecifiedCategories = !isActivityFullyCategorized({
     allCategories: settings.allCategories,
@@ -256,7 +339,7 @@ function SharePublicly({
 
   if (parentIsPublic) {
     return <p data-test="Public Status">Parent is public.</p>;
-  } else if (isPublic) {
+  } else if (localIsPublic) {
     return (
       <VStack justify="flex-start" align="flex-start" spacing="1rem" pt="1rem">
         {browseWarning}

@@ -103,7 +103,6 @@ import {
   loader as docEditorSettingsModeLoader,
 } from "./paths/editor/EditorSettingsMode";
 import axios, { AxiosError } from "axios";
-import { loadShareStatus } from "./popups/ShareMyContentModal";
 import {
   DocEditorHistoryMode,
   loader as docEditorHistoryModeLoader,
@@ -386,10 +385,6 @@ const router = createBrowserRouter([
         action: changeNameAction,
         errorElement: <ErrorPage />,
         element: <ChangeName />,
-      },
-      {
-        path: "loadShareStatus/:contentId",
-        loader: loadShareStatus,
       },
       {
         path: "scratchPad",
