@@ -6,9 +6,7 @@ describe("Assignment Invitation Modal", () => {
 
   beforeEach(() => {
     // Intercept the logo image request to prevent 404 errors
-    cy.intercept("/Doenet_Logo_Frontpage.png", {
-      fixture: "Doenet_Logo_Frontpage.png",
-    });
+    cy.intercept("/Doenet_Logo_Frontpage.png", {});
   });
 
   it("renders correctly and is accessible", () => {
