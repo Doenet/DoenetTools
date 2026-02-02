@@ -1,70 +1,78 @@
 import { useEffect, useState } from "react";
-import { ContentDescription } from "../types";
 
 type CardSelections = {
-  contentIds: Set<string>;
+  ids: Set<string>;
   areActive: boolean;
-  add: (contentId: string) => void;
-  remove: (contentId: string) => void;
+  count: number;
+  add: (id: string) => void;
+  remove: (id: string) => void;
   clear: () => void;
 };
 
-export function useCardSelections({
-  content,
-}: {
-  content: ContentDescription[];
-}): CardSelections {
+/**
+ * React hook for tracking a set of selected card ids.
+ * Keeps selections in sync with the provided `ids` list.
+ */
+export function useCardSelections({ ids }: { ids: string[] }): CardSelections {
   const [selectedCards, setSelectedCards] = useState<Set<string>>(new Set());
 
-  function add(contentId: string) {
+  /** Add a card id to the selection. */
+  function add(id: string) {
     setSelectedCards((was) => {
       const newSet = new Set(was);
-      newSet.add(contentId);
+      newSet.add(id);
       return newSet;
     });
   }
 
-  function remove(contentId: string) {
+  /** Remove a card id from the selection. */
+  function remove(id: string) {
     setSelectedCards((was) => {
       const newSet = new Set(was);
-      newSet.delete(contentId);
+      newSet.delete(id);
       return newSet;
     });
   }
 
   /*
-   * Every time the `content` changes, we check if any of the selected cards
-   * are no longer present in the current content list. If any are missing,
-   * we clear the selection to avoid referencing non-existent content.
+   * Every time the ids changes, we check if any of the selected cards
+   * are no longer present in the current id list. If any are missing,
+   * we clear the selection to avoid referencing non-existent ids.
    */
   useEffect(() => {
     setSelectedCards((was) => {
-      return updateSelectionGivenNewContent({
+      return updateSelectionGivenNewIds({
         selectedCards: was,
-        newContentIds: content.map((c) => c.contentId),
+        newIds: ids,
       });
     });
-  }, [content]);
+  }, [ids]);
 
   return {
-    contentIds: selectedCards,
+    ids: selectedCards,
     areActive: selectedCards.size > 0,
+    count: selectedCards.size,
     add,
     remove,
+    /** Clear all selections. */
     clear: () => setSelectedCards(new Set()),
   };
 }
 
-function updateSelectionGivenNewContent({
+/**
+ * Return a selection set that only includes ids still present in `newIds`.
+ * If any selected id is missing, the selection is cleared.
+ */
+function updateSelectionGivenNewIds({
   selectedCards,
-  newContentIds,
+  newIds,
 }: {
   selectedCards: Set<string>;
-  newContentIds: string[];
+  newIds: string[];
 }) {
   let foundMissing = false;
   for (const selectedCard of selectedCards) {
-    if (!newContentIds.includes(selectedCard)) {
+    if (!newIds.includes(selectedCard)) {
       foundMissing = true;
       break;
     }

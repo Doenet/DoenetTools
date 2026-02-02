@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { ContentDescription } from "../types";
 import { useFetcher } from "react-router";
 
 type CardMovement = {
@@ -9,36 +8,40 @@ type CardMovement = {
   moveDown: () => void;
 };
 
+/**
+ * React hook for moving selected cards up or down within a list.
+ * Right now, it is specific to `content` due to the API calls it generates.
+ */
 export function useCardMovement({
   selectedCards,
-  content,
+  ids,
 }: {
   selectedCards: Set<string>;
-  content: ContentDescription[];
+  ids: string[];
 }): CardMovement {
   const fetcher = useFetcher();
 
-  const contentIdToIndex = useMemo(
-    () => createMapFromContentIdToIndex({ selectedCards, content }),
-    [content, selectedCards],
+  const idToPosition = useMemo(
+    () => createMapFromIdToPosition({ selectedCards, ids }),
+    [ids, selectedCards],
   );
 
-  const canMoveUp = cardsCanMoveUp({ selectedCards, contentIdToIndex });
+  const canMoveUp = cardsCanMoveUp({ selectedCards, idToPosition });
   const canMoveDown = cardsCanMoveDown({
     selectedCards,
-    contentIdToIndex,
-    totalCards: content.length,
+    idToPosition,
+    totalCards: ids.length,
   });
 
   const moveUp = () => {
     if (!canMoveUp) return;
-    const contentId = selectedCards.values().next().value;
-    if (!contentId) return;
-    const position = contentIdToIndex[contentId];
+    const id = selectedCards.values().next().value;
+    if (!id) return;
+    const position = idToPosition[id];
     fetcher.submit(
       {
         path: "copyMove/moveContent",
-        contentId,
+        contentId: id,
         desiredPosition: position - 1,
         // parentId,
       },
@@ -48,13 +51,13 @@ export function useCardMovement({
 
   const moveDown = () => {
     if (!canMoveDown) return;
-    const contentId = selectedCards.values().next().value;
-    if (!contentId) return;
-    const position = contentIdToIndex[contentId];
+    const id = selectedCards.values().next().value;
+    if (!id) return;
+    const position = idToPosition[id];
     fetcher.submit(
       {
         path: "copyMove/moveContent",
-        contentId,
+        contentId: id,
         desiredPosition: position + 1,
         // parentId,
       },
@@ -70,49 +73,58 @@ export function useCardMovement({
   };
 }
 
-function createMapFromContentIdToIndex({
+/**
+ * Build a map of selected ids to their position in the list
+ */
+function createMapFromIdToPosition({
   selectedCards,
-  content,
+  ids,
 }: {
   selectedCards: Set<string>;
-  content: ContentDescription[];
+  ids: string[];
 }): Record<string, number> {
   const record: Record<string, number> = {};
-  for (const contentId of selectedCards) {
-    const index = content.findIndex((obj) => obj.contentId == contentId);
+  for (const id of selectedCards) {
+    const index = ids.findIndex((currentId) => currentId === id);
     if (index != -1) {
-      record[contentId] = index;
+      record[id] = index;
     }
   }
   return record;
 }
 
+/**
+ * Determine if the current selection can be moved up.
+ */
 function cardsCanMoveUp({
   selectedCards,
-  contentIdToIndex,
+  idToPosition,
 }: {
   selectedCards: Set<string>;
-  contentIdToIndex: Record<string, number>;
+  idToPosition: Record<string, number>;
 }) {
   if (selectedCards.size !== 1) {
     return false;
   }
-  const index = contentIdToIndex[Array.from(selectedCards)[0]];
+  const index = idToPosition[Array.from(selectedCards)[0]];
   return index > 0;
 }
 
+/**
+ * Determine if the current selection can be moved down.
+ */
 function cardsCanMoveDown({
   selectedCards,
-  contentIdToIndex,
+  idToPosition,
   totalCards,
 }: {
   selectedCards: Set<string>;
-  contentIdToIndex: Record<string, number>;
+  idToPosition: Record<string, number>;
   totalCards: number;
 }) {
   if (selectedCards.size !== 1) {
     return false;
   }
-  const index = contentIdToIndex[Array.from(selectedCards)[0]];
+  const index = idToPosition[Array.from(selectedCards)[0]];
   return index < totalCards - 1;
 }
