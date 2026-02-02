@@ -1,3 +1,8 @@
+/**
+ * UI helpers for selecting and upgrading DoenetML versions in the editor.
+ * Used in EditorSettingsMode.
+ */
+
 import { useState } from "react";
 import { FetcherWithComponents, useFetcher } from "react-router";
 import {
@@ -15,6 +20,10 @@ import axios from "axios";
 import { optimistic } from "../../utils/optimistic_ui";
 import { updateSyntaxFromV06toV07 } from "@doenet/v06-to-v07";
 
+/**
+ * Renders a DoenetML version selector.
+ * Saves the selection to the server.
+ */
 export function DoenetMLSelectionBox({
   contentId,
   versionId,
@@ -92,6 +101,9 @@ export function DoenetMLSelectionBox({
   );
 }
 
+/**
+ * Renders a button to upgrade content syntax to DoenetML 0.7.
+ */
 export function UpgradeSyntax({
   contentId,
   allVersions,
@@ -132,6 +144,10 @@ export function UpgradeSyntax({
   );
 }
 
+/**
+ * Fetches content, upgrades the DoenetML syntax from 0.6 to 0.7,
+ * and submits the updated source plus version ID to the server.
+ */
 async function performSyntaxUpgrade(
   contentId: string,
   fetcher: FetcherWithComponents<any>,
