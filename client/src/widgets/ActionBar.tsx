@@ -21,6 +21,12 @@ export type Context = {
   description?: string;
   closeLabel: string;
   onClose: () => void;
+  /**
+   * This field will append anything to the end of this action bar.
+   * Remove this once `<AddContentToMenu>` and `<CreateContentMenu>` have been properly
+   * refactored to NOT include their initial button UI inside of themselves.
+   */
+  FIX_ME_miscellaneous_buttons?: any;
 };
 
 /**
@@ -44,7 +50,6 @@ export function ActionBar({
       backgroundColor={isActive ? "gray.100" : undefined}
       width="100%"
       height="2.3rem"
-      px="10px"
       mb="10px"
     >
       {isActive && (
@@ -97,6 +102,7 @@ export function ActionBar({
             </Button>
           );
         })}
+      {isActive && context.FIX_ME_miscellaneous_buttons}
     </HStack>
   );
 }

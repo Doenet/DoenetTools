@@ -54,6 +54,8 @@ import { NameBar } from "../widgets/NameBar";
 import { ActionBar, Action as ActionBarActions } from "../widgets/ActionBar";
 import { useCardSelections } from "../utils/cardSelections";
 import { useCardMovement } from "../utils/cardMovement";
+import { CreateContentMenu } from "../dropdowns/CreateContentMenu";
+import { AddContentToMenu } from "../popups/AddContentToMenu";
 
 export async function loader({ params, request }: any) {
   const url = new URL(request.url);
@@ -577,18 +579,41 @@ export function Activities() {
         },
         isDisabled: cardSelections.count === 0 || haveQuery,
       },
-      {
-        label: "Copy to",
-        onClick: () => {},
-        isDisabled: cardSelections.count === 0 || haveQuery,
-      },
-      {
-        label: "Create from selected",
-        onClick: () => {},
-        isDisabled: cardSelections.count === 0 || haveQuery,
-      },
     ];
   }
+
+  /**
+   * TODO: This is a hack to place arbitrary buttons into the action bar.
+   * Move this logic to `actions` once `<AddContentToMenu>` and `<CreateContentMenu>`
+   * have been properly refactored to NOT include their initial button UI inside of themselves.
+   */
+  const REMOVE_ME_sourceContent = content.filter((c) =>
+    cardSelections.ids.has(c.contentId),
+  );
+  const FIX_ME_miscellaneous_buttons = addTo ? null : (
+    <>
+      <AddContentToMenu
+        fetcher={addContentFetcher}
+        sourceContent={REMOVE_ME_sourceContent}
+        size="xs"
+        colorScheme="blue"
+        label="Copy selected to"
+        user={user ?? null}
+        onNavigate={(url) => navigate(url)}
+        setAddTo={setAddTo}
+      />
+      <CreateContentMenu
+        sourceContent={REMOVE_ME_sourceContent}
+        size="xs"
+        colorScheme="blue"
+        label="Create from selected"
+        user={user ?? null}
+        navigate={navigate}
+        createFetcher={createContentMenuCreateFetcher}
+        saveNameFetcher={createContentMenuSaveNameFetcher}
+      />
+    </>
+  );
 
   const selectedItemsActions = (
     <ActionBar
@@ -598,6 +623,7 @@ export function Activities() {
         } selected`,
         closeLabel: "Deselect all",
         onClose: cardSelections.clear,
+        FIX_ME_miscellaneous_buttons,
       }}
       actions={actions}
       isActive={cardSelections.areActive}
