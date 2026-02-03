@@ -1,13 +1,23 @@
-import { HStack, CloseButton, Button, Text } from "@chakra-ui/react";
+import {
+  HStack,
+  CloseButton,
+  Button,
+  Text,
+  IconButton,
+  Tooltip,
+  Icon,
+} from "@chakra-ui/react";
+import type { IconType } from "react-icons";
 
-type Action = {
+export type Action = {
   label: string;
-  icon?: React.ReactElement;
+  icon?: IconType;
   onClick: () => void;
   isDisabled?: boolean;
+  useIconOnly?: boolean;
 };
 
-type Context = {
+export type Context = {
   description?: string;
   closeLabel: string;
   onClose: () => void;
@@ -29,11 +39,12 @@ export function ActionBar({
 }) {
   return (
     <HStack
-      spacing={3}
-      align="center"
+      spacing={"1rem"}
+      // align="center"
       backgroundColor={isActive ? "gray.100" : undefined}
       width="100%"
       height="2.3rem"
+      px="10px"
       mb="10px"
     >
       {isActive && (
@@ -45,25 +56,47 @@ export function ActionBar({
       )}
 
       {isActive && context.description && (
-        <Text noOfLines={1} data-test="Action Bar Description">
+        <Text width="8rem" noOfLines={1} data-test="Action Bar Description">
           {context.description}
         </Text>
       )}
 
       {isActive &&
-        actions.map((action) => (
-          <Button
-            key={action.label}
-            data-test={action.label}
-            isDisabled={action.isDisabled}
-            size="xs"
-            colorScheme="blue"
-            leftIcon={action.icon}
-            onClick={action.onClick}
-          >
-            {action.label}
-          </Button>
-        ))}
+        actions.map((action) => {
+          const iconElement = action.icon ? (
+            <Icon as={action.icon} fontSize="1rem" />
+          ) : undefined;
+
+          return action.useIconOnly ? (
+            <Tooltip
+              label={action.label}
+              key={action.label}
+              openDelay={500}
+              placement="top"
+            >
+              <IconButton
+                aria-label={action.label}
+                icon={iconElement}
+                isDisabled={action.isDisabled}
+                size="xs"
+                variant="ghost"
+                onClick={action.onClick}
+              />
+            </Tooltip>
+          ) : (
+            <Button
+              key={action.label}
+              data-test={action.label}
+              isDisabled={action.isDisabled}
+              size="xs"
+              variant="ghost"
+              leftIcon={iconElement}
+              onClick={action.onClick}
+            >
+              {action.label}
+            </Button>
+          );
+        })}
     </HStack>
   );
 }

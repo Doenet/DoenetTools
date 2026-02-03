@@ -34,7 +34,7 @@ import {
 } from "react-icons/md";
 import { FaPlus } from "react-icons/fa";
 import { LuDessert } from "react-icons/lu";
-import { FiCopy, FiTrash2 } from "react-icons/fi";
+import { FiTrash2 } from "react-icons/fi";
 
 import { CardContent } from "../widgets/Card";
 import CardList from "../widgets/CardList";
@@ -51,7 +51,7 @@ import { formatAssignmentBlurb } from "../utils/assignment";
 import { editorUrl } from "../utils/url";
 import { ShareMyContentModal } from "../popups/ShareMyContentModal";
 import { NameBar } from "../widgets/NameBar";
-import { ActionBar } from "../widgets/ActionBar";
+import { ActionBar, Action as ActionBarActions } from "../widgets/ActionBar";
 import { useCardSelections } from "../utils/cardSelections";
 import { useCardMovement } from "../utils/cardMovement";
 
@@ -507,71 +507,88 @@ export function Activities() {
     </Flex>
   ) : null;
 
-  const actions = addTo
-    ? []
-    : [
-        {
-          label: "Move up",
-          onClick: cardMovement.moveUp,
-          isDisabled: !cardMovement.canMoveUp || haveQuery,
-          icon: <FaArrowUp />,
+  let actions: ActionBarActions[] = [];
+
+  if (addTo) {
+    actions = [];
+  } else {
+    actions = [
+      {
+        label: "Move up",
+        onClick: cardMovement.moveUp,
+        isDisabled: !cardMovement.canMoveUp || haveQuery,
+        icon: FaArrowUp,
+        useIconOnly: true,
+      },
+      {
+        label: "Move down",
+        onClick: cardMovement.moveDown,
+        isDisabled: !cardMovement.canMoveDown || haveQuery,
+        icon: FaArrowDown,
+        useIconOnly: true,
+      },
+      {
+        label: "Move to",
+        onClick: () => {
+          const selectedContent = content.find(
+            (c) => c.contentId === cardSelections.ids.values().next().value,
+          );
+          if (selectedContent) {
+            setMoveCopyData({
+              contentId: selectedContent.contentId,
+              name: selectedContent.name,
+              type: selectedContent.type,
+              isPublic: selectedContent.isPublic,
+              isShared: selectedContent.isShared,
+              sharedWith: selectedContent.sharedWith,
+              licenseCode: selectedContent.licenseCode ?? null,
+            });
+            moveCopyContentOnOpen();
+          }
         },
-        {
-          label: "Move down",
-          onClick: cardMovement.moveDown,
-          isDisabled: !cardMovement.canMoveDown || haveQuery,
-          icon: <FaArrowDown />,
+        isDisabled: cardSelections.count !== 1 || haveQuery,
+        icon: MdDriveFileMoveOutline,
+        useIconOnly: true,
+      },
+      {
+        label: "Move to trash",
+        onClick: () => {
+          setSettingsContentId(
+            cardSelections.ids.values().next().value ?? null,
+          );
+          deleteContentOnOpen();
         },
-        {
-          label: "Move to",
-          onClick: () => {
-            const selectedContent = content.find(
-              (c) => c.contentId === cardSelections.ids.values().next().value,
-            );
-            if (selectedContent) {
-              setMoveCopyData({
-                contentId: selectedContent.contentId,
-                name: selectedContent.name,
-                type: selectedContent.type,
-                isPublic: selectedContent.isPublic,
-                isShared: selectedContent.isShared,
-                sharedWith: selectedContent.sharedWith,
-                licenseCode: selectedContent.licenseCode ?? null,
-              });
-              moveCopyContentOnOpen();
-            }
-          },
-          isDisabled: cardSelections.count !== 1 || haveQuery,
-          icon: <MdDriveFileMoveOutline />,
+        isDisabled: cardSelections.count !== 1 || haveQuery,
+        icon: FiTrash2,
+        useIconOnly: true,
+      },
+      {
+        label: "Make a copy",
+        onClick: () => {
+          contentActionsFetcher.submit(
+            {
+              path: "copyMove/copyContent",
+              contentIds: [...cardSelections.ids],
+              parentId,
+              prependCopy: true,
+            },
+            { method: "post", encType: "application/json" },
+          );
         },
-        {
-          label: "Make a copy",
-          onClick: () => {
-            contentActionsFetcher.submit(
-              {
-                path: "copyMove/copyContent",
-                contentIds: [...cardSelections.ids],
-                parentId,
-                prependCopy: true,
-              },
-              { method: "post", encType: "application/json" },
-            );
-          },
-          isDisabled: cardSelections.count === 0 || haveQuery,
-          icon: <FiCopy />,
-        },
-        {
-          label: "Move to trash",
-          onClick: () => {
-            setSettingsContentId(
-              cardSelections.ids.values().next().value ?? null,
-            );
-            deleteContentOnOpen();
-          },
-          isDisabled: cardSelections.count !== 1 || haveQuery,
-          icon: <FiTrash2 />,
-        },
-      ];
+        isDisabled: cardSelections.count === 0 || haveQuery,
+      },
+      {
+        label: "Copy to",
+        onClick: () => {},
+        isDisabled: cardSelections.count === 0 || haveQuery,
+      },
+      {
+        label: "Create from selected",
+        onClick: () => {},
+        isDisabled: cardSelections.count === 0 || haveQuery,
+      },
+    ];
+  }
 
   const selectedItemsActions = (
     <ActionBar
