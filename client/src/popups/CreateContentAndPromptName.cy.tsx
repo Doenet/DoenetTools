@@ -600,6 +600,7 @@ describe("CreateContentAndPromptName component tests", () => {
     );
 
     cy.contains("Creating").should("be.visible");
+    cy.wait(100);
     cy.checkAccessibility("body");
   });
 
@@ -630,6 +631,7 @@ describe("CreateContentAndPromptName component tests", () => {
     );
 
     cy.get('[data-test="Created Name"]').should("be.visible");
+    cy.wait(100);
     cy.checkAccessibility("body");
   });
 
@@ -655,6 +657,7 @@ describe("CreateContentAndPromptName component tests", () => {
     );
 
     cy.contains("An error occurred").should("be.visible");
+    cy.wait(100);
     cy.checkAccessibility("body");
   });
 
@@ -685,6 +688,7 @@ describe("CreateContentAndPromptName component tests", () => {
     );
 
     cy.contains("Folder created").should("be.visible");
+    cy.wait(100);
     cy.checkAccessibility("body");
   });
 });
