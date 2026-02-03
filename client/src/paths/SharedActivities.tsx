@@ -293,7 +293,7 @@ export function SharedActivities() {
       showPublicStatus={false}
       showActivityCategories={true}
       emptyMessage={"No Activities Yet"}
-      content={cardContent}
+      cardContent={cardContent}
       selectedCards={user ? selectedCards : undefined}
       setSelectedCards={setSelectedCards}
       disableSelectFor={addTo ? [addTo.contentId] : undefined}

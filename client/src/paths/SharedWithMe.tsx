@@ -122,7 +122,7 @@ export function SharedWithMe() {
       showPublicStatus={true}
       showActivityCategories={true}
       emptyMessage={emptyMessage}
-      content={cardContent}
+      cardContent={cardContent}
       selectedCards={selectedCards}
       setSelectedCards={setSelectedCards}
     />
