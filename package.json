@@ -15,6 +15,7 @@
     "lint:check": "npm run lint:check --workspaces"
   },
   "devDependencies": {
+    "@cypress/grep": "^5.1.0",
     "@eslint/js": "^9.39.2",
     "@types/luxon": "^3.7.1",
     "@types/node": "^25.0.10",

@@ -1,7 +1,7 @@
 import { toMathJaxString } from "@doenet-tools/shared";
 
 describe("Share Activities Tests", function () {
-  it("create, share, and copy public activity", () => {
+  it("create, share, and copy public activity", { tags: ["@brittle"] }, () => {
     const code = Date.now().toString();
     const scrappyEmail = `scrappy${code}@doo`;
     const scoobyEmail = `scooby${code}@doo`;
