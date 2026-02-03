@@ -10,7 +10,7 @@ import {
   Box,
   ModalCloseButton,
 } from "@chakra-ui/react";
-import { useFetcher } from "react-router";
+import { FetcherWithComponents } from "react-router";
 import { ContentDescription } from "../types";
 import { contentTypeToName } from "../utils/activity";
 
@@ -19,14 +19,14 @@ export function DeleteContent({
   onClose,
   finalFocusRef,
   content,
+  fetcher,
 }: {
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement | null>;
   content: ContentDescription;
+  fetcher: FetcherWithComponents<any>;
 }) {
-  const fetcher = useFetcher();
-
   function deleteContent() {
     fetcher.submit(
       {

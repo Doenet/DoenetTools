@@ -23,6 +23,7 @@ import {
   useLoaderData,
   useFetcher,
   useOutletContext,
+  useNavigate,
 } from "react-router";
 import axios from "axios";
 import { FaArrowUp, FaArrowDown } from "react-icons/fa6";
@@ -170,7 +171,35 @@ export function Activities() {
     document.title = `${parent?.name ?? "My Activities"} - Doenet`;
   }, [parent]);
 
-  const fetcher = useFetcher();
+  // Used for card actions (move up/down, duplicate)
+  const contentActionsFetcher = useFetcher();
+
+  // Used for creating new documents and problem sets
+  const createContentFetcher = useFetcher();
+
+  // Used by MoveCopyContent modal
+  const moveContentFetcher = useFetcher();
+
+  // Used by CreateLocalContent modal (folder creation)
+  const createFolderFetcher = useFetcher();
+
+  // Used by CopyContentAndReportFinish modal
+  const copyContentFetcher = useFetcher();
+
+  // Used by ActivateAuthorMode modal
+  const authorModeFetcher = useFetcher();
+
+  // Used by AddContentToMenu component
+  const addContentFetcher = useFetcher();
+
+  // Used by CreateContentMenu component
+  const createContentMenuCreateFetcher = useFetcher();
+  const createContentMenuSaveNameFetcher = useFetcher();
+
+  // Used by DeleteContent modal
+  const deleteContentFetcher = useFetcher();
+
+  const navigate = useNavigate();
 
   const { iconImage: folderIcon, iconColor: folderColor } = getIconInfo(
     "folder",
@@ -222,7 +251,7 @@ export function Activities() {
 
   function createNewDocument() {
     setHaveContentSpinner(true);
-    fetcher.submit(
+    createContentFetcher.submit(
       {
         path: "updateContent/createContent",
         redirectNewContentId: true,
@@ -237,6 +266,8 @@ export function Activities() {
     <MoveCopyContent
       isOpen={moveCopyContentIsOpen}
       onClose={moveCopyContentOnClose}
+      fetcher={moveContentFetcher}
+      onNavigate={(url) => navigate(url)}
       sourceContent={[moveCopyData]}
       userId={userId}
       currentParentId={parentId}
@@ -252,7 +283,7 @@ export function Activities() {
       onClose={createFolderOnClose}
       contentType="folder"
       parentId={parentId}
-      fetcher={fetcher}
+      fetcher={createFolderFetcher}
       finalFocusRef={finalFocusRef}
     />
   );
@@ -264,6 +295,7 @@ export function Activities() {
         onClose={deleteContentOnClose}
         content={contentData}
         finalFocusRef={finalFocusRef}
+        fetcher={deleteContentFetcher}
       />
     ) : null;
 
@@ -281,6 +313,10 @@ export function Activities() {
         contentIds={[...cardSelections.ids]}
         desiredParent={addTo}
         action="Add"
+        setAddTo={setAddTo}
+        user={user ?? null}
+        fetcher={copyContentFetcher}
+        onNavigate={navigate}
       />
     ) : null;
 
@@ -297,7 +333,7 @@ export function Activities() {
       desiredAction="create doc"
       user={user!}
       proceedCallback={createNewDocument}
-      fetcher={fetcher}
+      fetcher={authorModeFetcher}
     />
   );
 
@@ -344,7 +380,7 @@ export function Activities() {
           data-test="Add Problem Set Button"
           onClick={() => {
             setHaveContentSpinner(true);
-            fetcher.submit(
+            createContentFetcher.submit(
               {
                 path: "updateContent/createContent",
                 redirectNewContentId: true,
@@ -511,7 +547,7 @@ export function Activities() {
         {
           label: "Make a copy",
           onClick: () => {
-            fetcher.submit(
+            contentActionsFetcher.submit(
               {
                 path: "copyMove/copyContent",
                 contentIds: [...cardSelections.ids],

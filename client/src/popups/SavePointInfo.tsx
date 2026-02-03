@@ -53,7 +53,9 @@ export function SavePointInfo({
           }}
         />
         {revisionName === "" ? (
-          <FormErrorMessage>Save point name is required.</FormErrorMessage>
+          <FormErrorMessage color="red.700">
+            Save point name is required.
+          </FormErrorMessage>
         ) : null}
       </FormControl>
       <FormControl marginTop="10px">
@@ -90,7 +92,7 @@ export function SavePointInfo({
             isDisabled={
               (note === revision.note &&
                 revisionName === revision.revisionName) ||
-              revision.revisionName === ""
+              revisionName === ""
             }
             onClick={() => {
               fetcher.submit(

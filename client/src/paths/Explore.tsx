@@ -203,10 +203,15 @@ export function Explore() {
 
   const fetcher = useFetcher();
 
+  // Used by CreateContentMenu component
+  const createContentMenuCreateFetcher = useFetcher();
+  const createContentMenuSaveNameFetcher = useFetcher();
+
   const [selectedCards, setSelectedCards] = useState<
     (ContentDescription | undefined)[]
   >([]);
   const selectedCardsFiltered = selectedCards.filter((c) => c !== undefined);
+
   const numSelected = selectedCardsFiltered.length;
 
   const { search } = useLocation();
@@ -284,6 +289,10 @@ export function Explore() {
         contentIds={selectedCardsFiltered.map((sc) => sc.contentId)}
         desiredParent={addTo}
         action="Add"
+        setAddTo={setAddTo}
+        user={user ?? null}
+        fetcher={fetcher}
+        onNavigate={navigate}
       />
     ) : null;
 
@@ -811,12 +820,19 @@ export function Explore() {
                   size="xs"
                   colorScheme="blue"
                   label="Add selected to"
+                  user={user ?? null}
+                  onNavigate={(url) => navigate(url)}
+                  setAddTo={setAddTo}
                 />
                 <CreateContentMenu
                   sourceContent={selectedCardsFiltered}
                   size="xs"
                   colorScheme="blue"
                   label="Create from selected"
+                  user={user ?? null}
+                  navigate={navigate}
+                  createFetcher={createContentMenuCreateFetcher}
+                  saveNameFetcher={createContentMenuSaveNameFetcher}
                 />
               </HStack>
               {addTo !== null ? (

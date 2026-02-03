@@ -17,6 +17,7 @@ import {
   useFetcher,
   Link,
   useOutletContext,
+  useNavigate,
 } from "react-router";
 
 import { CardContent } from "../widgets/Card";
@@ -63,6 +64,8 @@ export function SharedActivities() {
   const { user, addTo, setAddTo, allLicenses } =
     useOutletContext<SiteContext>();
 
+  const navigate = useNavigate();
+
   const parentLicense = parent
     ? (allLicenses.find((l) => l.code === parent.licenseCode) ?? null)
     : null;
@@ -98,6 +101,10 @@ export function SharedActivities() {
   }, [owner, parent]);
 
   const fetcher = useFetcher();
+
+  // Used by CreateContentMenu component
+  const createContentMenuCreateFetcher = useFetcher();
+  const createContentMenuSaveNameFetcher = useFetcher();
 
   const [infoContentId, setInfoContentId] = useState<string | null>(null);
 
@@ -140,6 +147,10 @@ export function SharedActivities() {
         contentIds={selectedCardsFiltered.map((sc) => sc.contentId)}
         desiredParent={addTo}
         action="Add"
+        setAddTo={setAddTo}
+        user={user ?? null}
+        fetcher={fetcher}
+        onNavigate={navigate}
       />
     ) : null;
 
@@ -231,12 +242,19 @@ export function SharedActivities() {
                 size="xs"
                 colorScheme="blue"
                 label="Add selected to"
+                user={user ?? null}
+                onNavigate={(url) => navigate(url)}
+                setAddTo={setAddTo}
               />
               <CreateContentMenu
                 sourceContent={selectedCardsFiltered}
                 size="xs"
                 colorScheme="blue"
                 label="Create from selected"
+                user={user ?? null}
+                navigate={navigate}
+                createFetcher={createContentMenuCreateFetcher}
+                saveNameFetcher={createContentMenuSaveNameFetcher}
               />
             </HStack>
             {addTo !== null ? (

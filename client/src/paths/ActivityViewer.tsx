@@ -168,6 +168,9 @@ export function ActivityViewer() {
   }, [authorMode]);
 
   const fetcher = useFetcher();
+  const createContentMenuCreateFetcher = useFetcher();
+  const createContentMenuSaveNameFetcher = useFetcher();
+  const deleteContentFetcher = useFetcher();
 
   useEffect(() => {
     document.title = `${activityData.name} - Doenet`;
@@ -237,6 +240,10 @@ export function ActivityViewer() {
         contentIds={[activityData.contentId]}
         desiredParent={addTo}
         action="Add"
+        setAddTo={setAddTo}
+        user={user ?? null}
+        fetcher={fetcher}
+        onNavigate={navigate}
       />
     ) : null;
 
@@ -335,6 +342,9 @@ export function ActivityViewer() {
           activity={activityData}
           asViewer={true}
           fetcher={fetcher}
+          createContentMenuCreateFetcher={createContentMenuCreateFetcher}
+          createContentMenuSaveNameFetcher={createContentMenuSaveNameFetcher}
+          deleteContentFetcher={deleteContentFetcher}
         />
       );
     } else {
@@ -452,6 +462,9 @@ export function ActivityViewer() {
         suggestToBeCuratedOption={
           activityData.type === "singleDoc" && !libraryRelations.activity
         }
+        user={user ?? null}
+        onNavigate={(url) => navigate(url)}
+        setAddTo={setAddTo}
       />
     );
   }

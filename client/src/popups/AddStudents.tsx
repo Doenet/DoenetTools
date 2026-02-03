@@ -1,5 +1,6 @@
 import {
   Button,
+  FormLabel,
   HStack,
   Modal,
   ModalBody,
@@ -16,7 +17,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { RefObject, useRef, useState } from "react";
-import { useFetcher } from "react-router";
+import { FetcherWithComponents } from "react-router";
 import { downloadStudentAccountCredentialsToCsv } from "../utils/csv";
 
 export function AddStudents({
@@ -24,18 +25,18 @@ export function AddStudents({
   isOpen,
   onClose,
   finalFocusRef,
+  fetcher,
 }: {
   folderId: string;
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement | null>;
+  fetcher: FetcherWithComponents<any>;
 }) {
   const cancelRef = useRef<HTMLButtonElement>(null);
 
   const [numAccounts, setNumAccounts] = useState(1);
   const [created, setCreated] = useState(false);
-
-  const addAccountsFetcher = useFetcher();
 
   return (
     <Modal
@@ -51,10 +52,13 @@ export function AddStudents({
       <ModalContent>
         <ModalHeader textAlign="center">Add students</ModalHeader>
         <ModalBody pb="40px">
-          {addAccountsFetcher.data?.data === undefined && (
+          {fetcher.data?.data === undefined && (
             <HStack mt="20px">
-              <Text>How many students?</Text>
+              <FormLabel htmlFor="num-students-input" mb="0">
+                How many students?
+              </FormLabel>
               <NumberInput
+                id="num-students-input"
                 min={1}
                 max={500}
                 maxW={24}
@@ -62,7 +66,7 @@ export function AddStudents({
                 onChange={(v) => setNumAccounts(Number(v))}
               >
                 <NumberInputField />
-                <NumberInputStepper>
+                <NumberInputStepper data-test="num-students-stepper">
                   <NumberIncrementStepper />
                   <NumberDecrementStepper />
                 </NumberInputStepper>
@@ -70,13 +74,13 @@ export function AddStudents({
             </HStack>
           )}
 
-          {addAccountsFetcher.data?.data !== undefined && (
+          {fetcher.data?.data !== undefined && (
             <VStack>
               <Button
                 onClick={() =>
                   downloadStudentAccountCredentialsToCsv({
                     title: "Student accounts",
-                    accounts: addAccountsFetcher.data.data.accounts,
+                    accounts: fetcher.data.data.accounts,
                   })
                 }
               >
@@ -88,11 +92,11 @@ export function AddStudents({
         </ModalBody>
 
         <ModalFooter>
-          {addAccountsFetcher.data?.data === undefined && (
+          {fetcher.data?.data === undefined && (
             <Button
               marginRight="4px"
               onClick={() => {
-                addAccountsFetcher.submit(
+                fetcher.submit(
                   {
                     path: "user/handles",
                     numAccounts,
