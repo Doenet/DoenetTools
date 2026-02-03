@@ -57,6 +57,7 @@ import { LibraryEditorControls } from "../../widgets/editor/LibraryEditorControl
 import { editorUrl } from "../../utils/url";
 import { NameBar } from "../../widgets/NameBar";
 import { loader as settingsLoader } from "./EditorSettingsMode";
+import { loader as libraryLoader } from "./EditorLibraryMode";
 import { isActivityFullyCategorized } from "../../utils/classification";
 
 export async function loader({
@@ -236,6 +237,10 @@ export function EditorHeader() {
     onOpen: shareContentOnOpen,
     onClose: shareContentOnClose,
   } = useDisclosure();
+
+  // Fetchers for library editor controls
+  const libraryEditorLoadFetcher = useFetcher<typeof libraryLoader>();
+  const libraryEditorSubmitFetcher = useFetcher();
 
   const parent = contentDescription.parent;
   const isSubActivity = (parent?.type ?? "folder") !== "folder";
@@ -630,6 +635,8 @@ export function EditorHeader() {
             <LibraryEditorControls
               contentId={contentId}
               contentType={contentType}
+              loadFetcher={libraryEditorLoadFetcher}
+              submitFetcher={libraryEditorSubmitFetcher}
             />
           </Flex>
         ) : (

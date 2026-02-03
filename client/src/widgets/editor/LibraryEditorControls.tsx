@@ -18,13 +18,14 @@ import { editorUrl } from "../../utils/url";
 export function LibraryEditorControls({
   contentId,
   contentType,
+  loadFetcher,
+  submitFetcher,
 }: {
   contentId: string;
   contentType: ContentType;
+  loadFetcher: ReturnType<typeof useFetcher<typeof libraryLoader>>;
+  submitFetcher: ReturnType<typeof useFetcher>;
 }) {
-  const loadFetcher = useFetcher<typeof libraryLoader>();
-  const submitFetcher = useFetcher();
-
   useEffect(() => {
     if (loadFetcher.state === "idle" && !loadFetcher.data) {
       loadFetcher.load(editorUrl(contentId, contentType, "library"));
