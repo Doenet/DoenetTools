@@ -1,6 +1,6 @@
 import { License, LicenseCode } from "../../types";
 import { InfoIcon } from "@chakra-ui/icons";
-import { Box, Wrap, Select, Text } from "@chakra-ui/react";
+import { Box, FormControl, FormLabel, Select, Text } from "@chakra-ui/react";
 import { useFetcher } from "react-router";
 import { optimistic } from "../../utils/optimistic_ui";
 import { AuthorLicenseBox } from "../Licenses";
@@ -55,11 +55,11 @@ export function EditLicense({
 
   return (
     <>
-      <Wrap>
-        <Text color={fetcher.state === "idle" ? "black" : "gray"}>
+      <FormControl>
+        <FormLabel color={fetcher.state === "idle" ? "black" : "gray"}>
           This document {isPublic || isShared ? "is" : "will be"} shared under
           the following license(s)
-        </Text>
+        </FormLabel>
         <Select
           isDisabled={determinedFromRemixSource}
           data-test="Select License"
@@ -82,7 +82,7 @@ export function EditLicense({
             </option>
           ))}
         </Select>
-      </Wrap>
+      </FormControl>
       {determinedFromRemixSource && (
         <Text>
           (Cannot change license since remixed from activity with this license.)
