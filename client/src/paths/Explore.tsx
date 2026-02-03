@@ -38,7 +38,6 @@ import { Form, useFetcher } from "react-router";
 import { CardContent } from "../widgets/Card";
 import { createNameNoTag, createNameCheckCurateTag } from "../utils/names";
 import {
-  ContentDescription,
   Content,
   UserInfo,
   PartialContentClassification,
@@ -56,6 +55,7 @@ import { SiteContext } from "./SiteHeader";
 import { AddContentToMenu } from "../popups/AddContentToMenu";
 import { CopyContentAndReportFinish } from "../popups/CopyContentAndReportFinish";
 import { CreateContentMenu } from "../dropdowns/CreateContentMenu";
+import { useCardSelections } from "../utils/cardSelections";
 
 export async function loader({
   params,
@@ -207,12 +207,17 @@ export function Explore() {
   const createContentMenuCreateFetcher = useFetcher();
   const createContentMenuSaveNameFetcher = useFetcher();
 
-  const [selectedCards, setSelectedCards] = useState<
-    (ContentDescription | undefined)[]
-  >([]);
-  const selectedCardsFiltered = selectedCards.filter((c) => c !== undefined);
+  const cardSelections = useCardSelections({
+    ids: [
+      ...content.map((c) => c.contentId),
+      ...trendingContent.map((c) => c.contentId),
+      ...curatedContent.map((c) => c.contentId),
+    ],
+  });
 
-  const numSelected = selectedCardsFiltered.length;
+  const selectedContentDescriptions = content.filter((c) =>
+    cardSelections.ids.has(c.contentId),
+  );
 
   const { search } = useLocation();
   const navigate = useNavigate();
@@ -286,7 +291,7 @@ export function Explore() {
       <CopyContentAndReportFinish
         isOpen={copyDialogIsOpen}
         onClose={copyDialogOnClose}
-        contentIds={selectedCardsFiltered.map((sc) => sc.contentId)}
+        contentIds={[...cardSelections.ids]}
         desiredParent={addTo}
         action="Add"
         setAddTo={setAddTo}
@@ -295,27 +300,6 @@ export function Explore() {
         onNavigate={navigate}
       />
     ) : null;
-
-  useEffect(() => {
-    setSelectedCards((was) => {
-      let foundMissing = false;
-      const newList = [...content, ...curatedContent].map((c) => c.contentId);
-      if (trendingContent) {
-        newList.push(...trendingContent.map((c) => c.contentId));
-      }
-      for (const c of was.filter((x) => x !== undefined)) {
-        if (!newList.includes(c.contentId)) {
-          foundMissing = true;
-          break;
-        }
-      }
-      if (foundMissing) {
-        return [];
-      } else {
-        return was;
-      }
-    });
-  }, [content, trendingContent, curatedContent]);
 
   const curatedContentDisplay = useMemo(
     () =>
@@ -391,10 +375,12 @@ export function Explore() {
           showBlurb={false}
           showActivityCategories={true}
           showOwnerName={true}
-          content={cardContent}
+          cardContent={cardContent}
           emptyMessage={"No Matches Found!"}
-          selectedCards={user ? selectedCards : undefined}
-          setSelectedCards={setSelectedCards}
+          includeSelectionBox={user ? true : false}
+          selectedCards={cardSelections.ids}
+          onCardSelected={cardSelections.add}
+          onCardDeselected={cardSelections.remove}
           disableSelectFor={addTo ? [addTo.contentId] : undefined}
         />
       </Box>
@@ -792,12 +778,12 @@ export function Explore() {
             height="30px"
             width="100%"
             alignContent="center"
-            hidden={numSelected === 0 && addTo === null}
+            hidden={!cardSelections.areActive && addTo === null}
             backgroundColor="gray.100"
             justifyContent="center"
           >
             {addTo !== null ? (
-              <HStack hidden={numSelected > 0}>
+              <HStack hidden={cardSelections.areActive}>
                 <CloseButton
                   size="sm"
                   onClick={() => {
@@ -810,13 +796,13 @@ export function Explore() {
                 </Text>
               </HStack>
             ) : null}
-            <HStack hidden={numSelected === 0}>
-              <CloseButton size="sm" onClick={() => setSelectedCards([])} />{" "}
-              <Text>{numSelected} selected</Text>
+            <HStack hidden={!cardSelections.areActive}>
+              <CloseButton size="sm" onClick={cardSelections.clear} />{" "}
+              <Text>{cardSelections.count} selected</Text>
               <HStack hidden={addTo !== null}>
                 <AddContentToMenu
                   fetcher={fetcher}
-                  sourceContent={selectedCardsFiltered}
+                  sourceContent={selectedContentDescriptions}
                   size="xs"
                   colorScheme="blue"
                   label="Add selected to"
@@ -825,7 +811,7 @@ export function Explore() {
                   setAddTo={setAddTo}
                 />
                 <CreateContentMenu
-                  sourceContent={selectedCardsFiltered}
+                  sourceContent={selectedContentDescriptions}
                   size="xs"
                   colorScheme="blue"
                   label="Create from selected"
