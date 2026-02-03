@@ -1,4 +1,9 @@
-import { useLoaderData, useOutletContext, useSearchParams } from "react-router";
+import {
+  useLoaderData,
+  useOutletContext,
+  useSearchParams,
+  useFetcher,
+} from "react-router";
 import {
   AssignmentMode,
   ContentClassification,
@@ -88,6 +93,11 @@ export function EditorSettingsModeComponent({
   contentType,
   headerHeight,
   showRequired,
+  maxAttemptsFetcher,
+  variantFetcher,
+  modeFetcher,
+  deleteClassificationFetcher,
+  addClassificationFetcher,
 }: {
   isPublic: boolean;
   isShared: boolean;
@@ -108,6 +118,11 @@ export function EditorSettingsModeComponent({
   contentType: string;
   headerHeight: string;
   showRequired: boolean;
+  maxAttemptsFetcher: any;
+  variantFetcher: any;
+  modeFetcher: any;
+  deleteClassificationFetcher: any;
+  addClassificationFetcher: any;
 }) {
   const showUpgradeSyntax = Boolean(
     doenetmlVersionId &&
@@ -127,6 +142,9 @@ export function EditorSettingsModeComponent({
             individualizeByStudent={individualizeByStudent}
             mode={mode}
             includeMode={contentType !== "singleDoc"}
+            maxAttemptsFetcher={maxAttemptsFetcher}
+            variantFetcher={variantFetcher}
+            modeFetcher={modeFetcher}
           />
         </Box>
 
@@ -145,6 +163,8 @@ export function EditorSettingsModeComponent({
             <EditClassifications
               contentId={contentId}
               classifications={classifications}
+              deleteClassificationFetcher={deleteClassificationFetcher}
+              addClassificationFetcher={addClassificationFetcher}
             />
           </Box>
         </Box>
@@ -247,6 +267,15 @@ export function EditorSettingsMode() {
   const [searchParams, _] = useSearchParams();
   const showRequired = searchParams.get("showRequired") === null ? false : true;
 
+  // Create fetchers for EditAssignmentSettings sub-components
+  const maxAttemptsFetcher = useFetcher();
+  const variantFetcher = useFetcher();
+  const modeFetcher = useFetcher();
+
+  // Create fetchers for EditClassifications
+  const deleteClassificationFetcher = useFetcher();
+  const addClassificationFetcher = useFetcher();
+
   return (
     <EditorSettingsModeComponent
       isPublic={isPublic}
@@ -268,6 +297,11 @@ export function EditorSettingsMode() {
       contentType={contentType}
       headerHeight={headerHeight}
       showRequired={showRequired}
+      maxAttemptsFetcher={maxAttemptsFetcher}
+      variantFetcher={variantFetcher}
+      modeFetcher={modeFetcher}
+      deleteClassificationFetcher={deleteClassificationFetcher}
+      addClassificationFetcher={addClassificationFetcher}
     />
   );
 }

@@ -16,7 +16,7 @@ import {
   Radio,
   Tooltip,
 } from "@chakra-ui/react";
-import { useFetcher } from "react-router";
+import { FetcherWithComponents } from "react-router";
 import { optimistic } from "../../utils/optimistic_ui";
 import { AssignmentMode } from "../../types";
 
@@ -33,6 +33,9 @@ export function EditAssignmentSettings({
   mode,
   includeMode,
   isAssigned = false,
+  maxAttemptsFetcher,
+  variantFetcher,
+  modeFetcher,
 }: {
   contentId: string;
   maxAttempts: number;
@@ -40,6 +43,9 @@ export function EditAssignmentSettings({
   mode: AssignmentMode | null;
   includeMode: boolean;
   isAssigned?: boolean;
+  maxAttemptsFetcher: FetcherWithComponents<any>;
+  variantFetcher: FetcherWithComponents<any>;
+  modeFetcher: FetcherWithComponents<any>;
 }) {
   return (
     <VStack align="left" ml="1rem">
@@ -48,16 +54,19 @@ export function EditAssignmentSettings({
           contentId={contentId}
           mode={mode!}
           editable={!isAssigned}
+          fetcher={modeFetcher}
         />
       )}
       <MaxAttemptsSelectionBox
         contentId={contentId}
         attempts={maxAttempts ?? 0}
+        fetcher={maxAttemptsFetcher}
       />
       <VariantSelectionBox
         contentId={contentId}
         editable={!isAssigned}
         isIndividualized={individualizeByStudent}
+        fetcher={variantFetcher}
       />
     </VStack>
   );
@@ -70,12 +79,12 @@ export function EditAssignmentSettings({
 export function MaxAttemptsSelectionBox({
   contentId,
   attempts,
+  fetcher,
 }: {
   contentId: string;
   attempts: number;
+  fetcher: FetcherWithComponents<any>;
 }) {
-  const fetcher = useFetcher();
-
   const optimisticAttempts = optimistic<number>(
     fetcher,
     "maxAttempts",
@@ -189,12 +198,13 @@ function VariantSelectionBox({
   contentId,
   isIndividualized,
   editable = true,
+  fetcher,
 }: {
   contentId: string;
   isIndividualized: boolean;
   editable?: boolean;
+  fetcher: FetcherWithComponents<any>;
 }) {
-  const fetcher = useFetcher();
   const optimisticIsIndividualized = optimistic<boolean>(
     fetcher,
     "individualizeByStudent",
@@ -234,12 +244,13 @@ function AssignmentModeSelection({
   contentId,
   mode,
   editable,
+  fetcher,
 }: {
   contentId: string;
   mode: AssignmentMode;
   editable: boolean;
+  fetcher: FetcherWithComponents<any>;
 }) {
-  const fetcher = useFetcher();
   const optimisticMode = optimistic<AssignmentMode>(fetcher, "mode", mode);
 
   return (

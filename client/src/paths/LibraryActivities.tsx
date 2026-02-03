@@ -285,6 +285,8 @@ export function LibraryActivities() {
       finalFocusRef={finalFocusRef}
       allowedParentTypes={getAllowedParentTypes([moveToParentData.type])}
       action="Move"
+      fetcher={fetcher}
+      onNavigate={(url) => navigate(url)}
     />
   );
 

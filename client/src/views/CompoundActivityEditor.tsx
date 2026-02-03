@@ -26,6 +26,7 @@ import {
   FetcherWithComponents,
   Link as ReactRouterLink,
   useOutletContext,
+  useNavigate,
 } from "react-router";
 import { MoveCopyContent } from "../popups/MoveCopyContent";
 import CardList from "../widgets/CardList";
@@ -48,12 +49,18 @@ export function CompoundActivityEditor({
   inLibrary = false,
   fetcher,
   finalFocusRef,
+  createContentMenuCreateFetcher,
+  createContentMenuSaveNameFetcher,
+  deleteContentFetcher,
 }: {
   activity: Content;
   asViewer?: boolean;
   inLibrary?: boolean;
   fetcher: FetcherWithComponents<any>;
   finalFocusRef?: RefObject<HTMLElement | null>;
+  createContentMenuCreateFetcher: FetcherWithComponents<any>;
+  createContentMenuSaveNameFetcher: FetcherWithComponents<any>;
+  deleteContentFetcher: FetcherWithComponents<any>;
 }) {
   const contentTypeName = contentTypeToName[activity.type];
 
@@ -69,6 +76,8 @@ export function CompoundActivityEditor({
 
   const { user, addTo, setAddTo, headerHeight } =
     useOutletContext<EditorContext>();
+
+  const navigate = useNavigate();
 
   // `selectedCards` is a sparse array where the index is the index in the CardList.
   // When a card is selected, any entries corresponding to unselected cards above it
@@ -126,6 +135,8 @@ export function CompoundActivityEditor({
     <MoveCopyContent
       isOpen={moveCopyContentIsOpen}
       onClose={moveCopyContentOnClose}
+      fetcher={fetcher}
+      onNavigate={(url) => navigate(url)}
       sourceContent={[moveCopyData]}
       userId={user.userId}
       currentParentId={activity.contentId}
@@ -149,6 +160,10 @@ export function CompoundActivityEditor({
         contentIds={selectedCardsFiltered.map((sc) => sc.contentId)}
         desiredParent={addTo}
         action="Add"
+        setAddTo={setAddTo}
+        user={user ?? null}
+        fetcher={fetcher}
+        onNavigate={navigate}
       />
     ) : null;
 
@@ -164,6 +179,7 @@ export function CompoundActivityEditor({
       onClose={deleteContentOnClose}
       content={contentToDelete}
       finalFocusRef={finalFocusRef}
+      fetcher={deleteContentFetcher}
     />
   ) : null;
 
@@ -636,12 +652,19 @@ export function CompoundActivityEditor({
               size="xs"
               colorScheme="blue"
               label="Add selected to"
+              user={user ?? null}
+              onNavigate={(url) => navigate(url)}
+              setAddTo={setAddTo}
             />
             <CreateContentMenu
               sourceContent={selectedCardsFiltered}
               size="xs"
               colorScheme="blue"
               label="Create from selected"
+              user={user ?? null}
+              navigate={navigate}
+              createFetcher={createContentMenuCreateFetcher}
+              saveNameFetcher={createContentMenuSaveNameFetcher}
             />
           </HStack>
           {addTo !== null ? (

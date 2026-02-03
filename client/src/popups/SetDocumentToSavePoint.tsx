@@ -76,13 +76,13 @@ export function SetDocumentToSavePoint({
     <>
       <Text>Use the following save point?</Text>
       <List>
-        <ListItem marginTop="10px">
+        <ListItem marginTop="10px" data-test="Revision Name">
           <label>Save point name:</label> {revision.revisionName}
         </ListItem>
-        <ListItem marginTop="5px">
+        <ListItem marginTop="5px" data-test="Revision Note">
           <label>Note:</label> {revision.note}
         </ListItem>
-        <ListItem marginTop="5px">
+        <ListItem marginTop="5px" data-test="Revision Created">
           <label>Created:</label>{" "}
           {DateTime.fromISO(revision.createdAt).toLocaleString(
             DateTime.DATETIME_MED,

@@ -14,11 +14,11 @@ import {
   Input,
   Box,
   Flex,
+  FormLabel,
 } from "@chakra-ui/react";
-import { useFetcher, useNavigate, useOutletContext } from "react-router";
-import { ContentType } from "../types";
+import { FetcherWithComponents, NavigateFunction } from "react-router";
+import { ContentType, UserInfo } from "../types";
 import { contentTypeToName } from "../utils/activity";
-import { SiteContext } from "../paths/SiteHeader";
 import { editorUrl } from "../utils/url";
 
 /**
@@ -32,20 +32,23 @@ export function CreateContentAndPromptName({
   finalFocusRef,
   contentIds,
   desiredType,
+  user,
+  navigate,
+  createFetcher,
+  saveNameFetcher,
 }: {
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement | null>;
   contentIds: string[];
   desiredType: ContentType;
+  user: UserInfo | null;
+  navigate: NavigateFunction;
+  createFetcher: FetcherWithComponents<any>;
+  saveNameFetcher: FetcherWithComponents<any>;
 }) {
-  const { user } = useOutletContext<SiteContext>();
-  const navigate = useNavigate();
   const [errMsg, setErrMsg] = useState("");
   const nameRef = useRef<HTMLInputElement>(null);
-
-  const createFetcher = useFetcher();
-  const saveNameFetcher = useFetcher();
 
   const [newActivityData, setNewActivityData] = useState<{
     newChildContentIds: string[];
@@ -68,31 +71,44 @@ export function CreateContentAndPromptName({
 
   // Create the content when this modal opens
   // Only once - don't create if fetcher already has data
-  if (isOpen && createFetcher.state === "idle" && !createFetcher.data) {
-    document.body.style.cursor = "wait";
-    createFetcher.submit(
-      {
-        path: "copyMove/createContentCopyInChildren",
-        childSourceContentIds: contentIds,
-        contentType: desiredType,
-        parentId: null,
-      },
-      { method: "post", encType: "application/json" },
-    );
-  }
-
-  if (newActivityData === null && createFetcher.data) {
-    if (createFetcher.data.status === 200) {
-      setNewActivityData(createFetcher.data.data);
-    } else {
-      setErrMsg(`An error occurred while creating content.`);
+  useEffect(() => {
+    if (isOpen && createFetcher.state === "idle" && !createFetcher.data) {
+      document.body.style.cursor = "wait";
+      createFetcher.submit(
+        {
+          path: "copyMove/createContentCopyInChildren",
+          childSourceContentIds: contentIds,
+          contentType: desiredType,
+          parentId: null,
+        },
+        { method: "post", encType: "application/json" },
+      );
     }
-    document.body.style.cursor = "default";
-  }
+  }, [
+    isOpen,
+    createFetcher.state,
+    createFetcher.data,
+    contentIds,
+    desiredType,
+    createFetcher,
+  ]);
 
-  if (saveNameFetcher.data && saveNameFetcher.data.status !== 200) {
-    setErrMsg("An error occurred while saving the name.");
-  }
+  useEffect(() => {
+    if (newActivityData === null && createFetcher.data) {
+      if (createFetcher.data.status === 200) {
+        setNewActivityData(createFetcher.data.data);
+      } else {
+        setErrMsg(`An error occurred while creating content.`);
+      }
+      document.body.style.cursor = "default";
+    }
+  }, [createFetcher.data, newActivityData]);
+
+  useEffect(() => {
+    if (saveNameFetcher.data && saveNameFetcher.data.status !== 200) {
+      setErrMsg("An error occurred while saving the name.");
+    }
+  }, [saveNameFetcher.data]);
 
   useEffect(() => {
     nameRef.current?.select();
@@ -145,8 +161,9 @@ export function CreateContentAndPromptName({
                     {newActivityData.newChildContentIds.length > 1 ? "s" : ""}
                   </Box>
                   <Flex marginTop="10px">
-                    Name:
+                    <FormLabel htmlFor="created-content-name">Name:</FormLabel>
                     <Input
+                      id="created-content-name"
                       ref={nameRef}
                       marginLeft="10px"
                       maxLength={191}
