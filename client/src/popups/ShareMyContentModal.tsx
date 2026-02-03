@@ -21,7 +21,7 @@ import {
   AlertTitle,
   Link as ChakraLink,
 } from "@chakra-ui/react";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { contentTypeToName } from "../utils/activity";
 import { ContentType, UserInfoWithEmail } from "../types";
 import { Link as ReactRouterLink, FetcherWithComponents } from "react-router";
@@ -195,22 +195,24 @@ function ShareWithPeople({
   }, [unshareFetcher.state, unshareFetcher.data]);
 
   // Handle fetcher response for email errors
-  if (addEmailFetcher.data && typeof addEmailFetcher.data === "string") {
-    if (addEmailError !== addEmailFetcher.data) {
-      if (addEmailFetcher.data.includes("Invalid email address")) {
-        setAddEmailError("Invalid email address");
-      } else {
-        setAddEmailError(addEmailFetcher.data);
+  useEffect(() => {
+    if (addEmailFetcher.data && typeof addEmailFetcher.data === "string") {
+      if (addEmailError !== addEmailFetcher.data) {
+        if (addEmailFetcher.data.includes("Invalid email address")) {
+          setAddEmailError("Invalid email address");
+        } else {
+          setAddEmailError(addEmailFetcher.data);
+        }
       }
+    } else if (
+      addEmailFetcher.state === "idle" &&
+      addEmailFetcher.data === null &&
+      addEmailError
+    ) {
+      setAddEmailError(null);
+      setEmailInput("");
     }
-  } else if (
-    addEmailFetcher.state === "idle" &&
-    addEmailFetcher.data === null &&
-    addEmailError
-  ) {
-    setAddEmailError(null);
-    setEmailInput("");
-  }
+  }, [addEmailFetcher.state, addEmailFetcher.data, addEmailError]);
 
   function addEmail() {
     addEmailFetcher.submit(
@@ -264,7 +266,9 @@ function ShareWithPeople({
           <SpinnerWhileFetching state={addEmailFetcher.state} />
         </HStack>
 
-        {addEmailError && <FormErrorMessage>{addEmailError}</FormErrorMessage>}
+        {addEmailError && (
+          <FormErrorMessage color="red.700">{addEmailError}</FormErrorMessage>
+        )}
       </FormControl>
     </>
   );

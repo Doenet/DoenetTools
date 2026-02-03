@@ -122,6 +122,34 @@ describe("ShareMyContentModal component tests", () => {
     });
   });
 
+  it("handles invalid email error without infinite rerender", () => {
+    const errorMessage = "✖ Invalid email address\n  → at email";
+    cy.mount(
+      <ShareMyContentModal
+        contentId={contentId}
+        contentType={contentType}
+        isOpen={true}
+        onClose={cy.spy().as("onClose")}
+        shareStatusData={{ ...shareStatusData, sharedWith: [] }}
+        settingsData={settingsData}
+        isLoadingShareStatus={false}
+        isLoadingSettings={false}
+        addEmailFetcher={createMockFetcher({
+          state: "idle",
+          data: errorMessage,
+          submitAlias: "addEmailSubmit",
+        })}
+        publicShareFetcher={createMockFetcher({
+          submitAlias: "publicShareSubmit",
+        })}
+        unshareFetcher={createMockFetcher({ submitAlias: "unshareSubmit" })}
+      />,
+    );
+
+    // Should display the error message without crashing (would fail with infinite rerender)
+    cy.contains("Invalid email address").scrollIntoView().should("be.visible");
+  });
+
   it("submits unshare when clicking remove on a user", () => {
     cy.mount(
       <ShareMyContentModal
@@ -194,7 +222,8 @@ describe("ShareMyContentModal component tests", () => {
         />,
       );
 
-      cy.wait(200);
+      cy.contains("With the public").should("be.visible");
+      cy.wait(100); // Wait for any dynamic content to load
       cy.checkAccessibility("body");
     });
 
@@ -215,7 +244,36 @@ describe("ShareMyContentModal component tests", () => {
         />,
       );
 
-      cy.wait(200);
+      cy.contains("Content is public").should("be.visible");
+      cy.wait(100); // Wait for any dynamic content to load
+      cy.checkAccessibility("body");
+    });
+
+    it("is accessible with invalid email error message", () => {
+      const errorMessage = "✖ Invalid email address\n  → at email";
+      cy.mount(
+        <ShareMyContentModal
+          contentId={contentId}
+          contentType={contentType}
+          isOpen={true}
+          onClose={cy.spy().as("onClose")}
+          shareStatusData={{ ...shareStatusData, sharedWith: [] }}
+          settingsData={settingsData}
+          isLoadingShareStatus={false}
+          isLoadingSettings={false}
+          addEmailFetcher={createMockFetcher({
+            state: "idle",
+            data: errorMessage,
+          })}
+          publicShareFetcher={createMockFetcher()}
+          unshareFetcher={createMockFetcher()}
+        />,
+      );
+
+      cy.contains("Invalid email address")
+        .scrollIntoView()
+        .should("be.visible");
+      cy.wait(100); // Wait for any dynamic content to load
       cy.checkAccessibility("body");
     });
   });
