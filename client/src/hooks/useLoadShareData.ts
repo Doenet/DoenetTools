@@ -24,6 +24,8 @@ export function useLoadShareData(
     useState<ShareStatusData | null>(null);
   const [isLoadingShareStatus, setIsLoadingShareStatus] = useState(false);
   const hasFetchedRef = useRef(false);
+  const shareStatusRequestIdRef = useRef(0);
+  const lastLoadedSettingsContentIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (isOpen && contentId) {
@@ -31,28 +33,44 @@ export function useLoadShareData(
       if (!hasFetchedRef.current) {
         hasFetchedRef.current = true;
         setIsLoadingShareStatus(true);
+        const requestId = ++shareStatusRequestIdRef.current;
         axios
           .get(`/api/editor/getEditorShareStatus/${contentId}`)
           .then((response) => {
+            if (shareStatusRequestIdRef.current !== requestId || !isOpen) {
+              return;
+            }
             setShareStatusData(response.data);
           })
           .catch((error) => {
+            if (shareStatusRequestIdRef.current !== requestId || !isOpen) {
+              return;
+            }
             console.error("Error loading share status:", error);
           })
           .finally(() => {
+            if (shareStatusRequestIdRef.current !== requestId || !isOpen) {
+              return;
+            }
             setIsLoadingShareStatus(false);
           });
       }
 
       // Load settings using the fetcher (React Router loader)
-      if (
-        contentType !== "folder" &&
-        shareSettingsFetcher.state === "idle" &&
-        !shareSettingsFetcher.data
-      ) {
-        shareSettingsFetcher.load(
-          editorUrl(contentId, contentType, "settings"),
-        );
+      if (contentType !== "folder" && shareSettingsFetcher.state === "idle") {
+        const settingsContentId = shareSettingsFetcher.data?.contentId;
+        const shouldReloadSettings =
+          shareSettingsFetcher.data == null || settingsContentId !== contentId;
+
+        if (
+          shouldReloadSettings &&
+          lastLoadedSettingsContentIdRef.current !== contentId
+        ) {
+          lastLoadedSettingsContentIdRef.current = contentId;
+          shareSettingsFetcher.load(
+            editorUrl(contentId, contentType, "settings"),
+          );
+        }
       }
     }
   }, [isOpen, contentId, contentType, shareSettingsFetcher]);
@@ -62,6 +80,9 @@ export function useLoadShareData(
     if (!isOpen) {
       setShareStatusData(null);
       hasFetchedRef.current = false;
+      shareStatusRequestIdRef.current += 1;
+      setIsLoadingShareStatus(false);
+      lastLoadedSettingsContentIdRef.current = null;
     }
   }, [isOpen]);
 

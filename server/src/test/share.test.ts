@@ -59,7 +59,7 @@ describe("Share tests", () => {
     expect(content.isPublic).eq(false);
   });
 
-  test("shareContentWithEmail/unsharedContent shares/unshares content and returns result", async () => {
+  test("shareContentWithEmail/unshareContent shares/unshares content and returns result", async () => {
     const owner = await createTestUser();
     const ownerId = owner.userId;
 

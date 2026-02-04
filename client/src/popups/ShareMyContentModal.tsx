@@ -206,7 +206,7 @@ function ShareWithPeople({
       }
     } else if (
       addEmailFetcher.state === "idle" &&
-      addEmailFetcher.data === null &&
+      addEmailFetcher.data == null &&
       addEmailError
     ) {
       setAddEmailError(null);
@@ -291,7 +291,7 @@ function SharePublicly({
   closeModal: () => void;
   fetcher: FetcherWithComponents<any>;
 }) {
-  const shareableLink = `${window.location.host}/activityViewer/${contentId}`;
+  const shareableLink = `${window.location.origin}/activityViewer/${contentId}`;
 
   const [copiedLink, setCopiedLink] = useState(false);
   const [localIsPublic, setLocalIsPublic] = useState(isPublic);
