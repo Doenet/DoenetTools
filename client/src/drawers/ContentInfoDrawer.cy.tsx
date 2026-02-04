@@ -98,18 +98,6 @@ describe("ContentInfoDrawer", () => {
         req.continue();
       },
     );
-
-    // Intercept remix sources API call
-    cy.intercept("GET", "**/api/remix/getRemixSources/*", {
-      statusCode: 200,
-      body: { remixSources: [] },
-    });
-
-    // Intercept remixes API call
-    cy.intercept("GET", "**/api/remix/getRemixes/*", {
-      statusCode: 200,
-      body: { remixes: [] },
-    });
   });
 
   it("renders drawer header with activity information", () => {

@@ -20,6 +20,19 @@ Cypress.on("uncaught:exception", (err) => {
   return true;
 });
 
+beforeEach(() => {
+  // Stub remix endpoints globally for component tests so CI doesn't proxy to a backend.
+  cy.intercept("GET", "**/api/remix/getRemixSources/*", {
+    statusCode: 200,
+    body: { remixSources: [] },
+  });
+
+  cy.intercept("GET", "**/api/remix/getRemixes/*", {
+    statusCode: 200,
+    body: { remixes: [] },
+  });
+});
+
 // ***********************************************************
 // This example support/component.ts is processed and
 // loaded automatically before your test files.
