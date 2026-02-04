@@ -53,11 +53,11 @@ import { ActivateAuthorMode } from "../../popups/ActivateAuthorMode";
 import { ConfirmAssignModal } from "../../popups/ConfirmAssignModal";
 import { ShareMyContentModal } from "../../popups/ShareMyContentModal";
 import { NotificationDot } from "../../widgets/NotificationDot";
+import type { LibraryEditorData } from "../../widgets/editor/LibraryEditorControls";
 import { LibraryEditorControls } from "../../widgets/editor/LibraryEditorControls";
 import { editorUrl } from "../../utils/url";
 import { NameBar } from "../../widgets/NameBar";
 import { loader as settingsLoader } from "./EditorSettingsMode";
-import { loader as libraryLoader } from "./EditorLibraryMode";
 import { isActivityFullyCategorized } from "../../utils/classification";
 
 export async function loader({
@@ -241,8 +241,10 @@ export function EditorHeader() {
   } = useDisclosure();
 
   // Fetchers for library editor controls
-  const libraryEditorLoadFetcher = useFetcher<typeof libraryLoader>();
-  const libraryEditorSubmitFetcher = useFetcher();
+  const libraryEditorLoadFetcher = useFetcher<LibraryEditorData>({
+    key: contentId,
+  });
+  const libraryEditorSubmitFetcher = useFetcher({ key: contentId });
 
   const parent = contentDescription.parent;
   const isSubActivity = (parent?.type ?? "folder") !== "folder";

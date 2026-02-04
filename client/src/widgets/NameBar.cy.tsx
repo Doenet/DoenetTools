@@ -25,8 +25,6 @@ describe("NameBar", () => {
 
   describe("read-only mode", () => {
     it("renders read-only text when isEditable is false", () => {
-      const fetcher = createMockFetcher();
-
       cy.mount(
         <NameBar
           contentId="test-id"
@@ -34,7 +32,6 @@ describe("NameBar", () => {
           isEditable={false}
           leftIcon={defaultIcon}
           dataTest="Activity Title"
-          fetcher={fetcher}
         />,
       );
 
@@ -72,8 +69,6 @@ describe("NameBar", () => {
     });
 
     it("renders with folder font size mode", () => {
-      const fetcher = createMockFetcher();
-
       cy.mount(
         <NameBar
           contentId={null}
@@ -82,7 +77,6 @@ describe("NameBar", () => {
           leftIcon={defaultIcon}
           dataTest="Folder Title"
           fontSizeMode="folder"
-          fetcher={fetcher}
         />,
       );
 
@@ -94,8 +88,6 @@ describe("NameBar", () => {
     });
 
     it("applies custom max width when provided", () => {
-      const fetcher = createMockFetcher();
-
       cy.mount(
         <NameBar
           contentId={null}
@@ -104,7 +96,6 @@ describe("NameBar", () => {
           leftIcon={defaultIcon}
           dataTest="Trash Heading"
           overrideMaxWidth="10rem"
-          fetcher={fetcher}
         />,
       );
 
@@ -116,8 +107,6 @@ describe("NameBar", () => {
     });
 
     it("renders left icon", () => {
-      const fetcher = createMockFetcher();
-
       cy.viewport(1000, 600); // Set viewport to md or larger to show icon
 
       cy.mount(
@@ -127,7 +116,6 @@ describe("NameBar", () => {
           isEditable={false}
           leftIcon={<Icon as={FaFile} aria-label="Test Icon" />}
           dataTest="Test Title"
-          fetcher={fetcher}
         />,
       );
 
@@ -336,7 +324,6 @@ describe("NameBar", () => {
     });
 
     it("handles very long names with truncation", () => {
-      const fetcher = createMockFetcher();
       const longName = "A".repeat(200);
 
       cy.mount(
@@ -346,7 +333,6 @@ describe("NameBar", () => {
           isEditable={false}
           leftIcon={defaultIcon}
           dataTest="Long Title"
-          fetcher={fetcher}
         />,
       );
 

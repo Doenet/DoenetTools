@@ -1,6 +1,6 @@
 import { Box, Flex, Tooltip, Icon } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
-import { useLoaderData, useFetcher } from "react-router";
+import { useLoaderData } from "react-router";
 
 import { CardContent } from "../widgets/Card";
 import CardList from "../widgets/CardList";
@@ -21,8 +21,6 @@ export function SharedWithMe() {
     content: Content[];
     userId: string;
   };
-
-  const nameBarFetcher = useFetcher();
 
   // refs to the menu button of each content card,
   // which should be given focus when drawers are closed
@@ -74,7 +72,6 @@ export function SharedWithMe() {
       contentName={"Shared with me"}
       isEditable={false}
       leftIcon={titleIcon}
-      fetcher={nameBarFetcher}
       dataTest="Folder Title"
       fontSizeMode="folder"
     />

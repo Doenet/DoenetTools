@@ -29,7 +29,7 @@ export function NameBar({
   dataTest: string;
   overrideMaxWidth?: string;
   fontSizeMode?: "editor" | "folder";
-  fetcher: FetcherWithComponents<unknown>;
+  fetcher?: FetcherWithComponents<unknown>;
 }) {
   const maxWidth = overrideMaxWidth ?? "20rem";
   const width = "100%";
@@ -49,7 +49,7 @@ export function NameBar({
   // Special case: root folder or special view of some kind
   // Ex: My Activities, Shared with me, Trash
   // We can't edit the name of that, so just show read-only text
-  if (!isEditable || contentId === null) {
+  if (!isEditable || contentId === null || !fetcher) {
     // Read-only header for root folder: icon sits inside the title box (non-editable)
     return (
       <Box position="relative" maxWidth={maxWidth} width={width}>

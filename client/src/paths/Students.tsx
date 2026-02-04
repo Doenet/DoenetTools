@@ -76,8 +76,6 @@ export function Students() {
       folder: Folder;
     };
 
-  const nameBarFetcher = useFetcher();
-
   const name = folder?.name ?? "My Activities";
 
   useEffect(() => {
@@ -305,7 +303,6 @@ export function Students() {
           leftIcon={icon}
           dataTest="Scores Heading"
           fontSizeMode="folder"
-          fetcher={nameBarFetcher}
         />
       </Wrap>
 
