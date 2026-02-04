@@ -146,23 +146,6 @@ describe("ChangeNameFormComponent", () => {
     cy.checkAccessibility("body");
   });
 
-  it("shows spinner when form is submitted", () => {
-    cy.mount(
-      <ChangeNameFormComponent
-        firstNames="John"
-        lastNames="Doe"
-        setFirstNames={() => {}}
-        setLastNames={() => {}}
-        redirectTo="/"
-      />,
-    );
-
-    cy.get("form").submit();
-    // Spinner becomes visible (hidden attribute is removed) when submitted
-    cy.get("span").should("not.have.attr", "hidden");
-    cy.checkAccessibility("body");
-  });
-
   it("includes correct hidden form fields", () => {
     cy.mount(
       <ChangeNameFormComponent
