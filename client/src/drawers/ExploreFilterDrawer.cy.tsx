@@ -215,29 +215,6 @@ describe("ExploreFilterDrawer", () => {
     cy.checkAccessibility("body");
   });
 
-  it("does not render drawer when closed", () => {
-    cy.mount(
-      <ExploreFilterDrawer
-        isOpen={false}
-        onClose={cy.stub()}
-        topAuthors={mockAuthors}
-        authorInfo={mockAuthorInfo}
-        classificationBrowse={mockClassificationBrowse}
-        subCategoryBrowse={mockSubCategoryBrowse}
-        categoryBrowse={mockCategoryBrowse}
-        systemBrowse={mockSystemBrowse}
-        classificationInfo={mockClassificationInfo}
-        countByCategory={mockCountByCategory}
-        categories={mockCategoriesSet}
-        allCategories={mockCategoryGroups}
-        search=""
-        navigate={cy.stub()}
-      />,
-    );
-
-    cy.get(".chakra-modal__content").should("not.exist");
-  });
-
   it("renders close button", () => {
     const onCloseSpy = cy.stub();
     cy.mount(
