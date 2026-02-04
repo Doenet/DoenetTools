@@ -40,6 +40,13 @@ const theme = extendTheme({
   components: {
     Button,
     IconButton: Button,
+    FormError: {
+      baseStyle: {
+        text: {
+          color: "red.700",
+        },
+      },
+    },
   },
   fonts: {
     body: "Jost",
