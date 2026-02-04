@@ -129,6 +129,8 @@ export function EditorHeader() {
     contentDescription: ContentDescription;
   };
 
+  const nameBarFetcher = useFetcher();
+
   const location = useLocation();
   const tab = location.pathname.split("/").pop()?.toLowerCase();
 
@@ -422,6 +424,7 @@ export function EditorHeader() {
       contentName={contentName}
       leftIcon={typeIcon}
       dataTest="Activity Name Editable"
+      fetcher={nameBarFetcher}
     />
   );
 

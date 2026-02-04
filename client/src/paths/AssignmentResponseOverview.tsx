@@ -225,6 +225,8 @@ export function AssignmentData() {
       }
   );
 
+  const nameBarFetcher = useFetcher();
+
   const {
     contentId,
     assignment,
@@ -673,6 +675,7 @@ export function AssignmentData() {
               contentId={assignment.contentId}
               leftIcon={typeIcon}
               dataTest="Assignment Name Editable"
+              fetcher={nameBarFetcher}
             />
           </Flex>
         </GridItem>

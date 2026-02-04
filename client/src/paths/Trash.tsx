@@ -31,6 +31,7 @@ export function Trash() {
   }, []);
 
   const fetcher = useFetcher();
+  const nameBarFetcher = useFetcher();
 
   const titleIcon = (
     <Tooltip label={"Trash"}>
@@ -57,6 +58,7 @@ export function Trash() {
       dataTest="Trash Heading"
       fontSizeMode={"folder"}
       overrideMaxWidth="10rem"
+      fetcher={nameBarFetcher}
     />
   );
 
