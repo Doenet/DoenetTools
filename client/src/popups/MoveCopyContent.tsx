@@ -364,9 +364,10 @@ export function MoveCopyContent({
         size="xl"
         initialFocusRef={initialRef}
         finalFocusRef={finalFocusRef}
+        scrollBehavior="inside"
       >
         <ModalOverlay />
-        <ModalContent maxH="calc(100vh - 5rem)" marginBottom="0px">
+        <ModalContent>
           <ModalHeader>
             <Heading textAlign="center" data-test="MoveCopy Heading 1">
               {heading1}
@@ -401,7 +402,7 @@ export function MoveCopyContent({
             </HStack>
           </ModalHeader>
           <ModalCloseButton />
-          <ModalBody data-test="MoveCopy Body" overflowY="auto">
+          <ModalBody data-test="MoveCopy Body">
             {errMsg ? (
               errMsg
             ) : actionFinished ? (
