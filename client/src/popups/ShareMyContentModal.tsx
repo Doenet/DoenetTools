@@ -32,13 +32,7 @@ import { IoMdLink, IoMdCheckmark } from "react-icons/io";
 import { loader as settingsLoader } from "../paths/editor/EditorSettingsMode";
 import { editorUrl } from "../utils/url";
 import { isActivityFullyCategorized } from "../utils/classification";
-
-export interface ShareStatusData {
-  isPublic: boolean;
-  parentIsPublic: boolean;
-  sharedWith: UserInfoWithEmail[];
-  parentSharedWith: UserInfoWithEmail[];
-}
+import { ShareStatusData } from "../hooks/useLoadShareData";
 
 /**
  * A modal to manage the sharing status of your activity.

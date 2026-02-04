@@ -1,9 +1,23 @@
 import { useEffect, useState, useRef } from "react";
 import { FetcherWithComponents } from "react-router";
 import axios from "axios";
-import { ContentType } from "../types";
+import { ContentType, UserInfoWithEmail } from "../types";
 import { editorUrl } from "../utils/url";
-import { ShareStatusData } from "../popups/ShareMyContentModal";
+import { loader as settingsLoader } from "../paths/editor/EditorSettingsMode";
+
+export interface ShareStatusData {
+  isPublic: boolean;
+  parentIsPublic: boolean;
+  sharedWith: UserInfoWithEmail[];
+  parentSharedWith: UserInfoWithEmail[];
+}
+
+export interface UseLoadShareDataResult {
+  shareStatusData: ShareStatusData | null;
+  isLoadingShareStatus: boolean;
+  isLoadingSettings: boolean;
+  settingsData: Awaited<ReturnType<typeof settingsLoader>> | null;
+}
 
 /**
  * Custom hook to load share status and settings data when a share modal opens.
@@ -19,20 +33,26 @@ export function useLoadShareData(
   contentId: string | null | undefined,
   contentType: ContentType,
   shareSettingsFetcher: FetcherWithComponents<any>,
-) {
+): UseLoadShareDataResult {
   const [shareStatusData, setShareStatusData] =
     useState<ShareStatusData | null>(null);
+  // State drives UI updates; refs track internal control-flow without re-rendering.
   const [isLoadingShareStatus, setIsLoadingShareStatus] = useState(false);
+  // Whether we've kicked off the share-status request for the *current open session*.
   const hasFetchedRef = useRef(false);
+  // Monotonic id to ignore stale async responses if the modal closes/reopens.
   const shareStatusRequestIdRef = useRef(0);
+  // Tracks which contentId settings were last loaded to avoid redundant loads.
   const lastLoadedSettingsContentIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (isOpen && contentId) {
-      // Fetch share status on initial open (only once per modal session)
+      // Fetch share status on initial open (only once per modal session).
+      // `isLoadingShareStatus` is the UI signal; `hasFetchedRef` avoids re-requesting.
       if (!hasFetchedRef.current) {
         hasFetchedRef.current = true;
         setIsLoadingShareStatus(true);
+        // Request id lets us ignore responses from earlier requests after close/reopen.
         const requestId = ++shareStatusRequestIdRef.current;
         axios
           .get(`/api/editor/getEditorShareStatus/${contentId}`)
