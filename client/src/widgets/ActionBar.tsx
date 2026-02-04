@@ -19,6 +19,7 @@ export type Action = {
 
 export type Context = {
   description?: string;
+  isLongDescription?: boolean;
   closeLabel: string;
   onClose: () => void;
   /**
@@ -43,6 +44,8 @@ export function ActionBar({
   actions: Action[];
   isActive: boolean;
 }) {
+  const descriptionLengthRem = context.isLongDescription ? "20rem" : "8rem";
+
   return (
     <HStack
       spacing={"1rem"}
@@ -61,7 +64,11 @@ export function ActionBar({
       )}
 
       {isActive && context.description && (
-        <Text width="8rem" noOfLines={1} data-test="Action Bar Description">
+        <Text
+          width={descriptionLengthRem}
+          noOfLines={1}
+          data-test="Action Bar Description"
+        >
           {context.description}
         </Text>
       )}

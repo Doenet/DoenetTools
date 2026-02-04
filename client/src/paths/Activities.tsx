@@ -51,7 +51,11 @@ import { formatAssignmentBlurb } from "../utils/assignment";
 import { editorUrl } from "../utils/url";
 import { ShareMyContentModal } from "../popups/ShareMyContentModal";
 import { NameBar } from "../widgets/NameBar";
-import { ActionBar, Action as ActionBarActions } from "../widgets/ActionBar";
+import {
+  ActionBar,
+  Action as ActionBarActions,
+  Context as ActionBarContext,
+} from "../widgets/ActionBar";
 import { useCardSelections } from "../utils/cardSelections";
 import { useCardMovement } from "../utils/cardMovement";
 import { CreateContentMenu } from "../dropdowns/CreateContentMenu";
@@ -144,6 +148,10 @@ export function Activities() {
     selectedCards: cardSelections.ids,
     ids: content.map((c) => c.contentId),
   });
+
+  const selectedContentDescriptions = content.filter((c) =>
+    cardSelections.ids.has(c.contentId),
+  );
 
   const [moveCopyData, setMoveCopyData] = useState<{
     contentId: string;
@@ -509,11 +517,68 @@ export function Activities() {
     </Flex>
   ) : null;
 
-  let actions: ActionBarActions[] = [];
+  /**
+   * TODO: This is a hack to place arbitrary buttons into the action bar.
+   * Move this logic to `actions` once `<AddContentToMenu>` and `<CreateContentMenu>`
+   * have been properly refactored to NOT include their initial button UI inside of themselves.
+   */
+  const FIX_ME_miscellaneous_buttons = addTo ? null : (
+    <>
+      <AddContentToMenu
+        fetcher={addContentFetcher}
+        sourceContent={selectedContentDescriptions}
+        size="xs"
+        colorScheme="blue"
+        label="Copy selected to"
+        user={user ?? null}
+        onNavigate={(url) => navigate(url)}
+        setAddTo={setAddTo}
+      />
+      <CreateContentMenu
+        sourceContent={selectedContentDescriptions}
+        size="xs"
+        colorScheme="blue"
+        label="Create from selected"
+        user={user ?? null}
+        navigate={navigate}
+        createFetcher={createContentMenuCreateFetcher}
+        saveNameFetcher={createContentMenuSaveNameFetcher}
+      />
+    </>
+  );
+
+  let actionBarContext: ActionBarContext;
+  let actionBarIsActive: boolean;
+  let actions: ActionBarActions[];
 
   if (addTo) {
-    actions = [];
+    actionBarContext = {
+      description: `Adding ${cardSelections.count} item${cardSelections.count === 1 ? "" : "s"} to ${addTo.name}`,
+      isLongDescription: true,
+      closeLabel: "Stop adding items",
+      onClose: () => {
+        cardSelections.clear();
+        setAddTo(null);
+      },
+    };
+    actionBarIsActive = true;
+    actions = [
+      {
+        label: "Add",
+        onClick: copyDialogOnOpen,
+        isDisabled: cardSelections.count === 0 || haveQuery,
+      },
+    ];
   } else {
+    actionBarContext = {
+      description: `${cardSelections.count} item${
+        cardSelections.count === 1 ? "" : "s"
+      } selected`,
+      closeLabel: "Deselect all",
+      onClose: cardSelections.clear,
+      FIX_ME_miscellaneous_buttons,
+    };
+    actionBarIsActive = cardSelections.areActive;
     actions = [
       {
         label: "Move up",
@@ -582,51 +647,11 @@ export function Activities() {
     ];
   }
 
-  /**
-   * TODO: This is a hack to place arbitrary buttons into the action bar.
-   * Move this logic to `actions` once `<AddContentToMenu>` and `<CreateContentMenu>`
-   * have been properly refactored to NOT include their initial button UI inside of themselves.
-   */
-  const REMOVE_ME_sourceContent = content.filter((c) =>
-    cardSelections.ids.has(c.contentId),
-  );
-  const FIX_ME_miscellaneous_buttons = addTo ? null : (
-    <>
-      <AddContentToMenu
-        fetcher={addContentFetcher}
-        sourceContent={REMOVE_ME_sourceContent}
-        size="xs"
-        colorScheme="blue"
-        label="Copy selected to"
-        user={user ?? null}
-        onNavigate={(url) => navigate(url)}
-        setAddTo={setAddTo}
-      />
-      <CreateContentMenu
-        sourceContent={REMOVE_ME_sourceContent}
-        size="xs"
-        colorScheme="blue"
-        label="Create from selected"
-        user={user ?? null}
-        navigate={navigate}
-        createFetcher={createContentMenuCreateFetcher}
-        saveNameFetcher={createContentMenuSaveNameFetcher}
-      />
-    </>
-  );
-
-  const selectedItemsActions = (
+  const actionBar = (
     <ActionBar
-      context={{
-        description: `${cardSelections.count} item${
-          cardSelections.count === 1 ? "" : "s"
-        } selected`,
-        closeLabel: "Deselect all",
-        onClose: cardSelections.clear,
-        FIX_ME_miscellaneous_buttons,
-      }}
+      context={actionBarContext}
       actions={actions}
-      isActive={cardSelections.areActive}
+      isActive={actionBarIsActive}
     />
   );
 
@@ -689,7 +714,7 @@ export function Activities() {
 
       {heading}
       {searchResultsHeading}
-      {selectedItemsActions}
+      {actionBar}
 
       {mainPanel}
     </Box>
