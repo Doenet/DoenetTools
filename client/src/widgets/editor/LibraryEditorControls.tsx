@@ -1,10 +1,13 @@
 import { useEffect } from "react";
 import { Heading, Button, VStack, Text, Flex, Spacer } from "@chakra-ui/react";
 import { DateTime } from "luxon";
-import { useFetcher } from "react-router";
+import type { FetcherWithComponents } from "react-router";
 import { ContentType, LibraryComment, LibraryRelations } from "../../types";
 import { createNameCheckIsMeTag, createNameNoTag } from "../../utils/names";
-import type { loader as libraryLoader } from "../../paths/editor/EditorLibraryMode";
+export type LibraryEditorData = {
+  libraryRelations: LibraryRelations;
+  libraryComments: LibraryComment[];
+};
 import { getLibraryStatusStylized } from "../../utils/library";
 import { ChatConversation } from "../ChatConversation";
 import { editorUrl } from "../../utils/url";
@@ -18,13 +21,14 @@ import { editorUrl } from "../../utils/url";
 export function LibraryEditorControls({
   contentId,
   contentType,
+  loadFetcher,
+  submitFetcher,
 }: {
   contentId: string;
   contentType: ContentType;
+  loadFetcher: FetcherWithComponents<LibraryEditorData>;
+  submitFetcher: FetcherWithComponents<unknown>;
 }) {
-  const loadFetcher = useFetcher<typeof libraryLoader>();
-  const submitFetcher = useFetcher();
-
   useEffect(() => {
     if (loadFetcher.state === "idle" && !loadFetcher.data) {
       loadFetcher.load(editorUrl(contentId, contentType, "library"));
@@ -35,10 +39,8 @@ export function LibraryEditorControls({
   if (!loadFetcher.data) {
     contents = <p>Loading...</p>;
   } else {
-    const { libraryRelations, libraryComments } = loadFetcher.data as {
-      libraryRelations: LibraryRelations;
-      libraryComments: LibraryComment[];
-    };
+    const { libraryRelations, libraryComments } =
+      loadFetcher.data as LibraryEditorData;
     const librarySource = libraryRelations.source!;
     const status = librarySource.status;
     const sourceIdIsVisible = librarySource.sourceContentId !== null;

@@ -53,6 +53,7 @@ import { ActivateAuthorMode } from "../../popups/ActivateAuthorMode";
 import { ConfirmAssignModal } from "../../popups/ConfirmAssignModal";
 import { ShareMyContentModal } from "../../popups/ShareMyContentModal";
 import { NotificationDot } from "../../widgets/NotificationDot";
+import type { LibraryEditorData } from "../../widgets/editor/LibraryEditorControls";
 import { LibraryEditorControls } from "../../widgets/editor/LibraryEditorControls";
 import { editorUrl } from "../../utils/url";
 import { NameBar } from "../../widgets/NameBar";
@@ -128,6 +129,8 @@ export function EditorHeader() {
     inLibrary: boolean;
     contentDescription: ContentDescription;
   };
+
+  const nameBarFetcher = useFetcher();
 
   const location = useLocation();
   const tab = location.pathname.split("/").pop()?.toLowerCase();
@@ -255,6 +258,14 @@ export function EditorHeader() {
     contentType,
     shareSettingsFetcher,
   );
+
+  // Fetchers for library editor controls
+  const libraryEditorLoadFetcher = useFetcher<LibraryEditorData>({
+    key: `${contentId}-library-load`,
+  });
+  const libraryEditorSubmitFetcher = useFetcher({
+    key: `${contentId}-library-submit`,
+  });
 
   const parent = contentDescription.parent;
   const isSubActivity = (parent?.type ?? "folder") !== "folder";
@@ -436,6 +447,7 @@ export function EditorHeader() {
       contentName={contentName}
       leftIcon={typeIcon}
       dataTest="Activity Name Editable"
+      fetcher={nameBarFetcher}
     />
   );
 
@@ -656,6 +668,8 @@ export function EditorHeader() {
             <LibraryEditorControls
               contentId={contentId}
               contentType={contentType}
+              loadFetcher={libraryEditorLoadFetcher}
+              submitFetcher={libraryEditorSubmitFetcher}
             />
           </Flex>
         ) : (

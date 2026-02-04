@@ -105,6 +105,8 @@ export function Activities() {
     null,
   );
 
+  const nameBarFetcher = useFetcher();
+
   const {
     isOpen: createFolderIsOpen,
     onOpen: createFolderOnOpen,
@@ -393,6 +395,7 @@ export function Activities() {
       leftIcon={titleIcon}
       dataTest="Folder Title"
       fontSizeMode={"folder"}
+      fetcher={nameBarFetcher}
     />
   );
 

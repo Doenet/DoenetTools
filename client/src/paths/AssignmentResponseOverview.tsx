@@ -46,7 +46,6 @@ import {
   DoenetmlVersion,
   UserInfoWithEmail,
 } from "../types";
-// @ts-expect-error assignment-viewer doesn't publish types, see https://github.com/Doenet/assignment-viewer/issues/20
 import { isActivitySource } from "@doenet/assignment-viewer";
 import {
   compileActivityFromContent,
@@ -224,6 +223,8 @@ export function AssignmentData() {
         itemNames: string[];
       }
   );
+
+  const nameBarFetcher = useFetcher();
 
   const {
     contentId,
@@ -673,6 +674,7 @@ export function AssignmentData() {
               contentId={assignment.contentId}
               leftIcon={typeIcon}
               dataTest="Assignment Name Editable"
+              fetcher={nameBarFetcher}
             />
           </Flex>
         </GridItem>
