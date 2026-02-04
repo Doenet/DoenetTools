@@ -77,14 +77,36 @@ describe("ContentInfoDrawer", () => {
   ];
 
   beforeEach(() => {
+    // Log any non-2xx API responses to surface hidden CI failures
+    cy.intercept(
+      {
+        method: "*",
+        url: /\/api\/(?!remix\/getRemixSources|remix\/getRemixes).*/,
+      },
+      (req) => {
+        req.on("response", (res) => {
+          if (res.statusCode >= 400) {
+            // eslint-disable-next-line no-console
+            console.error("API error in ContentInfoDrawer tests:", {
+              method: req.method,
+              url: req.url,
+              statusCode: res.statusCode,
+              responseBody: res.body,
+            });
+          }
+        });
+        req.continue();
+      },
+    );
+
     // Intercept remix sources API call
-    cy.intercept("GET", "/api/remix/getRemixSources/*", {
+    cy.intercept("GET", "**/api/remix/getRemixSources/*", {
       statusCode: 200,
       body: { remixSources: [] },
     });
 
     // Intercept remixes API call
-    cy.intercept("GET", "/api/remix/getRemixes/*", {
+    cy.intercept("GET", "**/api/remix/getRemixes/*", {
       statusCode: 200,
       body: { remixes: [] },
     });
