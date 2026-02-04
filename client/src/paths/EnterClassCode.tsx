@@ -36,19 +36,20 @@ export async function action({
   return null;
 }
 
-export interface EnterClassCodeComponentProps {
-  classCode: string;
-  setClassCode: (code: string) => void;
-  haveInvalidClassCode: boolean;
-  invalidCode?: string;
-}
+export function EnterClassCode({ invalidCode }: { invalidCode?: string }) {
+  useEffect(() => {
+    document.title = `Enter class code - Doenet`;
+  }, []);
 
-export function EnterClassCodeComponent({
-  classCode,
-  setClassCode,
-  haveInvalidClassCode,
-  invalidCode,
-}: EnterClassCodeComponentProps) {
+  const [classCode, setClassCode] = useState(invalidCode ?? "");
+  const haveInvalidClassCode = Boolean(invalidCode);
+
+  useEffect(() => {
+    if (invalidCode !== undefined) {
+      setClassCode(invalidCode);
+    }
+  }, [invalidCode]);
+
   return (
     <Center>
       <Box margin="20px">
@@ -76,23 +77,5 @@ export function EnterClassCodeComponent({
         </Form>
       </Box>
     </Center>
-  );
-}
-
-export function EnterClassCode({ invalidCode }: { invalidCode?: string }) {
-  useEffect(() => {
-    document.title = `Enter class code - Doenet`;
-  }, []);
-
-  const [classCode, setClassCode] = useState(invalidCode ?? "");
-  const haveInvalidClassCode = Boolean(invalidCode);
-
-  return (
-    <EnterClassCodeComponent
-      classCode={classCode}
-      setClassCode={setClassCode}
-      haveInvalidClassCode={haveInvalidClassCode}
-      invalidCode={invalidCode}
-    />
   );
 }
