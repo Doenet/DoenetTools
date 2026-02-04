@@ -242,9 +242,11 @@ export function EditorHeader() {
 
   // Fetchers for library editor controls
   const libraryEditorLoadFetcher = useFetcher<LibraryEditorData>({
-    key: contentId,
+    key: `${contentId}-library-load`,
   });
-  const libraryEditorSubmitFetcher = useFetcher({ key: contentId });
+  const libraryEditorSubmitFetcher = useFetcher({
+    key: `${contentId}-library-submit`,
+  });
 
   const parent = contentDescription.parent;
   const isSubActivity = (parent?.type ?? "folder") !== "folder";
