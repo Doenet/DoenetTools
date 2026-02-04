@@ -266,9 +266,7 @@ function ShareWithPeople({
           <SpinnerWhileFetching state={addEmailFetcher.state} />
         </HStack>
 
-        {addEmailError && (
-          <FormErrorMessage color="red.700">{addEmailError}</FormErrorMessage>
-        )}
+        {addEmailError && <FormErrorMessage>{addEmailError}</FormErrorMessage>}
       </FormControl>
     </>
   );
