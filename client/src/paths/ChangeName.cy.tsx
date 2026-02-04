@@ -43,7 +43,7 @@ describe("ChangeNameAnonymousComponent", () => {
     cy.contains("Continue").click();
 
     cy.then(() => {
-      expect(onContinue.called).to.be.true;
+      return expect(onContinue.called).to.be.true;
     });
 
     cy.checkAccessibility("body");
