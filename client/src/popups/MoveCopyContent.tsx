@@ -366,7 +366,7 @@ export function MoveCopyContent({
         finalFocusRef={finalFocusRef}
       >
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent maxH="calc(100vh - 5rem)" marginBottom="0px">
           <ModalHeader>
             <Heading textAlign="center" data-test="MoveCopy Heading 1">
               {heading1}
@@ -401,7 +401,7 @@ export function MoveCopyContent({
             </HStack>
           </ModalHeader>
           <ModalCloseButton />
-          <ModalBody data-test="MoveCopy Body">
+          <ModalBody data-test="MoveCopy Body" overflowY="auto">
             {errMsg ? (
               errMsg
             ) : actionFinished ? (
