@@ -9,8 +9,9 @@
     "lint:check": "eslint",
     "test": "cypress open",
     "test:all": "cypress run -b 'chrome' --config video=false --headless",
-    "test:app": "cypress run -b 'electron' --config video=false,excludeSpecPattern=cypress/e2e/DoenetML/** --headless",
-    "test:parallel": "cypress-parallel -s test:all -t 4 -d cypress/e2e/DoenetML"
+    "test:skip-brittle": "cypress run -b 'chrome' --config video=false --headless --env grepTags='-@brittle'",
+    "test:brittle": "cypress run -b 'chrome' --config video=false --headless --env grepTags='@brittle',grepFilterSpecs=true,grepOmitFiltered=true",
+    "test:parallel": "cypress-parallel -s test:all -t 4 -d e2e -n ../../node_modules/cypress-multi-reporters"
   },
   "dependencies": {
     "@doenet-tools/client": "*",
