@@ -4,14 +4,6 @@
 // MathJax appears to crash if you navigate away while it is typesetting,
 // so we suppress those errors here rather than adding waits in each test.
 Cypress.on("uncaught:exception", (err) => {
-  // Log Axios errors with extra context for CI debugging
-  if (err?.name === "AxiosError" || err?.message?.includes("AxiosError")) {
-    // eslint-disable-next-line no-console
-    console.error("AxiosError (uncaught):", {
-      message: err.message,
-      stack: err.stack,
-    });
-  }
   // Suppress MathJax typesetting errors
   if (err.message?.includes("Typesetting failed")) {
     return false; // Suppress the error
