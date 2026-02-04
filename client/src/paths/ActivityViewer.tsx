@@ -220,7 +220,6 @@ export function ActivityViewer() {
       isOpen={infoIsOpen}
       onClose={infoOnClose}
       contentData={contentData}
-      libraryRelations={libraryRelations}
       displayTab={displayInfoTab}
       allLicenses={allLicenses}
     />

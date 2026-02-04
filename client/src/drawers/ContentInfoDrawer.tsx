@@ -15,12 +15,7 @@ import {
   Text,
   Tooltip,
 } from "@chakra-ui/react";
-import {
-  ActivityRemixItem,
-  Content,
-  LibraryRelations,
-  License,
-} from "../types";
+import { ActivityRemixItem, Content, License } from "../types";
 import { GeneralContentInfo } from "../drawerTabs/GeneralContentInfo";
 import { ClassificationInfo } from "../drawerTabs/ClassificationInfo";
 import axios from "axios";
@@ -40,7 +35,6 @@ export function ContentInfoDrawer({
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement | null>;
   contentData: Content;
-  libraryRelations?: LibraryRelations;
   displayTab?: "general" | "classifications";
   allLicenses: License[];
 }) {
