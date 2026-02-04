@@ -223,6 +223,7 @@ export function ActivityViewer() {
       contentData={contentData}
       libraryRelations={libraryRelations}
       displayTab={displayInfoTab}
+      allLicenses={allLicenses}
     />
   ) : null;
 
