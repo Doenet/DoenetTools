@@ -364,6 +364,7 @@ export function MoveCopyContent({
         size="xl"
         initialFocusRef={initialRef}
         finalFocusRef={finalFocusRef}
+        scrollBehavior="inside"
       >
         <ModalOverlay />
         <ModalContent>

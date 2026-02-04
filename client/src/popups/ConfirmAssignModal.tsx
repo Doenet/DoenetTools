@@ -164,6 +164,7 @@ export function ConfirmAssignModal({
             <Button
               colorScheme="blue"
               onClick={() => {
+                onClose();
                 moveCopyContentOnOpen();
               }}
               data-test="Confirm Create Assignment"
@@ -213,7 +214,6 @@ export function ConfirmAssignModal({
           );
 
           moveCopyContentOnClose();
-          onClose();
         }}
       />
     </>
