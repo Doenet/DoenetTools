@@ -78,7 +78,6 @@ import { BsBookmarkCheck } from "react-icons/bs";
 import { ImCheckmark } from "react-icons/im";
 import { DoenetEditor, DoenetViewer } from "@doenet/doenetml-iframe";
 import { BlueBanner } from "../widgets/BlueBanner";
-// @ts-expect-error assignment-viewer doesn't publish types, see https://github.com/Doenet/assignment-viewer/issues/20
 import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";
 
 export async function loader({ params }: { params: any }) {
@@ -354,7 +353,6 @@ export function ActivityViewer() {
             source={data.activityJson}
             requestedVariantIndex={1}
             userId={"hi"}
-            linkSettings={{ viewUrl: "", editURL: "" }}
             paginate={
               activityData.type === "sequence" ? activityData.paginate : false
             }
