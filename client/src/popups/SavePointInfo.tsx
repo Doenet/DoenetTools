@@ -53,9 +53,7 @@ export function SavePointInfo({
           }}
         />
         {revisionName === "" ? (
-          <FormErrorMessage color="red.700">
-            Save point name is required.
-          </FormErrorMessage>
+          <FormErrorMessage>Save point name is required.</FormErrorMessage>
         ) : null}
       </FormControl>
       <FormControl marginTop="10px">
