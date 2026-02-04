@@ -95,9 +95,12 @@ describe("ClassificationInfo", () => {
       <ClassificationInfo contentData={mockActivityWithClassifications} />,
     );
 
-    cy.contains("Algebra").should("not.be.visible");
-    cy.contains("MATH").parent().parent().click();
     cy.contains("Algebra").should("be.visible");
+    cy.contains("MATH").parent().click();
+    cy.contains("Algebra").should("not.be.visible");
+    cy.contains("MATH").parent().click();
+    cy.contains("Algebra").should("be.visible");
+    cy.wait(100);
     cy.checkAccessibility("body");
   });
 
