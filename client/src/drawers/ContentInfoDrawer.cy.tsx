@@ -77,6 +77,23 @@ describe("ContentInfoDrawer", () => {
   ];
 
   beforeEach(() => {
+    // Stub remix endpoints with explicit path matching to prevent Vite proxy errors in CI
+    cy.intercept(
+      { method: "GET", pathname: "/api/remix/getRemixSources/**" },
+      {
+        statusCode: 200,
+        body: { remixSources: [] },
+      },
+    ).as("getRemixSources");
+
+    cy.intercept(
+      { method: "GET", pathname: "/api/remix/getRemixes/**" },
+      {
+        statusCode: 200,
+        body: { remixes: [] },
+      },
+    ).as("getRemixes");
+
     // Log any non-2xx API responses to surface hidden CI failures
     cy.intercept(
       {
