@@ -46,7 +46,6 @@ import {
   DoenetmlVersion,
   UserInfoWithEmail,
 } from "../types";
-// @ts-expect-error assignment-viewer doesn't publish types, see https://github.com/Doenet/assignment-viewer/issues/20
 import { isActivitySource } from "@doenet/assignment-viewer";
 import {
   compileActivityFromContent,
