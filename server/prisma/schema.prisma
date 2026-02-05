@@ -155,6 +155,7 @@ model contentRevisions {
 
   @@id([contentId, revisionNum])
   @@index([contentId, cid])
+  @@index([cid])
 }
 
 model licenses {
