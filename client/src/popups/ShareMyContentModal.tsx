@@ -233,7 +233,7 @@ function SharePublicly({
   const fetcher = useFetcher();
 
   const shareableLink = `${window.location.origin}/activityViewer/${contentId}`;
-  const embedCode = `<iframe src="${window.location.origin}/view/${contentId}" width="100%" height="800" style="border: 0"></iframe>`;
+  const embedCode = `<iframe src="${window.location.origin}/embed/${contentId}" width="100%" height="800" style="border: 0"></iframe>`;
 
   const [copiedShareLink, setCopiedShareLink] = useState(false);
   const [copiedEmbedCode, setCopiedEmbedCode] = useState(false);

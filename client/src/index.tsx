@@ -402,7 +402,7 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/view/:viewId",
+    path: "/embed/:viewId",
     element: <RawViewer />,
     loader: rawViewerLoader,
     errorElement: (
