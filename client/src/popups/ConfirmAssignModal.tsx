@@ -42,6 +42,7 @@ export function ConfirmAssignModal({
   maxAttemptsFetcher,
   variantFetcher,
   modeFetcher,
+  assignmentFetcher,
 }: {
   contentDescription: ContentDescription;
   isOpen: boolean;
@@ -55,6 +56,7 @@ export function ConfirmAssignModal({
   maxAttemptsFetcher: FetcherWithComponents<any>;
   variantFetcher: FetcherWithComponents<any>;
   modeFetcher: FetcherWithComponents<any>;
+  assignmentFetcher: FetcherWithComponents<any>;
 }) {
   const { contentId, type: contentType } = contentDescription;
 
@@ -203,7 +205,7 @@ export function ConfirmAssignModal({
             precision: "minutes",
           });
 
-          fetcher.submit(
+          assignmentFetcher.submit(
             {
               path: "assign/createAssignment",
               contentId,

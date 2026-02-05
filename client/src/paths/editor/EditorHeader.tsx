@@ -210,6 +210,9 @@ export function EditorHeader() {
   // Used by ActivateAuthorMode popup to submit author mode activation
   const authorModeFetcher = useFetcher();
 
+  // Used by ConfirmAssignModal MoveCopyContent to copy/move content
+  const assignmentMoveCopyFetcher = useFetcher();
+
   // Used by ConfirmAssignModal to submit assignment creation
   const assignmentSubmitFetcher = useFetcher();
 
@@ -585,7 +588,7 @@ export function EditorHeader() {
         userId={context.user!.userId}
         isOpen={confirmAssignIsOpen}
         onClose={confirmAssignOnClose}
-        fetcher={assignmentSubmitFetcher}
+        fetcher={assignmentMoveCopyFetcher}
         onNavigate={(url) => navigate(url)}
         maxAttempts={assignmentSettingsFetcher.data?.maxAttempts}
         individualizeByStudent={
@@ -595,6 +598,7 @@ export function EditorHeader() {
         maxAttemptsFetcher={assignmentMaxAttemptsFetcher}
         variantFetcher={assignmentVariantFetcher}
         modeFetcher={assignmentModeFetcher}
+        assignmentFetcher={assignmentSubmitFetcher}
       />
       <ShareMyContentModal
         contentId={contentId}

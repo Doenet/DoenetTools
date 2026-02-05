@@ -26,6 +26,7 @@ describe("ConfirmAssignModal component tests", () => {
   function createFetchers() {
     return {
       mockFetcher: createMockFetcher(),
+      assignmentFetcher: createMockFetcher(),
       maxAttemptsFetcher: createMockFetcher(),
       variantFetcher: createMockFetcher(),
       modeFetcher: createMockFetcher(),
@@ -33,8 +34,13 @@ describe("ConfirmAssignModal component tests", () => {
   }
 
   it("shows modal when open", () => {
-    const { mockFetcher, maxAttemptsFetcher, variantFetcher, modeFetcher } =
-      createFetchers();
+    const {
+      mockFetcher,
+      assignmentFetcher,
+      maxAttemptsFetcher,
+      variantFetcher,
+      modeFetcher,
+    } = createFetchers();
     const onCloseSpy = cy.spy().as("onClose");
     const onNavigateSpy = cy.spy().as("onNavigate");
 
@@ -52,6 +58,7 @@ describe("ConfirmAssignModal component tests", () => {
         maxAttemptsFetcher={maxAttemptsFetcher}
         variantFetcher={variantFetcher}
         modeFetcher={modeFetcher}
+        assignmentFetcher={assignmentFetcher}
       />,
     );
 
@@ -60,8 +67,13 @@ describe("ConfirmAssignModal component tests", () => {
   });
 
   it("shows loading message when settings are undefined", () => {
-    const { mockFetcher, maxAttemptsFetcher, variantFetcher, modeFetcher } =
-      createFetchers();
+    const {
+      mockFetcher,
+      assignmentFetcher,
+      maxAttemptsFetcher,
+      variantFetcher,
+      modeFetcher,
+    } = createFetchers();
     const onCloseSpy = cy.spy().as("onClose");
     const onNavigateSpy = cy.spy().as("onNavigate");
 
@@ -76,6 +88,7 @@ describe("ConfirmAssignModal component tests", () => {
         maxAttemptsFetcher={maxAttemptsFetcher}
         variantFetcher={variantFetcher}
         modeFetcher={modeFetcher}
+        assignmentFetcher={assignmentFetcher}
       />,
     );
 
@@ -83,8 +96,13 @@ describe("ConfirmAssignModal component tests", () => {
   });
 
   it("displays settings when all props are provided", () => {
-    const { mockFetcher, maxAttemptsFetcher, variantFetcher, modeFetcher } =
-      createFetchers();
+    const {
+      mockFetcher,
+      assignmentFetcher,
+      maxAttemptsFetcher,
+      variantFetcher,
+      modeFetcher,
+    } = createFetchers();
     const onCloseSpy = cy.spy().as("onClose");
     const onNavigateSpy = cy.spy().as("onNavigate");
 
@@ -102,6 +120,7 @@ describe("ConfirmAssignModal component tests", () => {
         maxAttemptsFetcher={maxAttemptsFetcher}
         variantFetcher={variantFetcher}
         modeFetcher={modeFetcher}
+        assignmentFetcher={assignmentFetcher}
       />,
     );
 
@@ -114,8 +133,13 @@ describe("ConfirmAssignModal component tests", () => {
   });
 
   it("has default duration of 48 hours selected", () => {
-    const { mockFetcher, maxAttemptsFetcher, variantFetcher, modeFetcher } =
-      createFetchers();
+    const {
+      mockFetcher,
+      assignmentFetcher,
+      maxAttemptsFetcher,
+      variantFetcher,
+      modeFetcher,
+    } = createFetchers();
     const onCloseSpy = cy.spy().as("onClose");
     const onNavigateSpy = cy.spy().as("onNavigate");
 
@@ -133,6 +157,7 @@ describe("ConfirmAssignModal component tests", () => {
         maxAttemptsFetcher={maxAttemptsFetcher}
         variantFetcher={variantFetcher}
         modeFetcher={modeFetcher}
+        assignmentFetcher={assignmentFetcher}
       />,
     );
 
@@ -143,8 +168,13 @@ describe("ConfirmAssignModal component tests", () => {
   });
 
   it("allows selecting different duration options", () => {
-    const { mockFetcher, maxAttemptsFetcher, variantFetcher, modeFetcher } =
-      createFetchers();
+    const {
+      mockFetcher,
+      assignmentFetcher,
+      maxAttemptsFetcher,
+      variantFetcher,
+      modeFetcher,
+    } = createFetchers();
     const onCloseSpy = cy.spy().as("onClose");
     const onNavigateSpy = cy.spy().as("onNavigate");
 
@@ -162,6 +192,7 @@ describe("ConfirmAssignModal component tests", () => {
         maxAttemptsFetcher={maxAttemptsFetcher}
         variantFetcher={variantFetcher}
         modeFetcher={modeFetcher}
+        assignmentFetcher={assignmentFetcher}
       />,
     );
 
@@ -188,8 +219,13 @@ describe("ConfirmAssignModal component tests", () => {
   });
 
   it("enables custom date picker when Custom is selected", () => {
-    const { mockFetcher, maxAttemptsFetcher, variantFetcher, modeFetcher } =
-      createFetchers();
+    const {
+      mockFetcher,
+      assignmentFetcher,
+      maxAttemptsFetcher,
+      variantFetcher,
+      modeFetcher,
+    } = createFetchers();
     const onCloseSpy = cy.spy().as("onClose");
     const onNavigateSpy = cy.spy().as("onNavigate");
 
@@ -207,6 +243,7 @@ describe("ConfirmAssignModal component tests", () => {
         maxAttemptsFetcher={maxAttemptsFetcher}
         variantFetcher={variantFetcher}
         modeFetcher={modeFetcher}
+        assignmentFetcher={assignmentFetcher}
       />,
     );
 
@@ -221,8 +258,13 @@ describe("ConfirmAssignModal component tests", () => {
   });
 
   it("disables custom date picker when other duration is selected", () => {
-    const { mockFetcher, maxAttemptsFetcher, variantFetcher, modeFetcher } =
-      createFetchers();
+    const {
+      mockFetcher,
+      assignmentFetcher,
+      maxAttemptsFetcher,
+      variantFetcher,
+      modeFetcher,
+    } = createFetchers();
     const onCloseSpy = cy.spy().as("onClose");
     const onNavigateSpy = cy.spy().as("onNavigate");
 
@@ -240,6 +282,7 @@ describe("ConfirmAssignModal component tests", () => {
         maxAttemptsFetcher={maxAttemptsFetcher}
         variantFetcher={variantFetcher}
         modeFetcher={modeFetcher}
+        assignmentFetcher={assignmentFetcher}
       />,
     );
 
@@ -253,8 +296,13 @@ describe("ConfirmAssignModal component tests", () => {
   });
 
   it("closes modal when Close button is clicked", () => {
-    const { mockFetcher, maxAttemptsFetcher, variantFetcher, modeFetcher } =
-      createFetchers();
+    const {
+      mockFetcher,
+      assignmentFetcher,
+      maxAttemptsFetcher,
+      variantFetcher,
+      modeFetcher,
+    } = createFetchers();
     const onCloseSpy = cy.spy().as("onClose");
     const onNavigateSpy = cy.spy().as("onNavigate");
 
@@ -272,6 +320,7 @@ describe("ConfirmAssignModal component tests", () => {
         maxAttemptsFetcher={maxAttemptsFetcher}
         variantFetcher={variantFetcher}
         modeFetcher={modeFetcher}
+        assignmentFetcher={assignmentFetcher}
       />,
     );
 
@@ -280,8 +329,13 @@ describe("ConfirmAssignModal component tests", () => {
   });
 
   it("opens MoveCopyContent modal when Create assignment is clicked", () => {
-    const { mockFetcher, maxAttemptsFetcher, variantFetcher, modeFetcher } =
-      createFetchers();
+    const {
+      mockFetcher,
+      assignmentFetcher,
+      maxAttemptsFetcher,
+      variantFetcher,
+      modeFetcher,
+    } = createFetchers();
     const onCloseSpy = cy.spy().as("onClose");
     const onNavigateSpy = cy.spy().as("onNavigate");
 
@@ -307,6 +361,7 @@ describe("ConfirmAssignModal component tests", () => {
         maxAttemptsFetcher={maxAttemptsFetcher}
         variantFetcher={variantFetcher}
         modeFetcher={modeFetcher}
+        assignmentFetcher={assignmentFetcher}
       />,
     );
 
@@ -317,8 +372,13 @@ describe("ConfirmAssignModal component tests", () => {
   });
 
   it("handles document type correctly", () => {
-    const { mockFetcher, maxAttemptsFetcher, variantFetcher, modeFetcher } =
-      createFetchers();
+    const {
+      mockFetcher,
+      assignmentFetcher,
+      maxAttemptsFetcher,
+      variantFetcher,
+      modeFetcher,
+    } = createFetchers();
     const onCloseSpy = cy.spy().as("onClose");
     const onNavigateSpy = cy.spy().as("onNavigate");
 
@@ -341,6 +401,7 @@ describe("ConfirmAssignModal component tests", () => {
         maxAttemptsFetcher={maxAttemptsFetcher}
         variantFetcher={variantFetcher}
         modeFetcher={modeFetcher}
+        assignmentFetcher={assignmentFetcher}
       />,
     );
 
@@ -348,8 +409,13 @@ describe("ConfirmAssignModal component tests", () => {
   });
 
   it("shows loading when maxAttempts is null", () => {
-    const { mockFetcher, maxAttemptsFetcher, variantFetcher, modeFetcher } =
-      createFetchers();
+    const {
+      mockFetcher,
+      assignmentFetcher,
+      maxAttemptsFetcher,
+      variantFetcher,
+      modeFetcher,
+    } = createFetchers();
     const onCloseSpy = cy.spy().as("onClose");
     const onNavigateSpy = cy.spy().as("onNavigate");
 
@@ -367,6 +433,7 @@ describe("ConfirmAssignModal component tests", () => {
         maxAttemptsFetcher={maxAttemptsFetcher}
         variantFetcher={variantFetcher}
         modeFetcher={modeFetcher}
+        assignmentFetcher={assignmentFetcher}
       />,
     );
 
@@ -374,8 +441,13 @@ describe("ConfirmAssignModal component tests", () => {
   });
 
   it("shows loading when mode is null", () => {
-    const { mockFetcher, maxAttemptsFetcher, variantFetcher, modeFetcher } =
-      createFetchers();
+    const {
+      mockFetcher,
+      assignmentFetcher,
+      maxAttemptsFetcher,
+      variantFetcher,
+      modeFetcher,
+    } = createFetchers();
     const onCloseSpy = cy.spy().as("onClose");
     const onNavigateSpy = cy.spy().as("onNavigate");
 
@@ -393,6 +465,7 @@ describe("ConfirmAssignModal component tests", () => {
         maxAttemptsFetcher={maxAttemptsFetcher}
         variantFetcher={variantFetcher}
         modeFetcher={modeFetcher}
+        assignmentFetcher={assignmentFetcher}
       />,
     );
 
@@ -401,8 +474,13 @@ describe("ConfirmAssignModal component tests", () => {
 
   describe("accessibility tests", () => {
     it("is accessible with settings loaded", () => {
-      const { mockFetcher, maxAttemptsFetcher, variantFetcher, modeFetcher } =
-        createFetchers();
+      const {
+        mockFetcher,
+        assignmentFetcher,
+        maxAttemptsFetcher,
+        variantFetcher,
+        modeFetcher,
+      } = createFetchers();
       const onCloseSpy = cy.spy().as("onClose");
       const onNavigateSpy = cy.spy().as("onNavigate");
 
@@ -420,6 +498,7 @@ describe("ConfirmAssignModal component tests", () => {
           maxAttemptsFetcher={maxAttemptsFetcher}
           variantFetcher={variantFetcher}
           modeFetcher={modeFetcher}
+          assignmentFetcher={assignmentFetcher}
         />,
       );
 
@@ -430,8 +509,13 @@ describe("ConfirmAssignModal component tests", () => {
     });
 
     it("is accessible in loading state", () => {
-      const { mockFetcher, maxAttemptsFetcher, variantFetcher, modeFetcher } =
-        createFetchers();
+      const {
+        mockFetcher,
+        assignmentFetcher,
+        maxAttemptsFetcher,
+        variantFetcher,
+        modeFetcher,
+      } = createFetchers();
       const onCloseSpy = cy.spy().as("onClose");
       const onNavigateSpy = cy.spy().as("onNavigate");
 
@@ -446,6 +530,7 @@ describe("ConfirmAssignModal component tests", () => {
           maxAttemptsFetcher={maxAttemptsFetcher}
           variantFetcher={variantFetcher}
           modeFetcher={modeFetcher}
+          assignmentFetcher={assignmentFetcher}
         />,
       );
 
@@ -456,8 +541,13 @@ describe("ConfirmAssignModal component tests", () => {
     });
 
     it("is accessible with MoveCopyContent modal open", () => {
-      const { mockFetcher, maxAttemptsFetcher, variantFetcher, modeFetcher } =
-        createFetchers();
+      const {
+        mockFetcher,
+        assignmentFetcher,
+        maxAttemptsFetcher,
+        variantFetcher,
+        modeFetcher,
+      } = createFetchers();
       const onCloseSpy = cy.spy().as("onClose");
       const onNavigateSpy = cy.spy().as("onNavigate");
 
@@ -483,6 +573,7 @@ describe("ConfirmAssignModal component tests", () => {
           maxAttemptsFetcher={maxAttemptsFetcher}
           variantFetcher={variantFetcher}
           modeFetcher={modeFetcher}
+          assignmentFetcher={assignmentFetcher}
         />,
       );
 
