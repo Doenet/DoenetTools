@@ -13,7 +13,7 @@ import {
   CategoryGroup,
 } from "../../types";
 import axios from "axios";
-import { Box, Heading, VStack } from "@chakra-ui/react";
+import { Box, Button, Heading, Text, Tooltip, VStack } from "@chakra-ui/react";
 import { BlueBanner } from "../../widgets/BlueBanner";
 import { processRemixes } from "../../utils/processRemixes";
 import { EditorContext } from "./EditorHeader";
@@ -26,6 +26,9 @@ import {
   DoenetMLSelectionBox,
   UpgradeSyntax,
 } from "./DoenetMLVersionComponents";
+import { FiCode } from "react-icons/fi";
+import { IoMdCheckmark } from "react-icons/io";
+import { useState } from "react";
 
 export async function loader({ params }: { params: any }) {
   const { data } = await axios.get(
@@ -129,6 +132,21 @@ export function EditorSettingsModeComponent({
     allDoenetmlVersions.find((v) => v.id === doenetmlVersionId)?.deprecated,
   );
 
+  const [copiedEmbedCode, setCopiedEmbedCode] = useState(false);
+
+  async function generateEmbedCode() {
+    const {
+      data: { cid },
+    } = await axios.post(`/api/updateContent/createContentRevision`, {
+      contentId,
+      revisionName: "Embed code revision",
+      note: "Creating an embed code pinned to this revision",
+    });
+    const embedCode = `<iframe src="${window.location.origin}/embed/${cid}" width="100%" height="800" style="border: 0"></iframe>`;
+
+    return embedCode;
+  }
+
   return (
     <BlueBanner headerHeight={headerHeight}>
       <VStack ml="10px" spacing="2rem" align="flex-start">
@@ -215,6 +233,40 @@ export function EditorSettingsModeComponent({
             />
           </Box>
         )}
+
+        <Box>
+          <Heading size="md">Advanced</Heading>
+          <Box ml="1rem" mt="1rem">
+            <Text>
+              Generate a stable embed code for the current revision of this
+              document. The embedded content will not change if this document is
+              revised.
+            </Text>
+            <Tooltip
+              label="Embed this content in another website or LMS using an iframe."
+              hasArrow
+              openDelay={500}
+            >
+              <Button
+                size="sm"
+                colorScheme="blue"
+                mt="1em"
+                onClick={async () => {
+                  const embedCode = await generateEmbedCode();
+                  navigator.clipboard.writeText(embedCode);
+                  setCopiedEmbedCode(true);
+                }}
+              >
+                {copiedEmbedCode ? (
+                  <IoMdCheckmark fontSize="1.2rem" />
+                ) : (
+                  <FiCode fontSize="1.2rem" />
+                )}
+                <Text ml="0.5rem">Copy stable embed code</Text>
+              </Button>
+            </Tooltip>
+          </Box>
+        </Box>
       </VStack>
     </BlueBanner>
   );
