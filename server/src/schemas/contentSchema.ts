@@ -72,3 +72,7 @@ export const saveSyntaxUpdateSchema = z.object({
   updatedDoenetmlVersionId: z.int(),
   updatedSource: z.string(),
 });
+
+export const cidSchema = z.object({
+  cid: z.string(),
+});

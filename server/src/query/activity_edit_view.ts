@@ -214,3 +214,34 @@ export async function getPublicContent({
 
   return { activity };
 }
+
+/**
+ * Attempts to find public content that has a content revision with `cid`.
+ * If found, returns the content as though one were not logged in,
+ * i.e., only showing public content.
+ * Calls `getContent` with a blank `loggedInUserId`.
+ */
+export async function getPublicContentByCid({ cid }: { cid: string }) {
+  const content = await prisma.contentRevisions.findFirstOrThrow({
+    where: {
+      cid,
+      content: { isDeletedOn: null, isPublic: true, type: { not: "folder" } },
+    },
+    select: {
+      contentId: true,
+      source: true,
+      doenetmlVersion: { select: { fullVersion: true } },
+      content: { select: { type: true, name: true } },
+    },
+  });
+
+  return {
+    activity: {
+      contentId: content.contentId,
+      doenetML: content.source,
+      doenetmlVersion: content.doenetmlVersion,
+      type: content.content.type,
+      name: content.content.name,
+    },
+  };
+}
