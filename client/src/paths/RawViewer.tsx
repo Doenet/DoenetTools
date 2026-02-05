@@ -6,42 +6,83 @@ import { Content, DoenetmlVersion } from "../types";
 import { compileActivityFromContent } from "../utils/activity";
 import { useEffect } from "react";
 import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";
+import short from "short-uuid";
 
 export async function loader({ params }: any) {
-  const {
-    data: { activity: activityData },
-  } = await axios.get(
-    `/api/activityEditView/getPublicContent/${params.viewId}`,
-  );
+  const translator = short();
 
-  const contentId = params.viewId;
+  if (translator.validate(params.viewId)) {
+    // have a valid content id, so get activity data based on that
+    const {
+      data: { activity: activityData },
+    } = await axios.get(
+      `/api/activityEditView/getPublicContent/${params.viewId}`,
+    );
 
-  if (activityData.type === "singleDoc") {
-    const doenetML = activityData.doenetML;
-    const doenetmlVersion: DoenetmlVersion = activityData.doenetmlVersion;
+    const contentId = activityData.contentId;
 
-    return {
-      type: activityData.type,
-      activityData,
-      doenetML,
-      doenetmlVersion,
-      contentId,
-    };
+    if (activityData.type === "singleDoc") {
+      const doenetML = activityData.doenetML;
+      const doenetmlVersion: DoenetmlVersion = activityData.doenetmlVersion;
+
+      return {
+        type: activityData.type,
+        activityData,
+        doenetML,
+        doenetmlVersion,
+        contentId,
+      };
+    } else {
+      const activityJsonFromRevision = activityData.activityJson
+        ? JSON.parse(activityData.activityJson)
+        : null;
+
+      const activityJson = isActivitySource(activityJsonFromRevision)
+        ? activityJsonFromRevision
+        : compileActivityFromContent(activityData);
+
+      return {
+        type: activityData.type,
+        activityData,
+        activityJson,
+        contentId,
+      };
+    }
   } else {
-    const activityJsonFromRevision = activityData.activityJson
-      ? JSON.parse(activityData.activityJson)
-      : null;
+    // treat as cid
+    const {
+      data: { activity: activityData },
+    } = await axios.get(
+      `/api/activityEditView/getPublicContentByCid/${params.viewId}`,
+    );
 
-    const activityJson = isActivitySource(activityJsonFromRevision)
-      ? activityJsonFromRevision
-      : compileActivityFromContent(activityData);
+    const contentId = activityData.contentId;
 
-    return {
-      type: activityData.type,
-      activityData,
-      activityJson,
-      contentId,
-    };
+    if (activityData.type === "singleDoc") {
+      const doenetML = activityData.doenetML;
+      const doenetmlVersion: DoenetmlVersion = activityData.doenetmlVersion;
+
+      return {
+        type: activityData.type,
+        activityData,
+        doenetML,
+        doenetmlVersion,
+        contentId,
+      };
+    } else {
+      const activityJsonFromRevision = JSON.parse(activityData.source);
+
+      if (!isActivitySource(activityJsonFromRevision)) {
+        throw new Error("Activity JSON from revision is not valid");
+      }
+
+      return {
+        type: activityData.type,
+        activityData,
+        activityJson: activityJsonFromRevision,
+        contentId,
+      };
+    }
   }
 }
 
@@ -135,11 +176,6 @@ export function RawViewer() {
         paginate={
           activityData.type === "sequence" ? activityData.paginate : false
         }
-        activityLevelAttempts={
-          activityData.assignmentInfo?.mode === "summative"
-        }
-        itemLevelAttempts={activityData.assignmentInfo?.mode === "formative"}
-        maxAttemptsAllowed={activityData.assignmentInfo?.maxAttempts}
         showTitle={false}
         doenetViewerUrl={doenetViewerUrl}
         flags={{
