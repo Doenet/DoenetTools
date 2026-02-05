@@ -77,7 +77,7 @@ describe("Assignment workflow Tests", function () {
       // Save in My Activities
       cy.get('[data-test="Execute MoveCopy Button"]').click();
 
-      // wait a moment and make sure that that we don't have error page
+      // wait a moment and make sure that we don't have error page
       // (checking for a bug where used a fetcher twice)
       cy.wait(200);
       cy.get('[data-test="Execute MoveCopy Button"]').should("not.exist");
