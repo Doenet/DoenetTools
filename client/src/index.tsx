@@ -123,6 +123,7 @@ import {
 import { editorUrl } from "./utils/url";
 import { ScratchPad, loader as scratchPadLoader } from "./paths/ScratchPad";
 import { About } from "./paths/About";
+import { RawViewer, loader as rawViewerLoader } from "./paths/RawViewer";
 
 const router = createBrowserRouter([
   {
@@ -399,6 +400,16 @@ const router = createBrowserRouter([
         element: <ScratchPad />,
       },
     ],
+  },
+  {
+    path: "/view/:viewId",
+    element: <RawViewer />,
+    loader: rawViewerLoader,
+    errorElement: (
+      <ChakraProvider theme={theme}>
+        <ErrorPage />
+      </ChakraProvider>
+    ),
   },
 ]);
 
