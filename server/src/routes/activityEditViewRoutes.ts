@@ -1,6 +1,9 @@
 import express from "express";
 import { queryOptionalLoggedIn } from "../middleware/queryMiddleware";
-import { getActivityViewerData } from "../query/activity_edit_view";
+import {
+  getActivityViewerData,
+  getPublicContent,
+} from "../query/activity_edit_view";
 import { contentIdSchema } from "../schemas/contentSchema";
 import { getContentSource } from "../query/activity";
 
@@ -14,4 +17,9 @@ activityEditViewRouter.get(
 activityEditViewRouter.get(
   "/getContentSource/:contentId",
   queryOptionalLoggedIn(getContentSource, contentIdSchema),
+);
+
+activityEditViewRouter.get(
+  "/getPublicContent/:contentId",
+  queryOptionalLoggedIn(getPublicContent, contentIdSchema),
 );

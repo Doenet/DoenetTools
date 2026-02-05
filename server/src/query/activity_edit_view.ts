@@ -196,3 +196,21 @@ export async function getContent({
 
   return activity;
 }
+
+/**
+ * Get content for `contentId` as though one were not logged in,
+ * i.e., only showing public content.
+ * Calls `getContent` with a blank `loggedInUserId`.
+ */
+export async function getPublicContent({
+  contentId,
+}: {
+  contentId: Uint8Array;
+}) {
+  const activity = await getContent({
+    contentId,
+    loggedInUserId: new Uint8Array(16),
+  });
+
+  return { activity };
+}

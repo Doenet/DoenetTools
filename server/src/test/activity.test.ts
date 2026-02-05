@@ -17,7 +17,11 @@ import {
   getDescendantIds,
   getDefaultDoenetmlVersion,
 } from "../query/activity";
-import { getActivityViewerData, getContent } from "../query/activity_edit_view";
+import {
+  getActivityViewerData,
+  getContent,
+  getPublicContent,
+} from "../query/activity_edit_view";
 import { getMyContent, getMyTrash } from "../query/content_list";
 import { modifyContentSharedWith, setContentIsPublic } from "../query/share";
 import {
@@ -2086,6 +2090,39 @@ test("Create new activity with DoenetML", async () => {
   expect(newDoc.contentId).toStrictEqual(contentId);
   expect(newDoc.name).toBe("The new document");
   expect(newDoc.doenetML).toBe("My DoenetML source");
+});
+
+test("getPublicContent only gets public content", async () => {
+  const { userId: ownerId } = await createTestUser();
+
+  const { contentId: publicContentId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+
+  const { contentId: privateContentId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+
+  await setContentIsPublic({
+    contentId: publicContentId,
+    loggedInUserId: ownerId,
+    isPublic: true,
+  });
+
+  const { activity: publicContent } = await getPublicContent({
+    contentId: publicContentId,
+  });
+  expect(publicContent.contentId).eqls(publicContentId);
+
+  await expect(
+    getPublicContent({
+      contentId: privateContentId,
+    }),
+  ).rejects.toThrow("not found");
 });
 
 describe("createContent", () => {
