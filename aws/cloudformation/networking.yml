@@ -505,6 +505,55 @@ Resources:
       Type: "String"
       Value: !GetAtt "EnvironmentKmsKey.Arn"
 
+  S3VPCEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      VpcId: !GetAtt "VPC.Outputs.VPCId"
+      ServiceName: !Sub "com.amazonaws.${AWS::Region}.s3"
+      VpcEndpointType: Gateway
+      RouteTableIds: !Split
+        - ","
+        - !Join
+          - ","
+          - - !If
+              - CreateZoneA
+              - !GetAtt "ZoneA.Outputs.PublicRouteTable"
+              - !Ref "AWS::NoValue"
+            - !If
+              - CreateZoneA
+              - !GetAtt "ZoneA.Outputs.RouteTable"
+              - !Ref "AWS::NoValue"
+            - !If
+              - CreateZoneB
+              - !GetAtt "ZoneB.Outputs.PublicRouteTable"
+              - !Ref "AWS::NoValue"
+            - !If
+              - CreateZoneB
+              - !GetAtt "ZoneB.Outputs.RouteTable"
+              - !Ref "AWS::NoValue"
+            - !If
+              - CreateZoneC
+              - !GetAtt "ZoneC.Outputs.PublicRouteTable"
+              - !Ref "AWS::NoValue"
+            - !If
+              - CreateZoneC
+              - !GetAtt "ZoneC.Outputs.RouteTable"
+              - !Ref "AWS::NoValue"
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: "*"
+            Action:
+              - "s3:GetObject"
+              - "s3:PutObject"
+              - "s3:DeleteObject"
+              - "s3:ListBucket"
+              - "s3:GetBucketLocation"
+            Resource:
+              - "arn:aws:s3:::*"
+              - "arn:aws:s3:::*/*"
+
 Outputs:
   PrivateSubnetZoneA:
     Condition: CreateZoneA

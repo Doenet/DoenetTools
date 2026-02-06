@@ -87,6 +87,7 @@ Resources:
           - !Ref "AvailabilityZone"
           - private
         - !Cidr [!Ref VpcIpv6CidrBlock, 8, 64]
+      AssignIpv6AddressOnCreation: true
       Tags:
         - Key: Name
           Value: !Join

@@ -110,3 +110,9 @@ Outputs:
 
   RouteTable:
     Value: !GetAtt "Routes.Outputs.RouteTable"
+
+  RouteTable:
+    Value: !GetAtt "Routes.Outputs.RouteTable"
+
+  PublicRouteTable:
+    Value: !GetAtt "Routes.Outputs.PublicRouteTable"

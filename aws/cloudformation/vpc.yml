@@ -111,7 +111,10 @@ Resources:
       SecurityGroupEgress:
         - CidrIp: 0.0.0.0/0
           IpProtocol: "-1"
-          Description: permit all outbound
+          Description: permit all outbound IPv4
+        - CidrIpv6: ::/0
+          IpProtocol: "-1"
+          Description: permit all outbound IPv6
       Tags:
         - Key: Name
           Value: !Join

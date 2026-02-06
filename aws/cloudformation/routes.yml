@@ -72,9 +72,9 @@ Resources:
   PublicRouteIpv6:
     Type: AWS::EC2::Route
     Properties:
-      RouteTableId: !Ref 'PublicRouteTable'
-      DestinationIpv6CidrBlock: '::/0'
-      GatewayId: !Ref 'InternetGateway'
+      RouteTableId: !Ref "PublicRouteTable"
+      DestinationIpv6CidrBlock: "::/0"
+      GatewayId: !Ref "InternetGateway"
 
   PublicRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
@@ -107,9 +107,9 @@ Resources:
   RouteIpv6:
     Type: AWS::EC2::Route
     Properties:
-      RouteTableId: !Ref 'RouteTable'
-      DestinationIpv6CidrBlock: '::/0'
-      EgressOnlyInternetGatewayId: !Ref 'EgressOnlyInternetGateway'
+      RouteTableId: !Ref "RouteTable"
+      DestinationIpv6CidrBlock: "::/0"
+      EgressOnlyInternetGatewayId: !Ref "EgressOnlyInternetGateway"
 
   PrivateSubnetRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
