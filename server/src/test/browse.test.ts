@@ -1,4 +1,4 @@
-import { expect, test } from "vitest";
+import { describe, expect, test } from "vitest";
 import {
   createTestClassifications,
   createTestCategory,
@@ -27,6 +27,7 @@ import {
   browseSharedContent,
   browseTrendingContent,
   browseUsersWithSharedContent,
+  getSharedContentMatchCountPerAvailableCategory,
   searchSharedContent,
   searchUsersWithSharedContent,
 } from "../query/explore";
@@ -7905,4 +7906,287 @@ test("Explore APIs do not provide email", async () => {
     query: authorLastName,
   });
   expect(userResults[0]).not.toHaveProperty("email");
+});
+
+describe("getSharedContentMatchCountPerAvailableCategory", () => {
+  test("counts per category for a single owner without query", async () => {
+    const { userId: viewerId } = await createTestUser();
+    const { userId: ownerId } = await createTestUser();
+
+    const { contentId: content1Id } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "singleDoc",
+      parentId: null,
+      name: `alpha${Date.now()}1`,
+    });
+    const { contentId: content2Id } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "singleDoc",
+      parentId: null,
+      name: `alpha${Date.now()}2`,
+    });
+    const { contentId: content3Id } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "singleDoc",
+      parentId: null,
+      name: `alpha${Date.now()}3`,
+    });
+
+    await setContentIsPublic({
+      contentId: content1Id,
+      loggedInUserId: ownerId,
+      isPublic: true,
+    });
+    await setContentIsPublic({
+      contentId: content2Id,
+      loggedInUserId: ownerId,
+      isPublic: true,
+    });
+    await setContentIsPublic({
+      contentId: content3Id,
+      loggedInUserId: ownerId,
+      isPublic: true,
+    });
+
+    await updateCategories({
+      contentId: content1Id,
+      loggedInUserId: ownerId,
+      categories: { isInteractive: true },
+    });
+    await updateCategories({
+      contentId: content2Id,
+      loggedInUserId: ownerId,
+      categories: { containsVideo: true },
+    });
+    await updateCategories({
+      contentId: content3Id,
+      loggedInUserId: ownerId,
+      categories: { isInteractive: true, containsVideo: true },
+    });
+
+    const counts = await getSharedContentMatchCountPerAvailableCategory({
+      loggedInUserId: viewerId,
+      ownerId,
+    });
+
+    expect(counts.isInteractive?.numCommunity).eq(2);
+    expect(counts.containsVideo?.numCommunity).eq(2);
+    expect(counts.isAnimation?.numCommunity).eq(0);
+    expect(counts.isInteractive?.numCurated).eq(0);
+  });
+
+  test("respects query filtering when counting per category", async () => {
+    const { userId: viewerId } = await createTestUser();
+    const { userId: ownerId } = await createTestUser();
+    const code = Date.now().toString();
+
+    const { contentId: content1Id } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "singleDoc",
+      parentId: null,
+      name: `alpha${code}`,
+    });
+    const { contentId: content2Id } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "singleDoc",
+      parentId: null,
+      name: `beta${code}`,
+    });
+
+    await setContentIsPublic({
+      contentId: content1Id,
+      loggedInUserId: ownerId,
+      isPublic: true,
+    });
+    await setContentIsPublic({
+      contentId: content2Id,
+      loggedInUserId: ownerId,
+      isPublic: true,
+    });
+
+    await updateCategories({
+      contentId: content1Id,
+      loggedInUserId: ownerId,
+      categories: { isInteractive: true },
+    });
+    await updateCategories({
+      contentId: content2Id,
+      loggedInUserId: ownerId,
+      categories: { containsVideo: true },
+    });
+
+    const counts = await getSharedContentMatchCountPerAvailableCategory({
+      query: `alpha${code}`,
+      loggedInUserId: viewerId,
+      ownerId,
+    });
+
+    expect(counts.isInteractive?.numCommunity).eq(1);
+    expect(counts.containsVideo?.numCommunity).eq(0);
+    expect(counts.isInteractive?.numCurated).eq(0);
+  });
+
+  test("counts per category when categories filter is provided", async () => {
+    const { userId: viewerId } = await createTestUser();
+    const { userId: ownerId } = await createTestUser();
+    const code = Date.now().toString();
+
+    const { contentId: content1Id } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "singleDoc",
+      parentId: null,
+      name: `alpha${code}1`,
+    });
+    const { contentId: content2Id } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "singleDoc",
+      parentId: null,
+      name: `alpha${code}2`,
+    });
+    const { contentId: content3Id } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "singleDoc",
+      parentId: null,
+      name: `alpha${code}3`,
+    });
+    const { contentId: content4Id } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "singleDoc",
+      parentId: null,
+      name: `alpha${code}4`,
+    });
+
+    await setContentIsPublic({
+      contentId: content1Id,
+      loggedInUserId: ownerId,
+      isPublic: true,
+    });
+    await setContentIsPublic({
+      contentId: content2Id,
+      loggedInUserId: ownerId,
+      isPublic: true,
+    });
+    await setContentIsPublic({
+      contentId: content3Id,
+      loggedInUserId: ownerId,
+      isPublic: true,
+    });
+    await setContentIsPublic({
+      contentId: content4Id,
+      loggedInUserId: ownerId,
+      isPublic: true,
+    });
+
+    await updateCategories({
+      contentId: content1Id,
+      loggedInUserId: ownerId,
+      categories: { isInteractive: true },
+    });
+    await updateCategories({
+      contentId: content2Id,
+      loggedInUserId: ownerId,
+      categories: { isInteractive: true, containsVideo: true },
+    });
+    await updateCategories({
+      contentId: content3Id,
+      loggedInUserId: ownerId,
+      categories: { isInteractive: true, isAnimation: true },
+    });
+    await updateCategories({
+      contentId: content4Id,
+      loggedInUserId: ownerId,
+      categories: { containsVideo: true },
+    });
+
+    const counts = await getSharedContentMatchCountPerAvailableCategory({
+      loggedInUserId: viewerId,
+      ownerId,
+      categories: new Set(["isInteractive"]),
+    });
+
+    expect(counts.isInteractive?.numCommunity).eq(3);
+    expect(counts.containsVideo?.numCommunity).eq(1);
+    expect(counts.isAnimation?.numCommunity).eq(1);
+    expect(counts.isInteractive?.numCurated).eq(0);
+  });
+
+  test("handles categories filter with three items", async () => {
+    const { userId: viewerId } = await createTestUser();
+    const { userId: ownerId } = await createTestUser();
+    const code = Date.now().toString();
+
+    const { contentId: content1Id } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "singleDoc",
+      parentId: null,
+      name: `alpha${code}1`,
+    });
+    const { contentId: content2Id } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "singleDoc",
+      parentId: null,
+      name: `alpha${code}2`,
+    });
+    const { contentId: content3Id } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "singleDoc",
+      parentId: null,
+      name: `alpha${code}3`,
+    });
+
+    await setContentIsPublic({
+      contentId: content1Id,
+      loggedInUserId: ownerId,
+      isPublic: true,
+    });
+    await setContentIsPublic({
+      contentId: content2Id,
+      loggedInUserId: ownerId,
+      isPublic: true,
+    });
+    await setContentIsPublic({
+      contentId: content3Id,
+      loggedInUserId: ownerId,
+      isPublic: true,
+    });
+
+    await updateCategories({
+      contentId: content1Id,
+      loggedInUserId: ownerId,
+      categories: {
+        isInteractive: true,
+        containsVideo: true,
+        isAnimation: true,
+      },
+    });
+    await updateCategories({
+      contentId: content2Id,
+      loggedInUserId: ownerId,
+      categories: {
+        isInteractive: true,
+        containsVideo: true,
+        isAnimation: true,
+        isPreview: true,
+      },
+    });
+    await updateCategories({
+      contentId: content3Id,
+      loggedInUserId: ownerId,
+      categories: {
+        isInteractive: true,
+        containsVideo: true,
+      },
+    });
+
+    const counts = await getSharedContentMatchCountPerAvailableCategory({
+      loggedInUserId: viewerId,
+      ownerId,
+      categories: new Set(["isInteractive", "containsVideo", "isAnimation"]),
+    });
+
+    expect(counts.isInteractive?.numCommunity).eq(2);
+    expect(counts.isPreview?.numCommunity).eq(1);
+    expect(counts.isAnimation?.numCommunity).eq(2);
+    expect(counts.isInteractive?.numCurated).eq(0);
+  });
 });
