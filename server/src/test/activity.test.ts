@@ -103,7 +103,7 @@ test("New activity starts out private, then delete it", async () => {
     categories: [],
     classifications: [],
     doenetmlVersionId: currentDoenetmlVersion.id,
-    individualizeByStudent: false,
+    individualizeByStudent: true,
     maxAttempts: 1,
     mode: "formative",
   });
@@ -870,7 +870,7 @@ test.skip("activity editor data and my folder contents before and after assigned
     licenseCode: "CCDUAL",
     classifications: [],
     doenetmlVersionId: currentDoenetmlVersion.id,
-    individualizeByStudent: false,
+    individualizeByStudent: true,
     maxAttempts: 1,
     mode: "formative",
   });
@@ -926,7 +926,7 @@ test.skip("activity editor data and my folder contents before and after assigned
     licenseCode: "CCDUAL",
     classifications: [],
     maxAttempts: 1,
-    individualizeByStudent: false,
+    individualizeByStudent: true,
     mode: "formative",
   });
   expect(header2.assignmentStatus).eqls("Open");
@@ -963,7 +963,7 @@ test.skip("activity editor data and my folder contents before and after assigned
       hasScoreData: false,
       maxAttempts: 1,
       mode: "formative",
-      individualizeByStudent: false,
+      individualizeByStudent: true,
     },
   });
 
@@ -1010,7 +1010,7 @@ test.skip("activity editor data and my folder contents before and after assigned
       hasScoreData: false,
       maxAttempts: 1,
       mode: "formative",
-      individualizeByStudent: false,
+      individualizeByStudent: true,
     },
   });
 
@@ -1060,7 +1060,7 @@ test.skip("activity editor data and my folder contents before and after assigned
       hasScoreData: false,
       maxAttempts: 1,
       mode: "formative",
-      individualizeByStudent: false,
+      individualizeByStudent: true,
     },
   });
 
@@ -1120,7 +1120,7 @@ test.skip("activity editor data and my folder contents before and after assigned
       hasScoreData: true,
       maxAttempts: 1,
       mode: "formative",
-      individualizeByStudent: false,
+      individualizeByStudent: true,
     },
   });
 
@@ -1167,7 +1167,7 @@ test.skip("activity editor data and my folder contents before and after assigned
       hasScoreData: true,
       maxAttempts: 1,
       mode: "formative",
-      individualizeByStudent: false,
+      individualizeByStudent: true,
     },
   });
 });
