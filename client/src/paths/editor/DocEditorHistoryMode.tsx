@@ -44,7 +44,7 @@ export async function loader({ params }: { params: any }) {
   return data;
 }
 
-export interface DocEditorHistoryModeContentProps {
+export interface DocEditorHistoryModeComponentProps {
   doenetML: string;
   doenetmlVersion: DoenetmlVersion;
   revisions: ContentRevision[];
@@ -68,7 +68,7 @@ export function DocEditorHistoryModeComponent({
   onClose,
   fetcher,
   editorComponent: EditorComponent = DoenetEditor,
-}: DocEditorHistoryModeContentProps) {
+}: DocEditorHistoryModeComponentProps) {
   const [revNum, setRevNum] = useState(0);
 
   const selectedRevision = useMemo(() => {

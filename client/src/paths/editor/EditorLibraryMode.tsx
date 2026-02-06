@@ -47,7 +47,7 @@ export async function loader({ params }: { params: any }) {
   };
 }
 
-export interface EditorLibraryModeContentProps {
+export interface EditorLibraryModeComponentProps {
   libraryRelations: LibraryRelations;
   libraryComments: LibraryComment[];
   contentId: string;
@@ -71,7 +71,7 @@ export function EditorLibraryModeComponent({
   contentName,
   fetcher,
   onClose,
-}: EditorLibraryModeContentProps) {
+}: EditorLibraryModeComponentProps) {
   const suggestCuration = () => {
     fetcher.submit(
       {
