@@ -1,5 +1,4 @@
 import { ShareMyContentModal } from "./ShareMyContentModal";
-import { FetcherWithComponents } from "react-router";
 import { UserInfoWithEmail } from "../types";
 
 describe("ShareMyContentModal component tests", () => {
@@ -23,44 +22,46 @@ describe("ShareMyContentModal component tests", () => {
   const settingsData = {
     allCategories: [],
     categories: [],
-  } as any;
+    isPublic: false,
+    isShared: false,
+    assigned: false,
+  };
 
-  function createMockFetcher({
-    state = "idle",
-    data,
-    submitAlias = "fetcherSubmit",
+  function setupMocks({
+    shareStatus = shareStatusData,
+    settings = settingsData,
+    actionHandler,
   }: {
-    state?: "idle" | "submitting" | "loading";
-    data?: any;
-    submitAlias?: string;
+    shareStatus?: any;
+    settings?: any;
+    actionHandler?: ({ request }: { request: Request }) => any;
   } = {}) {
     return {
-      state,
-      formData: undefined,
-      data,
-      Form: ({ children }: any) => <form>{children}</form>,
-      submit: cy.stub().as(submitAlias),
-      load: () => {},
-    } as unknown as FetcherWithComponents<any>;
+      action: actionHandler,
+      routes: [
+        {
+          path: `/loadShareStatus/${contentId}`,
+          loader: () => shareStatus,
+        },
+        {
+          path: `/compoundEditor/${contentId}/settings`,
+          loader: () => settings,
+        },
+      ],
+    };
   }
 
   it("renders public and people sections when data is loaded", () => {
+    const mountOptions = setupMocks();
+
     cy.mount(
       <ShareMyContentModal
         contentId={contentId}
         contentType={contentType}
         isOpen={true}
         onClose={cy.spy().as("onClose")}
-        shareStatusData={shareStatusData}
-        settingsData={settingsData}
-        isLoadingShareStatus={false}
-        isLoadingSettings={false}
-        addEmailFetcher={createMockFetcher({ submitAlias: "addEmailSubmit" })}
-        publicShareFetcher={createMockFetcher({
-          submitAlias: "publicShareSubmit",
-        })}
-        unshareFetcher={createMockFetcher({ submitAlias: "unshareSubmit" })}
       />,
+      mountOptions,
     );
 
     cy.contains("With the public").should("be.visible");
@@ -70,22 +71,16 @@ describe("ShareMyContentModal component tests", () => {
   });
 
   it("renders shared users in the table", () => {
+    const mountOptions = setupMocks();
+
     cy.mount(
       <ShareMyContentModal
         contentId={contentId}
         contentType={contentType}
         isOpen={true}
         onClose={cy.spy().as("onClose")}
-        shareStatusData={shareStatusData}
-        settingsData={settingsData}
-        isLoadingShareStatus={false}
-        isLoadingSettings={false}
-        addEmailFetcher={createMockFetcher({ submitAlias: "addEmailSubmit" })}
-        publicShareFetcher={createMockFetcher({
-          submitAlias: "publicShareSubmit",
-        })}
-        unshareFetcher={createMockFetcher({ submitAlias: "unshareSubmit" })}
       />,
+      mountOptions,
     );
 
     cy.contains("People with access").should("be.visible");
@@ -94,28 +89,31 @@ describe("ShareMyContentModal component tests", () => {
   });
 
   it("submits add email when input loses focus", () => {
+    const actionSpy = cy.spy().as("actionSpy");
+    const mountOptions = setupMocks({
+      shareStatus: { ...shareStatusData, sharedWith: [] },
+      actionHandler: async ({ request }) => {
+        const body = await request.json();
+        actionSpy(body);
+        return { success: true };
+      },
+    });
+
     cy.mount(
       <ShareMyContentModal
         contentId={contentId}
         contentType={contentType}
         isOpen={true}
         onClose={cy.spy().as("onClose")}
-        shareStatusData={{ ...shareStatusData, sharedWith: [] }}
-        settingsData={settingsData}
-        isLoadingShareStatus={false}
-        isLoadingSettings={false}
-        addEmailFetcher={createMockFetcher({ submitAlias: "addEmailSubmit" })}
-        publicShareFetcher={createMockFetcher({
-          submitAlias: "publicShareSubmit",
-        })}
-        unshareFetcher={createMockFetcher({ submitAlias: "unshareSubmit" })}
       />,
+      mountOptions,
     );
 
+    cy.contains("Add people").should("be.visible");
     cy.get('input[name="email"]').type("new.user@example.com");
     cy.get('input[name="email"]').blur();
 
-    cy.get("@addEmailSubmit").should("have.been.calledWith", {
+    cy.get("@actionSpy").should("have.been.calledWith", {
       path: "share/shareContent",
       contentId,
       email: "new.user@example.com",
@@ -124,53 +122,57 @@ describe("ShareMyContentModal component tests", () => {
 
   it("handles invalid email error without infinite rerender", () => {
     const errorMessage = "✖ Invalid email address\n  → at email";
+    const mountOptions = setupMocks({
+      shareStatus: { ...shareStatusData, sharedWith: [] },
+      actionHandler: async () => {
+        // Return error string to simulate validation error
+        return errorMessage;
+      },
+    });
+
     cy.mount(
       <ShareMyContentModal
         contentId={contentId}
         contentType={contentType}
         isOpen={true}
         onClose={cy.spy().as("onClose")}
-        shareStatusData={{ ...shareStatusData, sharedWith: [] }}
-        settingsData={settingsData}
-        isLoadingShareStatus={false}
-        isLoadingSettings={false}
-        addEmailFetcher={createMockFetcher({
-          state: "idle",
-          data: errorMessage,
-          submitAlias: "addEmailSubmit",
-        })}
-        publicShareFetcher={createMockFetcher({
-          submitAlias: "publicShareSubmit",
-        })}
-        unshareFetcher={createMockFetcher({ submitAlias: "unshareSubmit" })}
       />,
+      mountOptions,
     );
+
+    cy.contains("Add people").should("be.visible");
+
+    // Trigger an email submission that will error
+    cy.get('input[name="email"]').type("invalid-email");
+    cy.get('input[name="email"]').blur();
 
     // Should display the error message without crashing (would fail with infinite rerender)
     cy.contains("Invalid email address").scrollIntoView().should("be.visible");
   });
 
   it("submits unshare when clicking remove on a user", () => {
+    const actionSpy = cy.spy().as("actionSpy");
+    const mountOptions = setupMocks({
+      actionHandler: async ({ request }) => {
+        const body = await request.json();
+        actionSpy(body);
+        return { success: true };
+      },
+    });
+
     cy.mount(
       <ShareMyContentModal
         contentId={contentId}
         contentType={contentType}
         isOpen={true}
         onClose={cy.spy().as("onClose")}
-        shareStatusData={shareStatusData}
-        settingsData={settingsData}
-        isLoadingShareStatus={false}
-        isLoadingSettings={false}
-        addEmailFetcher={createMockFetcher({ submitAlias: "addEmailSubmit" })}
-        publicShareFetcher={createMockFetcher({
-          submitAlias: "publicShareSubmit",
-        })}
-        unshareFetcher={createMockFetcher({ submitAlias: "unshareSubmit" })}
       />,
+      mountOptions,
     );
 
+    cy.contains("People with access").should("be.visible");
     cy.get('[aria-label="Stop sharing with Test User"]').click();
-    cy.get("@unshareSubmit").should("have.been.calledWith", {
+    cy.get("@actionSpy").should("have.been.calledWith", {
       path: "share/unshareContent",
       contentId,
       userId: mockUser.userId,
@@ -178,26 +180,29 @@ describe("ShareMyContentModal component tests", () => {
   });
 
   it("submits public share toggle when Share publicly is clicked", () => {
+    const actionSpy = cy.spy().as("actionSpy");
+    const mountOptions = setupMocks({
+      shareStatus: { ...shareStatusData, isPublic: false },
+      actionHandler: async ({ request }) => {
+        const body = await request.json();
+        actionSpy(body);
+        return { success: true };
+      },
+    });
+
     cy.mount(
       <ShareMyContentModal
         contentId={contentId}
         contentType={contentType}
         isOpen={true}
         onClose={cy.spy().as("onClose")}
-        shareStatusData={{ ...shareStatusData, isPublic: false }}
-        settingsData={settingsData}
-        isLoadingShareStatus={false}
-        isLoadingSettings={false}
-        addEmailFetcher={createMockFetcher({ submitAlias: "addEmailSubmit" })}
-        publicShareFetcher={createMockFetcher({
-          submitAlias: "publicShareSubmit",
-        })}
-        unshareFetcher={createMockFetcher({ submitAlias: "unshareSubmit" })}
       />,
+      mountOptions,
     );
 
+    cy.contains("Share publicly").should("be.visible");
     cy.get('[data-test="Share Publicly Button"]').click();
-    cy.get("@publicShareSubmit").should("have.been.calledWith", {
+    cy.get("@actionSpy").should("have.been.calledWith", {
       path: "share/setContentIsPublic",
       contentId,
       isPublic: true,
@@ -206,20 +211,16 @@ describe("ShareMyContentModal component tests", () => {
 
   describe("Accessibility", () => {
     it("is accessible when not public", () => {
+      const mountOptions = setupMocks();
+
       cy.mount(
         <ShareMyContentModal
           contentId={contentId}
           contentType={contentType}
           isOpen={true}
           onClose={cy.spy().as("onClose")}
-          shareStatusData={shareStatusData}
-          settingsData={settingsData}
-          isLoadingShareStatus={false}
-          isLoadingSettings={false}
-          addEmailFetcher={createMockFetcher()}
-          publicShareFetcher={createMockFetcher()}
-          unshareFetcher={createMockFetcher()}
         />,
+        mountOptions,
       );
 
       cy.contains("With the public").should("be.visible");
@@ -228,20 +229,18 @@ describe("ShareMyContentModal component tests", () => {
     });
 
     it("is accessible when public", () => {
+      const mountOptions = setupMocks({
+        shareStatus: { ...shareStatusData, isPublic: true },
+      });
+
       cy.mount(
         <ShareMyContentModal
           contentId={contentId}
           contentType={contentType}
           isOpen={true}
           onClose={cy.spy().as("onClose")}
-          shareStatusData={{ ...shareStatusData, isPublic: true }}
-          settingsData={settingsData}
-          isLoadingShareStatus={false}
-          isLoadingSettings={false}
-          addEmailFetcher={createMockFetcher()}
-          publicShareFetcher={createMockFetcher()}
-          unshareFetcher={createMockFetcher()}
         />,
+        mountOptions,
       );
 
       cy.contains("Content is public").should("be.visible");
@@ -251,24 +250,28 @@ describe("ShareMyContentModal component tests", () => {
 
     it("is accessible with invalid email error message", () => {
       const errorMessage = "✖ Invalid email address\n  → at email";
+      const mountOptions = setupMocks({
+        shareStatus: { ...shareStatusData, sharedWith: [] },
+        actionHandler: async () => {
+          return errorMessage;
+        },
+      });
+
       cy.mount(
         <ShareMyContentModal
           contentId={contentId}
           contentType={contentType}
           isOpen={true}
           onClose={cy.spy().as("onClose")}
-          shareStatusData={{ ...shareStatusData, sharedWith: [] }}
-          settingsData={settingsData}
-          isLoadingShareStatus={false}
-          isLoadingSettings={false}
-          addEmailFetcher={createMockFetcher({
-            state: "idle",
-            data: errorMessage,
-          })}
-          publicShareFetcher={createMockFetcher()}
-          unshareFetcher={createMockFetcher()}
         />,
+        mountOptions,
       );
+
+      cy.contains("Add people").should("be.visible");
+
+      // Trigger an email submission that will error
+      cy.get('input[name="email"]').type("invalid-email");
+      cy.get('input[name="email"]').blur();
 
       cy.contains("Invalid email address")
         .scrollIntoView()
