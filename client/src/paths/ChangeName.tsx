@@ -20,6 +20,7 @@ import {
 } from "react-router";
 import axios from "axios";
 import { SiteContext } from "./SiteHeader";
+import { UserInfoWithEmail } from "../types";
 
 export async function action({
   request,
@@ -54,6 +55,106 @@ export async function loader({ request }: { request: any }) {
   return { redirectTo };
 }
 
+export interface ChangeNameAnonymousComponentProps {
+  user: UserInfoWithEmail;
+  onContinue: () => void;
+}
+
+export function ChangeNameAnonymousComponent({
+  user,
+  onContinue,
+}: ChangeNameAnonymousComponentProps) {
+  return (
+    <Center>
+      <Box margin="50px">
+        <Heading size="md">Taking assignment as an anonymous user</Heading>
+        <Text mt="20px">
+          Your nickname is <strong>{user.lastNames}</strong>.
+        </Text>
+        <Button mt="20px" onClick={onContinue}>
+          Continue
+        </Button>
+      </Box>
+    </Center>
+  );
+}
+
+export interface ChangeNameFormComponentProps {
+  firstNames: string;
+  lastNames: string;
+  setFirstNames: (name: string) => void;
+  setLastNames: (name: string) => void;
+  redirectTo: string;
+}
+
+export function ChangeNameFormComponent({
+  firstNames,
+  lastNames,
+  setFirstNames,
+  setLastNames,
+  redirectTo,
+}: ChangeNameFormComponentProps) {
+  const [submitted, setSubmitted] = useState(false);
+  return (
+    <Box margin="20px">
+      <Heading size="lg">Enter your name</Heading>
+
+      <Form
+        method="post"
+        onSubmit={() => {
+          setSubmitted(true);
+        }}
+      >
+        <input type="hidden" name="_action" value="change user name" />
+        <input type="hidden" name="redirectTo" value={redirectTo ?? "/"} />
+        <input type="hidden" name="_isEditable" value="true" />
+
+        <Flex wrap="wrap">
+          <FormControl width="13rem">
+            <FormLabel mt="16px">First name(s):</FormLabel>
+            <Input
+              placeholder="First Name(s)"
+              name="firstNames"
+              size="sm"
+              width="11rem"
+              marginRight="5px"
+              value={firstNames ?? ""}
+              onChange={(e) => {
+                setFirstNames(e.target.value);
+              }}
+            />
+          </FormControl>
+          <FormControl isRequired width="13rem">
+            <FormLabel mt="16px">Last name(s):</FormLabel>
+            <Input
+              placeholder="Last Names"
+              name="lastNames"
+              size="sm"
+              width="11rem"
+              value={lastNames}
+              onChange={(e) => {
+                setLastNames(e.target.value);
+              }}
+            />
+          </FormControl>
+        </Flex>
+        <Flex marginTop="8px">
+          <Button
+            type="submit"
+            colorScheme="blue"
+            mr="12px"
+            size="xs"
+            isDisabled={submitted}
+          >
+            Submit
+          </Button>
+          <Spinner hidden={!submitted} />
+        </Flex>
+      </Form>
+    </Box>
+  );
+}
+
 /**
  * A page that allows a user to change their name. There must already be a logged in user
  * for this page to work.
@@ -71,90 +172,25 @@ export function ChangeName() {
     throw Error("No user logged in.");
   }
 
-  const isEditable = !user.isAnonymous;
-
   const [firstNames, setFirstNames] = useState(user?.firstNames ?? "");
   const [lastNames, setLastNames] = useState(user?.lastNames ?? "");
-  const [submitted, setSubmitted] = useState(false);
 
   if (user.isAnonymous) {
     return (
-      <Center>
-        <Box margin="50px">
-          <Heading size="md">Taking assignment as an anonymous user</Heading>
-          <Text mt="20px">
-            Your nickname is <strong>{user.lastNames}</strong>.
-          </Text>
-          <Button mt="20px" onClick={() => navigate(redirectTo ?? "/")}>
-            Continue
-          </Button>
-        </Box>
-      </Center>
+      <ChangeNameAnonymousComponent
+        user={user}
+        onContinue={() => navigate(redirectTo ?? "/")}
+      />
     );
   } else {
     return (
-      <Box margin="20px">
-        <Heading size="lg">Enter your name</Heading>
-
-        <Form
-          method="post"
-          onSubmit={() => {
-            setSubmitted(true);
-          }}
-        >
-          <input type="hidden" name="_action" value="change user name" />
-          <input type="hidden" name="redirectTo" value={redirectTo ?? "/"} />
-          <input
-            type="hidden"
-            name="_isEditable"
-            value={isEditable ? "true" : "false"}
-          />
-
-          <Flex wrap="wrap">
-            <FormControl width="13rem">
-              <FormLabel mt="16px">First name(s):</FormLabel>
-              <Input
-                placeholder="First Name(s)"
-                name="firstNames"
-                size="sm"
-                width="11rem"
-                marginRight="5px"
-                value={firstNames ?? ""}
-                isDisabled={!isEditable}
-                onChange={(e) => {
-                  setFirstNames(e.target.value);
-                }}
-              />
-            </FormControl>
-            <FormControl isRequired width="13rem">
-              <FormLabel mt="16px">Last name(s):</FormLabel>
-              <Input
-                placeholder="Last Names"
-                name="lastNames"
-                size="sm"
-                width="11rem"
-                value={lastNames}
-                isDisabled={!isEditable}
-                onChange={(e) => {
-                  setLastNames(e.target.value);
-                }}
-              />
-            </FormControl>
-          </Flex>
-          <Flex marginTop="8px">
-            <Button
-              type="submit"
-              colorScheme="blue"
-              mr="12px"
-              size="xs"
-              isDisabled={submitted}
-            >
-              Submit
-            </Button>
-            <Spinner hidden={!submitted} />
-          </Flex>
-        </Form>
-      </Box>
+      <ChangeNameFormComponent
+        firstNames={firstNames}
+        lastNames={lastNames}
+        setFirstNames={setFirstNames}
+        setLastNames={setLastNames}
+        redirectTo={redirectTo ?? "/"}
+      />
     );
   }
 }

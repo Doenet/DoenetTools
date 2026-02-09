@@ -44,6 +44,12 @@ export function EnterClassCode({ invalidCode }: { invalidCode?: string }) {
   const [classCode, setClassCode] = useState(invalidCode ?? "");
   const haveInvalidClassCode = Boolean(invalidCode);
 
+  useEffect(() => {
+    if (invalidCode !== undefined) {
+      setClassCode(invalidCode);
+    }
+  }, [invalidCode]);
+
   return (
     <Center>
       <Box margin="20px">

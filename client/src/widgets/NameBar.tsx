@@ -7,7 +7,7 @@ import {
   Show,
   Text,
 } from "@chakra-ui/react";
-import { useFetcher } from "react-router";
+import { type FetcherWithComponents } from "react-router";
 
 /**
  * Component to display the title of content, optionally editable
@@ -20,6 +20,7 @@ export function NameBar({
   dataTest,
   overrideMaxWidth,
   fontSizeMode = "editor",
+  fetcher,
 }: {
   contentId: string | null;
   isEditable?: boolean;
@@ -28,12 +29,12 @@ export function NameBar({
   dataTest: string;
   overrideMaxWidth?: string;
   fontSizeMode?: "editor" | "folder";
+  fetcher?: FetcherWithComponents<unknown>;
 }) {
   const maxWidth = overrideMaxWidth ?? "20rem";
   const width = "100%";
 
   const [name, setName] = useState(contentName);
-  const fetcher = useFetcher();
 
   const lastBaseDataName = useRef(contentName);
 
@@ -48,7 +49,7 @@ export function NameBar({
   // Special case: root folder or special view of some kind
   // Ex: My Activities, Shared with me, Trash
   // We can't edit the name of that, so just show read-only text
-  if (!isEditable || contentId === null) {
+  if (!isEditable || contentId === null || !fetcher) {
     // Read-only header for root folder: icon sits inside the title box (non-editable)
     return (
       <Box position="relative" maxWidth={maxWidth} width={width}>
@@ -140,6 +141,7 @@ export function NameBar({
         <Box
           as={EditableInput}
           data-test="Editable Input"
+          aria-label="Title Input"
           maxLength={191}
           lineHeight="1.2"
           pl={{ base: "0rem", md: "1.8rem" }}

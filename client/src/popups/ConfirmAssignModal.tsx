@@ -42,6 +42,7 @@ export function ConfirmAssignModal({
   maxAttemptsFetcher,
   variantFetcher,
   modeFetcher,
+  assignmentFetcher,
 }: {
   contentDescription: ContentDescription;
   isOpen: boolean;
@@ -55,6 +56,7 @@ export function ConfirmAssignModal({
   maxAttemptsFetcher: FetcherWithComponents<any>;
   variantFetcher: FetcherWithComponents<any>;
   modeFetcher: FetcherWithComponents<any>;
+  assignmentFetcher: FetcherWithComponents<any>;
 }) {
   const { contentId, type: contentType } = contentDescription;
 
@@ -164,6 +166,7 @@ export function ConfirmAssignModal({
             <Button
               colorScheme="blue"
               onClick={() => {
+                onClose();
                 moveCopyContentOnOpen();
               }}
               data-test="Confirm Create Assignment"
@@ -202,7 +205,7 @@ export function ConfirmAssignModal({
             precision: "minutes",
           });
 
-          fetcher.submit(
+          assignmentFetcher.submit(
             {
               path: "assign/createAssignment",
               contentId,
@@ -213,7 +216,6 @@ export function ConfirmAssignModal({
           );
 
           moveCopyContentOnClose();
-          onClose();
         }}
       />
     </>
