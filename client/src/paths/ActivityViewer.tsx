@@ -53,6 +53,8 @@ import {
   DoenetmlVersion,
   LibraryRelations,
   ActivityRemixItem,
+  Doc,
+  ProblemSet,
 } from "../types";
 import { CompoundActivityEditor } from "../views/CompoundActivityEditor";
 import {
@@ -128,7 +130,6 @@ export async function loader({ params }: { params: any }) {
 export function ActivityViewer() {
   const data = useLoaderData() as {
     contentId: string;
-    activityData: Content;
     libraryRelations: LibraryRelations;
     contributorHistory: ActivityRemixItem[];
   } & (
@@ -136,14 +137,16 @@ export function ActivityViewer() {
         type: "singleDoc";
         doenetML: string;
         doenetmlVersion: DoenetmlVersion;
+        activityData: Doc;
       }
     | {
-        type: "select" | "sequence";
+        type: "sequence";
         activityJson: ActivitySource;
+        activityData: ProblemSet;
       }
   );
 
-  const { activityData, contributorHistory, libraryRelations } = data;
+  const { activityData, contributorHistory, libraryRelations, type } = data;
 
   const { user, addTo, setAddTo, allLicenses } =
     useOutletContext<SiteContext>();
@@ -157,7 +160,7 @@ export function ActivityViewer() {
   const doenetViewerContainer = useRef<HTMLDivElement>(null);
   const scrollingContainer = useRef<HTMLDivElement>(null);
 
-  const authorMode = user?.isAuthor || data.type === "select";
+  const authorMode = user?.isAuthor;
 
   const [mode, setMode] = useState<"Edit" | "View">(
     authorMode ? "Edit" : "View",
@@ -291,7 +294,7 @@ export function ActivityViewer() {
 
   const headerHeight = "140px";
 
-  if (data.type === "singleDoc") {
+  if (type === "singleDoc") {
     if (mode === "Edit") {
       const initialWarnings = getDoenetMLDeprecationWarnings(
         data.doenetmlVersion,

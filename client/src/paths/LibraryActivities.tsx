@@ -498,7 +498,7 @@ export function LibraryActivities() {
       showPublicStatus={true}
       showActivityCategories={true}
       emptyMessage={emptyMessage}
-      content={cardContent}
+      cardContent={cardContent}
     />
   );
 
