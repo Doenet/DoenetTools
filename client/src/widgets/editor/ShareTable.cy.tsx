@@ -1,17 +1,5 @@
 import { ShareTable } from "./ShareTable";
-import { FetcherWithComponents } from "react-router";
 import { UserInfoWithEmail } from "../../types";
-
-function createMockFetcher() {
-  return {
-    state: "idle",
-    formData: undefined,
-    data: undefined,
-    Form: ({ children }: any) => <form>{children}</form>,
-    submit: cy.stub(),
-    load: () => {},
-  } as unknown as FetcherWithComponents<any>;
-}
 
 describe("ShareTable Component", () => {
   const contentId = "content-123";
@@ -36,7 +24,6 @@ describe("ShareTable Component", () => {
         parentIsPublic={false}
         sharedWith={[sharedUser]}
         parentSharedWith={[]}
-        unshareFetcher={createMockFetcher()}
       />,
     );
 
@@ -51,15 +38,7 @@ describe("ShareTable Component", () => {
   });
 
   it("submits unshare actions for public and user rows", () => {
-    const submit = cy.stub().as("submit");
-    const fetcher = {
-      state: "idle",
-      formData: undefined,
-      data: undefined,
-      Form: ({ children }: any) => <form>{children}</form>,
-      submit,
-      load: () => {},
-    } as unknown as FetcherWithComponents<any>;
+    const actionSpy = cy.spy().as("actionSpy");
 
     cy.mount(
       <ShareTable
@@ -68,37 +47,29 @@ describe("ShareTable Component", () => {
         parentIsPublic={false}
         sharedWith={[sharedUser]}
         parentSharedWith={[]}
-        unshareFetcher={fetcher}
       />,
+      {
+        action: async ({ request }) => {
+          const body = await request.json();
+          actionSpy(body);
+          return { success: true };
+        },
+      },
     );
 
     cy.get('button[aria-label="Stop sharing publicly"]').click();
-    cy.get("@submit").should(
-      "have.been.calledWith",
-      {
-        path: "share/setContentIsPublic",
-        contentId,
-        isPublic: false,
-      },
-      {
-        method: "post",
-        encType: "application/json",
-      },
-    );
+    cy.get("@actionSpy").should("have.been.calledWith", {
+      path: "share/setContentIsPublic",
+      contentId,
+      isPublic: false,
+    });
 
     cy.get('button[aria-label="Stop sharing with Ada Lovelace"]').click();
-    cy.get("@submit").should(
-      "have.been.calledWith",
-      {
-        path: "share/unshareContent",
-        contentId,
-        userId: sharedUser.userId,
-      },
-      {
-        method: "post",
-        encType: "application/json",
-      },
-    );
+    cy.get("@actionSpy").should("have.been.calledWith", {
+      path: "share/unshareContent",
+      contentId,
+      userId: sharedUser.userId,
+    });
   });
 
   it("shows inherited rows without close buttons and is accessible", () => {
@@ -109,7 +80,6 @@ describe("ShareTable Component", () => {
         parentIsPublic={true}
         sharedWith={[inheritedUser]}
         parentSharedWith={[inheritedUser]}
-        unshareFetcher={createMockFetcher()}
       />,
     );
 
