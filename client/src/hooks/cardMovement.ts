@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useFetcher } from "react-router";
 
-type CardMovement = {
+export type CardMovement = {
   canMoveUp: boolean;
   canMoveDown: boolean;
   moveUp: () => void;

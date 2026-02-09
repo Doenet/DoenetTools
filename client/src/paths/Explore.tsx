@@ -3,7 +3,6 @@ import axios from "axios";
 import {
   Box,
   Link as ChakraLink,
-  MenuItem,
   Tab,
   TabList,
   TabPanel,
@@ -43,14 +42,13 @@ import {
   PartialContentClassification,
   CategoryGroup,
 } from "../types";
-import { ContentInfoDrawer } from "../drawers/ContentInfoDrawer";
 import CardList from "../widgets/CardList";
 import { intWithCommas } from "../utils/formatting";
 import { MdFilterAlt, MdFilterAltOff } from "react-icons/md";
 import { clearQueryParameter } from "../utils/explore";
 import { FilterPanel } from "../widgets/FilterPanel";
 import { ExploreFilterDrawer } from "../drawers/ExploreFilterDrawer";
-import { contentTypeToName, menuIcons } from "../utils/activity";
+import { menuIcons } from "../utils/activity";
 import { SiteContext } from "./SiteHeader";
 import { AddContentToMenu } from "../popups/AddContentToMenu";
 import { CopyContentAndReportFinish } from "../popups/CopyContentAndReportFinish";
@@ -138,7 +136,6 @@ export async function loader({
 
     return {
       ...browseData,
-      content: browseData.recentContent,
       categories,
       allCategories,
     };
@@ -151,7 +148,7 @@ export function Explore() {
     topAuthors,
     matchedAuthors,
     authorInfo,
-    content,
+    recentContent,
     trendingContent,
     curatedContent,
     matchedClassifications,
@@ -171,7 +168,7 @@ export function Explore() {
     topAuthors: UserInfo[] | null;
     matchedAuthors: UserInfo[] | undefined;
     authorInfo: UserInfo | null;
-    content: Content[];
+    recentContent: Content[];
     trendingContent: Content[];
     curatedContent: Content[];
     matchedClassifications: PartialContentClassification[] | null | undefined;
@@ -209,15 +206,27 @@ export function Explore() {
 
   const cardSelections = useCardSelections({
     ids: [
-      ...content.map((c) => c.contentId),
+      ...recentContent.map((c) => c.contentId),
       ...trendingContent.map((c) => c.contentId),
       ...curatedContent.map((c) => c.contentId),
     ],
   });
 
-  const selectedContentDescriptions = content.filter((c) =>
-    cardSelections.ids.has(c.contentId),
-  );
+  const selectedContentDescriptions = [];
+  for (const content of [
+    ...recentContent,
+    ...trendingContent,
+    ...curatedContent,
+  ]) {
+    if (
+      cardSelections.ids.has(content.contentId) &&
+      !selectedContentDescriptions
+        .map((c) => c.contentId)
+        .includes(content.contentId)
+    ) {
+      selectedContentDescriptions.push(content);
+    }
+  }
 
   const { search } = useLocation();
   const navigate = useNavigate();
@@ -238,22 +247,6 @@ export function Explore() {
     totalCount.numCommunity,
     totalCount.numCurated,
   ]);
-
-  const [infoContentData, setInfoContentData] = useState<Content | null>(null);
-
-  const {
-    isOpen: infoIsOpen,
-    onOpen: infoOnOpen,
-    onClose: infoOnClose,
-  } = useDisclosure();
-
-  const infoDrawer = infoContentData ? (
-    <ContentInfoDrawer
-      isOpen={infoIsOpen}
-      onClose={infoOnClose}
-      contentData={infoContentData}
-    />
-  ) : null;
 
   const {
     isOpen: filterIsOpen,
@@ -317,11 +310,11 @@ export function Explore() {
 
   const contentDisplay = useMemo(
     () =>
-      displayMatchingContent(content, {
+      displayMatchingContent(recentContent, {
         base: `calc(100vh - ${q ? "250" : "210"}px)`,
         lg: `calc(100vh - ${q ? "210" : "170"}px)`,
       }),
-    [displayMatchingContent, content, q],
+    [displayMatchingContent, recentContent, q],
   );
 
   // TODO: figure out functions inside hooks
@@ -337,18 +330,6 @@ export function Explore() {
           ? `/sharedActivities/${owner.userId}/${contentId}`
           : `/activityViewer/${contentId}`;
 
-      const menuItems = (
-        <MenuItem
-          data-test={`${contentTypeToName[contentType]} Information`}
-          onClick={() => {
-            setInfoContentData(itemObj);
-            infoOnOpen();
-          }}
-        >
-          {contentTypeToName[contentType]} information
-        </MenuItem>
-      );
-
       const ownerAvatarName = createNameNoTag(owner!);
       const ownerName = createNameCheckCurateTag(owner!);
 
@@ -358,7 +339,6 @@ export function Explore() {
         ownerAvatarName,
         ownerName,
         cardLink,
-        menuItems,
       };
     });
 
@@ -929,7 +909,6 @@ export function Explore() {
 
   return (
     <>
-      {infoDrawer}
       {filterDrawer}
       {copyContentModal}
       {heading}

@@ -75,7 +75,7 @@ export function SharedActivities() {
     ids: content.map((c) => c.contentId),
   });
 
-  const selectedCardDescriptions = content.filter((c) =>
+  const selectedContentDescriptions = content.filter((c) =>
     cardSelections.ids.has(c.contentId),
   );
 
@@ -223,7 +223,7 @@ export function SharedActivities() {
             <HStack hidden={addTo !== null}>
               <AddContentToMenu
                 fetcher={fetcher}
-                sourceContent={selectedCardDescriptions}
+                sourceContent={selectedContentDescriptions}
                 size="xs"
                 colorScheme="blue"
                 label="Add selected to"
@@ -232,7 +232,7 @@ export function SharedActivities() {
                 setAddTo={setAddTo}
               />
               <CreateContentMenu
-                sourceContent={selectedCardDescriptions}
+                sourceContent={selectedContentDescriptions}
                 size="xs"
                 colorScheme="blue"
                 label="Create from selected"

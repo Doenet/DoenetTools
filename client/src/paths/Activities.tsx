@@ -12,6 +12,7 @@ import {
   IconButton,
   Input,
   HStack,
+  Show,
   Spinner,
   Icon,
 } from "@chakra-ui/react";
@@ -59,7 +60,6 @@ import {
 import { useCardSelections } from "../utils/cardSelections";
 import { useCardMovement } from "../utils/cardMovement";
 import { CreateContentMenu } from "../dropdowns/CreateContentMenu";
-import { AddContentToMenu } from "../popups/AddContentToMenu";
 
 export async function loader({ params, request }: any) {
   const url = new URL(request.url);
@@ -200,7 +200,7 @@ export function Activities() {
   const authorModeFetcher = useFetcher();
 
   // Used by AddContentToMenu component
-  const addContentFetcher = useFetcher();
+  // const addContentFetcher = useFetcher();
 
   // Used by CreateContentMenu component
   const createContentMenuCreateFetcher = useFetcher();
@@ -233,17 +233,6 @@ export function Activities() {
         />
       </Box>
     </Tooltip>
-  );
-
-  const headingText = (
-    <NameBar
-      contentName={parentName}
-      isEditable={parent !== null}
-      contentId={parentId}
-      leftIcon={titleIcon}
-      dataTest="Folder Title"
-      fontSizeMode={"folder"}
-    />
   );
 
   let contentData: Content | undefined;
@@ -415,108 +404,6 @@ export function Activities() {
     </Menu>
   );
 
-  const heading = (
-    <Flex
-      justify="flex-start"
-      align={{ base: "left", md: "center" }}
-      flexDirection={{ base: "column", md: "row" }}
-      pt="30px"
-      pb="30px"
-      gap="5px"
-    >
-      {headingText}
-      <HStack>
-        <Form>
-          <HStack gap="1px">
-            <Input
-              type="search"
-              size="sm"
-              colorScheme="blue"
-              width={{ base: "5rem", md: "10rem", lg: "200px" }}
-              ref={searchRef}
-              placeholder={parent ? `Search in folder` : `Search my activities`}
-              value={searchString}
-              name="q"
-              onInput={(e) => {
-                setSearchString((e.target as HTMLInputElement).value);
-              }}
-              data-test="Search Input"
-            />
-            <Tooltip
-              label={parent ? `Search in folder` : `Search my activities`}
-              placement="bottom-end"
-            >
-              <IconButton
-                size="sm"
-                colorScheme="blue"
-                icon={<MdOutlineSearch />}
-                aria-label={
-                  parent ? `Search in folder` : `Search my activities`
-                }
-                type="submit"
-                data-test="Search Button"
-              />
-            </Tooltip>
-          </HStack>
-        </Form>
-
-        <HStack gap="7px">
-          {createNewButton}
-          {parent && (
-            <>
-              <Button
-                size="sm"
-                colorScheme="blue"
-                onClick={shareFolderOnOpen}
-                data-test="Share Folder Button"
-              >
-                Share
-              </Button>
-              <Button
-                as={ReactRouterLink}
-                to={`/students/${parentId}`}
-                colorScheme="blue"
-                size="sm"
-              >
-                Students
-              </Button>
-            </>
-          )}
-        </HStack>
-      </HStack>
-    </Flex>
-  );
-
-  const searchResultsHeading = haveQuery ? (
-    <Flex
-      width="100%"
-      background="lightgray"
-      fontSize="large"
-      alignItems="center"
-      padding="5px"
-      paddingLeft={[".1em", "1em"]}
-      paddingRight={[".1em", "1em"]}
-    >
-      <Flex width="100%" alignItems="center" ml="2rem">
-        {/* left offset to align with card content (checkbox + icon + title padding) */}
-        Search results for: {query}
-      </Flex>
-      <Form>
-        <Tooltip label="Close search results" placement="bottom-end">
-          <IconButton
-            icon={<MdClose />}
-            background="lightgray"
-            aria-label="Close search results"
-            type="submit"
-            onClick={() => {
-              setSearchString("");
-            }}
-          />
-        </Tooltip>
-      </Form>
-    </Flex>
-  ) : null;
-
   /**
    * TODO: This is a hack to place arbitrary buttons into the action bar.
    * Move this logic to `actions` once `<AddContentToMenu>` and `<CreateContentMenu>`
@@ -524,7 +411,7 @@ export function Activities() {
    */
   const FIX_ME_miscellaneous_buttons = addTo ? null : (
     <>
-      <AddContentToMenu
+      {/* <AddContentToMenu
         fetcher={addContentFetcher}
         sourceContent={selectedContentDescriptions}
         size="xs"
@@ -533,25 +420,27 @@ export function Activities() {
         user={user ?? null}
         onNavigate={(url) => navigate(url)}
         setAddTo={setAddTo}
-      />
-      <CreateContentMenu
-        sourceContent={selectedContentDescriptions}
-        size="xs"
-        colorScheme="blue"
-        label="Create from selected"
-        user={user ?? null}
-        navigate={navigate}
-        createFetcher={createContentMenuCreateFetcher}
-        saveNameFetcher={createContentMenuSaveNameFetcher}
-      />
+      /> */}
+      <Show above="md">
+        <CreateContentMenu
+          sourceContent={selectedContentDescriptions}
+          size="xs"
+          label="Create from selected"
+          user={user ?? null}
+          navigate={navigate}
+          createFetcher={createContentMenuCreateFetcher}
+          saveNameFetcher={createContentMenuSaveNameFetcher}
+        />
+      </Show>
     </>
   );
 
+  let activeActionBar: "none" | "normal" | "add to" = "none";
   let actionBarContext: ActionBarContext;
-  let actionBarIsActive: boolean;
   let actions: ActionBarActions[];
 
   if (addTo) {
+    activeActionBar = "add to";
     actionBarContext = {
       description: `Adding ${cardSelections.count} item${cardSelections.count === 1 ? "" : "s"} to ${addTo.name}`,
       isLongDescription: true,
@@ -561,7 +450,6 @@ export function Activities() {
         setAddTo(null);
       },
     };
-    actionBarIsActive = true;
     actions = [
       {
         label: "Add",
@@ -570,6 +458,7 @@ export function Activities() {
       },
     ];
   } else {
+    activeActionBar = cardSelections.areActive ? "normal" : "none";
     actionBarContext = {
       description: `${cardSelections.count} item${
         cardSelections.count === 1 ? "" : "s"
@@ -578,7 +467,6 @@ export function Activities() {
       onClose: cardSelections.clear,
       FIX_ME_miscellaneous_buttons,
     };
-    actionBarIsActive = cardSelections.areActive;
     actions = [
       {
         label: "Move up",
@@ -647,13 +535,125 @@ export function Activities() {
     ];
   }
 
-  const actionBar = (
+  const normalActionBar = (
     <ActionBar
       context={actionBarContext}
       actions={actions}
-      isActive={actionBarIsActive}
+      isActive={activeActionBar === "normal"}
     />
   );
+
+  const addToActionBar = (
+    <ActionBar
+      context={actionBarContext}
+      actions={actions}
+      isActive={activeActionBar === "add to"}
+    />
+  );
+
+  const headingNoSelection = (
+    <>
+      <NameBar
+        contentName={parentName}
+        isEditable={parent !== null}
+        contentId={parentId}
+        leftIcon={titleIcon}
+        dataTest="Folder Title"
+        fontSizeMode={"folder"}
+      />
+      <HStack>
+        <Form>
+          <HStack gap="1px">
+            <Input
+              type="search"
+              size="sm"
+              colorScheme="blue"
+              width={{ base: "5rem", md: "10rem", lg: "200px" }}
+              ref={searchRef}
+              placeholder={parent ? `Search in folder` : `Search my activities`}
+              value={searchString}
+              name="q"
+              onInput={(e) => {
+                setSearchString((e.target as HTMLInputElement).value);
+              }}
+              data-test="Search Input"
+            />
+            <Tooltip
+              label={parent ? `Search in folder` : `Search my activities`}
+              placement="bottom-end"
+            >
+              <IconButton
+                size="sm"
+                colorScheme="blue"
+                icon={<MdOutlineSearch />}
+                aria-label={
+                  parent ? `Search in folder` : `Search my activities`
+                }
+                type="submit"
+                data-test="Search Button"
+              />
+            </Tooltip>
+          </HStack>
+        </Form>
+
+        <HStack gap="7px">
+          {createNewButton}
+          {parent && (
+            <>
+              <Button
+                size="sm"
+                colorScheme="blue"
+                onClick={shareFolderOnOpen}
+                data-test="Share Folder Button"
+              >
+                Share
+              </Button>
+              <Button
+                as={ReactRouterLink}
+                to={`/students/${parentId}`}
+                colorScheme="blue"
+                size="sm"
+              >
+                Students
+              </Button>
+            </>
+          )}
+        </HStack>
+      </HStack>
+    </>
+  );
+
+  const HEADING_HEIGHT = "2.5rem";
+
+  const searchResultsHeading = haveQuery ? (
+    <Flex
+      width="100%"
+      background="lightgray"
+      fontSize="large"
+      alignItems="center"
+      padding="5px"
+      paddingLeft={[".1em", "1em"]}
+      paddingRight={[".1em", "1em"]}
+    >
+      <Flex width="100%" alignItems="center" ml="2rem">
+        {/* left offset to align with card content (checkbox + icon + title padding) */}
+        Search results for: {query}
+      </Flex>
+      <Form>
+        <Tooltip label="Close search results" placement="bottom-end">
+          <IconButton
+            icon={<MdClose />}
+            background="lightgray"
+            aria-label="Close search results"
+            type="submit"
+            onClick={() => {
+              setSearchString("");
+            }}
+          />
+        </Tooltip>
+      </Form>
+    </Flex>
+  ) : null;
 
   const emptyMessage = haveQuery
     ? "No Results Found"
@@ -698,25 +698,48 @@ export function Activities() {
   );
 
   return (
-    <Box
+    <Flex
       data-test="Activities"
-      width={{ base: "100%", md: "calc(100% - 40px)" }}
       background={"white"}
-      ml={{ base: "0px", md: "20px" }}
-      mr={{ base: "0px", md: "20px" }}
+      align="flex-start"
+      overflowY="hidden"
+      height="100%"
+      width="100%"
+      flexDir="column"
     >
-      {moveCopyContentModal}
-      {createFolderModal}
-      {deleteModal}
-      {copyContentModal}
-      {authorModeModal}
-      {shareFolderModal}
+      <Flex
+        height={{ base: `calc(3 * ${HEADING_HEIGHT})`, md: HEADING_HEIGHT }}
+        justify="flex-start"
+        align={{ base: "left", md: "center" }}
+        flexDirection={{ base: "column", md: "row" }}
+        px={{ base: "10px", md: "20px" }}
+        py="30px"
+        gap="5px"
+      >
+        {activeActionBar === "normal" ? normalActionBar : headingNoSelection}
+      </Flex>
 
-      {heading}
-      {searchResultsHeading}
-      {actionBar}
+      <Box
+        width="100%"
+        height={{
+          base: `calc(100% - 3 * ${HEADING_HEIGHT})`,
+          md: `calc(100% - ${HEADING_HEIGHT})`,
+        }}
+        overflowY="auto"
+        px={{ base: "10px", md: "20px" }}
+      >
+        {moveCopyContentModal}
+        {createFolderModal}
+        {deleteModal}
+        {copyContentModal}
+        {authorModeModal}
+        {shareFolderModal}
 
-      {mainPanel}
-    </Box>
+        {searchResultsHeading}
+        {addToActionBar}
+
+        {mainPanel}
+      </Box>
+    </Flex>
   );
 }

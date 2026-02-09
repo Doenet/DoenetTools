@@ -91,7 +91,6 @@ export function ActionBar({
                 icon={iconElement}
                 isDisabled={action.isDisabled}
                 size="xs"
-                variant="ghost"
                 onClick={action.onClick}
               />
             </Tooltip>
@@ -101,7 +100,6 @@ export function ActionBar({
               data-test={action.label}
               isDisabled={action.isDisabled}
               size="xs"
-              variant="ghost"
               leftIcon={iconElement}
               onClick={action.onClick}
             >

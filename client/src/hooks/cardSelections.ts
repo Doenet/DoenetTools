@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-type CardSelections = {
+export type CardSelections = {
   ids: Set<string>;
   areActive: boolean;
   count: number;
