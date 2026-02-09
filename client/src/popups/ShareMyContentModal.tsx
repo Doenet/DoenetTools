@@ -27,12 +27,12 @@ import { ContentType, UserInfoWithEmail } from "../types";
 import { Link as ReactRouterLink, useFetcher } from "react-router";
 import { SpinnerWhileFetching } from "../utils/optimistic_ui";
 import { ShareTable } from "../widgets/editor/ShareTable";
+import axios from "axios";
 import { IoMdLink, IoMdCheckmark } from "react-icons/io";
 
 import { loader as settingsLoader } from "../paths/editor/EditorSettingsMode";
 import { editorUrl } from "../utils/url";
 import { isActivityFullyCategorized } from "../utils/classification";
-import axios from "axios";
 
 export async function loadShareStatus({ params }: { params: any }) {
   const { data } = await axios.get(
@@ -139,7 +139,6 @@ function ShareWithPeople({
   const [inputHasChanged, setInputHasChanged] = useState(false);
   const [addEmailError, setAddEmailError] = useState<string | null>(null);
 
-  // Handle fetcher response for email errors
   useEffect(() => {
     // TODO: This is hack to display a more understandable error message
     // when the user inputs a value that is not in an email format.
