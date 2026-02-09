@@ -10,7 +10,7 @@ import { DateTime } from "luxon";
 import { Content } from "../types";
 import { LuTrash2 } from "react-icons/lu";
 import { NameBar } from "../widgets/NameBar";
-import { useCardSelections } from "../utils/cardSelections";
+import { useCardSelections } from "../hooks/cardSelections";
 import { ActionBar } from "../widgets/ActionBar";
 
 export async function loader() {

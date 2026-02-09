@@ -27,15 +27,9 @@ import {
   useNavigate,
 } from "react-router";
 import axios from "axios";
-import { FaArrowUp, FaArrowDown } from "react-icons/fa6";
-import {
-  MdClose,
-  MdOutlineSearch,
-  MdDriveFileMoveOutline,
-} from "react-icons/md";
+import { MdClose, MdOutlineSearch } from "react-icons/md";
 import { FaPlus } from "react-icons/fa";
 import { LuDessert } from "react-icons/lu";
-import { FiTrash2 } from "react-icons/fi";
 
 import { CardContent } from "../widgets/Card";
 import CardList from "../widgets/CardList";
@@ -57,9 +51,13 @@ import {
   Action as ActionBarActions,
   Context as ActionBarContext,
 } from "../widgets/ActionBar";
-import { useCardSelections } from "../utils/cardSelections";
-import { useCardMovement } from "../utils/cardMovement";
+import { useCardSelections } from "../hooks/cardSelections";
+import { useCardMovement } from "../hooks/cardMovement";
 import { CreateContentMenu } from "../dropdowns/CreateContentMenu";
+import {
+  configAddFromContentList,
+  configOrganizeContentList,
+} from "../utils/actionBarConfig";
 
 export async function loader({ params, request }: any) {
   const url = new URL(request.url);
@@ -440,99 +438,59 @@ export function Activities() {
   let actions: ActionBarActions[];
 
   if (addTo) {
+    const config = configAddFromContentList({
+      cardSelections,
+      addTo,
+      setAddTo,
+      onAdd: copyDialogOnOpen,
+    });
+
     activeActionBar = "add to";
-    actionBarContext = {
-      description: `Adding ${cardSelections.count} item${cardSelections.count === 1 ? "" : "s"} to ${addTo.name}`,
-      isLongDescription: true,
-      closeLabel: "Stop adding items",
-      onClose: () => {
-        cardSelections.clear();
-        setAddTo(null);
-      },
-    };
-    actions = [
-      {
-        label: "Add",
-        onClick: copyDialogOnOpen,
-        isDisabled: cardSelections.count === 0 || haveQuery,
-      },
-    ];
+    actionBarContext = config.context;
+    actions = config.actions;
   } else {
-    activeActionBar = cardSelections.areActive ? "normal" : "none";
-    actionBarContext = {
-      description: `${cardSelections.count} item${
-        cardSelections.count === 1 ? "" : "s"
-      } selected`,
-      closeLabel: "Deselect all",
-      onClose: cardSelections.clear,
+    const config = configOrganizeContentList({
+      cardSelections,
+      cardMovement,
+      forceDisableMoveUpAndDown: haveQuery,
       FIX_ME_miscellaneous_buttons,
-    };
-    actions = [
-      {
-        label: "Move up",
-        onClick: cardMovement.moveUp,
-        isDisabled: !cardMovement.canMoveUp || haveQuery,
-        icon: FaArrowUp,
-        useIconOnly: true,
+      onMoveTo: () => {
+        const selectedContent = content.find(
+          (c) => c.contentId === cardSelections.ids.values().next().value,
+        );
+        if (selectedContent) {
+          setMoveCopyData({
+            contentId: selectedContent.contentId,
+            name: selectedContent.name,
+            type: selectedContent.type,
+            isPublic: selectedContent.isPublic,
+            isShared: selectedContent.isShared,
+            sharedWith: selectedContent.sharedWith,
+            licenseCode: selectedContent.licenseCode ?? null,
+          });
+          moveCopyContentOnOpen();
+        }
       },
-      {
-        label: "Move down",
-        onClick: cardMovement.moveDown,
-        isDisabled: !cardMovement.canMoveDown || haveQuery,
-        icon: FaArrowDown,
-        useIconOnly: true,
+      onCopy: () => {
+        contentActionsFetcher.submit(
+          {
+            path: "copyMove/copyContent",
+            contentIds: [...cardSelections.ids],
+            parentId,
+            prependCopy: true,
+          },
+          { method: "post", encType: "application/json" },
+        );
       },
-      {
-        label: "Move to",
-        onClick: () => {
-          const selectedContent = content.find(
-            (c) => c.contentId === cardSelections.ids.values().next().value,
-          );
-          if (selectedContent) {
-            setMoveCopyData({
-              contentId: selectedContent.contentId,
-              name: selectedContent.name,
-              type: selectedContent.type,
-              isPublic: selectedContent.isPublic,
-              isShared: selectedContent.isShared,
-              sharedWith: selectedContent.sharedWith,
-              licenseCode: selectedContent.licenseCode ?? null,
-            });
-            moveCopyContentOnOpen();
-          }
-        },
-        isDisabled: cardSelections.count !== 1 || haveQuery,
-        icon: MdDriveFileMoveOutline,
-        useIconOnly: true,
+      onDelete: () => {
+        setSettingsContentId(cardSelections.ids.values().next().value ?? null);
+        deleteContentOnOpen();
       },
-      {
-        label: "Move to trash",
-        onClick: () => {
-          setSettingsContentId(
-            cardSelections.ids.values().next().value ?? null,
-          );
-          deleteContentOnOpen();
-        },
-        isDisabled: cardSelections.count !== 1 || haveQuery,
-        icon: FiTrash2,
-        useIconOnly: true,
-      },
-      {
-        label: "Make a copy",
-        onClick: () => {
-          contentActionsFetcher.submit(
-            {
-              path: "copyMove/copyContent",
-              contentIds: [...cardSelections.ids],
-              parentId,
-              prependCopy: true,
-            },
-            { method: "post", encType: "application/json" },
-          );
-        },
-        isDisabled: cardSelections.count === 0 || haveQuery,
-      },
-    ];
+    });
+
+    activeActionBar = cardSelections.areActive ? "normal" : "none";
+    actionBarContext = config.context;
+    actions = config.actions;
   }
 
   const normalActionBar = (

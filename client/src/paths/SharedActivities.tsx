@@ -32,7 +32,7 @@ import { SiteContext } from "./SiteHeader";
 import { AddContentToMenu } from "../popups/AddContentToMenu";
 import { CreateContentMenu } from "../dropdowns/CreateContentMenu";
 import { CopyContentAndReportFinish } from "../popups/CopyContentAndReportFinish";
-import { useCardSelections } from "../utils/cardSelections";
+import { useCardSelections } from "../hooks/cardSelections";
 
 export async function loader({ params }: { params: any }) {
   const { data } = await axios.get(
