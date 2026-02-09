@@ -59,7 +59,6 @@ import { formatAssignmentBlurb } from "../utils/assignment";
 import { editorUrl } from "../utils/url";
 import { ShareMyContentModal } from "../popups/ShareMyContentModal";
 import { NameBar } from "../widgets/NameBar";
-import { useLoadShareData } from "../hooks/useLoadShareData";
 
 export async function loader({ params, request }: any) {
   const url = new URL(request.url);
@@ -222,24 +221,6 @@ export function Activities() {
 
   // Used by DeleteContent modal
   const deleteContentFetcher = useFetcher();
-
-  // Fetchers for share modal
-  const shareSettingsFetcher = useFetcher<any>();
-  const addEmailFetcher = useFetcher();
-  const publicShareFetcher = useFetcher();
-  const unshareFetcher = useFetcher();
-
-  const {
-    shareStatusData,
-    isLoadingShareStatus,
-    isLoadingSettings,
-    settingsData,
-  } = useLoadShareData(
-    shareFolderIsOpen,
-    parent?.contentId,
-    parent?.type ?? "folder",
-    shareSettingsFetcher,
-  );
 
   function getCardMenuList({
     contentId,
@@ -506,13 +487,6 @@ export function Activities() {
       contentType={parent.type}
       isOpen={shareFolderIsOpen}
       onClose={shareFolderOnClose}
-      shareStatusData={shareStatusData}
-      settingsData={settingsData}
-      isLoadingShareStatus={isLoadingShareStatus}
-      isLoadingSettings={isLoadingSettings}
-      addEmailFetcher={addEmailFetcher}
-      publicShareFetcher={publicShareFetcher}
-      unshareFetcher={unshareFetcher}
     />
   );
 

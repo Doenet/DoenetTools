@@ -122,6 +122,7 @@ import {
 import { editorUrl } from "./utils/url";
 import { ScratchPad, loader as scratchPadLoader } from "./paths/ScratchPad";
 import { About } from "./paths/About";
+import { loadShareStatus } from "./popups/ShareMyContentModal";
 
 const router = createBrowserRouter([
   {
@@ -385,6 +386,10 @@ const router = createBrowserRouter([
         action: changeNameAction,
         errorElement: <ErrorPage />,
         element: <ChangeName />,
+      },
+      {
+        path: "loadShareStatus/:contentId",
+        loader: loadShareStatus,
       },
       {
         path: "scratchPad",

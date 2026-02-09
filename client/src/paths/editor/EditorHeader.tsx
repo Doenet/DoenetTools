@@ -59,7 +59,6 @@ import { editorUrl } from "../../utils/url";
 import { NameBar } from "../../widgets/NameBar";
 import { loader as settingsLoader } from "./EditorSettingsMode";
 import { isActivityFullyCategorized } from "../../utils/classification";
-import { useLoadShareData } from "../../hooks/useLoadShareData";
 
 export async function loader({
   params,
@@ -240,24 +239,6 @@ export function EditorHeader() {
     onOpen: shareContentOnOpen,
     onClose: shareContentOnClose,
   } = useDisclosure();
-
-  // Fetchers for share modal
-  const shareSettingsFetcher = useFetcher<typeof settingsLoader>();
-  const addEmailFetcher = useFetcher();
-  const publicShareFetcher = useFetcher();
-  const unshareFetcher = useFetcher();
-
-  const {
-    shareStatusData,
-    isLoadingShareStatus,
-    isLoadingSettings,
-    settingsData,
-  } = useLoadShareData(
-    shareContentIsOpen,
-    contentId,
-    contentType,
-    shareSettingsFetcher,
-  );
 
   // Fetchers for library editor controls
   const libraryEditorLoadFetcher = useFetcher<LibraryEditorData>({
@@ -620,13 +601,6 @@ export function EditorHeader() {
         contentType={contentType}
         isOpen={shareContentIsOpen}
         onClose={shareContentOnClose}
-        shareStatusData={shareStatusData}
-        settingsData={settingsData}
-        isLoadingShareStatus={isLoadingShareStatus}
-        isLoadingSettings={isLoadingSettings}
-        addEmailFetcher={addEmailFetcher}
-        publicShareFetcher={publicShareFetcher}
-        unshareFetcher={unshareFetcher}
       />
 
       <Box
