@@ -67,6 +67,8 @@ import {
   menuIcons,
 } from "../utils/activity";
 import { ActivitySource, isActivitySource } from "@doenet-tools/shared";
+import { DoenetEditor, DoenetViewer } from "@doenet/doenetml-iframe";
+import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";
 import { processRemixes } from "../utils/processRemixes";
 import ContributorsMenu from "../dropdowns/ContributorsMenu";
 import { ContentInfoDrawer } from "../drawers/ContentInfoDrawer";
@@ -78,9 +80,7 @@ import { CopyContentAndReportFinish } from "../popups/CopyContentAndReportFinish
 import { CloseIcon } from "@chakra-ui/icons";
 import { BsBookmarkCheck } from "react-icons/bs";
 import { ImCheckmark } from "react-icons/im";
-import { DoenetEditor, DoenetViewer } from "@doenet/doenetml-iframe";
 import { BlueBanner } from "../widgets/BlueBanner";
-import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";
 
 export async function loader({ params }: { params: any }) {
   const {

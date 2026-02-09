@@ -87,7 +87,7 @@ export function NameBar({
       submitValue = "Untitled";
     }
 
-    fetcher.submit(
+    fetcher?.submit(
       {
         path: "updateContent/updateContentSettings",
         contentId,
