@@ -68,7 +68,7 @@ model content {
   assignmentClosedOn     DateTime?
   mode                   AssignmentMode           @default(formative)
   maxAttempts            Int                      @default(1) @db.UnsignedSmallInt
-  individualizeByStudent Boolean                  @default(false)
+  individualizeByStudent Boolean                  @default(true)
   submittedResponses     submittedResponses[]
   contentStates          contentState[]
   assignmentScores       assignmentScores[]

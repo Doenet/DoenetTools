@@ -19,7 +19,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { useFetcher } from "react-router";
+import { FetcherWithComponents } from "react-router";
 import { ContentRevision } from "../types";
 import { DateTime } from "luxon";
 import { MdError } from "react-icons/md";
@@ -31,6 +31,7 @@ export function SetDocumentToSavePoint({
   contentId,
   finalFocusRef,
   setRevNum,
+  fetcher,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -38,14 +39,13 @@ export function SetDocumentToSavePoint({
   contentId: string;
   finalFocusRef?: RefObject<HTMLElement | null>;
   setRevNum: Dispatch<SetStateAction<number>>;
+  fetcher: FetcherWithComponents<any>;
 }) {
   const [updated, setUpdated] = useState(false);
   const [encounteredError, setEncounteredError] = useState(false);
   const [statusStyleIdx, setStatusStyleIdx] = useState(0);
 
   const [newRevNum, setNewRevNum] = useState<number | null>(null);
-
-  const fetcher = useFetcher();
 
   useEffect(() => {
     if (fetcher.data) {
@@ -76,13 +76,13 @@ export function SetDocumentToSavePoint({
     <>
       <Text>Use the following save point?</Text>
       <List>
-        <ListItem marginTop="10px">
+        <ListItem marginTop="10px" data-test="Revision Name">
           <label>Save point name:</label> {revision.revisionName}
         </ListItem>
-        <ListItem marginTop="5px">
+        <ListItem marginTop="5px" data-test="Revision Note">
           <label>Note:</label> {revision.note}
         </ListItem>
-        <ListItem marginTop="5px">
+        <ListItem marginTop="5px" data-test="Revision Created">
           <label>Created:</label>{" "}
           {DateTime.fromISO(revision.createdAt).toLocaleString(
             DateTime.DATETIME_MED,

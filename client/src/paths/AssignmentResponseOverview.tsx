@@ -46,7 +46,6 @@ import {
   DoenetmlVersion,
   UserInfoWithEmail,
 } from "../types";
-// @ts-expect-error assignment-viewer doesn't publish types, see https://github.com/Doenet/assignment-viewer/issues/20
 import { isActivitySource } from "@doenet/assignment-viewer";
 import {
   compileActivityFromContent,
@@ -225,6 +224,8 @@ export function AssignmentData() {
       }
   );
 
+  const nameBarFetcher = useFetcher();
+
   const {
     contentId,
     assignment,
@@ -259,6 +260,11 @@ export function AssignmentData() {
     onOpen: inviteOnOpen,
     onClose: inviteOnClose,
   } = useDisclosure();
+
+  // Create fetchers for EditAssignmentSettings sub-components
+  const maxAttemptsFetcher = useFetcher();
+  const variantFetcher = useFetcher();
+  const modeFetcher = useFetcher();
 
   useEffect(() => {
     document.title = `${assignment.name} - Doenet`;
@@ -668,6 +674,7 @@ export function AssignmentData() {
               contentId={assignment.contentId}
               leftIcon={typeIcon}
               dataTest="Assignment Name Editable"
+              fetcher={nameBarFetcher}
             />
           </Flex>
         </GridItem>
@@ -687,6 +694,9 @@ export function AssignmentData() {
             mode={assignment.assignmentInfo!.mode}
             includeMode={assignment.type !== "singleDoc"}
             isAssigned={true}
+            maxAttemptsFetcher={maxAttemptsFetcher}
+            variantFetcher={variantFetcher}
+            modeFetcher={modeFetcher}
           />
 
           <ChakraHeading size="sm">Availability</ChakraHeading>

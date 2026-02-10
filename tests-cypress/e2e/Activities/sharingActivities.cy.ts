@@ -1,5 +1,7 @@
+import { toMathJaxString } from "@doenet-tools/shared";
+
 describe("Share Activities Tests", function () {
-  it("create, share, and copy public activity", () => {
+  it("create, share, and copy public activity", { tags: ["@brittle"] }, () => {
     const code = Date.now().toString();
     const scrappyEmail = `scrappy${code}@doo`;
     const scoobyEmail = `scooby${code}@doo`;
@@ -22,17 +24,23 @@ describe("Share Activities Tests", function () {
     );
 
     // Edit content - wait for editor to be ready before typing
-    cy.iframe().find(".cm-activeLine", { timeout: 10000 });
-    cy.iframe().find(".cm-activeLine").type("Hello there!");
-    cy.wait(500); // Wait for text to be set
-    cy.iframe().find(".cm-editor").click(); // Click to ensure focus
-    cy.wait(300);
-    cy.iframe().find(".cm-activeLine").type("{enter}");
-    cy.wait(300);
-    cy.iframe().find(".cm-activeLine").type("{ctrl+S}");
+    cy.getIframeBody("iframe", ".cm-activeLine").within(() => {
+      cy.get(".cm-activeLine").type("Hello there! <m>x</m>");
+      cy.wait(500); // Wait for text to be set
+      cy.get(".cm-editor").click(); // Click to ensure focus
+      cy.wait(300);
+      cy.get(".cm-activeLine").type("{enter}");
+      cy.wait(300);
+      cy.get(".cm-activeLine").type("{ctrl+S}");
+    });
 
     // Verify viewer shows content
-    cy.iframe().find(".doenet-viewer").should("contain.text", `Hello there!`);
+    cy.getIframeBody("iframe", ".doenet-viewer").within(() => {
+      cy.get(".doenet-viewer").should(
+        "contain.text",
+        `Hello there! ${toMathJaxString("x")}`,
+      );
+    });
 
     cy.get('[data-test="Share Button"]').click();
     cy.get('[data-test="Public Status"]').should(
@@ -67,18 +75,28 @@ describe("Share Activities Tests", function () {
       .find('[data-test="Content Card"]')
       .click();
 
+    // Verify viewer shows content (and wait for MathJax to load)
+    cy.getIframeBody("iframe", ".doenet-viewer").within(() => {
+      cy.get(".doenet-viewer").should(
+        "contain.text",
+        `Hello there! ${toMathJaxString("x")}`,
+      );
+    });
+
     cy.get('[data-test="Add To"]').click();
     cy.get('[data-test="Add To My Activities"]').click();
 
-    // Wait for MathJax to finish typesetting before navigating
-    cy.wait(500);
     cy.get('[data-test="Go to Destination"]').click();
 
     // Click the first content card - use eq() on a fresh query
     cy.get(`[data-test="Content Card"]`).eq(0).click();
 
-    cy.wait(100);
-    cy.iframe().find(".doenet-viewer").should("contain.text", `Hello there!`);
+    cy.getIframeBody("iframe", ".doenet-viewer").within(() => {
+      cy.get(".doenet-viewer").should(
+        "contain.text",
+        `Hello there! ${toMathJaxString("x")}`,
+      );
+    });
   });
 
   it("Share activity with particular person", () => {
@@ -132,9 +150,12 @@ describe("Share Activities Tests", function () {
         .should("contain.text", `Shared Activity`)
         .click();
 
-      cy.iframe()
-        .find(".doenet-viewer")
-        .should("contain.text", `This is a shared activity.`);
+      cy.getIframeBody("iframe", ".doenet-viewer").within(() => {
+        cy.get(".doenet-viewer").should(
+          "contain.text",
+          "This is a shared activity.",
+        );
+      });
 
       // Other user cannot see shared activity
       cy.loginAsTestUser();

@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { redirect, useLoaderData, useOutletContext } from "react-router";
+import {
+  redirect,
+  useLoaderData,
+  useOutletContext,
+  useNavigate,
+  useFetcher,
+} from "react-router";
 import { DoenetmlVersion } from "../types";
 import { DoenetEditor } from "@doenet/doenetml-iframe";
 import axios from "axios";
@@ -92,7 +98,9 @@ export function ScratchPad() {
   const [initialSource, setInitialSource] = useState(source);
   const [resetNum, setResetNum] = useState(0);
 
-  const { user } = useOutletContext<SiteContext>();
+  const navigate = useNavigate();
+  const fetcher = useFetcher();
+  const { user, setAddTo } = useOutletContext<SiteContext>();
 
   const {
     isOpen: saveDialogIsOpen,
@@ -106,6 +114,10 @@ export function ScratchPad() {
       onClose={saveDialogOnClose}
       DoenetML={initialSource}
       documentName={"Scratch Pad Document"}
+      navigate={navigate}
+      user={user}
+      setAddTo={setAddTo}
+      fetcher={fetcher}
     />
   );
 

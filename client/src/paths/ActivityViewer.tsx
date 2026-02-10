@@ -78,7 +78,6 @@ import { BsBookmarkCheck } from "react-icons/bs";
 import { ImCheckmark } from "react-icons/im";
 import { DoenetEditor, DoenetViewer } from "@doenet/doenetml-iframe";
 import { BlueBanner } from "../widgets/BlueBanner";
-// @ts-expect-error assignment-viewer doesn't publish types, see https://github.com/Doenet/assignment-viewer/issues/20
 import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";
 
 export async function loader({ params }: { params: any }) {
@@ -168,6 +167,9 @@ export function ActivityViewer() {
   }, [authorMode]);
 
   const fetcher = useFetcher();
+  const createContentMenuCreateFetcher = useFetcher();
+  const createContentMenuSaveNameFetcher = useFetcher();
+  const deleteContentFetcher = useFetcher();
 
   useEffect(() => {
     document.title = `${activityData.name} - Doenet`;
@@ -237,6 +239,10 @@ export function ActivityViewer() {
         contentIds={[activityData.contentId]}
         desiredParent={addTo}
         action="Add"
+        setAddTo={setAddTo}
+        user={user ?? null}
+        fetcher={fetcher}
+        onNavigate={navigate}
       />
     ) : null;
 
@@ -335,6 +341,9 @@ export function ActivityViewer() {
           activity={activityData}
           asViewer={true}
           fetcher={fetcher}
+          createContentMenuCreateFetcher={createContentMenuCreateFetcher}
+          createContentMenuSaveNameFetcher={createContentMenuSaveNameFetcher}
+          deleteContentFetcher={deleteContentFetcher}
         />
       );
     } else {
@@ -344,7 +353,6 @@ export function ActivityViewer() {
             source={data.activityJson}
             requestedVariantIndex={1}
             userId={"hi"}
-            linkSettings={{ viewUrl: "", editURL: "" }}
             paginate={
               activityData.type === "sequence" ? activityData.paginate : false
             }
@@ -452,6 +460,9 @@ export function ActivityViewer() {
         suggestToBeCuratedOption={
           activityData.type === "singleDoc" && !libraryRelations.activity
         }
+        user={user ?? null}
+        onNavigate={(url) => navigate(url)}
+        setAddTo={setAddTo}
       />
     );
   }

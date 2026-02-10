@@ -1,4 +1,5 @@
 import { RefObject, useEffect, useState } from "react";
+import { FetcherWithComponents } from "react-router";
 import {
   Modal,
   ModalOverlay,
@@ -12,8 +13,15 @@ import {
   Text,
   Spinner,
 } from "@chakra-ui/react";
-import { useFetcher, useNavigate, useOutletContext } from "react-router";
-import { SiteContext } from "../paths/SiteHeader";
+import { UserInfoWithEmail, ContentDescription } from "../types";
+
+type CreateContentResponse = {
+  status: number;
+  data?: {
+    contentId: string;
+  };
+  message?: string;
+};
 
 /**
  * A modal that immediately upon opening saves the DoenetML into an new document in Activities
@@ -26,27 +34,29 @@ export function SaveDoenetmlAndReportFinish({
   finalFocusRef,
   DoenetML,
   documentName,
+  navigate,
+  user,
+  setAddTo,
+  fetcher,
 }: {
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement | null>;
   DoenetML: string;
   documentName: string;
+  navigate: (path: string) => void;
+  user: UserInfoWithEmail | undefined;
+  setAddTo: (value: ContentDescription | null) => void;
+  fetcher: FetcherWithComponents<CreateContentResponse>;
 }) {
   const [newContentId, setNewContentId] = useState<string | null>(null);
 
-  const navigate = useNavigate();
-
   const [errMsg, setErrMsg] = useState("");
-
-  const fetcher = useFetcher();
-
-  const { user, setAddTo } = useOutletContext<SiteContext>();
 
   useEffect(() => {
     if (fetcher.data) {
       if (fetcher.data.status === 200) {
-        setNewContentId(fetcher.data.data.contentId);
+        setNewContentId(fetcher.data.data!.contentId);
       } else {
         const message = fetcher.data.message;
         setErrMsg(
@@ -60,7 +70,7 @@ export function SaveDoenetmlAndReportFinish({
 
   useEffect(() => {
     if (isOpen) {
-      if (newContentId === null) {
+      if (newContentId === null && documentName.trim() !== "") {
         document.body.style.cursor = "wait";
 
         fetcher.submit(
@@ -73,6 +83,8 @@ export function SaveDoenetmlAndReportFinish({
           },
           { method: "post", encType: "application/json" },
         );
+      } else if (documentName.trim() === "") {
+        setErrMsg("Document name cannot be empty.");
       }
     } else {
       setNewContentId(null);
