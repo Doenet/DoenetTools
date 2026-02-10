@@ -1837,11 +1837,6 @@ export async function getSharedContentMatchCount({
 /**
  * Calculates content match counts for each available category when added to the current filter set.
  *
- * This function iterates through all available categories and, for each category, temporarily adds it
- * to the existing filter set to count how many content items would match. This is used to populate
- * category filter UI elements with counts showing users how many results they would get if they
- * selected each additional category.
- *
  * The function respects the current filter context (classifications, existing categories, owner, etc.)
  * and only counts content that is either public or shared with the logged-in user.
  *
@@ -1861,14 +1856,14 @@ export async function getSharedContentMatchCount({
  *
  * @example
  * // Get counts for each category when filtering by math classification
- * const counts = await getSharedContentMatchCountPerAvailableCategory({
+ * const counts = await countMatchingContentByCategory({
  *   loggedInUserId,
  *   classificationId: 42,
  *   categories: new Set(['difficulty-beginner'])
  * });
  * // Returns: { 'isInteractive': { numCommunity: 15, numCurated: 3 }, 'containsVideo': { numCommunity: 8, numCurated: 1 }, ... }
  */
-export async function getSharedContentMatchCountPerAvailableCategory({
+export async function countMatchingContentByCategory({
   query,
   loggedInUserId,
   systemId,
@@ -1895,6 +1890,11 @@ export async function getSharedContentMatchCountPerAvailableCategory({
   > = {};
 
   const { allCategories } = await getAllCategories();
+
+  // Note: these queries iterate through all categories and, for each category, temporarily adds it
+  // to the existing filter set to count how many content items would match. This is used to populate
+  // category filter UI elements with counts showing users how many results they would get if they
+  // selected each additional category.
 
   if (query) {
     const query_as_prefixes = sanitizeQuery(query);
@@ -2208,7 +2208,7 @@ export async function searchExplore({
     ownerId,
   });
 
-  const countByCategoryPromise = getSharedContentMatchCountPerAvailableCategory(
+  const countByCategoryPromise = countMatchingContentByCategory(
     {
       query,
       loggedInUserId,
@@ -2433,7 +2433,7 @@ export async function browseExplore({
     ownerId,
   });
 
-  const countByCategoryPromise = getSharedContentMatchCountPerAvailableCategory(
+  const countByCategoryPromise = countMatchingContentByCategory(
     {
       loggedInUserId,
       systemId,

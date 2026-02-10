@@ -3,6 +3,8 @@ import {
   createTestClassifications,
   createTestCategory,
   createTestUser,
+  setupTestContent,
+  doc,
 } from "./utils";
 import { fromUUID, isEqualUUID } from "../utils/uuid";
 import {
@@ -27,7 +29,7 @@ import {
   browseSharedContent,
   browseTrendingContent,
   browseUsersWithSharedContent,
-  getSharedContentMatchCountPerAvailableCategory,
+  countMatchingContentByCategory,
   searchSharedContent,
   searchUsersWithSharedContent,
 } from "../query/explore";
@@ -7908,29 +7910,20 @@ test("Explore APIs do not provide email", async () => {
   expect(userResults[0]).not.toHaveProperty("email");
 });
 
-describe("getSharedContentMatchCountPerAvailableCategory", () => {
+describe("countMatchingContentByCategory", () => {
   test("counts per category for a single owner without query", async () => {
     const { userId: viewerId } = await createTestUser();
     const { userId: ownerId } = await createTestUser();
+    const code = Date.now().toString();
 
-    const { contentId: content1Id } = await createContent({
-      loggedInUserId: ownerId,
-      contentType: "singleDoc",
-      parentId: null,
-      name: `alpha${Date.now()}1`,
-    });
-    const { contentId: content2Id } = await createContent({
-      loggedInUserId: ownerId,
-      contentType: "singleDoc",
-      parentId: null,
-      name: `alpha${Date.now()}2`,
-    });
-    const { contentId: content3Id } = await createContent({
-      loggedInUserId: ownerId,
-      contentType: "singleDoc",
-      parentId: null,
-      name: `alpha${Date.now()}3`,
-    });
+    const [content1Id, content2Id, content3Id] = await setupTestContent(
+      ownerId,
+      {
+        [`alpha${code}1`]: doc(""),
+        [`alpha${code}2`]: doc(""),
+        [`alpha${code}3`]: doc(""),
+      },
+    );
 
     await setContentIsPublic({
       contentId: content1Id,
@@ -7964,7 +7957,7 @@ describe("getSharedContentMatchCountPerAvailableCategory", () => {
       categories: { isInteractive: true, containsVideo: true },
     });
 
-    const counts = await getSharedContentMatchCountPerAvailableCategory({
+    const counts = await countMatchingContentByCategory({
       loggedInUserId: viewerId,
       ownerId,
     });
@@ -7980,17 +7973,9 @@ describe("getSharedContentMatchCountPerAvailableCategory", () => {
     const { userId: ownerId } = await createTestUser();
     const code = Date.now().toString();
 
-    const { contentId: content1Id } = await createContent({
-      loggedInUserId: ownerId,
-      contentType: "singleDoc",
-      parentId: null,
-      name: `alpha${code}`,
-    });
-    const { contentId: content2Id } = await createContent({
-      loggedInUserId: ownerId,
-      contentType: "singleDoc",
-      parentId: null,
-      name: `beta${code}`,
+    const [content1Id, content2Id] = await setupTestContent(ownerId, {
+      [`alpha${code}`]: doc(""),
+      [`beta${code}`]: doc(""),
     });
 
     await setContentIsPublic({
@@ -8015,7 +8000,7 @@ describe("getSharedContentMatchCountPerAvailableCategory", () => {
       categories: { containsVideo: true },
     });
 
-    const counts = await getSharedContentMatchCountPerAvailableCategory({
+    const counts = await countMatchingContentByCategory({
       query: `alpha${code}`,
       loggedInUserId: viewerId,
       ownerId,
@@ -8031,30 +8016,13 @@ describe("getSharedContentMatchCountPerAvailableCategory", () => {
     const { userId: ownerId } = await createTestUser();
     const code = Date.now().toString();
 
-    const { contentId: content1Id } = await createContent({
-      loggedInUserId: ownerId,
-      contentType: "singleDoc",
-      parentId: null,
-      name: `alpha${code}1`,
-    });
-    const { contentId: content2Id } = await createContent({
-      loggedInUserId: ownerId,
-      contentType: "singleDoc",
-      parentId: null,
-      name: `alpha${code}2`,
-    });
-    const { contentId: content3Id } = await createContent({
-      loggedInUserId: ownerId,
-      contentType: "singleDoc",
-      parentId: null,
-      name: `alpha${code}3`,
-    });
-    const { contentId: content4Id } = await createContent({
-      loggedInUserId: ownerId,
-      contentType: "singleDoc",
-      parentId: null,
-      name: `alpha${code}4`,
-    });
+    const [content1Id, content2Id, content3Id, content4Id] =
+      await setupTestContent(ownerId, {
+        [`alpha${code}1`]: doc(""),
+        [`alpha${code}2`]: doc(""),
+        [`alpha${code}3`]: doc(""),
+        [`alpha${code}4`]: doc(""),
+      });
 
     await setContentIsPublic({
       contentId: content1Id,
@@ -8098,7 +8066,7 @@ describe("getSharedContentMatchCountPerAvailableCategory", () => {
       categories: { containsVideo: true },
     });
 
-    const counts = await getSharedContentMatchCountPerAvailableCategory({
+    const counts = await countMatchingContentByCategory({
       loggedInUserId: viewerId,
       ownerId,
       categories: new Set(["isInteractive"]),
@@ -8115,24 +8083,14 @@ describe("getSharedContentMatchCountPerAvailableCategory", () => {
     const { userId: ownerId } = await createTestUser();
     const code = Date.now().toString();
 
-    const { contentId: content1Id } = await createContent({
-      loggedInUserId: ownerId,
-      contentType: "singleDoc",
-      parentId: null,
-      name: `alpha${code}1`,
-    });
-    const { contentId: content2Id } = await createContent({
-      loggedInUserId: ownerId,
-      contentType: "singleDoc",
-      parentId: null,
-      name: `alpha${code}2`,
-    });
-    const { contentId: content3Id } = await createContent({
-      loggedInUserId: ownerId,
-      contentType: "singleDoc",
-      parentId: null,
-      name: `alpha${code}3`,
-    });
+    const [content1Id, content2Id, content3Id] = await setupTestContent(
+      ownerId,
+      {
+        [`alpha${code}1`]: doc(""),
+        [`alpha${code}2`]: doc(""),
+        [`alpha${code}3`]: doc(""),
+      },
+    );
 
     await setContentIsPublic({
       contentId: content1Id,
@@ -8178,7 +8136,7 @@ describe("getSharedContentMatchCountPerAvailableCategory", () => {
       },
     });
 
-    const counts = await getSharedContentMatchCountPerAvailableCategory({
+    const counts = await countMatchingContentByCategory({
       loggedInUserId: viewerId,
       ownerId,
       categories: new Set(["isInteractive", "containsVideo", "isAnimation"]),
