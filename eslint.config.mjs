@@ -25,11 +25,47 @@ export default tseslint.config(
   // TypeScript configuration for source files
   {
     files: ["**/*.ts", "**/*.tsx"],
+    ignores: ["blog/**"],
     extends: [...tseslint.configs.recommended],
     languageOptions: {
       parserOptions: {
         tsconfigRootDir: import.meta.dirname,
         project: "./tsconfig.json",
+      },
+    },
+    plugins: {
+      "unused-imports": unusedImports,
+    },
+    rules: {
+      "@typescript-eslint/no-unused-vars": "off",
+      "unused-imports/no-unused-imports": "error",
+
+      // Allow unused vars that start with underscore
+      // See https://typescript-eslint.io/rules/no-unused-vars/
+      "unused-imports/no-unused-vars": [
+        "warn",
+        {
+          args: "all",
+          argsIgnorePattern: "^_",
+          caughtErrors: "all",
+          caughtErrorsIgnorePattern: "^_",
+          destructuredArrayIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          ignoreRestSiblings: true,
+        },
+      ],
+    },
+  },
+
+  // TypeScript configuration for blog (Astro) files
+  // TODO: Cleaner way of linting this package. Can we combine with the above ruleset?
+  {
+    files: ["blog/**/*.ts", "blog/**/*.tsx"],
+    extends: [...tseslint.configs.recommended],
+    languageOptions: {
+      parserOptions: {
+        tsconfigRootDir: import.meta.dirname,
+        project: "./blog/tsconfig.json",
       },
     },
     plugins: {

@@ -24,6 +24,7 @@
   },
   "files": [],
   "references": [
+    { "path": "blog" },
     { "path": "client" },
     { "path": "server" },
     { "path": "shared" },
