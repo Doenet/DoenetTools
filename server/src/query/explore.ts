@@ -2208,19 +2208,17 @@ export async function searchExplore({
     ownerId,
   });
 
-  const countByCategoryPromise = countMatchingContentByCategory(
-    {
-      query,
-      loggedInUserId,
-      systemId,
-      categoryId,
-      subCategoryId,
-      classificationId,
-      isUnclassified,
-      categories,
-      ownerId,
-    },
-  );
+  const countByCategoryPromise = countMatchingContentByCategory({
+    query,
+    loggedInUserId,
+    systemId,
+    categoryId,
+    subCategoryId,
+    classificationId,
+    isUnclassified,
+    categories,
+    ownerId,
+  });
 
   const [
     topAuthors,
@@ -2433,18 +2431,16 @@ export async function browseExplore({
     ownerId,
   });
 
-  const countByCategoryPromise = countMatchingContentByCategory(
-    {
-      loggedInUserId,
-      systemId,
-      categoryId,
-      subCategoryId,
-      classificationId,
-      isUnclassified,
-      categories,
-      ownerId,
-    },
-  );
+  const countByCategoryPromise = countMatchingContentByCategory({
+    loggedInUserId,
+    systemId,
+    categoryId,
+    subCategoryId,
+    classificationId,
+    isUnclassified,
+    categories,
+    ownerId,
+  });
 
   const [
     topAuthors,
