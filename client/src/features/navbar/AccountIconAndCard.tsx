@@ -11,8 +11,8 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import { UserInfoWithEmail } from "client/src/types";
-import { createNameNoTag } from "client/src/utils/names";
-import { AccessibleAvatar } from "client/src/widgets/AccessibleAvatar";
+import { createNameNoTag } from "../../utils/names";
+import { AccessibleAvatar } from "../../widgets/AccessibleAvatar";
 import { useFetcher, useLocation } from "react-router";
 
 /**

@@ -11,8 +11,8 @@ import {
 } from "@chakra-ui/react";
 import { NavItem, NavSection } from "./navbar.types";
 import { Link as RouterLink } from "react-router";
-import { UserInfoWithEmail } from "client/src/types";
-import RouterLogo from "client/src/RouterLogo";
+import { UserInfoWithEmail } from "../../types";
+import RouterLogo from "../../RouterLogo";
 import { AccountIconAndCard } from "./AccountIconAndCard";
 
 // Match the logo's rounded bold lettering with heavier nav text for consistency.

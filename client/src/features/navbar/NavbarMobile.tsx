@@ -106,20 +106,6 @@ export function NavbarMobile({
           {sectionIndex < sections.length - 1 && <Divider my={2} />}
         </Box>
       ))}
-      {!user || user.isAnonymous ? (
-        <>
-          <Divider my={2} />
-          <NavbarMobileLeaf
-            navItem={{ label: "Sign up/Log In", to: "/signIn" }}
-            onClick={() =>
-              handleItemClick({
-                label: "Sign up/Log In",
-                to: "/signIn",
-              })
-            }
-          />
-        </>
-      ) : null}
     </VStack>
   );
 

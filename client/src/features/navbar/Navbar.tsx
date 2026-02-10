@@ -1,6 +1,6 @@
 import { Hide, Show } from "@chakra-ui/react";
-import { UserInfoWithEmail } from "client/src/types";
-import { getDiscourseUrl } from "client/src/utils/discourse";
+import { UserInfoWithEmail } from "../../types";
+import { getDiscourseUrl } from "../../utils/discourse";
 import { NavbarDesktop } from "./NavbarDesktop";
 import {
   mainSections,

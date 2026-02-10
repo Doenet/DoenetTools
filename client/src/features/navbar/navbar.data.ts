@@ -41,7 +41,6 @@ export function mainSections(discussionsLink: string): NavSection[] {
 }
 
 export const navAccountPublic: NavSection = {
-  heading: "My workspace",
   items: [{ label: "Sign up/Log In", to: "/signIn" }],
 };
 
