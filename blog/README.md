@@ -57,7 +57,7 @@ All commands are run from the root of the project, from a terminal:
 
 The header logo link can be configured with a public env var:
 
-- `PUBLIC_DOENET_MAIN_URL`: URL for the main Doenet site (defaults to `https://doenet.org`).
+- `PUBLIC_DOENET_MAIN_URL`: URL for the main Doenet site (If not specified, shows plain image).
 
 ## 👀 Want to learn more?
 
