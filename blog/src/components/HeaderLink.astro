@@ -1,17 +1,17 @@
 ---
-import type { HTMLAttributes } from 'astro/types';
+import type { HTMLAttributes } from "astro/types";
 
-type Props = HTMLAttributes<'a'>;
+type Props = HTMLAttributes<"a">;
 
 const { href, class: className, ...props } = Astro.props;
 ---
 
 <a href={href} class:list={[className]} {...props}>
-	<slot />
+  <slot />
 </a>
 <style>
-	a {
-		display: inline-block;
-		text-decoration: none;
-	}
+  a {
+    display: inline-block;
+    text-decoration: none;
+  }
 </style>
