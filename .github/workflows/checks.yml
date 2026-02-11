@@ -51,6 +51,9 @@ jobs:
       - name: Build server
         run: npm run build --workspace server
 
+      - name: Build blog
+        run: npm run build --workspace blog
+
       # -----------------------------
       # Start MySQL + Test server
       # -----------------------------
