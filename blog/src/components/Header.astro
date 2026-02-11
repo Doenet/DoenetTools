@@ -1,6 +1,10 @@
 ---
-import { DOENET_MAIN_URL } from "../consts";
+import { getImage } from "astro:assets";
+import { BLOG_BASE_URL, DOENET_MAIN_URL } from "../consts";
 import HeaderLink from "./HeaderLink.astro";
+import doenetLogo from "../../public/Doenet_Logo_Frontpage_color_text.png";
+
+const optimizedLogo = await getImage({ src: doenetLogo });
 ---
 
 <header>
@@ -9,25 +13,15 @@ import HeaderLink from "./HeaderLink.astro";
       {
         DOENET_MAIN_URL ? (
           <a class="logo-link" href={DOENET_MAIN_URL}>
-            <img
-              src="/Doenet_Logo_Frontpage_color_text.png"
-              alt="Doenet"
-              width="140"
-              height="32"
-            />
+            <img src={optimizedLogo.src} alt="Doenet" width="140" height="32" />
           </a>
         ) : (
           <span class="logo-link">
-            <img
-              src="/Doenet_Logo_Frontpage_color_text.png"
-              alt="Doenet"
-              width="140"
-              height="32"
-            />
+            <img src={optimizedLogo.src} alt="Doenet" width="140" height="32" />
           </span>
         )
       }
-      <HeaderLink href="/">Blog</HeaderLink>
+      <HeaderLink href={BLOG_BASE_URL}>Blog</HeaderLink>
     </div>
   </nav>
 </header>

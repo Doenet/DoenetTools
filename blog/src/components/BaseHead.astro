@@ -4,7 +4,7 @@
 import "../styles/global.css";
 import type { ImageMetadata } from "astro";
 import FallbackImage from "../assets/blog-placeholder-1.jpg";
-import { SITE_TITLE } from "../consts";
+import { BLOG_BASE_URL, SITE_TITLE } from "../consts";
 
 interface Props {
   title: string;
@@ -33,14 +33,14 @@ const { title, description, image = FallbackImage } = Astro.props;
 <!-- Font preloads -->
 <link
   rel="preload"
-  href="/fonts/open-sans-v18-latin-regular.woff"
+  href={`${BLOG_BASE_URL}/fonts/open-sans-v18-latin-regular.woff`}
   as="font"
   type="font/woff"
   crossorigin
 />
 <link
   rel="preload"
-  href="/fonts/open-sans-v18-latin-700.woff"
+  href={`${BLOG_BASE_URL}/fonts/open-sans-v18-latin-700.woff`}
   as="font"
   type="font/woff"
   crossorigin
