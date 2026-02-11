@@ -21,15 +21,6 @@ const { title, description, author, pubDate, updatedDate, heroImage } =
         max-width: 100%;
         margin: 0;
       }
-      .hero-image {
-        width: 100%;
-      }
-      .hero-image img {
-        display: block;
-        margin: 0 auto;
-        border-radius: 12px;
-        box-shadow: var(--box-shadow);
-      }
       .prose {
         width: 720px;
         max-width: calc(100% - 2em);
@@ -39,24 +30,30 @@ const { title, description, author, pubDate, updatedDate, heroImage } =
       }
       .title {
         margin-bottom: 1em;
-        padding: 1em 0;
         line-height: 1;
       }
       .title h1 {
-        margin: 0 0 0.75em 0;
+        margin: 0 0 0 0;
         text-align: left;
       }
-      .meta {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1em;
+      .subtitle {
+        margin: 0 0 1em 0;
+        color: rgb(var(--gray));
+        font-size: 1.5rem;
+        line-height: 1.4;
+        font-weight: 500;
       }
       .author {
+        margin: 0 0 0.25em 0;
         color: rgb(var(--gray));
+        font-size: 0.95rem;
+        font-style: italic;
       }
       .date {
+        margin: 0 0 1em 0;
         color: rgb(var(--gray));
+        font-size: 0.95rem;
+        font-style: italic;
       }
       .last-updated-on {
         font-style: italic;
@@ -68,21 +65,13 @@ const { title, description, author, pubDate, updatedDate, heroImage } =
     <Header />
     <main>
       <article>
-        <div class="hero-image">
-          {
-            heroImage && (
-              <Image width={1020} height={510} src={heroImage} alt="" />
-            )
-          }
-        </div>
         <div class="prose">
           <div class="title">
             <h1>{title}</h1>
-            <div class="meta">
-              <div class="author">By: {author}</div>
-              <div class="date">
-                <FormattedDate date={pubDate} />
-              </div>
+            <p class="subtitle">{description}</p>
+            <div class="author">By: {author}</div>
+            <div class="date">
+              Posted on <FormattedDate date={pubDate} />
             </div>
             {
               updatedDate && (
