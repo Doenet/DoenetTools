@@ -2096,23 +2096,12 @@ test("Create new activity with DoenetML", async () => {
 test("getPublicContent only gets public activity", async () => {
   const { userId: ownerId } = await createTestUser();
 
-  const { contentId: publicContentId } = await createContent({
-    loggedInUserId: ownerId,
-    contentType: "singleDoc",
-    parentId: null,
-  });
-
-  const { contentId: privateContentId } = await createContent({
-    loggedInUserId: ownerId,
-    contentType: "singleDoc",
-    parentId: null,
-  });
-
-  const { contentId: publicFolderId } = await createContent({
-    loggedInUserId: ownerId,
-    contentType: "folder",
-    parentId: null,
-  });
+  const [publicContentId, privateContentId, publicFolderId] =
+    await setupTestContent(ownerId, {
+      "public content": doc(""),
+      "private content": doc(""),
+      "public folder": fold({}),
+    });
 
   await setContentIsPublic({
     contentId: publicContentId,
