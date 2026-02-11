@@ -6,7 +6,7 @@ import unusedImports from "eslint-plugin-unused-imports";
 
 export default tseslint.config(
   // Global ignores
-  { ignores: ["dist/", ".wireit/", "vite.config.ts"] },
+  { ignores: ["dist/", ".wireit/", "**/.astro", "vite.config.ts"] },
 
   // Base ESLint rules for all files
   eslint.configs.recommended,
