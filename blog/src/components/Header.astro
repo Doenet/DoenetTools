@@ -6,19 +6,27 @@ import HeaderLink from "./HeaderLink.astro";
 <header>
   <nav>
     <div class="nav-left">
-      <a
-        class="logo-link"
-        href={DOENET_MAIN_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <img
-          src="/Doenet_Logo_Frontpage_color_text.png"
-          alt="Doenet"
-          width="140"
-          height="32"
-        />
-      </a>
+      {
+        DOENET_MAIN_URL ? (
+          <a class="logo-link" href={DOENET_MAIN_URL}>
+            <img
+              src="/Doenet_Logo_Frontpage_color_text.png"
+              alt="Doenet"
+              width="140"
+              height="32"
+            />
+          </a>
+        ) : (
+          <span class="logo-link">
+            <img
+              src="/Doenet_Logo_Frontpage_color_text.png"
+              alt="Doenet"
+              width="140"
+              height="32"
+            />
+          </span>
+        )
+      }
       <HeaderLink href="/">Blog</HeaderLink>
     </div>
   </nav>
@@ -61,14 +69,5 @@ import HeaderLink from "./HeaderLink.astro";
   .logo-link img {
     display: block;
     height: auto;
-  }
-  .social-links,
-  .social-links a {
-    display: flex;
-  }
-  @media (max-width: 720px) {
-    .social-links {
-      display: none;
-    }
   }
 </style>
