@@ -1,6 +1,6 @@
 ---
 import { getImage } from "astro:assets";
-import ccImage from "../../public/creative_commons_by_sa_small.png";
+import ccImage from "../../public/creative_commons_by.png";
 
 const optimizedImage = await getImage({ src: ccImage });
 ---
@@ -9,16 +9,16 @@ const optimizedImage = await getImage({ src: ccImage });
   <span class="license">
     This work is licensed under a
     <a
-      href="https://creativecommons.org/licenses/by-sa/4.0/"
+      href="https://creativecommons.org/licenses/by/4.0/"
       target="_blank"
       rel="noopener noreferrer"
     >
-      Creative Commons Attribution-ShareAlike 4.0 International License
+      Creative Commons Attribution 4.0 International License
     </a>.
   </span>
   <img
     src={optimizedImage.src}
-    alt="Creative Commons Attribution-ShareAlike 4.0 International License"
+    alt="Creative Commons Attribution 4.0 International License"
     class="license-badge"
     width="80"
     height="15"
