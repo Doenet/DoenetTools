@@ -36,7 +36,7 @@ const posts = (await getCollection("blog")).sort(
         transition: 0.2s ease;
       }
       ul li img {
-        margin-bottom: 1rem;
+        margin-bottom: 0.5rem;
         border-radius: 12px;
         width: 100%;
         height: auto;
@@ -46,17 +46,17 @@ const posts = (await getCollection("blog")).sort(
       ul li a {
         display: block;
       }
-      .title {
+      .date {
         margin: 0 0 0.5rem 0;
+        color: rgb(var(--gray));
+        font-size: 0.875rem;
+      }
+      .title {
+        margin: 0 0 0.25rem 0;
         color: rgb(var(--black));
         line-height: 1.2;
         font-size: 1.75rem;
         font-weight: 700;
-      }
-      .date {
-        margin: 0 0 0.75rem 0;
-        color: rgb(var(--gray));
-        font-size: 0.875rem;
       }
       .description {
         margin: 0;
@@ -99,10 +99,11 @@ const posts = (await getCollection("blog")).sort(
                       alt=""
                     />
                   )}
-                  <h4 class="title">{post.data.title}</h4>
                   <p class="date">
+                    {post.data.author} ·{" "}
                     <FormattedDate date={post.data.pubDate} />
                   </p>
+                  <h4 class="title">{post.data.title}</h4>
                   <p class="description">{post.data.description}</p>
                 </a>
               </li>
