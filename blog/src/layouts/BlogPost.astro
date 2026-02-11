@@ -8,8 +8,15 @@ import Header from "../components/Header.astro";
 
 type Props = CollectionEntry<"blog">["data"];
 
-const { title, description, author, pubDate, updatedDate, heroImage } =
-  Astro.props;
+const {
+  title,
+  description,
+  author,
+  organization,
+  pubDate,
+  updatedDate,
+  heroImage,
+} = Astro.props;
 ---
 
 <html lang="en">
@@ -69,7 +76,9 @@ const { title, description, author, pubDate, updatedDate, heroImage } =
           <div class="title">
             <h1>{title}</h1>
             <p class="subtitle">{description}</p>
-            <div class="author">By: {author}</div>
+            <div class="author">
+              By: {author}{organization ? ` (${organization})` : ""}
+            </div>
             <div class="date">
               Posted on <FormattedDate date={pubDate} />
             </div>
