@@ -44,6 +44,11 @@ export async function loadShareStatus({ params }: { params: any }) {
 /**
  * A modal to manage the sharing status of your activity.
  * Two tabs: sharing with specific people and sharing publicly.
+ *
+ * @param contentId - The ID of the content being shared
+ * @param contentType - The type of content (doc, sequence, etc.)
+ * @param isOpen - Whether the modal is open
+ * @param onClose - Callback to close the modal
  */
 export function ShareMyContentModal({
   contentId,
@@ -132,7 +137,6 @@ function ShareWithPeople({
   const addEmailFetcher = useFetcher();
   const [emailInput, setEmailInput] = useState("");
   const [inputHasChanged, setInputHasChanged] = useState(false);
-
   const [addEmailError, setAddEmailError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -226,7 +230,7 @@ function SharePublicly({
 }) {
   const fetcher = useFetcher();
 
-  const shareableLink = `${window.location.host}/activityViewer/${contentId}`;
+  const shareableLink = `${window.location.origin}/activityViewer/${contentId}`;
 
   const [copiedLink, setCopiedLink] = useState(false);
 

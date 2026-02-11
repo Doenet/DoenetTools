@@ -11,12 +11,14 @@ declare global {
        * @param options Additional options to pass into mount
        * @param options.routerProps Props for the memory router
        * @param options.action Optional action handler for route actions (e.g., fetcher.submit())
+       * @param options.routes Optional additional routes to add to the router
        */
       mount(
         component: React.ReactNode,
         options?: MountOptions & {
           routerProps?: MemoryRouterProps;
           action?: (data: { request: Request }) => Promise<any>;
+          routes?: any[];
         },
       ): Cypress.Chainable<MountReturn>;
     }

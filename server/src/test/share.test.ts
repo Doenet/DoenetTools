@@ -4,6 +4,7 @@ import {
   modifyContentSharedWith,
   setContentIsPublic,
   shareContentWithEmail,
+  unshareContent,
 } from "../query/share";
 import { getContent } from "../query/activity_edit_view";
 import { getMyContent, getSharedContent } from "../query/content_list";
@@ -23,6 +24,85 @@ import { DateTime } from "luxon";
 import { prisma } from "../model";
 
 describe("Share tests", () => {
+  test("setContentIsPublic sets content to public/private and returns result", async () => {
+    const owner = await createTestUser();
+    const ownerId = owner.userId;
+
+    const { contentId } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "singleDoc",
+      parentId: null,
+    });
+
+    let result = await setContentIsPublic({
+      contentId,
+      isPublic: true,
+      loggedInUserId: ownerId,
+    });
+    expect(result.isPublic).eq(true);
+    let content = await getContent({
+      contentId,
+      loggedInUserId: ownerId,
+    });
+    expect(content.isPublic).eq(true);
+
+    result = await setContentIsPublic({
+      contentId,
+      isPublic: false,
+      loggedInUserId: ownerId,
+    });
+    expect(result.isPublic).eq(false);
+    content = await getContent({
+      contentId,
+      loggedInUserId: ownerId,
+    });
+    expect(content.isPublic).eq(false);
+  });
+
+  test("shareContentWithEmail/unshareContent shares/unshares content and returns result", async () => {
+    const owner = await createTestUser();
+    const ownerId = owner.userId;
+
+    const user = await createTestUser();
+    if (user.email === null) {
+      throw new Error("User should have email");
+    }
+
+    const { contentId } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "singleDoc",
+      parentId: null,
+    });
+
+    const result = await shareContentWithEmail({
+      contentId,
+      loggedInUserId: ownerId,
+      email: user.email,
+    });
+
+    expect(result.userId).eqls(user.userId);
+    expect(result.email).eq(user.email);
+
+    let shareStatus = await getEditorShareStatus({
+      contentId,
+      loggedInUserId: ownerId,
+    });
+    expect(shareStatus.sharedWith.map((obj) => obj.email)).eqls([user.email]);
+
+    const result2 = await unshareContent({
+      contentId,
+      loggedInUserId: ownerId,
+      userId: user.userId,
+    });
+    expect(result2.userId).eqls(user.userId);
+
+    shareStatus = await getEditorShareStatus({
+      contentId,
+      loggedInUserId: ownerId,
+    });
+    expect(shareStatus.sharedWith).eqls([]);
+  });
+
   test("content in public folder is created as public", async () => {
     const owner = await createTestUser();
     const ownerId = owner.userId;
