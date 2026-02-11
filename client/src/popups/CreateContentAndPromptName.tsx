@@ -57,11 +57,18 @@ export function CreateContentAndPromptName({
   } | null>(null);
 
   function saveName(newName: string) {
+    const trimmed = newName.trim();
+    const finalName = trimmed === "" ? "Untitled" : newName;
+
+    if (trimmed === "" && nameRef.current) {
+      nameRef.current.value = finalName;
+    }
+
     if (newActivityData) {
       saveNameFetcher.submit(
         {
           path: "updateContent/updateContentSettings",
-          name: newName,
+          name: finalName,
           contentId: newActivityData.newContentId,
         },
         { method: "post", encType: "application/json" },
