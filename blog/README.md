@@ -53,6 +53,12 @@ All commands are run from the root of the project, from a terminal:
 | `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
 | `npm run astro -- --help` | Get help using the Astro CLI                     |
 
+## Configuration
+
+The header logo link can be configured with a public env var:
+
+- `PUBLIC_DOENET_MAIN_URL`: URL for the main Doenet site (defaults to `https://doenet.org`).
+
 ## 👀 Want to learn more?
 
 Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).

@@ -1,54 +1,74 @@
 ---
-import { SITE_TITLE } from '../consts';
-import HeaderLink from './HeaderLink.astro';
+import { DOENET_MAIN_URL } from "../consts";
+import HeaderLink from "./HeaderLink.astro";
 ---
 
 <header>
-	<nav>
-		<h2><a href="/">{SITE_TITLE}</a></h2>
-		<div class="internal-links">
-			<HeaderLink href="/">Home</HeaderLink>
-		</div>
-	</nav>
+  <nav>
+    <div class="nav-left">
+      <a
+        class="logo-link"
+        href={DOENET_MAIN_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <img
+          src="/Doenet_Logo_Frontpage_color_text.png"
+          alt="Doenet"
+          width="140"
+          height="32"
+        />
+      </a>
+      <HeaderLink href="/">Blog</HeaderLink>
+    </div>
+  </nav>
 </header>
 <style>
-	header {
-		margin: 0;
-		padding: 0 1em;
-		background: white;
-		box-shadow: 0 2px 8px rgba(var(--black), 5%);
-	}
-	h2 {
-		margin: 0;
-		font-size: 1em;
-	}
-
-	h2 a,
-	h2 a.active {
-		text-decoration: none;
-	}
-	nav {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-	}
-	nav a {
-		padding: 1em 0.5em;
-		color: var(--black);
-		border-bottom: 4px solid transparent;
-		text-decoration: none;
-	}
-	nav a.active {
-		text-decoration: none;
-		border-bottom-color: var(--accent);
-	}
-	.social-links,
-	.social-links a {
-		display: flex;
-	}
-	@media (max-width: 720px) {
-		.social-links {
-			display: none;
-		}
-	}
+  header {
+    margin: 0;
+    height: 50px;
+    padding: 0 1em;
+    background: white;
+    box-shadow: 0 2px 8px rgba(var(--black), 5%);
+  }
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100%;
+  }
+  .nav-left {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+  }
+  nav a {
+    height: 100%;
+    padding: 0 0.5em;
+    display: inline-flex;
+    align-items: center;
+    color: var(--black);
+    border-bottom: 4px solid transparent;
+    text-decoration: none;
+  }
+  .logo-link {
+    display: inline-flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 0.5em 0 0;
+    border-bottom: 4px solid transparent;
+  }
+  .logo-link img {
+    display: block;
+    height: auto;
+  }
+  .social-links,
+  .social-links a {
+    display: flex;
+  }
+  @media (max-width: 720px) {
+    .social-links {
+      display: none;
+    }
+  }
 </style>
