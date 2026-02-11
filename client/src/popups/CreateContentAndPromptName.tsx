@@ -58,7 +58,7 @@ export function CreateContentAndPromptName({
 
   function saveName(newName: string) {
     const trimmed = newName.trim();
-    const finalName = trimmed === "" ? "Untitled" : newName;
+    const finalName = trimmed === "" ? "Untitled" : trimmed;
 
     if (trimmed === "" && nameRef.current) {
       nameRef.current.value = finalName;
