@@ -29,7 +29,7 @@ const posts = (await getCollection("blog")).sort(
         padding: 0;
       }
       ul li {
-        width: calc(50% - 1rem);
+        width: calc((100% - 4rem) / 3);
       }
       ul li * {
         text-decoration: none;
@@ -40,7 +40,7 @@ const posts = (await getCollection("blog")).sort(
         border-radius: 12px;
         width: 100%;
         height: auto;
-        aspect-ratio: 2 / 1;
+        aspect-ratio: 16 / 9;
         object-fit: cover;
       }
       ul li a {
@@ -66,6 +66,11 @@ const posts = (await getCollection("blog")).sort(
       }
       ul a:hover img {
         filter: brightness(1.3);
+      }
+      @media (max-width: 960px) {
+        ul li {
+          width: calc((100% - 2rem) / 2);
+        }
       }
       @media (max-width: 720px) {
         ul {
