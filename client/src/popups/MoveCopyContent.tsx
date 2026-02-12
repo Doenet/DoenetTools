@@ -460,7 +460,7 @@ export function MoveCopyContent({
           {
             path: `copyMove/moveContent`,
             contentId: contentIds[0],
-            parentId,
+            changeParentIdTo: parentId,
             desiredPosition: activeView.contents.length, // place it as the last item
           },
           { method: "post", encType: "application/json" },

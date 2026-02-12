@@ -53,6 +53,8 @@ import {
   DoenetmlVersion,
   LibraryRelations,
   ActivityRemixItem,
+  Doc,
+  ProblemSet,
 } from "../types";
 import { CompoundActivityEditor } from "../views/CompoundActivityEditor";
 import {
@@ -65,6 +67,8 @@ import {
   menuIcons,
 } from "../utils/activity";
 import { ActivitySource, isActivitySource } from "@doenet-tools/shared";
+import { DoenetEditor, DoenetViewer } from "@doenet/doenetml-iframe";
+import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";
 import { processRemixes } from "../utils/processRemixes";
 import ContributorsMenu from "../dropdowns/ContributorsMenu";
 import { ContentInfoDrawer } from "../drawers/ContentInfoDrawer";
@@ -76,9 +80,7 @@ import { CopyContentAndReportFinish } from "../popups/CopyContentAndReportFinish
 import { CloseIcon } from "@chakra-ui/icons";
 import { BsBookmarkCheck } from "react-icons/bs";
 import { ImCheckmark } from "react-icons/im";
-import { DoenetEditor, DoenetViewer } from "@doenet/doenetml-iframe";
 import { BlueBanner } from "../widgets/BlueBanner";
-import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";
 
 export async function loader({ params }: { params: any }) {
   const {
@@ -127,7 +129,6 @@ export async function loader({ params }: { params: any }) {
 export function ActivityViewer() {
   const data = useLoaderData() as {
     contentId: string;
-    activityData: Content;
     libraryRelations: LibraryRelations;
     contributorHistory: ActivityRemixItem[];
   } & (
@@ -135,14 +136,16 @@ export function ActivityViewer() {
         type: "singleDoc";
         doenetML: string;
         doenetmlVersion: DoenetmlVersion;
+        activityData: Doc;
       }
     | {
-        type: "select" | "sequence";
+        type: "sequence";
         activityJson: ActivitySource;
+        activityData: ProblemSet;
       }
   );
 
-  const { activityData, contributorHistory, libraryRelations } = data;
+  const { activityData, contributorHistory, libraryRelations, type } = data;
 
   const { user, addTo, setAddTo, allLicenses } =
     useOutletContext<SiteContext>();
@@ -156,7 +159,7 @@ export function ActivityViewer() {
   const doenetViewerContainer = useRef<HTMLDivElement>(null);
   const scrollingContainer = useRef<HTMLDivElement>(null);
 
-  const authorMode = user?.isAuthor || data.type === "select";
+  const authorMode = user?.isAuthor;
 
   const [mode, setMode] = useState<"Edit" | "View">(
     authorMode ? "Edit" : "View",
@@ -290,7 +293,7 @@ export function ActivityViewer() {
 
   const headerHeight = "140px";
 
-  if (data.type === "singleDoc") {
+  if (type === "singleDoc") {
     if (mode === "Edit") {
       const initialWarnings = getDoenetMLDeprecationWarnings(
         data.doenetmlVersion,

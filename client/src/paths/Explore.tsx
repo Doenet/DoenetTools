@@ -3,7 +3,6 @@ import axios from "axios";
 import {
   Box,
   Link as ChakraLink,
-  MenuItem,
   Tab,
   TabList,
   TabPanel,
@@ -38,24 +37,23 @@ import { Form, useFetcher } from "react-router";
 import { CardContent } from "../widgets/Card";
 import { createNameNoTag, createNameCheckCurateTag } from "../utils/names";
 import {
-  ContentDescription,
   Content,
   UserInfo,
   PartialContentClassification,
   CategoryGroup,
 } from "../types";
-import { ContentInfoDrawer } from "../drawers/ContentInfoDrawer";
 import CardList from "../widgets/CardList";
 import { intWithCommas } from "../utils/formatting";
 import { MdFilterAlt, MdFilterAltOff } from "react-icons/md";
 import { clearQueryParameter } from "../utils/explore";
 import { FilterPanel } from "../widgets/FilterPanel";
 import { ExploreFilterDrawer } from "../drawers/ExploreFilterDrawer";
-import { contentTypeToName, menuIcons } from "../utils/activity";
+import { menuIcons } from "../utils/activity";
 import { SiteContext } from "./SiteHeader";
 import { AddContentToMenu } from "../popups/AddContentToMenu";
 import { CopyContentAndReportFinish } from "../popups/CopyContentAndReportFinish";
 import { CreateContentMenu } from "../dropdowns/CreateContentMenu";
+import { useCardSelections } from "../hooks/cardSelections";
 
 export async function loader({
   params,
@@ -138,7 +136,6 @@ export async function loader({
 
     return {
       ...browseData,
-      content: browseData.recentContent,
       categories,
       allCategories,
     };
@@ -151,7 +148,7 @@ export function Explore() {
     topAuthors,
     matchedAuthors,
     authorInfo,
-    content,
+    recentContent,
     trendingContent,
     curatedContent,
     matchedClassifications,
@@ -171,7 +168,7 @@ export function Explore() {
     topAuthors: UserInfo[] | null;
     matchedAuthors: UserInfo[] | undefined;
     authorInfo: UserInfo | null;
-    content: Content[];
+    recentContent: Content[];
     trendingContent: Content[];
     curatedContent: Content[];
     matchedClassifications: PartialContentClassification[] | null | undefined;
@@ -207,9 +204,29 @@ export function Explore() {
   const createContentMenuCreateFetcher = useFetcher();
   const createContentMenuSaveNameFetcher = useFetcher();
 
-  const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
-  const selectedCardsFiltered = selectedCards.filter((c) => c);
-  const numSelected = selectedCardsFiltered.length;
+  const cardSelections = useCardSelections({
+    ids: [
+      ...recentContent.map((c) => c.contentId),
+      ...trendingContent.map((c) => c.contentId),
+      ...curatedContent.map((c) => c.contentId),
+    ],
+  });
+
+  const selectedContentDescriptions = [];
+  for (const content of [
+    ...recentContent,
+    ...trendingContent,
+    ...curatedContent,
+  ]) {
+    if (
+      cardSelections.ids.has(content.contentId) &&
+      !selectedContentDescriptions
+        .map((c) => c.contentId)
+        .includes(content.contentId)
+    ) {
+      selectedContentDescriptions.push(content);
+    }
+  }
 
   const { search } = useLocation();
   const navigate = useNavigate();
@@ -230,22 +247,6 @@ export function Explore() {
     totalCount.numCommunity,
     totalCount.numCurated,
   ]);
-
-  const [infoContentData, setInfoContentData] = useState<Content | null>(null);
-
-  const {
-    isOpen: infoIsOpen,
-    onOpen: infoOnOpen,
-    onClose: infoOnClose,
-  } = useDisclosure();
-
-  const infoDrawer = infoContentData ? (
-    <ContentInfoDrawer
-      isOpen={infoIsOpen}
-      onClose={infoOnClose}
-      contentData={infoContentData}
-    />
-  ) : null;
 
   const {
     isOpen: filterIsOpen,
@@ -283,7 +284,7 @@ export function Explore() {
       <CopyContentAndReportFinish
         isOpen={copyDialogIsOpen}
         onClose={copyDialogOnClose}
-        contentIds={selectedCardsFiltered.map((sc) => sc.contentId)}
+        contentIds={[...cardSelections.ids]}
         desiredParent={addTo}
         action="Add"
         setAddTo={setAddTo}
@@ -292,27 +293,6 @@ export function Explore() {
         onNavigate={navigate}
       />
     ) : null;
-
-  useEffect(() => {
-    setSelectedCards((was) => {
-      let foundMissing = false;
-      const newList = [...content, ...curatedContent].map((c) => c.contentId);
-      if (trendingContent) {
-        newList.push(...trendingContent.map((c) => c.contentId));
-      }
-      for (const c of was.filter((x) => x)) {
-        if (!newList.includes(c.contentId)) {
-          foundMissing = true;
-          break;
-        }
-      }
-      if (foundMissing) {
-        return [];
-      } else {
-        return was;
-      }
-    });
-  }, [content, trendingContent, curatedContent]);
 
   const curatedContentDisplay = useMemo(
     () =>
@@ -330,11 +310,11 @@ export function Explore() {
 
   const contentDisplay = useMemo(
     () =>
-      displayMatchingContent(content, {
+      displayMatchingContent(recentContent, {
         base: `calc(100vh - ${q ? "250" : "210"}px)`,
         lg: `calc(100vh - ${q ? "210" : "170"}px)`,
       }),
-    [displayMatchingContent, content, q],
+    [displayMatchingContent, recentContent, q],
   );
 
   // TODO: figure out functions inside hooks
@@ -350,18 +330,6 @@ export function Explore() {
           ? `/sharedActivities/${owner.userId}/${contentId}`
           : `/activityViewer/${contentId}`;
 
-      const menuItems = (
-        <MenuItem
-          data-test={`${contentTypeToName[contentType]} Information`}
-          onClick={() => {
-            setInfoContentData(itemObj);
-            infoOnOpen();
-          }}
-        >
-          {contentTypeToName[contentType]} information
-        </MenuItem>
-      );
-
       const ownerAvatarName = createNameNoTag(owner!);
       const ownerName = createNameCheckCurateTag(owner!);
 
@@ -371,7 +339,6 @@ export function Explore() {
         ownerAvatarName,
         ownerName,
         cardLink,
-        menuItems,
       };
     });
 
@@ -388,10 +355,12 @@ export function Explore() {
           showBlurb={false}
           showActivityCategories={true}
           showOwnerName={true}
-          content={cardContent}
+          cardContent={cardContent}
           emptyMessage={"No Matches Found!"}
-          selectedCards={user ? selectedCards : undefined}
-          setSelectedCards={setSelectedCards}
+          includeSelectionBox={user ? true : false}
+          selectedCards={cardSelections.ids}
+          onCardSelected={cardSelections.add}
+          onCardDeselected={cardSelections.remove}
           disableSelectFor={addTo ? [addTo.contentId] : undefined}
         />
       </Box>
@@ -789,12 +758,12 @@ export function Explore() {
             height="30px"
             width="100%"
             alignContent="center"
-            hidden={numSelected === 0 && addTo === null}
+            hidden={!cardSelections.areActive && addTo === null}
             backgroundColor="gray.100"
             justifyContent="center"
           >
             {addTo !== null ? (
-              <HStack hidden={numSelected > 0}>
+              <HStack hidden={cardSelections.areActive}>
                 <CloseButton
                   size="sm"
                   onClick={() => {
@@ -807,13 +776,13 @@ export function Explore() {
                 </Text>
               </HStack>
             ) : null}
-            <HStack hidden={numSelected === 0}>
-              <CloseButton size="sm" onClick={() => setSelectedCards([])} />{" "}
-              <Text>{numSelected} selected</Text>
+            <HStack hidden={!cardSelections.areActive}>
+              <CloseButton size="sm" onClick={cardSelections.clear} />{" "}
+              <Text>{cardSelections.count} selected</Text>
               <HStack hidden={addTo !== null}>
                 <AddContentToMenu
                   fetcher={fetcher}
-                  sourceContent={selectedCardsFiltered}
+                  sourceContent={selectedContentDescriptions}
                   size="xs"
                   colorScheme="blue"
                   label="Add selected to"
@@ -822,7 +791,7 @@ export function Explore() {
                   setAddTo={setAddTo}
                 />
                 <CreateContentMenu
-                  sourceContent={selectedCardsFiltered}
+                  sourceContent={selectedContentDescriptions}
                   size="xs"
                   colorScheme="blue"
                   label="Create from selected"
@@ -940,7 +909,6 @@ export function Explore() {
 
   return (
     <>
-      {infoDrawer}
       {filterDrawer}
       {copyContentModal}
       {heading}

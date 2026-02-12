@@ -23,7 +23,7 @@ import {
 import { CardContent } from "../widgets/Card";
 import axios from "axios";
 import { createNameNoTag } from "../utils/names";
-import { ContentDescription, Content } from "../types";
+import { Content } from "../types";
 import { DisplayLicenseItem } from "../widgets/Licenses";
 import { ContentInfoDrawer } from "../drawers/ContentInfoDrawer";
 import CardList from "../widgets/CardList";
@@ -32,6 +32,7 @@ import { SiteContext } from "./SiteHeader";
 import { AddContentToMenu } from "../popups/AddContentToMenu";
 import { CreateContentMenu } from "../dropdowns/CreateContentMenu";
 import { CopyContentAndReportFinish } from "../popups/CopyContentAndReportFinish";
+import { useCardSelections } from "../hooks/cardSelections";
 
 export async function loader({ params }: { params: any }) {
   const { data } = await axios.get(
@@ -70,27 +71,13 @@ export function SharedActivities() {
     ? (allLicenses.find((l) => l.code === parent.licenseCode) ?? null)
     : null;
 
-  const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
-  const selectedCardsFiltered = selectedCards.filter((c) => c);
-  const numSelected = selectedCardsFiltered.length;
+  const cardSelections = useCardSelections({
+    ids: content.map((c) => c.contentId),
+  });
 
-  useEffect(() => {
-    setSelectedCards((was) => {
-      let foundMissing = false;
-      const newList = content.map((c) => c.contentId);
-      for (const c of was.filter((x) => x)) {
-        if (!newList.includes(c.contentId)) {
-          foundMissing = true;
-          break;
-        }
-      }
-      if (foundMissing) {
-        return [];
-      } else {
-        return was;
-      }
-    });
-  }, [content]);
+  const selectedContentDescriptions = content.filter((c) =>
+    cardSelections.ids.has(c.contentId),
+  );
 
   useEffect(() => {
     document.title = parent
@@ -142,7 +129,7 @@ export function SharedActivities() {
       <CopyContentAndReportFinish
         isOpen={copyDialogIsOpen}
         onClose={copyDialogOnClose}
-        contentIds={selectedCardsFiltered.map((sc) => sc.contentId)}
+        contentIds={[...cardSelections.ids]}
         desiredParent={addTo}
         action="Add"
         setAddTo={setAddTo}
@@ -212,12 +199,12 @@ export function SharedActivities() {
           height="30px"
           width="100%"
           alignContent="center"
-          hidden={numSelected === 0 && addTo === null}
+          hidden={!cardSelections.areActive && addTo === null}
           backgroundColor="gray.100"
           justifyContent="center"
         >
           {addTo !== null ? (
-            <HStack hidden={numSelected > 0}>
+            <HStack hidden={cardSelections.areActive}>
               <CloseButton
                 size="sm"
                 onClick={() => {
@@ -230,13 +217,13 @@ export function SharedActivities() {
               </Text>
             </HStack>
           ) : null}
-          <HStack hidden={numSelected === 0}>
-            <CloseButton size="sm" onClick={() => setSelectedCards([])} />{" "}
-            <Text>{numSelected} selected</Text>
+          <HStack hidden={!cardSelections.areActive}>
+            <CloseButton size="sm" onClick={cardSelections.clear} />{" "}
+            <Text>{cardSelections.count} selected</Text>
             <HStack hidden={addTo !== null}>
               <AddContentToMenu
                 fetcher={fetcher}
-                sourceContent={selectedCardsFiltered}
+                sourceContent={selectedContentDescriptions}
                 size="xs"
                 colorScheme="blue"
                 label="Add selected to"
@@ -245,7 +232,7 @@ export function SharedActivities() {
                 setAddTo={setAddTo}
               />
               <CreateContentMenu
-                sourceContent={selectedCardsFiltered}
+                sourceContent={selectedContentDescriptions}
                 size="xs"
                 colorScheme="blue"
                 label="Create from selected"
@@ -309,9 +296,11 @@ export function SharedActivities() {
       showPublicStatus={false}
       showActivityCategories={true}
       emptyMessage={"No Activities Yet"}
-      content={cardContent}
-      selectedCards={user ? selectedCards : undefined}
-      setSelectedCards={setSelectedCards}
+      cardContent={cardContent}
+      includeSelectionBox={user ? true : false}
+      selectedCards={cardSelections.ids}
+      onCardSelected={cardSelections.add}
+      onCardDeselected={cardSelections.remove}
       disableSelectFor={addTo ? [addTo.contentId] : undefined}
     />
   );

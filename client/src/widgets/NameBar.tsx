@@ -81,6 +81,22 @@ export function NameBar({
     );
   }
 
+  function submitName(newName: string) {
+    let submitValue = newName;
+    if (submitValue.trim() === "") {
+      submitValue = "Untitled";
+    }
+
+    fetcher?.submit(
+      {
+        path: "updateContent/updateContentSettings",
+        contentId,
+        name: submitValue,
+      },
+      { method: "post", encType: "application/json" },
+    );
+  }
+
   return (
     <Box position="relative" maxWidth={maxWidth} width={width}>
       <Show above="md">
@@ -109,19 +125,7 @@ export function NameBar({
           setName(value);
         }}
         onSubmit={(value) => {
-          let submitValue = value;
-          if (submitValue.trim() === "") {
-            submitValue = "Untitled";
-          }
-
-          fetcher.submit(
-            {
-              path: "updateContent/updateContentSettings",
-              contentId,
-              name: submitValue,
-            },
-            { method: "post", encType: "application/json" },
-          );
+          submitName(value);
         }}
       >
         <Box

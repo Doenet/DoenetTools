@@ -12,9 +12,8 @@ import {
   IconButton,
   Input,
   HStack,
+  Show,
   Spinner,
-  CloseButton,
-  MenuDivider,
   Icon,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
@@ -23,35 +22,23 @@ import {
   Link as ReactRouterLink,
   redirect,
   useLoaderData,
-  useNavigate,
   useFetcher,
   useOutletContext,
+  useNavigate,
 } from "react-router";
-
-import { CardContent } from "../widgets/Card";
-import CardList from "../widgets/CardList";
 import axios from "axios";
-import { MoveCopyContent } from "../popups/MoveCopyContent";
-import {
-  ContentDescription,
-  Content,
-  ContentType,
-  LicenseCode,
-  UserInfo,
-} from "../types";
 import { MdClose, MdOutlineSearch } from "react-icons/md";
 import { FaPlus } from "react-icons/fa";
 import { LuDessert } from "react-icons/lu";
 
-import {
-  getAllowedParentTypes,
-  getIconInfo,
-  menuIcons,
-} from "../utils/activity";
+import { CardContent } from "../widgets/Card";
+import CardList from "../widgets/CardList";
+import { MoveCopyContent } from "../popups/MoveCopyContent";
+import { Content, ContentType, LicenseCode, UserInfo } from "../types";
+
+import { getAllowedParentTypes, getIconInfo } from "../utils/activity";
 import { CreateLocalContent } from "../popups/CreateLocalContent";
 import { DeleteContent } from "../popups/DeleteContent";
-import { AddContentToMenu } from "../popups/AddContentToMenu";
-import { CreateContentMenu } from "../dropdowns/CreateContentMenu";
 import { CopyContentAndReportFinish } from "../popups/CopyContentAndReportFinish";
 import { SiteContext } from "../paths/SiteHeader";
 import { ActivateAuthorMode } from "../popups/ActivateAuthorMode";
@@ -59,6 +46,18 @@ import { formatAssignmentBlurb } from "../utils/assignment";
 import { editorUrl } from "../utils/url";
 import { ShareMyContentModal } from "../popups/ShareMyContentModal";
 import { NameBar } from "../widgets/NameBar";
+import {
+  ActionBar,
+  Action as ActionBarActions,
+  Context as ActionBarContext,
+} from "../widgets/ActionBar";
+import { useCardSelections } from "../hooks/cardSelections";
+import { useCardMovement } from "../hooks/cardMovement";
+import { CreateContentMenu } from "../dropdowns/CreateContentMenu";
+import {
+  configAddFromContentList,
+  configOrganizeContentList,
+} from "../utils/actionBarConfig";
 
 export async function loader({ params, request }: any) {
   const url = new URL(request.url);
@@ -142,29 +141,17 @@ export function Activities() {
     setHaveContentSpinner(false);
   }, [content]);
 
-  const navigate = useNavigate();
+  const cardSelections = useCardSelections({
+    ids: content.map((c) => c.contentId),
+  });
+  const cardMovement = useCardMovement({
+    selectedCards: cardSelections.ids,
+    ids: content.map((c) => c.contentId),
+  });
 
-  const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
-  const selectedCardsFiltered = selectedCards.filter((c) => c);
-  const numSelected = selectedCardsFiltered.length;
-
-  useEffect(() => {
-    setSelectedCards((was) => {
-      let foundMissing = false;
-      const newList = content.map((c: Content) => c.contentId);
-      for (const c of was.filter((x) => x)) {
-        if (!newList.includes(c.contentId)) {
-          foundMissing = true;
-          break;
-        }
-      }
-      if (foundMissing) {
-        return [];
-      } else {
-        return was;
-      }
-    });
-  }, [content]);
+  const selectedContentDescriptions = content.filter((c) =>
+    cardSelections.ids.has(c.contentId),
+  );
 
   const [moveCopyData, setMoveCopyData] = useState<{
     contentId: string;
@@ -194,7 +181,7 @@ export function Activities() {
     document.title = `${parent?.name ?? "My Activities"} - Doenet`;
   }, [parent]);
 
-  // Used for inline card actions (move up/down, duplicate)
+  // Used for card actions (move up/down, duplicate)
   const contentActionsFetcher = useFetcher();
 
   // Used for creating new documents and problem sets
@@ -213,7 +200,7 @@ export function Activities() {
   const authorModeFetcher = useFetcher();
 
   // Used by AddContentToMenu component
-  const addContentFetcher = useFetcher();
+  // const addContentFetcher = useFetcher();
 
   // Used by CreateContentMenu component
   const createContentMenuCreateFetcher = useFetcher();
@@ -222,127 +209,7 @@ export function Activities() {
   // Used by DeleteContent modal
   const deleteContentFetcher = useFetcher();
 
-  function getCardMenuList({
-    contentId,
-    name,
-    position,
-    numCards,
-    contentType,
-    isPublic,
-    isShared,
-    sharedWith,
-    licenseCode,
-    parentId,
-  }: {
-    contentId: string;
-    name: string;
-    position: number;
-    numCards: number;
-    contentType: ContentType;
-    isPublic: boolean;
-    isShared: boolean;
-    sharedWith: UserInfo[];
-    licenseCode: LicenseCode | null;
-    parentId: string | null;
-  }) {
-    return (
-      <>
-        {position > 0 && !haveQuery ? (
-          <MenuItem
-            data-test="Move Up Menu Item"
-            onClick={() => {
-              contentActionsFetcher.submit(
-                {
-                  path: "copyMove/moveContent",
-                  contentId,
-                  desiredPosition: position - 1,
-                  parentId,
-                },
-                { method: "post", encType: "application/json" },
-              );
-            }}
-          >
-            Move Up
-          </MenuItem>
-        ) : null}
-        {position < numCards - 1 && !haveQuery ? (
-          <MenuItem
-            data-test="Move Down Menu Item"
-            onClick={() => {
-              contentActionsFetcher.submit(
-                {
-                  path: "copyMove/moveContent",
-                  contentId,
-                  desiredPosition: position + 1,
-                  parentId,
-                },
-                { method: "post", encType: "application/json" },
-              );
-            }}
-          >
-            Move Down
-          </MenuItem>
-        ) : null}
-        {haveQuery ? null : (
-          <MenuItem
-            data-test="Move to"
-            onClick={() => {
-              setMoveCopyData({
-                contentId,
-                name,
-                type: contentType,
-                isPublic,
-                isShared,
-                sharedWith,
-                licenseCode,
-              });
-              moveCopyContentOnOpen();
-            }}
-          >
-            Move to&hellip;
-          </MenuItem>
-        )}
-        <MenuItem
-          data-test={"Duplicate Content"}
-          onClick={() => {
-            contentActionsFetcher.submit(
-              {
-                path: "copyMove/copyContent",
-                contentIds: [contentId],
-                parentId,
-                prependCopy: true,
-              },
-              { method: "post", encType: "application/json" },
-            );
-          }}
-        >
-          Make a copy
-        </MenuItem>
-        {haveQuery ? (
-          <MenuItem
-            data-test="Go to containing folder"
-            onClick={() => {
-              navigate(
-                `/activities/${userId}${parentId ? "/" + parentId : ""}`,
-              );
-            }}
-          >
-            Go to containing folder
-          </MenuItem>
-        ) : null}
-        <MenuDivider />
-        <MenuItem
-          data-test="Delete Menu Item"
-          onClick={() => {
-            setSettingsContentId(contentId);
-            deleteContentOnOpen();
-          }}
-        >
-          Move to trash
-        </MenuItem>
-      </>
-    );
-  }
+  const navigate = useNavigate();
 
   const { iconImage: folderIcon, iconColor: folderColor } = getIconInfo(
     "folder",
@@ -366,18 +233,6 @@ export function Activities() {
         />
       </Box>
     </Tooltip>
-  );
-
-  const headingText = (
-    <NameBar
-      contentName={parentName}
-      isEditable={parent !== null}
-      contentId={parentId}
-      leftIcon={titleIcon}
-      dataTest="Folder Title"
-      fontSizeMode={"folder"}
-      fetcher={nameBarFetcher}
-    />
   );
 
   let contentData: Content | undefined;
@@ -454,7 +309,7 @@ export function Activities() {
       <CopyContentAndReportFinish
         isOpen={copyDialogIsOpen}
         onClose={copyDialogOnClose}
-        contentIds={selectedCardsFiltered.map((sc) => sc.contentId)}
+        contentIds={[...cardSelections.ids]}
         desiredParent={addTo}
         action="Add"
         setAddTo={setAddTo}
@@ -549,16 +404,125 @@ export function Activities() {
     </Menu>
   );
 
-  const heading = (
-    <Flex
-      justify="flex-start"
-      align={{ base: "left", md: "center" }}
-      flexDirection={{ base: "column", md: "row" }}
-      pt="30px"
-      pb="30px"
-      gap="5px"
-    >
-      {headingText}
+  /**
+   * TODO: This is a hack to place arbitrary buttons into the action bar.
+   * Move this logic to `actions` once `<AddContentToMenu>` and `<CreateContentMenu>`
+   * have been properly refactored to NOT include their initial button UI inside of themselves.
+   */
+  const FIX_ME_miscellaneous_buttons = addTo ? null : (
+    <>
+      {/* <AddContentToMenu
+        fetcher={addContentFetcher}
+        sourceContent={selectedContentDescriptions}
+        size="xs"
+        colorScheme="blue"
+        label="Copy selected to"
+        user={user ?? null}
+        onNavigate={(url) => navigate(url)}
+        setAddTo={setAddTo}
+      /> */}
+      <Show above="md">
+        <CreateContentMenu
+          sourceContent={selectedContentDescriptions}
+          size="xs"
+          label="Create from selected"
+          user={user ?? null}
+          navigate={navigate}
+          createFetcher={createContentMenuCreateFetcher}
+          saveNameFetcher={createContentMenuSaveNameFetcher}
+        />
+      </Show>
+    </>
+  );
+
+  let activeActionBar: "none" | "normal" | "add to" = "none";
+  let actionBarContext: ActionBarContext;
+  let actions: ActionBarActions[];
+
+  if (addTo) {
+    const config = configAddFromContentList({
+      cardSelections,
+      addTo,
+      setAddTo,
+      onAdd: copyDialogOnOpen,
+    });
+
+    activeActionBar = "add to";
+    actionBarContext = config.context;
+    actions = config.actions;
+  } else {
+    const config = configOrganizeContentList({
+      cardSelections,
+      cardMovement,
+      forceDisableMoveUpAndDown: haveQuery,
+      FIX_ME_miscellaneous_buttons,
+      onMoveTo: () => {
+        const selectedContent = content.find(
+          (c) => c.contentId === cardSelections.ids.values().next().value,
+        );
+        if (selectedContent) {
+          setMoveCopyData({
+            contentId: selectedContent.contentId,
+            name: selectedContent.name,
+            type: selectedContent.type,
+            isPublic: selectedContent.isPublic,
+            isShared: selectedContent.isShared,
+            sharedWith: selectedContent.sharedWith,
+            licenseCode: selectedContent.licenseCode ?? null,
+          });
+          moveCopyContentOnOpen();
+        }
+      },
+      onCopy: () => {
+        contentActionsFetcher.submit(
+          {
+            path: "copyMove/copyContent",
+            contentIds: [...cardSelections.ids],
+            parentId,
+            prependCopy: true,
+          },
+          { method: "post", encType: "application/json" },
+        );
+      },
+      onDelete: () => {
+        setSettingsContentId(cardSelections.ids.values().next().value ?? null);
+        deleteContentOnOpen();
+      },
+    });
+
+    activeActionBar = cardSelections.areActive ? "normal" : "none";
+    actionBarContext = config.context;
+    actions = config.actions;
+  }
+
+  const normalActionBar = (
+    <ActionBar
+      context={actionBarContext}
+      actions={actions}
+      isActive={activeActionBar === "normal"}
+    />
+  );
+
+  const addToActionBar = (
+    <ActionBar
+      context={actionBarContext}
+      actions={actions}
+      isActive={activeActionBar === "add to"}
+    />
+  );
+
+  const headingNoSelection = (
+    <>
+      <NameBar
+        contentName={parentName}
+        isEditable={parent !== null}
+        contentId={parentId}
+        leftIcon={titleIcon}
+        dataTest="Folder Title"
+        fontSizeMode={"folder"}
+        fetcher={nameBarFetcher}
+      />
+
       <HStack>
         <Form>
           <HStack gap="1px">
@@ -618,84 +582,10 @@ export function Activities() {
           )}
         </HStack>
       </HStack>
-    </Flex>
+    </>
   );
 
-  const selectedItemsActions = (
-    <HStack
-      spacing={3}
-      align="center"
-      justify="center"
-      backgroundColor={numSelected > 0 || addTo ? "gray.100" : undefined}
-      width="100%"
-      height="2.3rem"
-      mb="10px"
-    >
-      {addTo !== null && (
-        <>
-          <CloseButton
-            data-test="Stop Adding Items"
-            size="sm"
-            onClick={() => setAddTo(null)}
-          />
-          <Text noOfLines={1} data-test="Adding Items Message">
-            Adding items to: {menuIcons[addTo.type]}
-            <strong>{addTo.name}</strong>
-          </Text>
-        </>
-      )}
-
-      {numSelected > 0 && (
-        <HStack spacing={2} align="center">
-          <CloseButton
-            data-test="Clear Selection"
-            size="sm"
-            onClick={() => setSelectedCards([])}
-          />
-          <Text>{numSelected} selected</Text>
-          {addTo === null && (
-            <>
-              <AddContentToMenu
-                fetcher={addContentFetcher}
-                sourceContent={selectedCardsFiltered}
-                size="xs"
-                colorScheme="blue"
-                label="Copy selected to"
-                user={user ?? null}
-                onNavigate={(url) => navigate(url)}
-                setAddTo={setAddTo}
-              />
-              <CreateContentMenu
-                sourceContent={selectedCardsFiltered}
-                size="xs"
-                colorScheme="blue"
-                label="Create from selected"
-                user={user ?? null}
-                navigate={navigate}
-                createFetcher={createContentMenuCreateFetcher}
-                saveNameFetcher={createContentMenuSaveNameFetcher}
-              />
-            </>
-          )}
-
-          {addTo !== null && (
-            <Button
-              data-test="Add Selected To Button"
-              size="xs"
-              colorScheme="blue"
-              onClick={() => copyDialogOnOpen()}
-            >
-              Add selected to: {menuIcons[addTo.type]}
-              <strong>
-                {addTo.name.substring(0, 10)}
-                {addTo.name.length > 10 ? "..." : ""}
-              </strong>
-            </Button>
-          )}
-        </HStack>
-      )}
-    </HStack>
-  );
+  const HEADING_HEIGHT = "2.5rem";
 
   const searchResultsHeading = haveQuery ? (
     <Flex
@@ -749,18 +639,6 @@ export function Activities() {
       menuRef: getCardMenuRef,
       content: activity,
       blurb: formatAssignmentBlurb(activity),
-      menuItems: getCardMenuList({
-        contentId: activity.contentId,
-        name: activity.name,
-        position,
-        numCards: content.length,
-        contentType: activity.type,
-        isPublic: activity.isPublic,
-        isShared: activity.isShared,
-        sharedWith: activity.sharedWith,
-        licenseCode: activity.licenseCode ?? null,
-        parentId: activity.parent?.contentId ?? null,
-      }),
       cardLink,
     };
   });
@@ -772,33 +650,58 @@ export function Activities() {
       showPublicStatus={true}
       showActivityCategories={true}
       emptyMessage={emptyMessage}
-      content={cardContent}
-      selectedCards={selectedCards}
-      setSelectedCards={setSelectedCards}
+      cardContent={cardContent}
+      includeSelectionBox={true}
+      selectedCards={cardSelections.ids}
+      onCardSelected={cardSelections.add}
+      onCardDeselected={cardSelections.remove}
       disableSelectFor={addTo ? [addTo.contentId] : undefined}
     />
   );
 
   return (
-    <Box
+    <Flex
       data-test="Activities"
-      width={{ base: "100%", md: "calc(100% - 40px)" }}
       background={"white"}
-      ml={{ base: "0px", md: "20px" }}
-      mr={{ base: "0px", md: "20px" }}
+      align="flex-start"
+      overflowY="hidden"
+      height="100%"
+      width="100%"
+      flexDir="column"
     >
-      {moveCopyContentModal}
-      {createFolderModal}
-      {deleteModal}
-      {copyContentModal}
-      {authorModeModal}
-      {shareFolderModal}
+      <Flex
+        height={{ base: `calc(3 * ${HEADING_HEIGHT})`, md: HEADING_HEIGHT }}
+        justify="flex-start"
+        align={{ base: "left", md: "center" }}
+        flexDirection={{ base: "column", md: "row" }}
+        px={{ base: "10px", md: "20px" }}
+        py="30px"
+        gap="5px"
+      >
+        {activeActionBar === "normal" ? normalActionBar : headingNoSelection}
+      </Flex>
 
-      {heading}
-      {searchResultsHeading}
-      {selectedItemsActions}
+      <Box
+        width="100%"
+        height={{
+          base: `calc(100% - 3 * ${HEADING_HEIGHT})`,
+          md: `calc(100% - ${HEADING_HEIGHT})`,
+        }}
+        overflowY="auto"
+        px={{ base: "10px", md: "20px" }}
+      >
+        {moveCopyContentModal}
+        {createFolderModal}
+        {deleteModal}
+        {copyContentModal}
+        {authorModeModal}
+        {shareFolderModal}
 
-      {mainPanel}
-    </Box>
+        {searchResultsHeading}
+        {addToActionBar}
+
+        {mainPanel}
+      </Box>
+    </Flex>
   );
 }

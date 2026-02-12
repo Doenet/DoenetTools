@@ -24,7 +24,7 @@ import {
   NumberInputStepper,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink, useOutletContext } from "react-router";
-import { Content, ContentDescription } from "../types";
+import { Content } from "../types";
 import { FaEllipsisVertical } from "react-icons/fa6";
 import { BsPeople } from "react-icons/bs";
 import {
@@ -63,8 +63,10 @@ export default function Card({
   showAddButton = false,
   showLibraryEditor = false,
   indentLevel = 0,
-  selectedCards,
-  selectCallback,
+  includeSelectionBox = false,
+  isSelected = false,
+  onSelected,
+  onDeselected,
   isAuthor = false,
   addDocumentCallback,
   disableSelect = false,
@@ -79,13 +81,10 @@ export default function Card({
   showAddButton?: boolean;
   showLibraryEditor?: boolean;
   indentLevel?: number;
-  selectedCards?: string[];
-  selectCallback?: (
-    arg: ContentDescription & {
-      checked: boolean;
-      idx: number;
-    },
-  ) => void;
+  includeSelectionBox?: boolean;
+  isSelected?: boolean;
+  onSelected?: () => void;
+  onDeselected?: () => void;
   isAuthor?: boolean;
   addDocumentCallback?: (contentId: string) => void;
   disableSelect?: boolean;
@@ -102,7 +101,6 @@ export default function Card({
     licenseCode,
     categories,
     type: contentType,
-    parent,
   } = cardContent.content;
 
   const license = allLicenses.find((l) => l.code === licenseCode) ?? null;
@@ -131,21 +129,18 @@ export default function Card({
   const variantsBadgeWidth = "3.5rem";
 
   // Select checkbox
-  const selectCheckbox = selectedCards && (
+  const selectCheckbox = includeSelectionBox && (
     <Checkbox
       data-test="Card Select"
       margin="5px"
       isDisabled={disableSelect || disableAsSelected}
-      isChecked={selectedCards.includes(contentId) || disableAsSelected}
+      isChecked={isSelected || disableAsSelected}
       onChange={(e) => {
-        selectCallback?.({
-          contentId,
-          checked: e.target.checked,
-          type: contentType,
-          name: title,
-          parent,
-          idx,
-        });
+        if (e.target.checked) {
+          onSelected?.();
+        } else {
+          onDeselected?.();
+        }
       }}
       aria-label={`Select item ${idx + 1}: ${title}`}
     ></Checkbox>

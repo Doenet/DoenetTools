@@ -1,15 +1,16 @@
 import { Box, Flex, Tooltip, Icon } from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useLoaderData } from "react-router";
 
 import { CardContent } from "../widgets/Card";
 import CardList from "../widgets/CardList";
 import axios from "axios";
-import { ContentDescription, Content } from "../types";
+import { Content } from "../types";
 import { formatAssignmentBlurb } from "../utils/assignment";
 import { NameBar } from "../widgets/NameBar";
 import { BsPeople } from "react-icons/bs";
 import { createNameNoTag } from "../utils/names";
+import { useCardSelections } from "../hooks/cardSelections";
 
 export async function loader() {
   const { data: results } = await axios.get(`/api/contentList/getSharedWithMe`);
@@ -26,25 +27,9 @@ export function SharedWithMe() {
   // which should be given focus when drawers are closed
   const cardMenuRefs = useRef<HTMLButtonElement[]>([]);
 
-  const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
-
-  useEffect(() => {
-    setSelectedCards((was) => {
-      let foundMissing = false;
-      const newList = content.map((c: Content) => c.contentId);
-      for (const c of was.filter((x) => x)) {
-        if (!newList.includes(c.contentId)) {
-          foundMissing = true;
-          break;
-        }
-      }
-      if (foundMissing) {
-        return [];
-      } else {
-        return was;
-      }
-    });
-  }, [content]);
+  const cardSelections = useCardSelections({
+    ids: content.map((c) => c.contentId),
+  });
 
   useEffect(() => {
     document.title = "Shared with me - Doenet";
@@ -120,9 +105,10 @@ export function SharedWithMe() {
       showPublicStatus={true}
       showActivityCategories={true}
       emptyMessage={emptyMessage}
-      content={cardContent}
-      selectedCards={selectedCards}
-      setSelectedCards={setSelectedCards}
+      cardContent={cardContent}
+      selectedCards={cardSelections.ids}
+      onCardSelected={cardSelections.add}
+      onCardDeselected={cardSelections.remove}
     />
   );
 
