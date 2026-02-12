@@ -3,9 +3,11 @@ title: "Easing the pain of making interactive activities"
 description: "How Doenet was created to let math instructors more easily make interactive visual activities for their classes."
 author: "Duane Nykamp"
 organization: "University of Minnesota"
-pubDate: "Feb 11 2026"
-heroImage: "../assets/simplify-creating-interactive-activities/directional-derivative-gradients.png"
+pubDate: "Feb 13 2026"
+heroImage: "../assets/simplify-creating-interactive-activities/graph_de_zoomed_in.png"
 ---
+
+import { DoenetViewer, DoenetEditor } from "@doenet/doenetml-iframe";
 
 How many times have you experienced a student plowing through an activity oblivious to their misconceptions and ignoring your carefully designed instructions to make them reflect? By the time you hand the activity back with feedback, either:
 
@@ -38,7 +40,7 @@ I've searched for ways to lessen the burden of developing interactive activities
 
 After struggling with different ad-hoc approaches, including building the technology behind [Math Insight](https://mathinsight.org), I decided I needed to step back and reexamine what an author of interactive activities really cares about.
 
-For authors, what really matters is the _meaning of the objects being displayed_ and the _relationships among them_. What if we could design a semantic way to describe the desired objects and their relationships? Maybe all the author has to do is specify how the pieces fit together and the software can determine how to make the interactive experience for the student.
+What really matters is the _meaning of the objects being displayed_ and the _relationships among them_. What if we could design a semantic way to describe the desired objects and their relationships? Maybe all the author has to do is specify how the pieces fit together and the software can determine how to make the interactive experience for the student.
 
 This realization inspired the Doenet project, which a group of us started around 2018. We designed an approach to give authors the ability to create interactives via a semantic description. Our goal is to let math instructors more easily make interactive visual activities for their classes.
 
@@ -50,9 +52,21 @@ For example, if I am creating a problem about local maxima, and I want to illust
 </graph>
 ```
 
-and out pops a graph that matches my criteria.
+and out pops a graph that matches my criteria. (In the below display, you can modify the instructions in the left panel and click the Update button to see the result.)
 
-![A function with maxima at (-4,2) and (3,7)](../assets/simplify-creating-interactive-activities/plot-function-two-maxima.png)
+export const functionWithMaximum = `<graph>
+  <function maxima="(-4,2) (3,7)" />
+</graph>
+`;
+
+<DoenetEditor
+  doenetML={functionWithMaximum}
+  client:only="react"
+  showFormatter={false}
+  showErrorsWarnings={false}
+  showResponses={false}
+  height="400px"
+/>
 
 For students to engage, I want them to interact with the graph to solve a problem. Maybe I want them to draw a graph of a function that has a single maximum of about 6. This shouldn't be that much more difficult for me to specify. I have to give them three moveable points, say $A$, $B$, and $C$, and a function $f$ through those points. In Doenet, we could describe this relationship with the following:
 
@@ -79,9 +93,31 @@ For instance, if I want students to draw a function with a maximum at 6, I need 
 
 With those instructions, if students move the points to create a function with a single maximum close to 6, they should get feedback that their graph is correct.
 
-Doenet would count this graph as correctly meeting the criteria.
+See the result below. You can move the three points. If you can get the maximum of the function to be within 10% of 6, Doenet will display "Correct" when you click the Check Work button.
 
-![A graph sketched by a student with a maximum around (-5, 6). The sketched is marked as Correct.](../assets/simplify-creating-interactive-activities/student-sketch-function-with-maximum.png)
+export const checkMaximum = `<graph>
+<point name="A">(-1,3)</point>
+<point name="B">(4,6)</point>
+<point name="C">(-8,-1)</point>
+<function name="f" through="$A $B $C" />
+</graph>
+
+<answer allowedErrorInNumbers="0.1">
+  <award>
+    <when>$f.maximumValues = 6</when>
+  </award>
+</answer>
+`;
+
+<DoenetEditor
+  doenetML={checkMaximum}
+  client:only="react"
+  showFormatter={false}
+  showErrorsWarnings={false}
+  showResponses={false}
+/>
+
+I hope these examples give you a glimpse of how you can create interactives for your students using a semantic description!
 
 Doenet is our attempt to create the technology and a social context where instructors can support each other while creating cool activities, collaborating and sharing the fruits of our labor.
 
