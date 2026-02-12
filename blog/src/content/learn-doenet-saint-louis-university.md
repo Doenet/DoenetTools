@@ -7,6 +7,8 @@ pubDate: "Feb 13 2026"
 heroImage: "../assets/learn-doenet-saint-louis-university/mean-value-theorem-zoomed-in.png"
 ---
 
+## TODO: Insert link for training page once it exists!!
+
 During our November 7-8 Doenet workshop, participants built classroom-ready activities featuring instant answer checking, interactive graphs, and randomized problems - all designed to give students immediate feedback as they work in a classroom setting.
 
 The hands-on format allowed participants to focus deeply on their specific course needs, with individualized support from facilitators throughout the development process. Each participant completed a polished activity ready for immediate classroom use, with several planning to deploy their work as early as the following semester.
