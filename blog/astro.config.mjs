@@ -4,6 +4,8 @@ import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import { defineConfig } from "astro/config";
 
+import react from "@astrojs/react";
+
 // https://astro.build/config
 export default defineConfig({
   // TODO: Can we make `site` more general?
@@ -12,5 +14,5 @@ export default defineConfig({
   // aka `beta.doenet.org/blog/...` to `doenet.org/blog/...`
   site: "https://beta.doenet.org",
   base: "/blog",
-  integrations: [mdx(), sitemap()],
+  integrations: [mdx(), sitemap(), react()],
 });
