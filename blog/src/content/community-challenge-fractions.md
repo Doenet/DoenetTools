@@ -14,5 +14,3 @@ This challenge comes from Anurag Katyal, an avid Doenet user who enjoys creating
 Understanding fractions is a common issue in building number sense for students. What does a fraction mean? How do we add fractions, and why does it work? How do we compare fractions? We’d love to have more activities to help our students build conceptual understanding of fractions!
 
 To participate in this challenge, create a public activity at beta.doenet.org and submit a link to your activity to communications@doenet.org. The winner of this challenge will have their activity featured in the next Doenet newsletter!
-
-Testing
