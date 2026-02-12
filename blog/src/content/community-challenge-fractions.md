@@ -3,7 +3,7 @@ title: "A community challenge"
 description: "Brainstorming on the theme of fraction mistakes"
 author: "Melissa Lynn"
 organization: "St. Olaf College"
-pubDate: "Feb 12 2026"
+pubDate: "Feb 13 2026"
 heroImage: "../assets/community-challenge-fractions/fractions-snapshot.png"
 ---
 
