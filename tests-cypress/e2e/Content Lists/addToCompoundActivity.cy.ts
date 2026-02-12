@@ -68,7 +68,7 @@ describe("Add to compound activity tests", () => {
 
     cy.visit("/");
 
-    cy.get('[data-test="Activities"]').click();
+    cy.get('[data-test="My Activities"]').click();
 
     cy.log("Add items to Problem Set 1");
     cy.get(`[data-test="Content Card"]`)
@@ -116,7 +116,7 @@ describe("Add to compound activity tests", () => {
 
     cy.visit("/");
 
-    cy.get('[data-test="Activities"]').click();
+    cy.get('[data-test="My Activities"]').click();
 
     cy.log("Add items to Problem Set 1");
     cy.get(`[data-test="Content Card"]`)
@@ -200,7 +200,7 @@ describe("Add to compound activity tests", () => {
 
       cy.visit("/");
 
-      cy.get('[data-test="Activities"]').click();
+      cy.get('[data-test="My Activities"]').click();
 
       cy.log("Create new problem set, then add items from explore");
       cy.get('[data-test="New Button"]').click();
@@ -278,7 +278,7 @@ describe("Add to compound activity tests", () => {
 
       cy.visit("/");
 
-      cy.get('[data-test="Activities"]').click();
+      cy.get('[data-test="My Activities"]').click();
 
       cy.log(
         "Create new problem set, then add items from shared activities found from explore",
@@ -364,7 +364,7 @@ describe("Add to compound activity tests", () => {
 
       cy.visit("/");
 
-      cy.get('[data-test="Activities"]').click();
+      cy.get('[data-test="My Activities"]').click();
 
       cy.log(
         "Create new problem set, then add items from shared activities found from explore",

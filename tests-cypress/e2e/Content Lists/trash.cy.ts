@@ -6,7 +6,7 @@ describe("Trash tests", () => {
 
     cy.visit("/");
 
-    cy.get('[data-test="Activities"]').click();
+    cy.get('[data-test="My Activities"]').click();
 
     cy.get(`[data-test="Content Card"]`).should("have.length", 1);
     cy.get(`[data-test="Content Card"]`)
@@ -30,7 +30,7 @@ describe("Trash tests", () => {
 
     cy.visit("/");
 
-    cy.get('[data-test="Activities"]').click();
+    cy.get('[data-test="My Activities"]').click();
 
     cy.get(`[data-test="Content Card"]`).should("have.length", 1);
     cy.get(`[data-test="Content Card"]`)
@@ -54,7 +54,7 @@ describe("Trash tests", () => {
 
     cy.visit("/");
 
-    cy.get('[data-test="Activities"]').click();
+    cy.get('[data-test="My Activities"]').click();
 
     cy.get(`[data-test="Content Card"]`).should("have.length", 1);
     cy.get(`[data-test="Content Card"]`)
@@ -100,7 +100,7 @@ describe("Trash tests", () => {
     );
     cy.visit("/");
 
-    cy.get('[data-test="Activities"]').click();
+    cy.get('[data-test="My Activities"]').click();
 
     cy.get(`[data-test="Content Card"]`).should("have.length", 1);
     cy.get(`[data-test="Content Card"]`)
@@ -200,7 +200,7 @@ describe("Trash tests", () => {
     );
     cy.visit("/");
 
-    cy.get('[data-test="Activities"]').click();
+    cy.get('[data-test="My Activities"]').click();
 
     cy.get(`[data-test="Content Card"]`).should("have.length", 1);
     cy.get(`[data-test="Content Card"]`)

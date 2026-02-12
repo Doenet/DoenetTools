@@ -15,7 +15,7 @@ describe("Share Activities Tests", function () {
 
     cy.visit("/");
 
-    cy.get('[data-test="Activities"]').click();
+    cy.get('[data-test="My Activities"]').click();
     cy.get('[data-test="New Button"]').click();
     cy.get('[data-test="Add Document Button"]').click();
 
@@ -142,7 +142,7 @@ describe("Share Activities Tests", function () {
 
       cy.visit("/");
 
-      cy.get('[data-test="Activities"]').click();
+      cy.get('[data-test="My Activities"]').click();
 
       cy.get('[data-test="Shared With Me Button"]').click();
 
@@ -160,7 +160,7 @@ describe("Share Activities Tests", function () {
       // Other user cannot see shared activity
       cy.loginAsTestUser();
       cy.visit("/");
-      cy.get('[data-test="Activities"]').click();
+      cy.get('[data-test="My Activities"]').click();
       cy.get('[data-test="Shared With Me Button"]').click();
       cy.get('[data-test="Folder Title"]').should(
         "have.text",
