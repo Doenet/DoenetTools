@@ -4,6 +4,8 @@
   "exclude": ["dist"],
   "compilerOptions": {
     "moduleResolution": "bundler",
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
   }
 }

@@ -12,9 +12,15 @@
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.13",
+    "@astrojs/react": "^4.4.2",
     "@astrojs/rss": "^4.0.15",
     "@astrojs/sitemap": "^3.7.0",
+    "@doenet/doenetml-iframe": "^0.7.6",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
     "astro": "^5.17.1",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
     "sharp": "^0.34.3"
   }
 }
