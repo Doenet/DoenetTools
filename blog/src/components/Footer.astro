@@ -1,0 +1,46 @@
+---
+import { getImage } from "astro:assets";
+import ccImage from "../../public/creative_commons_by.png";
+
+const optimizedImage = await getImage({ src: ccImage });
+---
+
+<footer>
+  <span class="license">
+    This work is licensed under a
+    <a
+      href="https://creativecommons.org/licenses/by/4.0/"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Creative Commons Attribution 4.0 International License
+    </a>.
+  </span>
+  <img
+    src={optimizedImage.src}
+    alt="Creative Commons Attribution 4.0 International License"
+    class="license-badge"
+    width="80"
+    height="15"
+  />
+</footer>
+<style>
+  footer {
+    padding: 2em 1em 1.5em 1em;
+    background: linear-gradient(var(--gray-gradient)) no-repeat;
+    color: rgb(var(--gray));
+    text-align: center;
+  }
+  .license {
+    display: inline-block;
+    max-width: 900px;
+    width: 100%;
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+  .license-badge {
+    display: block;
+    margin: 0.75rem auto 0;
+    height: auto;
+  }
+</style>

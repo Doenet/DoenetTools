@@ -6,7 +6,8 @@
     "client",
     "server",
     "shared",
-    "tests-cypress"
+    "tests-cypress",
+    "blog"
   ],
   "scripts": {
     "format": "prettier . --write",
