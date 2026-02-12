@@ -22,7 +22,7 @@ describe("Assignment workflow Tests", function () {
 
       // Instructor creates document
       cy.visit("/");
-      cy.get('[data-test="Activities"]').click();
+      cy.get('[data-test="My Activities"]').click();
       cy.get('[data-test="New Button"]').click();
       cy.get('[data-test="Add Document Button"]').click();
 
@@ -193,7 +193,7 @@ describe("Assignment workflow Tests", function () {
 
         cy.visit("/");
         // Navigate to My Activities to find assignment
-        cy.get('[data-test="Activities"]').click();
+        cy.get('[data-test="My Activities"]').click();
         cy.get(`[data-test="Content Card"]`).eq(1).click();
 
         cy.get(`td:contains("${studentUser!.lastNames}")`).click();
@@ -442,7 +442,7 @@ describe("Assignment workflow Tests", function () {
 
         cy.visit("/");
         // Navigate to My Activities to find assignment
-        cy.get('[data-test="Activities"]').click();
+        cy.get('[data-test="My Activities"]').click();
         cy.get(`[data-test="Content Card"]`).eq(1).click();
 
         cy.get(`[data-test="Student Row ${studentUser2!.userId}"]`).within(
