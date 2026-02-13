@@ -1,4 +1,4 @@
-describe("Create Assignment Tests", function () {
+describe("Create Assignment Tests", { tags: ["@group1"] }, function () {
   it("verify bug fixed from creating assignment", () => {
     cy.loginAsTestUser();
 

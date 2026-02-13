@@ -1,4 +1,4 @@
-describe("Navigate Explore Tests", function () {
+describe("Navigate Explore Tests", { tags: ["@group3"] }, function () {
   it("remember explore's current tab", () => {
     cy.loginAsTestUser({ isEditor: true });
 
