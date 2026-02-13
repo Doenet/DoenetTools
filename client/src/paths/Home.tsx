@@ -233,7 +233,7 @@ export function Home() {
       </Text>
       <Text marginTop="10px" fontSize="1.4rem">
         To learn how to get involved, check out{" "}
-        <ChakraLink href="https://pages.doenet.org" textDecoration="underline">
+        <ChakraLink href="/get-involved" textDecoration="underline">
           How to get involved with Doenet
         </ChakraLink>
         .
