@@ -7,17 +7,19 @@ import {
   Tooltip,
   UnorderedList,
 } from "@chakra-ui/react";
-import { Content } from "../types";
+import { Content, License } from "../types";
 import { InfoIcon } from "@chakra-ui/icons";
 import { DisplayLicenseItem } from "../widgets/Licenses";
 import { createNameCheckCurateTag } from "../utils/names";
 import { activityCategoryIcons } from "../utils/activity";
-import { useOutletContext } from "react-router";
-import { SiteContext } from "../paths/SiteHeader";
 
-export function GeneralContentInfo({ contentData }: { contentData: Content }) {
-  const { allLicenses } = useOutletContext<SiteContext>();
-
+export function GeneralContentInfo({
+  contentData,
+  allLicenses,
+}: {
+  contentData: Content;
+  allLicenses: License[];
+}) {
   const license =
     allLicenses.find((l) => l.code === contentData.licenseCode) ?? null;
   const contentType = contentData.type === "folder" ? "Folder" : "Activity";

@@ -59,7 +59,7 @@ export function ExploreFilterDrawer({
       size="sm"
     >
       <DrawerOverlay />
-      <DrawerContent>
+      <DrawerContent aria-label="Explore filter options">
         <DrawerCloseButton data-test="Close Filters Button" />
 
         <DrawerBody margin={0} padding={0}>
