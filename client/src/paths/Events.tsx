@@ -4,6 +4,7 @@ import {
   Heading,
   Text,
   VStack,
+  Button,
   Link as ChakraLink,
 } from "@chakra-ui/react";
 import { WithSideBanners } from "../layout/WithSideBanners";
@@ -84,7 +85,15 @@ export function Events() {
                 borderLeft="3px solid"
                 borderColor="border"
               >
-                <Heading size="sm">Getting started with Doenet</Heading>
+                <Heading size="sm">
+                  <ChakraLink
+                    href="https://scholarlattice.org/collections/b428f8ce-9981-4f9b-bb32-526994c57caf"
+                    isExternal
+                    textDecoration="underline"
+                  >
+                    Getting started with Doenet{" "}
+                  </ChakraLink>
+                </Heading>
                 <Text fontSize="1.3rem" lineHeight="1.3">
                   Learn the basics of how to write Doenet activities in this
                   introductory workshop.
@@ -97,14 +106,15 @@ export function Events() {
                   office hours from 3-4pm EST, noon-1pm PST)
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Registration</strong>:{" "}
-                  <ChakraLink
-                    href="https://scholarlattice.org/collections/b428f8ce-9981-4f9b-bb32-526994c57caf"
-                    isExternal
-                    textDecoration="underline"
+                  <Button
+                    as="a"
+                    href="https://scholarlattice.org/collections/b428f8ce-9981-4f9b-bb32-526994c57caf/registrations/new"
+                    colorScheme="blue"
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
                     Register here
-                  </ChakraLink>
+                  </Button>
                 </Text>
               </VStack>
 
@@ -118,7 +128,13 @@ export function Events() {
                 borderColor="border"
               >
                 <Heading size="sm">
-                  Creating accessible activities in Doenet
+                  <ChakraLink
+                    href="https://scholarlattice.org/collections/eab4d5ce-064d-409a-a576-bcab507f7836"
+                    isExternal
+                    textDecoration="underline"
+                  >
+                    Creating accessible activities in Doenet
+                  </ChakraLink>
                 </Heading>
                 <Text fontSize="1.3rem" lineHeight="1.3">
                   In this workshop, we will discuss best practices for creating
@@ -134,14 +150,15 @@ export function Events() {
                   office hours from 3-4pm EST, noon-1pm PST)
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Registration</strong>:{" "}
-                  <ChakraLink
-                    href="https://scholarlattice.org/collections/eab4d5ce-064d-409a-a576-bcab507f7836"
-                    isExternal
-                    textDecoration="underline"
+                  <Button
+                    as="a"
+                    href="https://scholarlattice.org/collections/eab4d5ce-064d-409a-a576-bcab507f7836/registrations/new"
+                    colorScheme="blue"
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
                     Register here
-                  </ChakraLink>
+                  </Button>
                 </Text>
               </VStack>
 
@@ -153,7 +170,15 @@ export function Events() {
                 borderLeft="3px solid"
                 borderColor="border"
               >
-                <Heading size="sm">Getting started with Doenet</Heading>
+                <Heading size="sm">
+                  <ChakraLink
+                    href="https://scholarlattice.org/collections/b8ec4af3-8f71-4e4a-b86e-838242e47058"
+                    isExternal
+                    textDecoration="underline"
+                  >
+                    Getting started with Doenet
+                  </ChakraLink>
+                </Heading>
                 <Text fontSize="1.3rem" lineHeight="1.3">
                   Learn the basics of how to write Doenet activities in this
                   introductory workshop.
@@ -166,14 +191,15 @@ export function Events() {
                   office hours from 3-4pm EST, noon-1pm PST)
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Registration</strong>:{" "}
-                  <ChakraLink
-                    href="https://scholarlattice.org/collections/b8ec4af3-8f71-4e4a-b86e-838242e47058"
-                    isExternal
-                    textDecoration="underline"
+                  <Button
+                    as="a"
+                    href="https://scholarlattice.org/collections/b8ec4af3-8f71-4e4a-b86e-838242e47058/registrations/new"
+                    colorScheme="blue"
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
                     Register here
-                  </ChakraLink>
+                  </Button>
                 </Text>
               </VStack>
             </Box>
