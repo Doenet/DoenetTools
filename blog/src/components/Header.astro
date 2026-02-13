@@ -1,0 +1,67 @@
+---
+import { getImage } from "astro:assets";
+import { BLOG_BASE_URL, DOENET_MAIN_URL } from "../consts";
+import HeaderLink from "./HeaderLink.astro";
+import doenetLogo from "../../public/Doenet_Logo_Frontpage_color_text.png";
+
+const optimizedLogo = await getImage({ src: doenetLogo });
+---
+
+<header>
+  <nav>
+    <div class="nav-left">
+      {
+        DOENET_MAIN_URL ? (
+          <a class="logo-link" href={DOENET_MAIN_URL}>
+            <img src={optimizedLogo.src} alt="Doenet" width="140" height="32" />
+          </a>
+        ) : (
+          <span class="logo-link">
+            <img src={optimizedLogo.src} alt="Doenet" width="140" height="32" />
+          </span>
+        )
+      }
+      <HeaderLink href={BLOG_BASE_URL}>Blog</HeaderLink>
+    </div>
+  </nav>
+</header>
+<style>
+  header {
+    margin: 0;
+    height: 50px;
+    padding: 0 1em;
+    background: white;
+    box-shadow: 0 2px 8px rgba(var(--black), 5%);
+  }
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100%;
+  }
+  .nav-left {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+  }
+  nav a {
+    height: 100%;
+    padding: 0 0.5em;
+    display: inline-flex;
+    align-items: center;
+    color: var(--black);
+    border-bottom: 4px solid transparent;
+    text-decoration: none;
+  }
+  .logo-link {
+    display: inline-flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 0.5em 0 0;
+    border-bottom: 4px solid transparent;
+  }
+  .logo-link img {
+    display: block;
+    height: auto;
+  }
+</style>
