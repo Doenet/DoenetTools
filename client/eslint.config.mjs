@@ -42,6 +42,7 @@ export default tseslint.config(
       "react/jsx-uses-react": "off", // Not needed with new JSX transform
       "@typescript-eslint/triple-slash-reference": "off",
       "mocha/no-exclusive-tests": "error", // Prevent .only in specs
+      "react/no-unescaped-entities": "off", // Allow apostrophes and quotes in text
     },
   },
 
