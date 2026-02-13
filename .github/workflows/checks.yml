@@ -69,10 +69,14 @@ jobs:
         run: npm test --workspace server
 
   # -----------------------------
-  # E2E Tests
+  # E2E Tests (Grouped)
   # -----------------------------
   e2e-tests:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        test-group: [group1, group2, group3, group4]
 
     env:
       DATABASE_URL: mysql://root:root@localhost:3306/db
@@ -147,9 +151,9 @@ jobs:
           echo "=== Client Log ===" && cat /tmp/client.log || true
           echo "=== Server processes ===" && ps aux | grep "node\|npm" || true
 
-      # Run Cypress e2e tests (excluding brittle tests)
+      # Run Cypress e2e tests (grouped)
       - name: Run Cypress e2e tests
-        run: npm run test:skip-brittle --workspace tests-cypress
+        run: npm run test:${{ matrix.test-group }} --workspace tests-cypress
 
       # Upload screenshots and videos on failure
       - uses: actions/upload-artifact@v4

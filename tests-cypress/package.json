@@ -9,6 +9,10 @@
     "lint:check": "eslint",
     "test": "cypress open",
     "test:all": "cypress run -b 'chrome' --config video=false --headless",
+    "test:group1": "cypress run -b 'chrome' --config video=false --headless --env grepTags='@group1',grepFilterSpecs=true,grepOmitFiltered=true",
+    "test:group2": "cypress run -b 'chrome' --config video=false --headless --env grepTags='@group2',grepFilterSpecs=true,grepOmitFiltered=true",
+    "test:group3": "cypress run -b 'chrome' --config video=false --headless --env grepTags='@group3',grepFilterSpecs=true,grepOmitFiltered=true",
+    "test:group4": "cypress run -b 'chrome' --config video=false --headless --env grepTags='@group4',grepFilterSpecs=true,grepOmitFiltered=true",
     "test:skip-brittle": "cypress run -b 'chrome' --config video=false --headless --env grepTags='-@brittle'",
     "test:brittle": "cypress run -b 'chrome' --config video=false --headless --env grepTags='@brittle',grepFilterSpecs=true,grepOmitFiltered=true",
     "test:parallel": "cypress-parallel -s test:all -t 4 -d e2e -n ../../node_modules/cypress-multi-reporters"
