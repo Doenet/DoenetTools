@@ -13,7 +13,7 @@ import {
   CategoryGroup,
 } from "../../types";
 import axios from "axios";
-import { Box, Button, Heading, Text, Tooltip, VStack } from "@chakra-ui/react";
+import { Box, Heading, VStack } from "@chakra-ui/react";
 import { BlueBanner } from "../../widgets/BlueBanner";
 import { processRemixes } from "../../utils/processRemixes";
 import { EditorContext } from "./EditorHeader";
@@ -26,9 +26,6 @@ import {
   DoenetMLSelectionBox,
   UpgradeSyntax,
 } from "./DoenetMLVersionComponents";
-import { FiCode } from "react-icons/fi";
-import { IoMdCheckmark } from "react-icons/io";
-import { useState } from "react";
 
 export async function loader({ params }: { params: any }) {
   const { data } = await axios.get(
@@ -132,20 +129,22 @@ export function EditorSettingsModeComponent({
     allDoenetmlVersions.find((v) => v.id === doenetmlVersionId)?.deprecated,
   );
 
-  const [copiedEmbedCode, setCopiedEmbedCode] = useState(false);
+  // Hide the stable embed code until we determine if this is a feature users want
 
-  async function generateEmbedCode() {
-    const {
-      data: { cid },
-    } = await axios.post(`/api/updateContent/createContentRevision`, {
-      contentId,
-      revisionName: "Embed code revision",
-      note: "Creating an embed code pinned to this revision",
-    });
-    const embedCode = `<iframe src="${window.location.origin}/embed/${cid}" width="100%" height="800" style="border: 0"></iframe>`;
+  // const [copiedEmbedCode, setCopiedEmbedCode] = useState(false);
 
-    return embedCode;
-  }
+  // async function generateEmbedCode() {
+  //   const {
+  //     data: { cid },
+  //   } = await axios.post(`/api/updateContent/createContentRevision`, {
+  //     contentId,
+  //     revisionName: "Embed code revision",
+  //     note: "Creating an embed code pinned to this revision",
+  //   });
+  //   const embedCode = `<iframe src="${window.location.origin}/embed/${cid}" width="100%" height="800" style="border: 0"></iframe>`;
+
+  //   return embedCode;
+  // }
 
   return (
     <BlueBanner headerHeight={headerHeight}>
@@ -234,7 +233,8 @@ export function EditorSettingsModeComponent({
           </Box>
         )}
 
-        <Box>
+        {/* Hide the stable embed code until we determine if this is a feature users want */}
+        {/* <Box>
           <Heading size="md">Advanced</Heading>
           <Box ml="1rem" mt="1rem">
             <Text>
@@ -266,7 +266,7 @@ export function EditorSettingsModeComponent({
               </Button>
             </Tooltip>
           </Box>
-        </Box>
+        </Box> */}
       </VStack>
     </BlueBanner>
   );
