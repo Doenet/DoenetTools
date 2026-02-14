@@ -255,7 +255,7 @@ jobs:
         with:
           timeout_minutes: 30
           max_attempts: 3
-          command: npm run test:brittle${{ matrix.test-group }} --workspace tests-cypress
+          command: npm run test:${{ matrix.test-group }} --workspace tests-cypress
 
       # Upload screenshots and videos on failure
       - uses: actions/upload-artifact@v4
