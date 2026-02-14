@@ -20,6 +20,7 @@ import {
   AlertIcon,
   AlertTitle,
   Link as ChakraLink,
+  Tooltip,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { contentTypeToName } from "../utils/activity";
@@ -29,6 +30,7 @@ import { SpinnerWhileFetching } from "../utils/optimistic_ui";
 import { ShareTable } from "../widgets/editor/ShareTable";
 import axios from "axios";
 import { IoMdLink, IoMdCheckmark } from "react-icons/io";
+import { FiCode } from "react-icons/fi";
 
 import { loader as settingsLoader } from "../paths/editor/EditorSettingsMode";
 import { editorUrl } from "../utils/url";
@@ -231,8 +233,10 @@ function SharePublicly({
   const fetcher = useFetcher();
 
   const shareableLink = `${window.location.origin}/activityViewer/${contentId}`;
+  const embedCode = `<iframe src="${window.location.origin}/embed/${contentId}" width="100%" height="800" style="border: 0"></iframe>`;
 
-  const [copiedLink, setCopiedLink] = useState(false);
+  const [copiedShareLink, setCopiedShareLink] = useState(false);
+  const [copiedEmbedCode, setCopiedEmbedCode] = useState(false);
 
   const unspecifiedCategories = !isActivityFullyCategorized({
     allCategories: settings.allCategories,
@@ -267,22 +271,53 @@ function SharePublicly({
 
         <Text data-test="Public Status">Content is public.</Text>
 
-        <Button
-          size="sm"
-          colorScheme="blue"
-          onClick={() => {
-            navigator.clipboard.writeText(shareableLink);
-            setCopiedLink(true);
-          }}
-        >
-          {copiedLink ? (
-            <IoMdCheckmark fontSize="1.2rem" />
-          ) : (
-            <IoMdLink fontSize="1.2rem" />
-          )}
-          <Text ml="0.5rem">Copy shareable link</Text>
-        </Button>
+        <HStack spacing="1rem">
+          <Tooltip
+            label="Copies a direct link to this content."
+            hasArrow
+            openDelay={500}
+          >
+            <Button
+              size="sm"
+              colorScheme="blue"
+              onClick={() => {
+                navigator.clipboard.writeText(shareableLink);
+                setCopiedShareLink(true);
+                setCopiedEmbedCode(false);
+              }}
+            >
+              {copiedShareLink ? (
+                <IoMdCheckmark fontSize="1.2rem" />
+              ) : (
+                <IoMdLink fontSize="1.2rem" />
+              )}
+              <Text ml="0.5rem">Copy shareable link</Text>
+            </Button>
+          </Tooltip>
 
+          <Tooltip
+            label="Embed this content in another website or LMS using an iframe."
+            hasArrow
+            openDelay={500}
+          >
+            <Button
+              size="sm"
+              colorScheme="blue"
+              onClick={() => {
+                navigator.clipboard.writeText(embedCode);
+                setCopiedEmbedCode(true);
+                setCopiedShareLink(false);
+              }}
+            >
+              {copiedEmbedCode ? (
+                <IoMdCheckmark fontSize="1.2rem" />
+              ) : (
+                <FiCode fontSize="1.2rem" />
+              )}
+              <Text ml="0.5rem">Copy embed code</Text>
+            </Button>
+          </Tooltip>
+        </HStack>
         <Button
           size="sm"
           colorScheme="blue"
