@@ -21,7 +21,7 @@ import {
   getActivityViewerData,
   getContent,
   getPublicContent,
-  getPublicContentByCid,
+  getContentByCid,
 } from "../query/activity_edit_view";
 import { getMyContent, getMyTrash } from "../query/content_list";
 import { modifyContentSharedWith, setContentIsPublic } from "../query/share";
@@ -2133,24 +2133,26 @@ test("getPublicContent only gets public activity", async () => {
   ).rejects.toThrow("not found");
 });
 
-test("getPublicContentByCid only gets public activity", async () => {
+test("getContentByCid gets public and private activities", async () => {
   const { userId: ownerId } = await createTestUser();
 
-  const doenetml = "<text>Content for this test</text>";
+  const baseSource = DateTime.now().toISO();
+
+  const publicDoenetml = `<text>Public content for this test: ${baseSource}</text>`;
+  const privateDoenetml = `<text>Private content for this test: ${baseSource}</text>`;
 
   const { contentId: publicContentId } = await createContent({
     loggedInUserId: ownerId,
     contentType: "singleDoc",
     parentId: null,
-    doenetml,
+    doenetml: publicDoenetml,
   });
 
   const { contentId: privateContentId } = await createContent({
     loggedInUserId: ownerId,
     contentType: "singleDoc",
     parentId: null,
-    doenetml:
-      "<text>Private content for this test. Test will fail if public content has this same text.</text>",
+    doenetml: privateDoenetml,
   });
 
   await setContentIsPublic({
@@ -2173,7 +2175,7 @@ test("getPublicContentByCid only gets public activity", async () => {
     revisionName: "Initial revision",
   });
 
-  const { activity: publicContent } = await getPublicContentByCid({
+  const { activity: publicContent } = await getContentByCid({
     cid: publicContentCid,
   });
 
@@ -2181,16 +2183,20 @@ test("getPublicContentByCid only gets public activity", async () => {
     throw Error("shouldn't happen");
   }
 
-  expect(publicContent.doenetML).toBe(doenetml);
+  expect(publicContent.doenetML).toBe(publicDoenetml);
 
-  await expect(
-    getPublicContentByCid({
-      cid: privateContentCid,
-    }),
-  ).rejects.toThrow("not found");
+  const { activity: privateContent } = await getContentByCid({
+    cid: privateContentCid,
+  });
+
+  if (privateContent.type !== "singleDoc") {
+    throw Error("shouldn't happen");
+  }
+
+  expect(privateContent.doenetML).toBe(privateDoenetml);
 });
 
-test("getPublicContentByCid gets doenetml from correct revision", async () => {
+test("getContentByCid gets doenetml from correct revision", async () => {
   const { userId: ownerId } = await createTestUser();
 
   const baseSource = DateTime.now().toISO();
@@ -2241,7 +2247,7 @@ test("getPublicContentByCid gets doenetml from correct revision", async () => {
     revisionName: "revision 3",
   });
 
-  const { activity: publicContent } = await getPublicContentByCid({
+  const { activity: publicContent } = await getContentByCid({
     cid: revision2Cid,
   });
 
