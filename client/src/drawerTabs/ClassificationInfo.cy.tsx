@@ -1,7 +1,7 @@
 import { ClassificationInfo } from "./ClassificationInfo";
 import { Content } from "../types";
 
-describe("ClassificationInfo", () => {
+describe("ClassificationInfo", { tags: ["@group1"] }, () => {
   const mockClassifications = [
     {
       id: 1,

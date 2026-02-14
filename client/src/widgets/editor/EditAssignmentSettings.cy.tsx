@@ -1,7 +1,7 @@
 import { EditAssignmentSettings } from "./EditAssignmentSettings";
 import { FetcherWithComponents } from "react-router";
 
-describe("EditAssignmentSettings Component", () => {
+describe("EditAssignmentSettings Component", { tags: ["@group3"] }, () => {
   function createMockFetcher() {
     return {
       state: "idle",

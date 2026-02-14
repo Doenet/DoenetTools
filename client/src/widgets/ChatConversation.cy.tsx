@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 import { ChatConversation } from "./ChatConversation";
 
-describe("ChatConversation Component", () => {
+describe("ChatConversation Component", { tags: ["@group3"] }, () => {
   it("renders empty state and is accessible", () => {
     cy.mount(
       <ChatConversation

@@ -1,7 +1,7 @@
 import { Box } from "@chakra-ui/react";
 import { PanelPair } from "./PanelPair";
 
-describe("PanelPair", () => {
+describe("PanelPair", { tags: ["@group4"] }, () => {
   const panelA = <Box data-test="panel-a">Panel A Content</Box>;
   const panelB = <Box data-test="panel-b">Panel B Content</Box>;
 

@@ -1,7 +1,7 @@
 import { ContentInfoDrawer } from "./ContentInfoDrawer";
 import { Content, Doc, DoenetmlVersion, License, UserInfo } from "../types";
 
-describe("ContentInfoDrawer", () => {
+describe("ContentInfoDrawer", { tags: ["@group1"] }, () => {
   const mockOwner: UserInfo = {
     userId: "owner-123" as any,
     firstNames: "Test",

@@ -1,4 +1,4 @@
-describe("Search My Activities Tests", function () {
+describe("Search My Activities Tests", { tags: ["@group3"] }, function () {
   it("test search button", () => {
     cy.loginAsTestUser();
 

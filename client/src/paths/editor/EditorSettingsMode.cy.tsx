@@ -9,7 +9,7 @@ import {
 } from "../../types";
 import { FetcherWithComponents } from "react-router";
 
-describe("EditorSettingsModeComponent", () => {
+describe("EditorSettingsModeComponent", { tags: ["@group1"] }, () => {
   function createMockFetcher() {
     return {
       state: "idle",

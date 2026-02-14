@@ -3,7 +3,7 @@
 
 import { DateTime } from "luxon";
 
-describe("Basic accessibility tests", function () {
+describe("Basic accessibility tests", { tags: ["@group1"] }, function () {
   it("Check accessibility of home page", () => {
     cy.visit("/");
 

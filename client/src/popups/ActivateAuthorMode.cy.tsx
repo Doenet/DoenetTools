@@ -2,7 +2,7 @@ import { ActivateAuthorMode } from "./ActivateAuthorMode";
 import { FetcherWithComponents } from "react-router";
 import { UserInfoWithEmail } from "../types";
 
-describe("ActivateAuthorMode component tests", () => {
+describe("ActivateAuthorMode component tests", { tags: ["@group2"] }, () => {
   const mockUser: UserInfoWithEmail = {
     userId: "12345678-1111-2222-3333-123456789999",
     firstNames: "John",

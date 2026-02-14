@@ -2,7 +2,7 @@ import { DeleteContent } from "./DeleteContent";
 import { FetcherWithComponents } from "react-router";
 import { ContentDescription } from "../types";
 
-describe("DeleteContent component tests", () => {
+describe("DeleteContent component tests", { tags: ["@group2"] }, () => {
   const mockContent: ContentDescription = {
     contentId: "content-123",
     name: "My Activity",

@@ -1,6 +1,6 @@
 import { toMathJaxString } from "@doenet-tools/shared";
 
-describe("Assignment settings Tests", function () {
+describe("Assignment settings Tests", { tags: ["@group1"] }, function () {
   it("number of attempts changed via stepper is saved immediately", () => {
     cy.loginAsTestUser({
       isAuthor: true,

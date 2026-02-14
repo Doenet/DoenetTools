@@ -1,4 +1,4 @@
-describe("Add selected to tests", () => {
+describe("Add selected to tests", { tags: ["@group2"] }, () => {
   function createInitialSetup() {
     cy.loginAsTestUser({ isAuthor: true });
 

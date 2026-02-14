@@ -1,4 +1,4 @@
-describe("Classification panel tests", function () {
+describe("Classification panel tests", { tags: ["@group4"] }, function () {
   it("add classifications to activity", () => {
     cy.loginAsTestUser();
 

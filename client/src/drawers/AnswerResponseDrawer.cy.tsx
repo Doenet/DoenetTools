@@ -2,7 +2,7 @@ import { AnswerResponseDrawer } from "./AnswerResponseDrawer";
 import { toMathJaxString } from "@doenet-tools/shared";
 import { DateTime } from "luxon";
 
-describe("AnswerResponseDrawer component tests", () => {
+describe("AnswerResponseDrawer component tests", { tags: ["@group1"] }, () => {
   it("renders math correctly", () => {
     const responses = [
       {

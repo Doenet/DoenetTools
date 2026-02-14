@@ -1,6 +1,7 @@
 import { defineConfig } from "cypress";
 //@ts-expect-error no types
 import addAccessibilityTasks from "wick-a11y/accessibility-tasks";
+import { plugin as cypressGrepPlugin } from "@cypress/grep/plugin";
 
 export default defineConfig({
   component: {
@@ -8,8 +9,11 @@ export default defineConfig({
       framework: "react",
       bundler: "vite",
     },
-    setupNodeEvents(on) {
+    setupNodeEvents(on, config) {
       addAccessibilityTasks(on);
+
+      cypressGrepPlugin(config);
+      return config;
     },
   },
 });

@@ -1,6 +1,6 @@
 import Searchbar from "./SearchBar";
 
-describe("SearchBar", () => {
+describe("SearchBar", { tags: ["@group4"] }, () => {
   // No-op handler to prevent React warning about controlled inputs without onChange
   const noOpChange = () => {};
 

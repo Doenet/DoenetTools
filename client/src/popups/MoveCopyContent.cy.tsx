@@ -1,7 +1,7 @@
 import { MoveCopyContent } from "./MoveCopyContent";
 import { FetcherWithComponents } from "react-router";
 
-describe("MoveCopyContent component tests", () => {
+describe("MoveCopyContent component tests", { tags: ["@group2"] }, () => {
   const contentName = "A problem set";
   const contentType = "sequence";
   const contentId = "abc";
