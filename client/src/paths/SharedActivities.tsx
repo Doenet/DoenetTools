@@ -128,6 +128,7 @@ export function SharedActivities() {
         isOpen={infoIsOpen}
         onClose={infoOnClose}
         contentData={contentData}
+        allLicenses={allLicenses}
       />
     ) : null;
 
