@@ -12,7 +12,7 @@
     "lint": "eslint --fix",
     "lint:check": "eslint",
     "test": "cypress open",
-    "test:group1a": "cypress run --component -b 'chrome' --config video=false --headless --expose grepTags='@group1a',grepFilterSpecs=true,grepOmitFiltered=true",
+    "test:group1": "cypress run --component -b 'chrome' --config video=false --headless --expose grepTags='@group1',grepFilterSpecs=true,grepOmitFiltered=true",
     "test:group2": "cypress run --component -b 'chrome' --config video=false --headless --expose grepTags='@group2',grepFilterSpecs=true,grepOmitFiltered=true",
     "test:group3": "cypress run --component -b 'chrome' --config video=false --headless --expose grepTags='@group3',grepFilterSpecs=true,grepOmitFiltered=true",
     "test:group4": "cypress run --component -b 'chrome' --config video=false --headless --expose grepTags='@group4',grepFilterSpecs=true,grepOmitFiltered=true",
