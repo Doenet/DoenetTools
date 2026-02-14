@@ -1,7 +1,7 @@
 import { CreateContentMenu } from "./CreateContentMenu";
 import { ContentDescription, UserInfo } from "../types";
 
-describe("CreateContentMenu", () => {
+describe("CreateContentMenu", { tags: ["@group1"] }, () => {
   const mockUser: UserInfo = {
     userId: "user-123" as any,
     firstNames: "Test",

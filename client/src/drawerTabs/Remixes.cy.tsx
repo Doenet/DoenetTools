@@ -1,7 +1,7 @@
 import { Remixes } from "./Remixes";
 import { ActivityRemixItem, RemixContent, DoenetDateTime } from "../types";
 
-describe("Remixes", () => {
+describe("Remixes", { tags: ["@group1"] }, () => {
   const mockOwner = {
     userId: "owner-1" as any,
     firstNames: "Jane",

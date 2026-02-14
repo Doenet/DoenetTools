@@ -271,6 +271,10 @@ jobs:
   component-tests:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        test-group: [group1, group2, group3, group4]
+
     steps:
       # Checkout repo
       - uses: actions/checkout@v4
@@ -288,9 +292,9 @@ jobs:
       - name: Build shared workspace
         run: npm run build --workspace shared
 
-      # Run component tests
+      # Run component tests (grouped)
       - name: Run component tests
-        run: npm run test:all --workspace client
+        run: npm run test:${{ matrix.test-group }} --workspace client
 
       # Upload artifacts on failure
       - name: Upload test artifacts
