@@ -273,6 +273,49 @@ describe("CreateContentAndPromptName component tests", () => {
     });
   });
 
+  it("defaults empty name to 'Untitled'", () => {
+    const mockCreateFetcher = createMockFetcher(
+      "idle",
+      {
+        status: 200,
+        data: {
+          newChildContentIds: ["new-1"],
+          newContentId: "new-content-123",
+          newContentName: "Original Name",
+        },
+      },
+      "createSubmit",
+    );
+    const mockSaveNameFetcher = createMockFetcher(
+      "idle",
+      undefined,
+      "saveSubmit",
+    );
+    const mockNavigate = createMockNavigate();
+    const onCloseSpy = cy.spy().as("onClose");
+
+    cy.mount(
+      <CreateContentAndPromptName
+        isOpen={true}
+        onClose={onCloseSpy}
+        contentIds={mockContentIds}
+        desiredType="folder"
+        user={mockUser}
+        navigate={mockNavigate}
+        createFetcher={mockCreateFetcher}
+        saveNameFetcher={mockSaveNameFetcher}
+      />,
+    );
+
+    cy.get('[data-test="Created Name"]').clear().type("   ").blur();
+
+    cy.get("@saveSubmit").should("have.been.calledWith", {
+      path: "updateContent/updateContentSettings",
+      name: "Untitled",
+      contentId: "new-content-123",
+    });
+  });
+
   it("saves name on Enter key", () => {
     const mockCreateFetcher = createMockFetcher(
       "idle",
