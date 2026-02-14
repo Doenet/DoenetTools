@@ -188,6 +188,10 @@ jobs:
       ALLOW_TEST_LOGIN: "true"
       ADD_TEST_APIS: "true"
 
+    strategy:
+      matrix:
+        test-group: [brittle1, brittle2, brittle3]
+
     steps:
       # Checkout repo
       - uses: actions/checkout@v4
@@ -245,13 +249,13 @@ jobs:
           echo "=== Client Log ===" && cat /tmp/client.log || true
           echo "=== Server processes ===" && ps aux | grep "node\|npm" || true
 
-      # Run brittle tests with aggressive retry
+      # Run brittle tests with aggressive retry (grouped)
       - name: Run Brittle Tests
         uses: nick-fields/retry@v3
         with:
           timeout_minutes: 30
           max_attempts: 3
-          command: npm run test:brittle --workspace tests-cypress
+          command: npm run test:brittle${{ matrix.test-group }} --workspace tests-cypress
 
       # Upload screenshots and videos on failure
       - uses: actions/upload-artifact@v4
