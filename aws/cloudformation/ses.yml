@@ -1,3 +1,6 @@
+# If you're setting this up for the first time, and you want `dev` to use `prod`'s SES server,
+# you will have to manually add permissions that allow `dev` to send email with `prod`'s SES identity.
+
 AWSTemplateFormatVersion: "2010-09-09"
 Description: SES configuration
 
