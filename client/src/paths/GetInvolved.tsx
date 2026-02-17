@@ -220,7 +220,7 @@ export function GetInvolved() {
               </Heading>
               <VStack align="start" spacing={2}>
                 <Text fontSize="1.3rem" lineHeight="1.3">
-                  The software group developes the software for the Doenet
+                  The software group develops the software for the Doenet
                   website and the language used to write Doenet activities,
                   called DoenetML (Doenet Markup Language). You can help the
                   software group by creating bug reports (called Issues) on our{" "}
@@ -265,7 +265,7 @@ export function GetInvolved() {
               </Heading>
               <VStack align="start" spacing={2}>
                 <Text fontSize="1.3rem" lineHeight="1.3">
-                  Test accessibility group works to make sure that Doenet is
+                  The accessibility group works to make sure that Doenet is
                   accessible to all. They test the accessibility of the Doenet
                   website and activities, and they work to improve the way users
                   using assistive technology can interact with the content.

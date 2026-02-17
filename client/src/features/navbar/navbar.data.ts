@@ -16,7 +16,7 @@ export function mainSections(discussionsLink: string): NavSection[] {
         {
           label: "Get Involved",
           subItems: [
-            { label: "How to get involved", to: "get-involved" },
+            { label: "How to get involved", to: "/get-involved" },
             { label: "Community discussions", to: discussionsLink },
             { label: "Software/technical", to: "https://github.com/Doenet" },
           ],
@@ -34,7 +34,7 @@ export function mainSections(discussionsLink: string): NavSection[] {
         {
           label: "Authors",
           subItems: [
-            { label: "Scratch pad", to: "/scratchpad" },
+            { label: "Scratch pad", to: "/scratchPad" },
             { label: "Authoring documentation", to: "https://docs.doenet.org" },
             { label: "Training workshops", to: "/events#workshops" },
             { label: "Get support", to: discussionsLink },
