@@ -78,32 +78,40 @@ describe("ContentInfoDrawer", { tags: ["@group1"] }, () => {
 
   beforeEach(() => {
     // Stub remix endpoints with explicit path matching to prevent Vite proxy errors in CI
-    cy.intercept(
-      { method: "GET", pathname: "/api/remix/getRemixSources/**" },
-      {
-        statusCode: 200,
-        body: { remixSources: [] },
-      },
-    ).as("getRemixSources");
+    cy.intercept("GET", "**/api/remix/getRemixSources/**", {
+      statusCode: 200,
+      body: { remixSources: [] },
+    }).as("getRemixSources");
 
-    cy.intercept(
-      { method: "GET", pathname: "/api/remix/getRemixes/**" },
-      {
-        statusCode: 200,
-        body: { remixes: [] },
-      },
-    ).as("getRemixes");
+    cy.intercept("GET", "**/api/remix/getRemixes/**", {
+      statusCode: 200,
+      body: { remixes: [] },
+    }).as("getRemixes");
   });
 
-  it("renders drawer header with activity information", () => {
+  function mountActivityDrawer({
+    contentData = mockActivity,
+    displayTab,
+  }: {
+    contentData?: Doc;
+    displayTab?: "general" | "classifications";
+  } = {}) {
     cy.mount(
       <ContentInfoDrawer
         isOpen={true}
         onClose={cy.stub()}
-        contentData={mockActivity}
+        contentData={contentData}
+        displayTab={displayTab}
         allLicenses={mockLicenses}
       />,
     );
+
+    cy.wait("@getRemixSources").its("response.statusCode").should("eq", 200);
+    cy.wait("@getRemixes").its("response.statusCode").should("eq", 200);
+  }
+
+  it("renders drawer header with activity information", () => {
+    mountActivityDrawer();
 
     cy.contains("Activity Information").should("be.visible");
     cy.contains("Test Activity").should("be.visible");
@@ -126,28 +134,14 @@ describe("ContentInfoDrawer", { tags: ["@group1"] }, () => {
   });
 
   it("displays close button", () => {
-    cy.mount(
-      <ContentInfoDrawer
-        isOpen={true}
-        onClose={cy.stub()}
-        contentData={mockActivity}
-        allLicenses={mockLicenses}
-      />,
-    );
+    mountActivityDrawer();
 
     cy.get("[data-test='Close Settings Button']").should("be.visible");
     cy.checkAccessibility("body");
   });
 
   it("renders General tab for activity", () => {
-    cy.mount(
-      <ContentInfoDrawer
-        isOpen={true}
-        onClose={cy.stub()}
-        contentData={mockActivity}
-        allLicenses={mockLicenses}
-      />,
-    );
+    mountActivityDrawer();
 
     cy.get("[data-test='General Tab']").should("be.visible");
     cy.checkAccessibility("body");
@@ -168,14 +162,7 @@ describe("ContentInfoDrawer", { tags: ["@group1"] }, () => {
   });
 
   it("displays Classifications tab only for activities", () => {
-    cy.mount(
-      <ContentInfoDrawer
-        isOpen={true}
-        onClose={cy.stub()}
-        contentData={mockActivity}
-        allLicenses={mockLicenses}
-      />,
-    );
+    mountActivityDrawer();
 
     cy.get("[data-test='Classifications']").should("be.visible");
     cy.contains("Classifications").should("be.visible");
@@ -197,14 +184,7 @@ describe("ContentInfoDrawer", { tags: ["@group1"] }, () => {
   });
 
   it("displays Remix Sources tab for activities", () => {
-    cy.mount(
-      <ContentInfoDrawer
-        isOpen={true}
-        onClose={cy.stub()}
-        contentData={mockActivity}
-        allLicenses={mockLicenses}
-      />,
-    );
+    mountActivityDrawer();
 
     cy.get("[data-test='Remix Sources Tab']").should("be.visible");
     cy.contains("Remix Sources").should("be.visible");
@@ -226,14 +206,7 @@ describe("ContentInfoDrawer", { tags: ["@group1"] }, () => {
   });
 
   it("displays Remixes tab for activities", () => {
-    cy.mount(
-      <ContentInfoDrawer
-        isOpen={true}
-        onClose={cy.stub()}
-        contentData={mockActivity}
-        allLicenses={mockLicenses}
-      />,
-    );
+    mountActivityDrawer();
 
     cy.get("[data-test='Remixes Tab']").should("be.visible");
     cy.contains("Remixes").should("be.visible");
@@ -255,14 +228,7 @@ describe("ContentInfoDrawer", { tags: ["@group1"] }, () => {
   });
 
   it("starts with General tab selected by default", () => {
-    cy.mount(
-      <ContentInfoDrawer
-        isOpen={true}
-        onClose={cy.stub()}
-        contentData={mockActivity}
-        allLicenses={mockLicenses}
-      />,
-    );
+    mountActivityDrawer();
 
     cy.get("[data-test='General Tab']").should(
       "have.attr",
@@ -273,15 +239,7 @@ describe("ContentInfoDrawer", { tags: ["@group1"] }, () => {
   });
 
   it("starts with Classifications tab when displayTab is set", () => {
-    cy.mount(
-      <ContentInfoDrawer
-        isOpen={true}
-        onClose={cy.stub()}
-        contentData={mockActivity}
-        displayTab="classifications"
-        allLicenses={mockLicenses}
-      />,
-    );
+    mountActivityDrawer({ displayTab: "classifications" });
 
     cy.get("[data-test='Classifications']").should(
       "have.attr",
@@ -292,14 +250,7 @@ describe("ContentInfoDrawer", { tags: ["@group1"] }, () => {
   });
 
   it("switches tabs when clicked", () => {
-    cy.mount(
-      <ContentInfoDrawer
-        isOpen={true}
-        onClose={cy.stub()}
-        contentData={mockActivity}
-        allLicenses={mockLicenses}
-      />,
-    );
+    mountActivityDrawer();
 
     cy.get("[data-test='General Tab']").should(
       "have.attr",
@@ -328,9 +279,7 @@ describe("ContentInfoDrawer", { tags: ["@group1"] }, () => {
     cy.get("[data-test='Close Settings Button']").should("not.exist");
   });
 
-  // Note: I give up trying to figure out why this fails in CI
-  // with an axios proxy error but works locally.
-  it.skip("renders with activity having classifications", () => {
+  it("renders with activity having classifications", () => {
     const activityWithClassifications: Doc = {
       ...mockActivity,
       classifications: [
@@ -366,14 +315,7 @@ describe("ContentInfoDrawer", { tags: ["@group1"] }, () => {
       ],
     };
 
-    cy.mount(
-      <ContentInfoDrawer
-        isOpen={true}
-        onClose={cy.stub()}
-        contentData={activityWithClassifications}
-        allLicenses={mockLicenses}
-      />,
-    );
+    mountActivityDrawer({ contentData: activityWithClassifications });
 
     cy.contains("Classifications (1)").should("be.visible");
     cy.checkAccessibility("body");
@@ -385,14 +327,7 @@ describe("ContentInfoDrawer", { tags: ["@group1"] }, () => {
       name: "This is a very long activity name that should be truncated in the header",
     };
 
-    cy.mount(
-      <ContentInfoDrawer
-        isOpen={true}
-        onClose={cy.stub()}
-        contentData={activityWithLongName}
-        allLicenses={mockLicenses}
-      />,
-    );
+    mountActivityDrawer({ contentData: activityWithLongName });
 
     cy.contains(
       "This is a very long activity name that should be truncated in the header",
@@ -413,14 +348,7 @@ describe("ContentInfoDrawer", { tags: ["@group1"] }, () => {
       },
     };
 
-    cy.mount(
-      <ContentInfoDrawer
-        isOpen={true}
-        onClose={cy.stub()}
-        contentData={contentWithParent}
-        allLicenses={mockLicenses}
-      />,
-    );
+    mountActivityDrawer({ contentData: contentWithParent });
 
     cy.contains("Activity Information").should("be.visible");
     cy.checkAccessibility("body");
@@ -432,28 +360,14 @@ describe("ContentInfoDrawer", { tags: ["@group1"] }, () => {
       classifications: [],
     };
 
-    cy.mount(
-      <ContentInfoDrawer
-        isOpen={true}
-        onClose={cy.stub()}
-        contentData={activityNoClassifications}
-        allLicenses={mockLicenses}
-      />,
-    );
+    mountActivityDrawer({ contentData: activityNoClassifications });
 
     cy.contains("Classifications (0)").should("be.visible");
     cy.checkAccessibility("body");
   });
 
   it("renders with multiple tabs accessible", () => {
-    cy.mount(
-      <ContentInfoDrawer
-        isOpen={true}
-        onClose={cy.stub()}
-        contentData={mockActivity}
-        allLicenses={mockLicenses}
-      />,
-    );
+    mountActivityDrawer();
 
     // Verify all tabs are accessible
     cy.get("[data-test='General Tab']").should("exist");
@@ -477,14 +391,7 @@ describe("ContentInfoDrawer", { tags: ["@group1"] }, () => {
       ],
     };
 
-    cy.mount(
-      <ContentInfoDrawer
-        isOpen={true}
-        onClose={cy.stub()}
-        contentData={sharedContent}
-        allLicenses={mockLicenses}
-      />,
-    );
+    mountActivityDrawer({ contentData: sharedContent });
 
     cy.contains("Activity Information").should("be.visible");
     cy.checkAccessibility("body");
