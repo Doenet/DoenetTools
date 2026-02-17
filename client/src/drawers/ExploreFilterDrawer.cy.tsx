@@ -5,7 +5,7 @@ import {
   UserInfo,
 } from "../types";
 
-describe("ExploreFilterDrawer", () => {
+describe("ExploreFilterDrawer", { tags: ["@group1"] }, () => {
   const mockAuthors: UserInfo[] = [
     {
       userId: "author-1" as any,

@@ -2,7 +2,7 @@ import { LibraryEditorControls } from "./LibraryEditorControls";
 import { FetcherWithComponents } from "react-router";
 import { LibraryRelations, LibraryComment, UserInfo } from "../../types";
 
-describe("LibraryEditorControls Component", () => {
+describe("LibraryEditorControls Component", { tags: ["@group3"] }, () => {
   function createMockFetcher(data?: any, submitStub?: any, loadStub?: any) {
     return {
       state: "idle",

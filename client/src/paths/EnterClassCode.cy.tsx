@@ -1,6 +1,6 @@
 import { EnterClassCode } from "./EnterClassCode";
 
-describe("EnterClassCode", () => {
+describe("EnterClassCode", { tags: ["@group2"] }, () => {
   it("renders the form with empty class code input", () => {
     cy.mount(<EnterClassCode invalidCode={undefined} />);
 

@@ -2,7 +2,7 @@ import { ConfirmAssignModal } from "./ConfirmAssignModal";
 import { FetcherWithComponents } from "react-router";
 import { ContentDescription } from "../types";
 
-describe("ConfirmAssignModal component tests", () => {
+describe("ConfirmAssignModal component tests", { tags: ["@group2"] }, () => {
   const mockContentDescription: ContentDescription = {
     contentId: "12345678-1234-1234-1234-123456789abc",
     name: "Test Activity",

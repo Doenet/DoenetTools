@@ -1,7 +1,7 @@
 import { RemixSources } from "./RemixSources";
 import { ActivityRemixItem, RemixContent, DoenetDateTime } from "../types";
 
-describe("RemixSources", () => {
+describe("RemixSources", { tags: ["@group1"] }, () => {
   const mockSourceOwner = {
     userId: "source-owner-1" as any,
     firstNames: "Alice",

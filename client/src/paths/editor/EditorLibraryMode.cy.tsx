@@ -2,7 +2,7 @@ import { EditorLibraryModeComponent } from "./EditorLibraryMode";
 import { ContentType, LibraryComment, LibraryRelations } from "../../types";
 import { FetcherWithComponents } from "react-router";
 
-describe("EditorLibraryModeContent", () => {
+describe("EditorLibraryModeContent", { tags: ["@group1"] }, () => {
   // Mock fetcher
   const mockFetcher = {
     state: "idle",

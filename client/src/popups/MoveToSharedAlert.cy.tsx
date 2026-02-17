@@ -1,6 +1,6 @@
 import MoveToSharedAlert from "./MoveToSharedAlert";
 
-describe("MoveToSharedAlert component tests", () => {
+describe("MoveToSharedAlert component tests", { tags: ["@group2"] }, () => {
   it("shows modal when open", () => {
     const onCloseSpy = cy.spy().as("onClose");
     const performMoveSpy = cy.spy().as("performMove");

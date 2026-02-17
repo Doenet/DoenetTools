@@ -4,7 +4,7 @@ import {
 } from "./DoenetMLVersionComponents";
 import { DoenetmlVersion } from "../../types";
 
-describe("DoenetML Version Components", () => {
+describe("DoenetML Version Components", { tags: ["@group1"] }, () => {
   const mockVersions: DoenetmlVersion[] = [
     {
       id: 1,

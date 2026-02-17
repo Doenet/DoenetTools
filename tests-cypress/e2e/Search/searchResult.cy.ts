@@ -1,4 +1,4 @@
-describe("Search results Tests", function () {
+describe("Search results Tests", { tags: ["@group3"] }, function () {
   it("classifications shown in search", () => {
     cy.loginAsTestUser();
     const code = Date.now().toString();

@@ -1,4 +1,4 @@
-describe("Create Folders Tests", function () {
+describe("Create Folders Tests", { tags: ["@group3"] }, function () {
   it("create and share folder", () => {
     const code = Date.now().toString();
     const scrappyEmail = `scrappy${code}@doo.com`;

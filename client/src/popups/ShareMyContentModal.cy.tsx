@@ -1,7 +1,7 @@
 import { ShareMyContentModal } from "./ShareMyContentModal";
 import { UserInfoWithEmail } from "../types";
 
-describe("ShareMyContentModal component tests", () => {
+describe("ShareMyContentModal component tests", { tags: ["@group3"] }, () => {
   const contentId = "content-123";
   const contentType = "sequence";
 

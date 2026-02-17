@@ -1,7 +1,7 @@
 import { GeneralContentInfo } from "./GeneralContentInfo";
 import { Content, License } from "../types";
 
-describe("GeneralContentInfo", () => {
+describe("GeneralContentInfo", { tags: ["@group1"] }, () => {
   const mockLicense: License = {
     code: "CCDUAL",
     name: "CC Dual",

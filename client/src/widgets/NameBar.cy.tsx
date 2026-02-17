@@ -3,7 +3,7 @@ import { FaFile } from "react-icons/fa";
 import { type FetcherWithComponents } from "react-router";
 import { NameBar } from "./NameBar";
 
-describe("NameBar", () => {
+describe("NameBar", { tags: ["@group4"] }, () => {
   function createMockFetcher(): FetcherWithComponents<unknown> {
     return {
       submit: cy.stub().as("fetcherSubmit"),

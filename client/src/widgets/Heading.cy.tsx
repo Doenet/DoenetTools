@@ -1,6 +1,6 @@
 import { DoenetHeading } from "./Heading";
 
-describe("DoenetHeading", () => {
+describe("DoenetHeading", { tags: ["@group4"] }, () => {
   describe("rendering", () => {
     it("renders nothing when neither heading nor subheading is provided", () => {
       cy.mount(<DoenetHeading />);
