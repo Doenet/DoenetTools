@@ -9,8 +9,14 @@
     "lint:check": "eslint",
     "test": "cypress open",
     "test:all": "cypress run -b 'chrome' --config video=false --headless",
-    "test:skip-brittle": "cypress run -b 'chrome' --config video=false --headless --env grepTags='-@brittle'",
-    "test:brittle": "cypress run -b 'chrome' --config video=false --headless --env grepTags='@brittle',grepFilterSpecs=true,grepOmitFiltered=true",
+    "test:group1": "cypress run -b 'chrome' --config video=false --headless --expose grepTags='@group1',grepFilterSpecs=true,grepOmitFiltered=true",
+    "test:group2": "cypress run -b 'chrome' --config video=false --headless --expose grepTags='@group2',grepFilterSpecs=true,grepOmitFiltered=true",
+    "test:group3": "cypress run -b 'chrome' --config video=false --headless --expose grepTags='@group3',grepFilterSpecs=true,grepOmitFiltered=true",
+    "test:group4": "cypress run -b 'chrome' --config video=false --headless --expose grepTags='-@group1+-@group2+-@group3+-@brittle1+-@brittle2+-@brittle3',grepFilterSpecs=true,grepOmitFiltered=true",
+    "test:skip-brittle": "cypress run -b 'chrome' --config video=false --headless --expose grepTags='-@brittle1+-@brittle2+-@brittle3',grepFilterSpecs=true,grepOmitFiltered=true",
+    "test:brittle1": "cypress run -b 'chrome' --config video=false --headless --expose grepTags='@brittle1',grepFilterSpecs=true,grepOmitFiltered=true",
+    "test:brittle2": "cypress run -b 'chrome' --config video=false --headless --expose grepTags='@brittle2',grepFilterSpecs=true,grepOmitFiltered=true",
+    "test:brittle3": "cypress run -b 'chrome' --config video=false --headless --expose grepTags='@brittle3',grepFilterSpecs=true,grepOmitFiltered=true",
     "test:parallel": "cypress-parallel -s test:all -t 4 -d e2e -n ../../node_modules/cypress-multi-reporters"
   },
   "dependencies": {

@@ -197,6 +197,7 @@ export function Explore() {
     setExploreTab: setCurrentTab,
     addTo,
     setAddTo,
+    allLicenses,
   } = useOutletContext<SiteContext>();
 
   const [searchString, setSearchString] = useState(q || "");
@@ -244,6 +245,7 @@ export function Explore() {
       isOpen={infoIsOpen}
       onClose={infoOnClose}
       contentData={infoContentData}
+      allLicenses={allLicenses}
     />
   ) : null;
 

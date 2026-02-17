@@ -1,7 +1,7 @@
 import { EditCategories } from "./EditCategories";
 import { CategoryGroup } from "../../types";
 
-describe("EditCategories Component", () => {
+describe("EditCategories Component", { tags: ["@group3"] }, () => {
   const mockAllCategories: CategoryGroup[] = [
     {
       name: "Question Type",

@@ -1,4 +1,4 @@
-describe("Move tests", () => {
+describe("Move tests", { tags: ["@group3"] }, () => {
   it("Move items up and down", () => {
     cy.loginAsTestUser();
 

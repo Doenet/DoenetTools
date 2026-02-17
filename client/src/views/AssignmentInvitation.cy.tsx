@@ -1,6 +1,6 @@
 import { AssignmentInvitation } from "./AssignmentInvitation";
 
-describe("Assignment Invitation Modal", () => {
+describe("Assignment Invitation Modal", { tags: ["@group3"] }, () => {
   const assignmentName = "Sample Assignment";
   const classCode = "ABC123";
 

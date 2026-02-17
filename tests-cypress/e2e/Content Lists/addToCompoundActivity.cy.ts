@@ -1,4 +1,4 @@
-describe("Add to compound activity tests", () => {
+describe("Add to compound activity tests", { tags: ["@group2"] }, () => {
   function createInitialSetup() {
     cy.loginAsTestUser({ isAuthor: true });
 

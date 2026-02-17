@@ -1,7 +1,7 @@
 import { ShareTable } from "./ShareTable";
 import { UserInfoWithEmail } from "../../types";
 
-describe("ShareTable Component", () => {
+describe("ShareTable Component", { tags: ["@group3"] }, () => {
   const contentId = "content-123";
   const sharedUser: UserInfoWithEmail = {
     userId: "b3d9b6f6-0d8a-4b9a-8f71-5e1f3e5d4f11",

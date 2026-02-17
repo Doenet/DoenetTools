@@ -1,11 +1,11 @@
-describe("Create Content Tests", function () {
+describe("Create Content Tests", { tags: ["@group3"] }, function () {
   it("create new content of each type", () => {
     cy.loginAsTestUser({ isAuthor: true });
 
     cy.visit("/");
 
     cy.get('[data-test="My Activities"]').click();
-    cy.get('[data-test="New Button').should("be.visible");
+    cy.get('[data-test="New Button"]').should("be.visible");
 
     cy.get(`[data-test="Content Card"]`).should("not.exist");
 

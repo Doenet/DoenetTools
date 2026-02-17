@@ -1,4 +1,4 @@
-describe("Share panel tests", function () {
+describe("Share panel tests", { tags: ["@group4"] }, function () {
   it("cannot select incompatible license after remix, ShareAlike", () => {
     const code = Date.now().toString();
     const scrappyEmail = `scrappy${code}@doo`;

@@ -1,7 +1,7 @@
 import { DocEditorRemixModeComponent } from "./DocEditorRemixMode";
 import { ActivityRemixItem } from "../../types";
 
-describe("DocEditorRemixModeContent", () => {
+describe("DocEditorRemixModeContent", { tags: ["@group1"] }, () => {
   // Mock data
   const mockSources: ActivityRemixItem[] = [
     {

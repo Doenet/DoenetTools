@@ -1,7 +1,7 @@
 import { AddStudents } from "./AddStudents";
 import { FetcherWithComponents } from "react-router";
 
-describe("AddStudents component tests", () => {
+describe("AddStudents component tests", { tags: ["@group2"] }, () => {
   const mockFolderId = "12345678-1234-1234-1234-123456789abc";
 
   function createMockFetcher(data?: any) {

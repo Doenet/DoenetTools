@@ -1,4 +1,4 @@
-describe("Trash tests", () => {
+describe("Trash tests", { tags: ["@group3"] }, () => {
   it("Delete document", () => {
     cy.loginAsTestUser();
 

@@ -1,4 +1,4 @@
-describe("Duplicate content Tests", function () {
+describe("Duplicate content Tests", { tags: ["@group3"] }, function () {
   it("Duplicate Document, in My Activities", () => {
     cy.loginAsTestUser({ isAuthor: true });
 

@@ -1,4 +1,4 @@
-describe("Activity Viewer Tests", function () {
+describe("Activity Viewer Tests", { tags: ["@group1"] }, function () {
   it("classifications shown in activity viewer", () => {
     cy.loginAsTestUser();
     cy.createContent({
