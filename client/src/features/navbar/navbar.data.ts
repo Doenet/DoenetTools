@@ -9,8 +9,8 @@ export function mainSections(discussionsLink: string): NavSection[] {
           label: "About",
           subItems: [
             { label: "About Doenet", to: "/about" },
-            { label: "Blog", to: "/blog" },
             { label: "Events", to: "/events" },
+            { label: "Blog", to: "/blog" },
           ],
         },
         {

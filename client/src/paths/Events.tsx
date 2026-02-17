@@ -72,7 +72,7 @@ export function Events() {
               </Heading>
 
               <Text fontSize="1.3rem" lineHeight="1.3" mb={6}>
-                Virtual training workshops are one hour long and held on zoom.
+                Virtual training workshops are one hour long and held on Zoom.
                 Immediately following each workshop, the instructors will hold
                 an office hour to answer any questions and help you with any
                 activities you want to create.
