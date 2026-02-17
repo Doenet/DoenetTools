@@ -4,6 +4,7 @@ import BaseHead from "../components/BaseHead.astro";
 import Footer from "../components/Footer.astro";
 import FormattedDate from "../components/FormattedDate.astro";
 import Header from "../components/Header.astro";
+import { BLOG_BASE_URL } from "../consts";
 
 type PostNav = {
   title: string;
@@ -147,13 +148,16 @@ const {
             (previousPost || nextPost) && (
               <nav class="post-nav" aria-label="Post navigation">
                 {previousPost && (
-                  <a href={previousPost.url} class="previous">
+                  <a
+                    href={BLOG_BASE_URL + "/" + previousPost.url}
+                    class="previous"
+                  >
                     <span class="label">Previous</span>
                     <span class="title">{previousPost.title}</span>
                   </a>
                 )}
                 {nextPost && (
-                  <a href={nextPost.url} class="next">
+                  <a href={BLOG_BASE_URL + "/" + nextPost.url} class="next">
                     <span class="label">Next</span>
                     <span class="title">{nextPost.title}</span>
                   </a>
