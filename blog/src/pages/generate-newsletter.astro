@@ -271,8 +271,7 @@ const defaults = newsletterConfig.default;
       <!-- Posts -->
       {
         postsWithExcerpts.map(({ post, slug, Content, config }) => {
-          const isInitiallyVisible =
-            post.data.pubDate >= defaults.sinceDate;
+          const isInitiallyVisible = post.data.pubDate >= defaults.sinceDate;
           return (
             <>
               {/* Render the full content in a hidden div so we can extract from it */}
@@ -311,18 +310,21 @@ const defaults = newsletterConfig.default;
             style="padding: 1.5em 1em; text-align: center; background: #f8f9fa; border-top: 1px solid #e0e0e0;"
           >
             <p
-              style="margin: 0 0 0.5em 0; font-size: 0.9em; color: #666; font-family: sans-serif;"
+              style="margin: 0; font-size: 0.85em; color: #666; font-family: sans-serif;"
             >
               Visit the <a
                 href="https://beta.doenet.org/blog"
                 style="color: #0066cc; text-decoration: underline;"
                 >Doenet Blog</a
-              > for more updates
-            </p>
-            <p
-              style="margin: 0; font-size: 0.8em; color: #999; font-family: sans-serif;"
-            >
-              © {new Date().getFullYear()} Doenet. All rights reserved.
+              > for more updates. Licensed under
+              <a
+                href="https://creativecommons.org/licenses/by/4.0/"
+                style="color: #0066cc; text-decoration: underline;"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                CC BY 4.0
+              </a>.
             </p>
           </td>
         </tr>
