@@ -5,7 +5,7 @@ import { DateTime } from "luxon";
 describe("Assignment workflow Tests", function () {
   it(
     "instructor creates assignment, anonymous user takes it, instructor views data",
-    { tags: ["@brittle"] },
+    { tags: ["@brittle2"] },
     () => {
       const code = Date.now().toString();
       const instructorEmail = `test${code}@doenet.org`;
@@ -271,7 +271,7 @@ describe("Assignment workflow Tests", function () {
 
   it(
     "Anonymous user takes problem set assignment, instructor view data",
-    { tags: ["@brittle"] },
+    { tags: ["@brittle3"] },
     () => {
       const code = Date.now().toString();
       const instructorEmail = `test${code}@doenet.org`;

@@ -68,7 +68,7 @@ function createDefaultProps(
   };
 }
 
-describe("FilterPanel Component", () => {
+describe("FilterPanel Component", { tags: ["@group4"] }, () => {
   it("renders filters and is accessible", () => {
     const props = createDefaultProps();
 

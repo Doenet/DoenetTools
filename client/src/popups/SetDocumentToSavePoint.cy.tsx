@@ -3,7 +3,7 @@ import { FetcherWithComponents } from "react-router";
 import { ContentRevision } from "../types";
 import { DateTime } from "luxon";
 
-describe("SetDocumentToSavePoint component", () => {
+describe("SetDocumentToSavePoint component", { tags: ["@group3"] }, () => {
   function createMockFetcher(state: "idle" | "loading", data?: any) {
     return {
       state,

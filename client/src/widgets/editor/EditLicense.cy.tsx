@@ -1,7 +1,7 @@
 import { EditLicense } from "./EditLicense";
 import { License, LicenseCode } from "../../types";
 
-describe("EditLicense Component", () => {
+describe("EditLicense Component", { tags: ["@group3"] }, () => {
   const mockLicenses: License[] = [
     {
       code: "CCBYSA",

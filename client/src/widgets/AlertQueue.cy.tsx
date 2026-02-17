@@ -1,6 +1,6 @@
 import { AlertQueue, Alert } from "./AlertQueue";
 
-describe("AlertQueue Component", () => {
+describe("AlertQueue Component", { tags: ["@group3"] }, () => {
   const alerts: Alert[] = [
     {
       id: "info-1",

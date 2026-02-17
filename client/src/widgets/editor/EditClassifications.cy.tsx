@@ -2,7 +2,7 @@ import { EditClassifications } from "./EditClassifications";
 import { FetcherWithComponents } from "react-router";
 import { ContentClassification } from "../../types";
 
-describe("EditClassifications Component", () => {
+describe("EditClassifications Component", { tags: ["@group3"] }, () => {
   beforeEach(() => {
     // Mock the classifications API to prevent ECONNREFUSED errors
     cy.intercept("GET", "/api/classifications/getClassificationCategories", {
