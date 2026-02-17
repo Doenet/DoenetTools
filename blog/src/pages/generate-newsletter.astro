@@ -1,10 +1,9 @@
 ---
 import { getCollection, render } from "astro:content";
-import {
-  extractUntilMarker,
-  cleanForEmail,
-  applyEmailStyles,
-} from "../utils/excerpt";
+import { newsletterStyles } from "../utils/newsletterStyles";
+
+// Note: Helper functions (escapeRegExp, extractUntilMarker, cleanForEmail, applyEmailStyles)
+// are inlined directly in the client-side script to avoid eval and CSP issues.
 
 // ============================================================================
 // NEWSLETTER CONFIGURATION
@@ -69,15 +68,7 @@ const initiallyVisibleCount = postsWithExcerpts.filter(
   ({ post }) => post.data.pubDate >= newsletterConfig.default.sinceDate,
 ).length;
 
-// Format the issue date
-const issueDateFormatted = newsletterConfig.issueDate.toLocaleDateString(
-  "en-US",
-  {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  },
-);
+// Issue date will be computed client-side to always show current date
 
 const siteUrl = Astro.site ? Astro.site.toString().replace(/\/$/, "") : "";
 const blogBasePath = import.meta.env.BASE_URL || "/";
@@ -89,7 +80,7 @@ const defaults = newsletterConfig.default;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{defaults.title} - {issueDateFormatted}</title>
+    <title>{defaults.title} - Loading...</title>
     <style>
       body {
         font-family:
@@ -228,7 +219,7 @@ const defaults = newsletterConfig.default;
         • Date range: Since <span id="date-range"
           >{defaults.sinceDate.toLocaleDateString()}</span
         ><br />
-        • Issue date: {issueDateFormatted}
+        • Issue date: <span id="stats-issue-date">Loading...</span>
       </div>
     </div>
 
@@ -255,9 +246,10 @@ const defaults = newsletterConfig.default;
               <span id="newsletter-subtitle">{defaults.subtitle}</span>
             </p>
             <p
+              id="current-issue-date"
               style="margin: 0.5em 0 0 0; font-size: 0.9em; color: #999; font-family: sans-serif;"
             >
-              {issueDateFormatted}
+              Loading...
             </p>
           </td>
         </tr>
@@ -313,7 +305,7 @@ const defaults = newsletterConfig.default;
               style="margin: 0; font-size: 0.85em; color: #666; font-family: sans-serif;"
             >
               Visit the <a
-                href="https://beta.doenet.org/blog"
+                href={`${siteUrl}${blogBasePath}`.replace(/\/$/, "")}
                 style="color: #0066cc; text-decoration: underline;"
                 >Doenet Blog</a
               > for more updates. Licensed under
@@ -335,17 +327,196 @@ const defaults = newsletterConfig.default;
     <script
       is:inline
       define:vars={{
-        extractUntilMarker: extractUntilMarker.toString(),
-        cleanForEmail: cleanForEmail.toString(),
-        applyEmailStyles: applyEmailStyles.toString(),
         siteUrl,
         blogBasePath,
+        newsletterStylesJSON: JSON.stringify(newsletterStyles),
       }}
     >
-      // Re-declare functions in browser context
-      eval("window.extractUntilMarker = " + extractUntilMarker);
-      eval("window.cleanForEmail = " + cleanForEmail);
-      eval("window.applyEmailStyles = " + applyEmailStyles);
+      // Escape a string so it can be safely used inside a RegExp as a literal.
+      function escapeRegExp(str) {
+        return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      }
+
+      // Extract content up to an HTML comment marker (e.g., <!-- more -->)
+      function extractUntilMarker(html, marker = "more") {
+        const escapedMarker = escapeRegExp(marker);
+        const markerPattern = new RegExp(
+          `<!--\\s*${escapedMarker}\\s*-->`,
+          "i",
+        );
+        const match = html.match(markerPattern);
+
+        if (match && match.index !== undefined) {
+          return html.substring(0, match.index).trim();
+        }
+
+        return html;
+      }
+
+      // Clean HTML for email compatibility and security
+      // - Remove script tags and style tags
+      // - Remove dangerous/interactive elements (button, form, iframe, object, embed, etc.)
+      // - Strip all event handler attributes (on*, data-*, dangerous protocols)
+      // - Sanitize href/src attributes to prevent javascript: and data: URLs
+      function cleanForEmail(html) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, "text/html");
+
+        // Elements to completely remove (dangerous or non-email-compatible)
+        const dangerousTags = [
+          "script",
+          "style",
+          "button",
+          "input",
+          "textarea",
+          "select",
+          "form",
+          "iframe",
+          "object",
+          "embed",
+          "applet",
+          "base",
+          "link",
+          "meta",
+        ];
+
+        dangerousTags.forEach((tag) => {
+          doc.querySelectorAll(tag).forEach((el) => el.remove());
+        });
+
+        // Strip dangerous attributes from all elements
+        doc.querySelectorAll("*").forEach((el) => {
+          // Remove all event handler attributes (on*, data-*)
+          Array.from(el.attributes).forEach((attr) => {
+            if (
+              attr.name.startsWith("on") || // onclick, onerror, onload, etc.
+              attr.name.startsWith("data-") // Remove data attributes for safety
+            ) {
+              el.removeAttribute(attr.name);
+            }
+          });
+
+          // Sanitize href and src attributes
+          const href = el.getAttribute("href");
+          const src = el.getAttribute("src");
+
+          if (
+            href &&
+            (href.startsWith("javascript:") || href.startsWith("data:"))
+          ) {
+            el.removeAttribute("href");
+          }
+
+          if (
+            src &&
+            (src.startsWith("javascript:") || src.startsWith("data:"))
+          ) {
+            el.removeAttribute("src");
+          }
+
+          // Remove aria-* attributes that might execute code in some email clients
+          Array.from(el.attributes).forEach((attr) => {
+            if (
+              attr.name.startsWith("aria-") &&
+              attr.value.includes("javascript")
+            ) {
+              el.removeAttribute(attr.name);
+            }
+          });
+        });
+
+        return doc.body.innerHTML;
+      }
+
+      // Apply inline styles for email compatibility
+      function applyEmailStyles(html) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, "text/html");
+
+        // Style paragraphs
+        doc.querySelectorAll("p").forEach((p) => {
+          p.setAttribute(
+            "style",
+            "margin: 0 0 1em 0; line-height: 1.6; color: #333;",
+          );
+        });
+
+        // Style headings
+        doc.querySelectorAll("h1, h2, h3, h4, h5, h6").forEach((h) => {
+          h.setAttribute(
+            "style",
+            "margin: 1.5em 0 0.5em 0; line-height: 1.3; color: #1a1a1a;",
+          );
+        });
+
+        // Style links
+        doc.querySelectorAll("a").forEach((a) => {
+          a.setAttribute(
+            "style",
+            "color: #0066cc; text-decoration: underline;",
+          );
+        });
+
+        // Style lists
+        doc.querySelectorAll("ul, ol").forEach((list) => {
+          list.setAttribute("style", "margin: 0 0 1em 0; padding-left: 2em;");
+        });
+
+        doc.querySelectorAll("li").forEach((li) => {
+          li.setAttribute("style", "margin: 0 0 0.5em 0; line-height: 1.6;");
+        });
+
+        // Style code blocks
+        doc.querySelectorAll("pre").forEach((pre) => {
+          pre.setAttribute(
+            "style",
+            "background: #f5f5f5; padding: 1em; border-radius: 4px; overflow-x: auto; margin: 1em 0;",
+          );
+        });
+
+        doc.querySelectorAll("code").forEach((code) => {
+          if (code.parentElement?.tagName !== "PRE") {
+            code.setAttribute(
+              "style",
+              "background: #f5f5f5; padding: 0.2em 0.4em; border-radius: 3px; font-family: monospace;",
+            );
+          }
+        });
+
+        // Style blockquotes
+        doc.querySelectorAll("blockquote").forEach((bq) => {
+          bq.setAttribute(
+            "style",
+            "border-left: 4px solid #ddd; padding-left: 1em; margin: 1em 0; color: #666;",
+          );
+        });
+
+        // Style images
+        doc.querySelectorAll("img").forEach((img) => {
+          img.setAttribute(
+            "style",
+            "max-width: 100%; height: auto; display: block; margin: 1em 0;",
+          );
+        });
+
+        return doc.body.innerHTML;
+      }
+
+      // Escape HTML special characters to prevent injection
+      function escapeHtml(text) {
+        if (!text) return text;
+        const map = {
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;",
+        };
+        return text.replace(/[&<>"']/g, (char) => map[char]);
+      }
+
+      // Parse styles from JSON
+      const styleSheet = JSON.parse(newsletterStylesJSON);
 
       function absolutizeUrl(rawUrl) {
         if (!rawUrl) return rawUrl;
@@ -424,11 +595,11 @@ const defaults = newsletterConfig.default;
           let html = hiddenDiv.innerHTML;
 
           // Extract excerpt based on config
-          const excerpt = window.extractUntilMarker(html, config.untilMarker);
+          const excerpt = extractUntilMarker(html, config.untilMarker);
 
           // Clean and style for email
-          let processedExcerpt = window.cleanForEmail(excerpt);
-          processedExcerpt = window.applyEmailStyles(processedExcerpt);
+          let processedExcerpt = cleanForEmail(excerpt);
+          processedExcerpt = applyEmailStyles(processedExcerpt);
           processedExcerpt = rewriteUrls(processedExcerpt);
 
           // Get post metadata
@@ -443,35 +614,42 @@ const defaults = newsletterConfig.default;
             day: "numeric",
           });
 
+          // Escape HTML in metadata to prevent injection
+          const escapedTitle = escapeHtml(title);
+          const escapedAuthor = escapeHtml(author);
+          const escapedOrganization = escapeHtml(organization);
+          const escapedDescription = escapeHtml(description);
+
           // Build the post HTML
-          const postUrl = `https://beta.doenet.org/blog/${slug}`;
+          const blogBaseUrl = `${siteUrl}${blogBasePath}`.replace(/\/$/, "");
+          const postUrl = `${blogBaseUrl}/${slug}`;
           const postHtml = `
-            <table role="presentation" style="width: 100%; max-width: 600px; margin: 0 auto 2em auto; border-collapse: collapse; table-layout: fixed;">
+            <table role="presentation" style="${styleSheet.table}">
               <tr>
-                <td style="padding: 1.5em; background: #ffffff; border: 1px solid #e0e0e0; border-radius: 8px; word-break: break-word; overflow-wrap: anywhere;">
-                  <h2 style="margin: 0 0 0.5em 0; font-size: 1.5em; line-height: 1.3; color: #1a1a1a; font-family: sans-serif;">
-                    <a href="${postUrl}" style="color: #1a1a1a; text-decoration: none;" target="_blank">
-                      ${title}
+                <td style="${styleSheet.cell}">
+                  <h2 style="${styleSheet.title}">
+                    <a href="${postUrl}" style="${styleSheet.titleLink}" target="_blank" rel="noopener noreferrer">
+                      ${escapedTitle}
                     </a>
                   </h2>
-                  <p style="margin: 0 0 1em 0; font-size: 0.9em; color: #666; font-style: italic; font-family: sans-serif;">
-                    By ${author}${organization ? ` (${organization})` : ""} • ${dateFormatted}
+                  <p style="${styleSheet.meta}">
+                    By ${escapedAuthor}${escapedOrganization ? ` (${escapedOrganization})` : ""} • ${dateFormatted}
                   </p>
-                  ${description ? `<p style="margin: 0 0 1em 0; font-size: 1em; line-height: 1.6; color: #555; font-weight: 500; font-family: sans-serif;">${description}</p>` : ""}
-                  <div style="margin: 0 0 1em 0; font-family: sans-serif; font-size: 1em; line-height: 1.6; color: #333; word-break: break-word; overflow-wrap: anywhere;">
+                  ${escapedDescription ? `<p style="${styleSheet.description}">${escapedDescription}</p>` : ""}
+                  <div style="${styleSheet.body}">
                     ${processedExcerpt}
                   </div>
-                  <p style="margin: 1.5em 0 0 0; font-family: sans-serif;">
-                    <a href="${postUrl}" style="display: inline-block; padding: 0.6em 1.2em; background: #0066cc; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: 500;" target="_blank">
+                  <p style="${styleSheet.buttonWrap}">
+                    <a href="${postUrl}" style="${styleSheet.button}" target="_blank" rel="noopener noreferrer">
                       Read Full Post →
                     </a>
                   </p>
                 </td>
               </tr>
             </table>
-            <table role="presentation" style="width: 100%; max-width: 600px; margin: 0 auto 2em auto; border-collapse: collapse;">
+            <table role="presentation" style="${styleSheet.separator}">
               <tr>
-                <td style="height: 1px; background: #e0e0e0;"></td>
+                <td style="${styleSheet.separatorCell}"></td>
               </tr>
             </table>
           `;
@@ -479,30 +657,32 @@ const defaults = newsletterConfig.default;
           targetDiv.innerHTML = postHtml;
         });
 
-        // Hide tables for initially hidden posts
-        const allPosts = document.querySelectorAll('[id^="post-"]');
-        allPosts.forEach((postDiv) => {
-          const isInitiallyVisible =
-            postDiv.getAttribute("data-initially-visible") === "true";
-          if (!isInitiallyVisible) {
-            // Find and hide the rendered tables
-            let currentElement = postDiv;
-            const tablesToHide = [];
-
-            // Find the next two tables after this div
-            while (currentElement && tablesToHide.length < 2) {
-              currentElement = currentElement.nextElementSibling;
-              if (currentElement && currentElement.tagName === "TABLE") {
-                tablesToHide.push(currentElement);
-              }
-            }
-
-            tablesToHide.forEach((table) => (table.style.display = "none"));
-          }
-        });
-
         // Remove hidden content divs from the newsletter content
         hiddenContents.forEach((div) => div.remove());
+
+        // Set current issue date
+        const today = new Date();
+        const issueDateFormatted = today.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
+
+        const currentIssueDateEl =
+          document.getElementById("current-issue-date");
+        if (currentIssueDateEl) {
+          currentIssueDateEl.textContent = issueDateFormatted;
+        }
+
+        const statsIssueDateEl = document.getElementById("stats-issue-date");
+        if (statsIssueDateEl) {
+          statsIssueDateEl.textContent = issueDateFormatted;
+        }
+
+        document.title = document.title.replace(
+          "Loading...",
+          issueDateFormatted,
+        );
 
         // Attach event listeners to buttons
         const downloadBtn = document.getElementById("download-btn");
@@ -555,7 +735,9 @@ const defaults = newsletterConfig.default;
       // Filter posts based on selected date
       function filterPostsByDate() {
         const sinceDateInput = document.getElementById("since-date");
-        const selectedDate = new Date(sinceDateInput.value);
+        // Parse date input as local midnight to avoid timezone issues
+        const [year, month, day] = sinceDateInput.value.split("-").map(Number);
+        const selectedDate = new Date(year, month - 1, day);
 
         // Get all post containers
         const allPosts = document.querySelectorAll('[id^="post-"]');
@@ -563,28 +745,20 @@ const defaults = newsletterConfig.default;
 
         allPosts.forEach((postDiv) => {
           const postDateStr = postDiv.getAttribute("data-date");
-          const postDate = new Date(postDateStr);
-
-          // Find the parent tables (both the post table and separator)
-          let currentElement = postDiv;
-          const tablesToToggle = [];
-
-          // Find the next two tables after this div
-          while (currentElement && tablesToToggle.length < 2) {
-            currentElement = currentElement.nextElementSibling;
-            if (currentElement && currentElement.tagName === "TABLE") {
-              tablesToToggle.push(currentElement);
-            }
-          }
+          const postDateObj = new Date(postDateStr);
+          // Convert UTC post date to local midnight for fair comparison
+          const postDate = new Date(
+            postDateObj.getUTCFullYear(),
+            postDateObj.getUTCMonth(),
+            postDateObj.getUTCDate(),
+          );
 
           // Show or hide based on date
           if (postDate >= selectedDate) {
             postDiv.style.display = "";
-            tablesToToggle.forEach((table) => (table.style.display = ""));
             visibleCount++;
           } else {
             postDiv.style.display = "none";
-            tablesToToggle.forEach((table) => (table.style.display = "none"));
           }
         });
 
@@ -594,7 +768,7 @@ const defaults = newsletterConfig.default;
         const totalPosts = allPosts.length;
 
         if (postCountSpan) {
-          postCountSpan.textContent = `${visibleCount} of ${totalPosts} total`;
+          postCountSpan.textContent = visibleCount;
         }
         if (dateRangeSpan) {
           dateRangeSpan.textContent = selectedDate.toLocaleDateString();
