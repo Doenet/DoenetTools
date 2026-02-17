@@ -2,6 +2,8 @@ import { useEffect } from "react";
 import {
   Box,
   Heading,
+  List,
+  ListItem,
   Text,
   VStack,
   Button,
@@ -24,14 +26,14 @@ export function Events() {
           // Remove once we implement background color globally
           minH="calc(100vh - 40px)"
         >
-          <Heading size="lg" mb={6}>
+          <Heading size="xl" mb={6}>
             Events
           </Heading>
 
           <VStack align="start" spacing={8}>
             {/* Virtual Office Hours Section */}
             <Box w="100%">
-              <Heading size="md" mb={3}>
+              <Heading size="lg" mb={3}>
                 Virtual office hours
               </Heading>
               <VStack align="start" spacing={3}>
@@ -65,7 +67,7 @@ export function Events() {
 
             {/* Training Workshops Section */}
             <Box w="100%" id="workshops">
-              <Heading size="md" mb={3}>
+              <Heading size="lg" mb={3} mt={5}>
                 Virtual training workshops
               </Heading>
 
@@ -85,7 +87,7 @@ export function Events() {
                 borderLeft="3px solid"
                 borderColor="border"
               >
-                <Heading size="sm">
+                <Heading size="md">
                   <ChakraLink
                     href="https://scholarlattice.org/collections/b428f8ce-9981-4f9b-bb32-526994c57caf"
                     isExternal
@@ -108,12 +110,12 @@ export function Events() {
                 <Text fontSize="1rem" lineHeight="1.4">
                   <Button
                     as="a"
-                    href="https://scholarlattice.org/collections/b428f8ce-9981-4f9b-bb32-526994c57caf/registrations/new"
+                    href="https://scholarlattice.org/collections/b428f8ce-9981-4f9b-bb32-526994c57caf"
                     colorScheme="blue"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Register here
+                    More information and registration
                   </Button>
                 </Text>
               </VStack>
@@ -127,7 +129,7 @@ export function Events() {
                 borderLeft="3px solid"
                 borderColor="border"
               >
-                <Heading size="sm">
+                <Heading size="md">
                   <ChakraLink
                     href="https://scholarlattice.org/collections/eab4d5ce-064d-409a-a576-bcab507f7836"
                     isExternal
@@ -152,12 +154,12 @@ export function Events() {
                 <Text fontSize="1rem" lineHeight="1.4">
                   <Button
                     as="a"
-                    href="https://scholarlattice.org/collections/eab4d5ce-064d-409a-a576-bcab507f7836/registrations/new"
+                    href="https://scholarlattice.org/collections/eab4d5ce-064d-409a-a576-bcab507f7836"
                     colorScheme="blue"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Register here
+                    More information and registration
                   </Button>
                 </Text>
               </VStack>
@@ -170,7 +172,7 @@ export function Events() {
                 borderLeft="3px solid"
                 borderColor="border"
               >
-                <Heading size="sm">
+                <Heading size="md">
                   <ChakraLink
                     href="https://scholarlattice.org/collections/b8ec4af3-8f71-4e4a-b86e-838242e47058"
                     isExternal
@@ -193,12 +195,12 @@ export function Events() {
                 <Text fontSize="1rem" lineHeight="1.4">
                   <Button
                     as="a"
-                    href="https://scholarlattice.org/collections/b8ec4af3-8f71-4e4a-b86e-838242e47058/registrations/new"
+                    href="https://scholarlattice.org/collections/b8ec4af3-8f71-4e4a-b86e-838242e47058"
                     colorScheme="blue"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Register here
+                    More information and registration
                   </Button>
                 </Text>
               </VStack>
@@ -206,7 +208,7 @@ export function Events() {
 
             {/* In-person Workshops and Conferences Section */}
             <Box w="100%">
-              <Heading size="md" mb={3}>
+              <Heading size="lg" mb={3} mt={5}>
                 In-person workshops and conferences
               </Heading>
 
@@ -224,7 +226,7 @@ export function Events() {
                 borderLeft="3px solid"
                 borderColor="border"
               >
-                <Heading size="sm">
+                <Heading size="md">
                   2026 MAA Florida /FTYCMA Joint Annual Meeting
                 </Heading>
                 <Text fontSize="1rem" lineHeight="1.4">
@@ -234,6 +236,31 @@ export function Events() {
                   <strong>Location:</strong> State College of Florida /
                   Bradenton campus
                 </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <strong>Doenet-related events:</strong>
+                </Text>
+                <List
+                  fontSize="1rem"
+                  lineHeight="1.4"
+                  spacing={1}
+                  pl={5}
+                  styleType="disc"
+                >
+                  <ListItem>
+                    Feb 20, 3:00-3:50pm:{" "}
+                    <em>Different Ways of Looking at the Familiar</em>, talk by
+                    Anurag Katyal
+                  </ListItem>
+                  <ListItem>
+                    Feb 21, 9:00-10:45am:{" "}
+                    <em>
+                      Creating AI–Resistant Interactive Activities to Facilitate
+                      Active Learning
+                    </em>
+                    , introduction to Doenet workshop by Anurag Katyal
+                  </ListItem>
+                </List>
+
                 <Text fontSize="1rem" lineHeight="1.4">
                   <ChakraLink
                     href="https://www.florida.maa.org/events/2026-maa-florida-ftycma-joint-annual-meeting"
@@ -254,9 +281,9 @@ export function Events() {
                 borderLeft="3px solid"
                 borderColor="border"
               >
-                <Heading size="sm">Doenet Community Workshop</Heading>
+                <Heading size="md">Doenet Community Workshop</Heading>
                 <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Dates:</strong> May/June 2026 (exact date TBD)
+                  <strong>Dates:</strong> June 1-5 2026
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
                   <strong>Location:</strong> University of Minnesota
@@ -274,7 +301,7 @@ export function Events() {
                 borderLeft="3px solid"
                 borderColor="border"
               >
-                <Heading size="sm">MathFest 2026</Heading>
+                <Heading size="md">MathFest 2026</Heading>
                 <Text fontSize="1rem" lineHeight="1.4">
                   <strong>Dates:</strong> August 5-8, 2026
                 </Text>
