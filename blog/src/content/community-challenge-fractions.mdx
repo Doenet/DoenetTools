@@ -4,7 +4,7 @@ description: "Build an activity to help students understand fractions"
 author: "Melissa Lynn"
 organization: "St. Olaf College"
 pubDate: "Feb 13 2026"
-heroImage: "../assets/community-challenge-fractions/fractions-snapshot.png"
+heroImage: "/blog/images/community-challenge-fractions/fractions-snapshot.png"
 ---
 
 Challenger: Anurag Katyal is an avid Doenet user, who enjoys creating problems for other people.
