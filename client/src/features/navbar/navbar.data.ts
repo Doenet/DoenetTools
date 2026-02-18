@@ -10,7 +10,7 @@ export function mainSections(discussionsLink: string): NavSection[] {
           subItems: [
             { label: "About Doenet", to: "/about" },
             { label: "Events", to: "/events" },
-            { label: "Blog", to: "/blog" },
+            { label: "Blog", to: "/blog", reloadDocument: true },
           ],
         },
         {
