@@ -1,39 +1,15 @@
 ---
 import { getCollection, render } from "astro:content";
 import { newsletterStyles } from "../utils/newsletterStyles";
+import { newsletterConfig } from "../newsletter-config";
 
 // Note: Helper functions (escapeRegExp, extractUntilMarker, cleanForEmail, applyEmailStyles)
 // are inlined directly in the client-side script to avoid eval and CSP issues.
 
 // ============================================================================
-// NEWSLETTER CONFIGURATION
+// Newsletter configuration is imported from ../newsletter-config.ts
+// Edit that file for each newsletter (it's gitignored so changes won't be tracked)
 // ============================================================================
-// Adjust these values to control which posts appear and how much content
-// from each post is included in the newsletter.
-
-const newsletterConfig = {
-  // Defaults that can be overridden on the page
-  default: {
-    // Only include posts published on or after this date
-    sinceDate: new Date("2024-01-01"),
-
-    // Newsletter metadata
-    title: "Doenet Newsletter",
-    subtitle: "Recent updates from the Doenet blog",
-  },
-
-  // Issue date is not user-editable on the page
-  issueDate: new Date(), // Current date
-
-  // Excerpt marker configuration
-  // Posts should include the marker <!-- more -->, {/* more */}, or an element
-  // with data-excerpt (e.g., <span data-excerpt style="display:none"></span>)
-  // to indicate the end of the clip. If the marker is missing, the full post
-  // content is used.
-  excerptMarker: "more",
-
-  // Base URL configuration is derived from Astro config at runtime
-};
 
 // ============================================================================
 // DATA FETCHING AND PROCESSING
@@ -42,11 +18,20 @@ const newsletterConfig = {
 // Fetch all blog posts
 const allPosts = await getCollection("blog");
 
-// Sort all posts by publication date (newest first)
-// We'll filter by date on the client side so users can adjust dynamically
-const recentPosts = allPosts.sort(
-  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+// Filter and sort posts by ordered slug list
+const manualOrder = newsletterConfig.manualOrder;
+const manualIndex = new Map<string, number>(
+  manualOrder.map((slug, index) => [slug, index]),
 );
+const recentPosts = allPosts
+  .filter((post) => manualIndex.has(post.id.replace(/\.(md|mdx)$/, "")))
+  .sort((a, b) => {
+    const slugA = a.id.replace(/\.(md|mdx)$/, "");
+    const slugB = b.id.replace(/\.(md|mdx)$/, "");
+    const indexA = manualIndex.get(slugA) ?? 0;
+    const indexB = manualIndex.get(slugB) ?? 0;
+    return indexA - indexB;
+  });
 
 // Render posts and extract excerpts
 const postsWithExcerpts = await Promise.all(
@@ -65,16 +50,20 @@ const postsWithExcerpts = await Promise.all(
   }),
 );
 
-// Count initially visible posts
-const initiallyVisibleCount = postsWithExcerpts.filter(
-  ({ post }) => post.data.pubDate >= newsletterConfig.default.sinceDate,
-).length;
-
-// Issue date will be computed client-side to always show current date
-
 const siteUrl = Astro.site ? Astro.site.toString().replace(/\/$/, "") : "";
 const blogBasePath = import.meta.env.BASE_URL || "/";
-const defaults = newsletterConfig.default;
+
+// For newsletter images, always use the production URL so they work in emails
+const productionUrl = "https://beta.doenet.org";
+const logoUrl = `${productionUrl}${blogBasePath}/Doenet_Logo_Frontpage_color_text.png`;
+
+const issueDateFormatted = newsletterConfig.issueDate.toLocaleDateString(
+  "en-US",
+  {
+    year: "numeric",
+    month: "short",
+  },
+);
 ---
 
 <!doctype html>
@@ -82,7 +71,7 @@ const defaults = newsletterConfig.default;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{defaults.title} - Loading...</title>
+    <title>{newsletterConfig.title} - {issueDateFormatted}</title>
     <style>
       body {
         font-family:
@@ -93,7 +82,6 @@ const defaults = newsletterConfig.default;
         max-width: 800px;
         margin: 0 auto;
         padding: 2rem;
-        background: #f5f5f5;
       }
       .controls {
         background: white;
@@ -149,60 +137,9 @@ const defaults = newsletterConfig.default;
     <div class="controls">
       <h1>📧 Newsletter Generator</h1>
       <p>
-        This page generates an email-friendly HTML newsletter from recent blog
-        posts. Configure which posts to include and how much content to show by
-        editing the configuration.
+        This page generates an email-friendly HTML newsletter from the posts
+        listed in the configuration.
       </p>
-
-      <div style="margin-bottom: 1.5rem;">
-        <label
-          for="newsletter-title-input"
-          style="display: block; margin-bottom: 0.5rem; font-weight: 500;"
-        >
-          Newsletter title:
-        </label>
-        <input
-          type="text"
-          id="newsletter-title-input"
-          value={defaults.title}
-          data-default={defaults.title}
-          style="padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; width: min(100%, 480px);"
-        />
-      </div>
-
-      <div style="margin-bottom: 1.5rem;">
-        <label
-          for="newsletter-subtitle-input"
-          style="display: block; margin-bottom: 0.5rem; font-weight: 500;"
-        >
-          Newsletter subtitle:
-        </label>
-        <input
-          type="text"
-          id="newsletter-subtitle-input"
-          value={defaults.subtitle}
-          data-default={defaults.subtitle}
-          style="padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; width: min(100%, 480px);"
-        />
-      </div>
-
-      <div style="margin-bottom: 1.5rem;">
-        <label
-          for="since-date"
-          style="display: block; margin-bottom: 0.5rem; font-weight: 500;"
-        >
-          Include posts since:
-        </label>
-        <input
-          type="date"
-          id="since-date"
-          value={defaults.sinceDate.toISOString().split("T")[0]}
-          style="padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem;"
-        />
-        <span style="margin-left: 1rem; color: #666; font-size: 0.9rem;">
-          Posts published before this date will be hidden
-        </span>
-      </div>
 
       <button class="button" id="download-btn">
         ⬇️ Download Newsletter HTML
@@ -214,15 +151,6 @@ const defaults = newsletterConfig.default;
       >
         📋 Copy HTML to Clipboard
       </button>
-      <div class="stats">
-        <strong>Newsletter Stats:</strong><br />
-        • Posts included: <span id="post-count">{initiallyVisibleCount}</span> of
-        {postsWithExcerpts.length} total<br />
-        • Date range: Since <span id="date-range"
-          >{defaults.sinceDate.toLocaleDateString()}</span
-        ><br />
-        • Issue date: <span id="stats-issue-date">Loading...</span>
-      </div>
     </div>
 
     <!-- Newsletter Content (this is what gets downloaded/copied) -->
@@ -230,29 +158,34 @@ const defaults = newsletterConfig.default;
       <!-- Email-friendly container -->
       <table
         role="presentation"
-        style="width: 100%; max-width: 600px; margin: 0 auto; border-collapse: collapse; font-family: sans-serif;"
+        style="width: 600px; margin: 0 auto; border-collapse: collapse; font-family: sans-serif;"
       >
         <!-- Header -->
         <tr>
           <td
-            style="padding: 2em 1em; text-align: center; background: #f8f9fa; border-bottom: 3px solid #0066cc;"
+            style="padding: 1em; background: #ffffff; border-bottom: 3px solid #0066cc;"
           >
-            <h1
-              style="margin: 0 0 0.5em 0; font-size: 2em; color: #1a1a1a; font-family: sans-serif;"
+            <table
+              role="presentation"
+              style="width: 100%; border-collapse: collapse;"
             >
-              <span id="newsletter-title">{defaults.title}</span>
-            </h1>
-            <p
-              style="margin: 0; font-size: 1.1em; color: #666; font-family: sans-serif;"
-            >
-              <span id="newsletter-subtitle">{defaults.subtitle}</span>
-            </p>
-            <p
-              id="current-issue-date"
-              style="margin: 0.5em 0 0 0; font-size: 0.9em; color: #999; font-family: sans-serif;"
-            >
-              Loading...
-            </p>
+              <tr>
+                <td style="text-align: left; vertical-align: bottom;">
+                  <span
+                    style="font-size: 1.2em; color: #666; font-family: sans-serif;"
+                  >
+                    {issueDateFormatted} Newsletter
+                  </span>
+                </td>
+                <td style="text-align: right; vertical-align: bottom;">
+                  <img
+                    src={logoUrl}
+                    alt="Doenet"
+                    style="height: 50px; width: auto; display: inline-block; margin: 0 0 -12px 0;"
+                  />
+                </td>
+              </tr>
+            </table>
           </td>
         </tr>
 
@@ -265,7 +198,6 @@ const defaults = newsletterConfig.default;
       <!-- Posts -->
       {
         postsWithExcerpts.map(({ post, slug, Content, config }) => {
-          const isInitiallyVisible = post.data.pubDate >= defaults.sinceDate;
           return (
             <>
               {/* Render the full content in a hidden div so we can extract from it */}
@@ -286,8 +218,7 @@ const defaults = newsletterConfig.default;
                 data-author={post.data.author}
                 data-organization={post.data.organization || ""}
                 data-date={post.data.pubDate.toISOString()}
-                data-initially-visible={isInitiallyVisible}
-                style={isInitiallyVisible ? "" : "display: none;"}
+                data-hero-image={post.data.heroImage || ""}
               />
             </>
           );
@@ -297,7 +228,7 @@ const defaults = newsletterConfig.default;
       <!-- Footer -->
       <table
         role="presentation"
-        style="width: 100%; max-width: 600px; margin: 2em auto 0 auto; border-collapse: collapse; font-family: sans-serif;"
+        style="width: 600px; margin: 2em auto 0 auto; border-collapse: collapse; font-family: sans-serif;"
       >
         <tr>
           <td
@@ -331,6 +262,7 @@ const defaults = newsletterConfig.default;
       define:vars={{
         siteUrl,
         blogBasePath,
+        productionUrl,
         newsletterStylesJSON: JSON.stringify(newsletterStyles),
       }}
     >
@@ -445,15 +377,36 @@ const defaults = newsletterConfig.default;
         doc.querySelectorAll("p").forEach((p) => {
           p.setAttribute(
             "style",
-            "margin: 0 0 1em 0; line-height: 1.6; color: #333;",
+            "margin: 0 0 1em 0; line-height: 1.6; color: #333; font-size: 18px;",
           );
         });
 
         // Style headings
-        doc.querySelectorAll("h1, h2, h3, h4, h5, h6").forEach((h) => {
+        doc.querySelectorAll("h1").forEach((h) => {
           h.setAttribute(
             "style",
-            "margin: 1.5em 0 0.5em 0; line-height: 1.3; color: #1a1a1a;",
+            "margin: 1.5em 0 0.5em 0; line-height: 1.3; color: #1a1a1a; font-size: 32px;",
+          );
+        });
+
+        doc.querySelectorAll("h2").forEach((h) => {
+          h.setAttribute(
+            "style",
+            "margin: 1.5em 0 0.5em 0; line-height: 1.3; color: #1a1a1a; font-size: 28px;",
+          );
+        });
+
+        doc.querySelectorAll("h3").forEach((h) => {
+          h.setAttribute(
+            "style",
+            "margin: 1.5em 0 0.5em 0; line-height: 1.3; color: #1a1a1a; font-size: 24px;",
+          );
+        });
+
+        doc.querySelectorAll("h4, h5, h6").forEach((h) => {
+          h.setAttribute(
+            "style",
+            "margin: 1.5em 0 0.5em 0; line-height: 1.3; color: #1a1a1a; font-size: 20px;",
           );
         });
 
@@ -461,24 +414,30 @@ const defaults = newsletterConfig.default;
         doc.querySelectorAll("a").forEach((a) => {
           a.setAttribute(
             "style",
-            "color: #0066cc; text-decoration: underline;",
+            "color: #0066cc; text-decoration: underline; font-size: 18px;",
           );
         });
 
         // Style lists
         doc.querySelectorAll("ul, ol").forEach((list) => {
-          list.setAttribute("style", "margin: 0 0 1em 0; padding-left: 2em;");
+          list.setAttribute(
+            "style",
+            "margin: 0 0 1em 0; padding-left: 2em; font-size: 18px;",
+          );
         });
 
         doc.querySelectorAll("li").forEach((li) => {
-          li.setAttribute("style", "margin: 0 0 0.5em 0; line-height: 1.6;");
+          li.setAttribute(
+            "style",
+            "margin: 0 0 0.5em 0; line-height: 1.6; font-size: 18px;",
+          );
         });
 
         // Style code blocks
         doc.querySelectorAll("pre").forEach((pre) => {
           pre.setAttribute(
             "style",
-            "background: #f5f5f5; padding: 1em; border-radius: 4px; overflow-x: auto; margin: 1em 0;",
+            "background: #f5f5f5; padding: 1em; border-radius: 4px; overflow-x: auto; margin: 1em 0; font-size: 16px;",
           );
         });
 
@@ -486,7 +445,7 @@ const defaults = newsletterConfig.default;
           if (code.parentElement?.tagName !== "PRE") {
             code.setAttribute(
               "style",
-              "background: #f5f5f5; padding: 0.2em 0.4em; border-radius: 3px; font-family: monospace;",
+              "background: #f5f5f5; padding: 0.2em 0.4em; border-radius: 3px; font-family: monospace; font-size: 16px;",
             );
           }
         });
@@ -495,7 +454,7 @@ const defaults = newsletterConfig.default;
         doc.querySelectorAll("blockquote").forEach((bq) => {
           bq.setAttribute(
             "style",
-            "border-left: 4px solid #ddd; padding-left: 1em; margin: 1em 0; color: #666;",
+            "border-left: 4px solid #ddd; padding-left: 1em; margin: 1em 0; color: #666; font-size: 18px;",
           );
         });
 
@@ -539,15 +498,13 @@ const defaults = newsletterConfig.default;
           return `https:${url}`;
         }
 
+        // Use production URL for all absolute and relative paths
         if (url.startsWith("/")) {
-          return siteUrl ? `${siteUrl}${url}` : url;
+          return `${productionUrl}${url}`;
         }
 
-        if (!siteUrl) {
-          return url;
-        }
-
-        const base = `${siteUrl}${blogBasePath}`.replace(/\/$/, "");
+        // For relative URLs, construct full URL with production base
+        const base = `${productionUrl}${blogBasePath}`.replace(/\/$/, "");
         const relative = url.replace(/^\.\//, "");
         return `${base}/${relative}`;
       }
@@ -559,7 +516,8 @@ const defaults = newsletterConfig.default;
         doc.querySelectorAll("img").forEach((img) => {
           const src = img.getAttribute("src");
           if (src) {
-            img.setAttribute("src", absolutizeUrl(src));
+            const absoluteUrl = absolutizeUrl(src);
+            img.setAttribute("src", absoluteUrl);
           }
 
           const srcset = img.getAttribute("srcset");
@@ -615,12 +573,7 @@ const defaults = newsletterConfig.default;
           const description = targetDiv.getAttribute("data-description");
           const author = targetDiv.getAttribute("data-author");
           const organization = targetDiv.getAttribute("data-organization");
-          const date = new Date(targetDiv.getAttribute("data-date"));
-          const dateFormatted = date.toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          });
+          const heroImage = targetDiv.getAttribute("data-hero-image");
 
           // Escape HTML in metadata to prevent injection
           const escapedTitle = escapeHtml(title);
@@ -631,19 +584,35 @@ const defaults = newsletterConfig.default;
           // Build the post HTML
           const blogBaseUrl = `${siteUrl}${blogBasePath}`.replace(/\/$/, "");
           const postUrl = `${blogBaseUrl}/${slug}`;
+
+          // Build hero image HTML if available
+          const heroImageHtml = heroImage
+            ? `
+            <tr>
+              <td style="${styleSheet.cell}">
+                <img src="${absolutizeUrl(heroImage)}" alt="${escapedTitle}" style="max-width: 100%; height: auto; display: block; margin: 0 0 1em 0; border-radius: 4px;" />
+              </td>
+            </tr>
+          `
+            : "";
+
           const postHtml = `
             <table role="presentation" style="${styleSheet.table}">
+              ${heroImageHtml}
               <tr>
-                <td style="${styleSheet.cell}">
+                <td style="${styleSheet.headerCell}">
                   <h2 style="${styleSheet.title}">
                     <a href="${postUrl}" style="${styleSheet.titleLink}" target="_blank" rel="noopener noreferrer">
                       ${escapedTitle}
                     </a>
                   </h2>
                   <p style="${styleSheet.meta}">
-                    By ${escapedAuthor}${escapedOrganization ? ` (${escapedOrganization})` : ""} • ${dateFormatted}
+                    By ${escapedAuthor}${escapedOrganization ? ` (${escapedOrganization})` : ""}
                   </p>
-                  ${escapedDescription ? `<p style="${styleSheet.description}">${escapedDescription}</p>` : ""}
+                </td>
+              </tr>
+              <tr>
+                <td style="${styleSheet.cell}">
                   <div style="${styleSheet.body}">
                     ${processedExcerpt}
                   </div>
@@ -655,11 +624,6 @@ const defaults = newsletterConfig.default;
                 </td>
               </tr>
             </table>
-            <table role="presentation" style="${styleSheet.separator}">
-              <tr>
-                <td style="${styleSheet.separatorCell}"></td>
-              </tr>
-            </table>
           `;
 
           targetDiv.innerHTML = postHtml;
@@ -667,30 +631,6 @@ const defaults = newsletterConfig.default;
 
         // Remove hidden content divs from the newsletter content
         hiddenContents.forEach((div) => div.remove());
-
-        // Set current issue date
-        const today = new Date();
-        const issueDateFormatted = today.toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        });
-
-        const currentIssueDateEl =
-          document.getElementById("current-issue-date");
-        if (currentIssueDateEl) {
-          currentIssueDateEl.textContent = issueDateFormatted;
-        }
-
-        const statsIssueDateEl = document.getElementById("stats-issue-date");
-        if (statsIssueDateEl) {
-          statsIssueDateEl.textContent = issueDateFormatted;
-        }
-
-        document.title = document.title.replace(
-          "Loading...",
-          issueDateFormatted,
-        );
 
         // Attach event listeners to buttons
         const downloadBtn = document.getElementById("download-btn");
@@ -702,100 +642,32 @@ const defaults = newsletterConfig.default;
         if (copyBtn) {
           copyBtn.addEventListener("click", copyToClipboard);
         }
-
-        // Handle title/subtitle overrides
-        const titleInput = document.getElementById("newsletter-title-input");
-        const subtitleInput = document.getElementById(
-          "newsletter-subtitle-input",
-        );
-        const titleDisplay = document.getElementById("newsletter-title");
-        const subtitleDisplay = document.getElementById("newsletter-subtitle");
-
-        if (titleInput && titleDisplay) {
-          const defaultTitle = titleInput.dataset.default || "";
-          titleInput.addEventListener("input", () => {
-            const nextTitle = titleInput.value.trim() || defaultTitle;
-            titleDisplay.textContent = nextTitle;
-          });
-        }
-
-        if (subtitleInput && subtitleDisplay) {
-          const defaultSubtitle = subtitleInput.dataset.default || "";
-          subtitleInput.addEventListener("input", () => {
-            const nextSubtitle = subtitleInput.value.trim() || defaultSubtitle;
-            subtitleDisplay.textContent = nextSubtitle;
-          });
-        }
-
-        // Handle date filtering
-        const sinceDateInput = document.getElementById("since-date");
-        if (sinceDateInput) {
-          sinceDateInput.addEventListener("change", filterPostsByDate);
-        }
       });
-
-      function getNewsletterTitleText() {
-        const titleEl = document.getElementById("newsletter-title");
-        const titleText = titleEl ? titleEl.textContent.trim() : "";
-        return titleText || "Doenet Newsletter";
-      }
-
-      // Filter posts based on selected date
-      function filterPostsByDate() {
-        const sinceDateInput = document.getElementById("since-date");
-        // Parse date input as local midnight to avoid timezone issues
-        const [year, month, day] = sinceDateInput.value.split("-").map(Number);
-        const selectedDate = new Date(year, month - 1, day);
-
-        // Get all post containers
-        const allPosts = document.querySelectorAll('[id^="post-"]');
-        let visibleCount = 0;
-
-        allPosts.forEach((postDiv) => {
-          const postDateStr = postDiv.getAttribute("data-date");
-          const postDateObj = new Date(postDateStr);
-          // Convert UTC post date to local midnight for fair comparison
-          const postDate = new Date(
-            postDateObj.getUTCFullYear(),
-            postDateObj.getUTCMonth(),
-            postDateObj.getUTCDate(),
-          );
-
-          // Show or hide based on date
-          if (postDate >= selectedDate) {
-            postDiv.style.display = "";
-            visibleCount++;
-          } else {
-            postDiv.style.display = "none";
-          }
-        });
-
-        // Update stats
-        const postCountSpan = document.getElementById("post-count");
-        const dateRangeSpan = document.getElementById("date-range");
-        const totalPosts = allPosts.length;
-
-        if (postCountSpan) {
-          postCountSpan.textContent = visibleCount;
-        }
-        if (dateRangeSpan) {
-          dateRangeSpan.textContent = selectedDate.toLocaleDateString();
-        }
-      }
 
       // Download newsletter as HTML file
       function downloadNewsletter() {
         const content = document.getElementById("newsletter-content");
-        const titleText = getNewsletterTitleText();
         const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${titleText}</title>
+  <title>${escapeHtml(document.title)}</title>
 </head>
-<body style="margin: 0; padding: 0; background: #f5f5f5; font-family: sans-serif;">
+<body style="margin: 0; padding: 0; font-family: sans-serif; font-size: 18px; background-color: #f5f5f5;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 0; padding: 0;">
+    <tr>
+      <td align="center" style="padding: 20px 0;">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width: 600px; background-color: #ffffff;">
+          <tr>
+            <td>
 ${content.innerHTML}
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>`;
 
@@ -813,16 +685,27 @@ ${content.innerHTML}
       // Copy newsletter HTML to clipboard
       function copyToClipboard() {
         const content = document.getElementById("newsletter-content");
-        const titleText = getNewsletterTitleText();
         const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${titleText}</title>
+  <title>${escapeHtml(document.title)}</title>
 </head>
-<body style="margin: 0; padding: 0; background: #f5f5f5; font-family: sans-serif;">
+<body style="margin: 0; padding: 0; font-family: sans-serif; font-size: 18px; background-color: #f5f5f5;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 0; padding: 0;">
+    <tr>
+      <td align="center" style="padding: 20px 0;">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width: 600px; background-color: #ffffff;">
+          <tr>
+            <td>
 ${content.innerHTML}
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>`;
 

@@ -23,3 +23,6 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# newsletter config (edit freely for each newsletter)
+src/newsletter-config.ts
