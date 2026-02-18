@@ -26,8 +26,10 @@ const newsletterConfig = {
   issueDate: new Date(), // Current date
 
   // Excerpt marker configuration
-  // Posts should include the marker <!-- more --> to indicate the end of the clip.
-  // If the marker is missing, the full post content is used.
+  // Posts should include the marker <!-- more -->, {/* more */}, or an element
+  // with data-excerpt (e.g., <span data-excerpt style="display:none"></span>)
+  // to indicate the end of the clip. If the marker is missing, the full post
+  // content is used.
   excerptMarker: "more",
 
   // Base URL configuration is derived from Astro config at runtime
@@ -337,11 +339,17 @@ const defaults = newsletterConfig.default;
         return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       }
 
-      // Extract content up to an HTML comment marker (e.g., <!-- more -->)
+      // Extract content up to a marker comment/element (HTML, MDX, or data-excerpt)
+      // HTML: <!-- more -->
+      // MDX:  {/* more */}
+      // Element: <span data-excerpt style="display:none"></span>
       function extractUntilMarker(html, marker = "more") {
         const escapedMarker = escapeRegExp(marker);
+        const htmlComment = `<!--\\s*${escapedMarker}\\s*-->`;
+        const mdxComment = `\\{\\/\\*\\s*${escapedMarker}\\s*\\*\\/\\}`;
+        const dataMarker = `<[^>]*\\sdata-excerpt(?:\\s|=|>|/)[^>]*>`;
         const markerPattern = new RegExp(
-          `<!--\\s*${escapedMarker}\\s*-->`,
+          `${htmlComment}|${mdxComment}|${dataMarker}`,
           "i",
         );
         const match = html.match(markerPattern);
