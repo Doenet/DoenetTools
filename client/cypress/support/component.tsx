@@ -32,6 +32,8 @@ import { ChakraProvider } from "@chakra-ui/react";
 import "./commands";
 import "cypress-axe";
 import "wick-a11y";
+import { register as registerCypressGrep } from "@cypress/grep";
+registerCypressGrep();
 
 // Configure cypress-axe to use the correct path for axe-core in monorepo
 // axe-core is installed in the root node_modules, not in client/node_modules

@@ -1,7 +1,7 @@
 import { CreateLocalContent } from "./CreateLocalContent";
 import { FetcherWithComponents } from "react-router";
 
-describe("CreateLocalContent component tests", () => {
+describe("CreateLocalContent component tests", { tags: ["@group2"] }, () => {
   function createMockFetcher(state = "idle", data?: any, alias?: string) {
     const submitStub = cy.stub();
     if (alias) {

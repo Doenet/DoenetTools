@@ -1,7 +1,7 @@
 import ContributorsMenu from "./ContributorsMenu";
 import { ActivityRemixItem, UserInfo, Doc, RemixContent } from "../types";
 
-describe("ContributorsMenu", () => {
+describe("ContributorsMenu", { tags: ["@group1"] }, () => {
   const mockOwner: UserInfo = {
     userId: "550e8400-e29b-41d4-a716-446655440000" as any,
     firstNames: "John",

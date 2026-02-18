@@ -72,10 +72,7 @@ export function About() {
             <Heading size="md">What you can do</Heading>
             <Box display="flex" gap="12px" flexWrap="wrap">
               <CustomButton label="Explore existing content" to="/explore" />
-              <CustomButton
-                label="How to get involved"
-                to="https://pages.doenet.org"
-              />
+              <CustomButton label="How to get involved" to="/get-involved" />
               <CustomButton
                 label="Start authoring"
                 to="https://docs.doenet.org"

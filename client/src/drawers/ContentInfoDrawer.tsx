@@ -15,7 +15,7 @@ import {
   Text,
   Tooltip,
 } from "@chakra-ui/react";
-import { ActivityRemixItem, Content, LibraryRelations } from "../types";
+import { ActivityRemixItem, Content, License } from "../types";
 import { GeneralContentInfo } from "../drawerTabs/GeneralContentInfo";
 import { ClassificationInfo } from "../drawerTabs/ClassificationInfo";
 import axios from "axios";
@@ -29,13 +29,14 @@ export function ContentInfoDrawer({
   finalFocusRef,
   contentData,
   displayTab = "general",
+  allLicenses,
 }: {
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement | null>;
   contentData: Content;
-  libraryRelations?: LibraryRelations;
   displayTab?: "general" | "classifications";
+  allLicenses: License[];
 }) {
   let initialTabIndex: number;
   switch (displayTab) {
@@ -65,30 +66,59 @@ export function ContentInfoDrawer({
   const [remixes, setRemixes] = useState<ActivityRemixItem[]>([]);
 
   useEffect(() => {
+    if (!isOpen || contentData.type === "folder") {
+      return;
+    }
+
+    const abortController = new AbortController();
+    let isCancelled = false;
+
     async function getHistoryAndRemixes() {
-      const { data } = await axios.get(
-        `/api/remix/getRemixSources/${contentData.contentId}`,
-      );
+      try {
+        const { data } = await axios.get(
+          `/api/remix/getRemixSources/${contentData.contentId}`,
+          { signal: abortController.signal },
+        );
 
-      const hist = processRemixes(data.remixSources);
-      setContributorHistory(hist);
+        if (isCancelled) {
+          return;
+        }
 
-      const haveChanged = hist.some((dhi) => dhi.originContent.changed);
+        const hist = processRemixes(data.remixSources);
+        setContributorHistory(hist);
 
-      setHaveChangedHistoryItem(haveChanged);
+        const haveChanged = hist.some((dhi) => dhi.originContent.changed);
+        setHaveChangedHistoryItem(haveChanged);
 
-      const { data: data2 } = await axios.get(
-        `/api/remix/getRemixes/${contentData.contentId}`,
-      );
+        const { data: data2 } = await axios.get(
+          `/api/remix/getRemixes/${contentData.contentId}`,
+          { signal: abortController.signal },
+        );
 
-      const remixes = processRemixes(data2.remixes);
-      setRemixes(remixes);
+        if (isCancelled) {
+          return;
+        }
+
+        const remixes = processRemixes(data2.remixes);
+        setRemixes(remixes);
+      } catch (e) {
+        if (abortController.signal.aborted || isCancelled) {
+          return;
+        }
+
+        setContributorHistory([]);
+        setHaveChangedHistoryItem(false);
+        setRemixes([]);
+      }
     }
 
-    if (contentData.type !== "folder") {
-      getHistoryAndRemixes();
-    }
-  }, [contentData]);
+    getHistoryAndRemixes();
+
+    return () => {
+      isCancelled = true;
+      abortController.abort();
+    };
+  }, [isOpen, contentData.type, contentData.contentId]);
 
   return (
     <Drawer
@@ -138,7 +168,10 @@ export function ContentInfoDrawer({
             <Box height="calc(100vh - 130px)">
               <TabPanels height="100%">
                 <TabPanel height="100%">
-                  <GeneralContentInfo contentData={contentData} />
+                  <GeneralContentInfo
+                    contentData={contentData}
+                    allLicenses={allLicenses}
+                  />
                 </TabPanel>
                 {contentData.type !== "folder" ? (
                   <TabPanel overflowY="hidden" height="100%">
