@@ -7,5 +7,6 @@ export type NavSection = {
 export type NavItem = {
   label: string;
   to?: string; // for links
+  reloadDocument?: boolean; // for same-origin links that should bypass client-side routing
   subItems?: NavItem[]; // if present, renders as menu/dropdown
 };
