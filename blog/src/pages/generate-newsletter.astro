@@ -156,32 +156,25 @@ const issueDateFormatted = newsletterConfig.issueDate.toLocaleDateString(
     <!-- Newsletter Content (this is what gets downloaded/copied) -->
     <div id="newsletter-content">
       <!-- Email-friendly container -->
-      <table
-        role="presentation"
-        style="width: 600px; margin: 0 auto; border-collapse: collapse; font-family: sans-serif;"
-      >
+      <table role="presentation" style={newsletterStyles.newsletterTable}>
         <!-- Header -->
         <tr>
-          <td
-            style="padding: 1em; background: #ffffff; border-bottom: 3px solid #0066cc;"
-          >
+          <td style={newsletterStyles.newsletterHeaderCell}>
             <table
               role="presentation"
-              style="width: 100%; border-collapse: collapse;"
+              style={newsletterStyles.newsletterHeaderTable}
             >
               <tr>
-                <td style="text-align: left; vertical-align: bottom;">
-                  <span
-                    style="font-size: 1.2em; color: #666; font-family: sans-serif;"
-                  >
+                <td style={newsletterStyles.newsletterHeaderLeftCell}>
+                  <span style={newsletterStyles.newsletterHeaderDateText}>
                     {issueDateFormatted} Newsletter
                   </span>
                 </td>
-                <td style="text-align: right; vertical-align: bottom;">
+                <td style={newsletterStyles.newsletterHeaderRightCell}>
                   <img
                     src={logoUrl}
                     alt="Doenet"
-                    style="height: 50px; width: auto; display: inline-block; margin: 0 0 -12px 0;"
+                    style={newsletterStyles.newsletterLogoImage}
                   />
                 </td>
               </tr>
@@ -191,7 +184,7 @@ const issueDateFormatted = newsletterConfig.issueDate.toLocaleDateString(
 
         <!-- Spacer -->
         <tr>
-          <td style="height: 2em;"></td>
+          <td style={newsletterStyles.newsletterSpacerCell}></td>
         </tr>
       </table>
 
@@ -226,25 +219,17 @@ const issueDateFormatted = newsletterConfig.issueDate.toLocaleDateString(
       }
 
       <!-- Footer -->
-      <table
-        role="presentation"
-        style="width: 600px; margin: 2em auto 0 auto; border-collapse: collapse; font-family: sans-serif;"
-      >
+      <table role="presentation" style={newsletterStyles.newsletterFooterTable}>
         <tr>
-          <td
-            style="padding: 1.5em 1em; text-align: center; background: #f8f9fa; border-top: 1px solid #e0e0e0;"
-          >
-            <p
-              style="margin: 0; font-size: 0.85em; color: #666; font-family: sans-serif;"
-            >
+          <td style={newsletterStyles.newsletterFooterCell}>
+            <p style={newsletterStyles.newsletterFooterText}>
               Visit the <a
                 href={`${siteUrl}${blogBasePath}`.replace(/\/$/, "")}
-                style="color: #0066cc; text-decoration: underline;"
-                >Doenet Blog</a
+                style={newsletterStyles.newsletterFooterLink}>Doenet Blog</a
               > for more updates. Licensed under
               <a
                 href="https://creativecommons.org/licenses/by/4.0/"
-                style="color: #0066cc; text-decoration: underline;"
+                style={newsletterStyles.newsletterFooterLink}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -368,6 +353,9 @@ const issueDateFormatted = newsletterConfig.issueDate.toLocaleDateString(
         return doc.body.innerHTML;
       }
 
+      // Parse styles from JSON
+      const styleSheet = JSON.parse(newsletterStylesJSON);
+
       // Apply inline styles for email compatibility
       function applyEmailStyles(html) {
         const parser = new DOMParser();
@@ -375,95 +363,59 @@ const issueDateFormatted = newsletterConfig.issueDate.toLocaleDateString(
 
         // Style paragraphs
         doc.querySelectorAll("p").forEach((p) => {
-          p.setAttribute(
-            "style",
-            "margin: 0 0 1em 0; line-height: 1.6; color: #333; font-size: 18px;",
-          );
+          p.setAttribute("style", styleSheet.paragraph);
         });
 
         // Style headings
         doc.querySelectorAll("h1").forEach((h) => {
-          h.setAttribute(
-            "style",
-            "margin: 1.5em 0 0.5em 0; line-height: 1.3; color: #1a1a1a; font-size: 32px;",
-          );
+          h.setAttribute("style", styleSheet.heading1);
         });
 
         doc.querySelectorAll("h2").forEach((h) => {
-          h.setAttribute(
-            "style",
-            "margin: 1.5em 0 0.5em 0; line-height: 1.3; color: #1a1a1a; font-size: 28px;",
-          );
+          h.setAttribute("style", styleSheet.heading2);
         });
 
         doc.querySelectorAll("h3").forEach((h) => {
-          h.setAttribute(
-            "style",
-            "margin: 1.5em 0 0.5em 0; line-height: 1.3; color: #1a1a1a; font-size: 24px;",
-          );
+          h.setAttribute("style", styleSheet.heading3);
         });
 
         doc.querySelectorAll("h4, h5, h6").forEach((h) => {
-          h.setAttribute(
-            "style",
-            "margin: 1.5em 0 0.5em 0; line-height: 1.3; color: #1a1a1a; font-size: 20px;",
-          );
+          h.setAttribute("style", styleSheet.heading4);
         });
 
         // Style links
         doc.querySelectorAll("a").forEach((a) => {
-          a.setAttribute(
-            "style",
-            "color: #0066cc; text-decoration: underline; font-size: 18px;",
-          );
+          a.setAttribute("style", styleSheet.link);
         });
 
         // Style lists
         doc.querySelectorAll("ul, ol").forEach((list) => {
-          list.setAttribute(
-            "style",
-            "margin: 0 0 1em 0; padding-left: 2em; font-size: 18px;",
-          );
+          list.setAttribute("style", styleSheet.list);
         });
 
         doc.querySelectorAll("li").forEach((li) => {
-          li.setAttribute(
-            "style",
-            "margin: 0 0 0.5em 0; line-height: 1.6; font-size: 18px;",
-          );
+          li.setAttribute("style", styleSheet.listItem);
         });
 
         // Style code blocks
         doc.querySelectorAll("pre").forEach((pre) => {
-          pre.setAttribute(
-            "style",
-            "background: #f5f5f5; padding: 1em; border-radius: 4px; overflow-x: auto; margin: 1em 0; font-size: 16px;",
-          );
+          pre.setAttribute("style", styleSheet.codeBlock);
         });
 
         doc.querySelectorAll("code").forEach((code) => {
           if (code.parentElement?.tagName !== "PRE") {
-            code.setAttribute(
-              "style",
-              "background: #f5f5f5; padding: 0.2em 0.4em; border-radius: 3px; font-family: monospace; font-size: 16px;",
-            );
+            code.setAttribute("style", styleSheet.codeInline);
           }
         });
 
         // Style blockquotes
         doc.querySelectorAll("blockquote").forEach((bq) => {
-          bq.setAttribute(
-            "style",
-            "border-left: 4px solid #ddd; padding-left: 1em; margin: 1em 0; color: #666; font-size: 18px;",
-          );
+          bq.setAttribute("style", styleSheet.blockquote);
         });
 
         // Style images
         doc.querySelectorAll("img").forEach((img) => {
-          img.setAttribute(
-            "style",
-            "max-width: 100%; height: auto; display: block; margin: 1em 0;",
-          );
+          img.setAttribute("style", styleSheet.image);
         });
 
         return doc.body.innerHTML;
@@ -481,9 +433,6 @@ const issueDateFormatted = newsletterConfig.issueDate.toLocaleDateString(
         };
         return text.replace(/[&<>"']/g, (char) => map[char]);
       }
-
-      // Parse styles from JSON
-      const styleSheet = JSON.parse(newsletterStylesJSON);
 
       function absolutizeUrl(rawUrl) {
         if (!rawUrl) return rawUrl;
@@ -590,7 +539,7 @@ const issueDateFormatted = newsletterConfig.issueDate.toLocaleDateString(
             ? `
             <tr>
               <td style="${styleSheet.cell}">
-                <img src="${absolutizeUrl(heroImage)}" alt="${escapedTitle}" style="max-width: 100%; height: auto; display: block; margin: 0 0 1em 0; border-radius: 4px;" />
+                <img src="${absolutizeUrl(heroImage)}" alt="${escapedTitle}" style="${styleSheet.heroImage}" />
               </td>
             </tr>
           `
@@ -654,11 +603,11 @@ const issueDateFormatted = newsletterConfig.issueDate.toLocaleDateString(
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${escapeHtml(document.title)}</title>
 </head>
-<body style="margin: 0; padding: 0; font-family: sans-serif; font-size: 18px; background-color: #f5f5f5;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 0; padding: 0;">
+<body style="${styleSheet.wrapperBody}">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="${styleSheet.wrapperOuterTable}">
     <tr>
-      <td align="center" style="padding: 20px 0;">
-        <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width: 600px; background-color: #ffffff;">
+      <td align="center" style="${styleSheet.wrapperOuterCell}">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="${styleSheet.wrapperInnerTable}">
           <tr>
             <td>
 ${content.innerHTML}
@@ -692,11 +641,11 @@ ${content.innerHTML}
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${escapeHtml(document.title)}</title>
 </head>
-<body style="margin: 0; padding: 0; font-family: sans-serif; font-size: 18px; background-color: #f5f5f5;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 0; padding: 0;">
+<body style="${styleSheet.wrapperBody}">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="${styleSheet.wrapperOuterTable}">
     <tr>
-      <td align="center" style="padding: 20px 0;">
-        <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width: 600px; background-color: #ffffff;">
+      <td align="center" style="${styleSheet.wrapperOuterCell}">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="${styleSheet.wrapperInnerTable}">
           <tr>
             <td>
 ${content.innerHTML}
