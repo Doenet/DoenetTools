@@ -166,7 +166,7 @@ const issueDateFormatted = newsletterConfig.issueDate.toLocaleDateString(
             >
               <tr>
                 <td style={newsletterStyles.newsletterHeaderLeftCell}>
-                  <span style={newsletterStyles.newsletterHeaderDateText}>
+                  <span>
                     {issueDateFormatted} Newsletter
                   </span>
                 </td>
@@ -234,7 +234,7 @@ const issueDateFormatted = newsletterConfig.issueDate.toLocaleDateString(
                 rel="noopener noreferrer"
               >
                 CC BY 4.0
-              </a>.
+              </a>. Reply to unsubscribe.
             </p>
           </td>
         </tr>
@@ -534,30 +534,30 @@ const issueDateFormatted = newsletterConfig.issueDate.toLocaleDateString(
           const blogBaseUrl = `${siteUrl}${blogBasePath}`.replace(/\/$/, "");
           const postUrl = `${blogBaseUrl}/${slug}`;
 
-          // Build hero image HTML if available
-          const heroImageHtml = heroImage
-            ? `
-            <tr>
-              <td style="${styleSheet.cell}">
-                <img src="${absolutizeUrl(heroImage)}" alt="${escapedTitle}" style="${styleSheet.heroImage}" />
-              </td>
-            </tr>
-          `
+          // Build hero image HTML if enabled for this post
+          const heroImageCell = heroImage
+            ? `<td style="${styleSheet.headerImageCell}"><img src="${absolutizeUrl(heroImage)}" alt="${escapedTitle}" style="${styleSheet.heroImage}" /></td>`
             : "";
 
           const postHtml = `
             <table role="presentation" style="${styleSheet.table}">
-              ${heroImageHtml}
               <tr>
                 <td style="${styleSheet.headerCell}">
-                  <h2 style="${styleSheet.title}">
-                    <a href="${postUrl}" style="${styleSheet.titleLink}" target="_blank" rel="noopener noreferrer">
-                      ${escapedTitle}
-                    </a>
-                  </h2>
-                  <p style="${styleSheet.meta}">
-                    By ${escapedAuthor}${escapedOrganization ? ` (${escapedOrganization})` : ""}
-                  </p>
+                  <table role="presentation" style="${styleSheet.headerInnerTable}">
+                    <tr>
+                      ${heroImageCell}
+                      <td style="${styleSheet.headerContentCell}">
+                        <h2 style="${styleSheet.title}">
+                          <a href="${postUrl}" style="${styleSheet.titleLink}" target="_blank" rel="noopener noreferrer">
+                            ${escapedTitle}
+                          </a>
+                        </h2>
+                        <p style="${styleSheet.meta}">
+                          By ${escapedAuthor}${escapedOrganization ? ` (${escapedOrganization})` : ""}
+                        </p>
+                      </td>
+                    </tr>
+                  </table>
                 </td>
               </tr>
               <tr>
