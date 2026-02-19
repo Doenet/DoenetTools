@@ -1,14 +1,10 @@
 ﻿type NewsletterConfig = {
-  title: string;
-  subtitle: string;
   issueDate: Date;
   excerptMarker: string;
   manualOrder: string[];
 };
 
 const defaults: NewsletterConfig = {
-  title: "Doenet Newsletter",
-  subtitle: "Welcome! Here are some recent updates from the Doenet project.",
   issueDate: new Date(),
   excerptMarker: "more",
   manualOrder: [],
@@ -42,8 +38,6 @@ function parseIssueDate(rawValue: string | undefined): Date {
 const env = import.meta.env;
 
 export const newsletterConfig: NewsletterConfig = {
-  title: env.NEWSLETTER_TITLE || defaults.title,
-  subtitle: env.NEWSLETTER_SUBTITLE || defaults.subtitle,
   issueDate: parseIssueDate(env.NEWSLETTER_ISSUE_DATE),
   excerptMarker: env.NEWSLETTER_EXCERPT_MARKER || defaults.excerptMarker,
   manualOrder: parseManualOrder(env.NEWSLETTER_MANUAL_ORDER),
