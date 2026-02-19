@@ -1,14 +1,14 @@
 ---
 import { getCollection, render } from "astro:content";
 import { newsletterStyles } from "../utils/newsletterStyles";
-import { newsletterConfig } from "../newsletter-config";
+import { newsletterConfig } from "../utils/newsletter-config";
 
 // Note: Helper functions (escapeRegExp, extractUntilMarker, cleanForEmail, applyEmailStyles)
 // are inlined directly in the client-side script to avoid eval and CSP issues.
 
 // ============================================================================
-// Newsletter configuration is imported from ../newsletter-config.ts
-// Edit that file for each newsletter (it's gitignored so changes won't be tracked)
+// Newsletter configuration is sourced from environment variables.
+// See blog/.env.example for the available keys.
 // ============================================================================
 
 // ============================================================================
