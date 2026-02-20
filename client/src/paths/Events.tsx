@@ -45,12 +45,10 @@ export function Events() {
                   Drop in anytime during the two hours.
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Dates:</strong> Each Tuesday except for the first
-                  Tuesday of each month, which is reserved for a training
-                  workshop.
+                  <strong>Dates:</strong> 2nd–5th Tuesday of each month
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Time:</strong> 2-4pm EST, 11am-1pm PST
+                  <strong>Time:</strong> 2–4pm EST, 11am–1pm PST
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
                   <strong>Location:</strong> Online, via Zoom. Link:{" "}
@@ -72,10 +70,8 @@ export function Events() {
               </Heading>
 
               <Text fontSize="1.3rem" lineHeight="1.3" mb={6}>
-                Virtual training workshops are one hour long and held on Zoom.
-                Immediately following each workshop, the instructors will hold
-                an office hour to answer any questions and help you with any
-                activities you want to create.
+                Virtual training workshops are scheduled for the first Tuesday
+                of the month.
               </Text>
 
               {/* Workshop 1 */}
@@ -104,8 +100,7 @@ export function Events() {
                   <strong>Date:</strong> Tuesday, March 3, 2026
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Time:</strong> 2-3pm EST, 11am-noon PST (followed by
-                  office hours from 3-4pm EST, noon-1pm PST)
+                  <strong>Time:</strong> 2–4pm EST, 11am–1pm PST
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
                   <Button
@@ -148,8 +143,7 @@ export function Events() {
                   <strong>Date:</strong> Tuesday, April 7, 2026
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Time:</strong> 2-3pm EST, 11am-noon PST (followed by
-                  office hours from 3-4pm EST, noon-1pm PST)
+                  <strong>Time:</strong> 2–4pm EST, 11am–1pm PST
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
                   <Button
@@ -189,8 +183,7 @@ export function Events() {
                   <strong>Date:</strong> Tuesday, May 5, 2026
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Time:</strong> 2-3pm EST, 11am-noon PST (followed by
-                  office hours from 3-4pm EST, noon-1pm PST)
+                  <strong>Time:</strong> 2–4pm EST, 11am–1pm PST
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
                   <Button
@@ -230,7 +223,7 @@ export function Events() {
                   2026 MAA Florida /FTYCMA Joint Annual Meeting
                 </Heading>
                 <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Dates:</strong> February 20 - 21, 2026
+                  <strong>Dates:</strong> February 20 – 21, 2026
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
                   <strong>Location:</strong> State College of Florida /
@@ -247,12 +240,12 @@ export function Events() {
                   styleType="disc"
                 >
                   <ListItem>
-                    Feb 20, 3:00-3:50pm:{" "}
+                    Feb 20, 3:00–3:50pm:{" "}
                     <em>Different Ways of Looking at the Familiar</em>, talk by
                     Anurag Katyal
                   </ListItem>
                   <ListItem>
-                    Feb 21, 9:00-10:45am:{" "}
+                    Feb 21, 9:00–10:45am:{" "}
                     <em>
                       Creating AI–Resistant Interactive Activities to Facilitate
                       Active Learning
@@ -283,7 +276,7 @@ export function Events() {
               >
                 <Heading size="md">Doenet Community Workshop</Heading>
                 <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Dates:</strong> June 1-5 2026
+                  <strong>Dates:</strong> June 1–5 2026
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
                   <strong>Location:</strong> University of Minnesota
@@ -303,7 +296,7 @@ export function Events() {
               >
                 <Heading size="md">MathFest 2026</Heading>
                 <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Dates:</strong> August 5-8, 2026
+                  <strong>Dates:</strong> August 5–8, 2026
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
                   <strong>Location:</strong> Boston, MA
