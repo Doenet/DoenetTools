@@ -8,6 +8,9 @@ env:
   AWS_REGION: "us-east-2"
   WORKING_DIR: ./server
   ECR_REPOSITORY: dev3/doenet
+  ECS_CLUSTER: dev3
+  ECS_SERVICE: doenet-backend
+  GHA_ROLE: arn:aws:iam::568298704244:role/github-actions-dev3
 
 permissions:
   id-token: write # This is required for requesting the JWT
@@ -38,7 +41,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v5
         with:
           audience: sts.amazonaws.com
-          role-to-assume: "arn:aws:iam::568298704244:role/github-actions-dev3"
+          role-to-assume: ${{ env.GHA_ROLE }}
           role-skip-session-tagging: true
           # role-session-name: GitHub_to_AWS_via_FederatedOIDC
           aws-region: ${{ env.AWS_REGION }}
@@ -73,3 +76,11 @@ jobs:
             ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
           cache-from: type=registry,ref=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
           cache-to: type=inline
+      - name: Update the Doenet ECS Service
+        uses: ./.github/actions/update-cluster
+        with:
+          github-actions-role: ${{ env.GHA_ROLE }}
+          role-session-name: doenet-backend-ecs
+          aws-region: ${{ env.AWS_REGION }}
+          ecs-cluster: ${{ env.ECS_CLUSTER }}
+          ecs-service: ${{ env.ECS_SERVICE }}
