@@ -845,7 +845,7 @@ export async function createContentRevision({
     });
   }
 
-  return { revisionNum: contentRevision.revisionNum, createdNew };
+  return { revisionNum: contentRevision.revisionNum, createdNew, cid };
 }
 
 /**
