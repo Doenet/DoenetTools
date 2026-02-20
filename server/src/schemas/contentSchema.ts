@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { uuidOrNullSchema, uuidSchema } from "./uuid";
+import { isValidCid } from "../utils/cid";
 
 export const contentIdSchema = z.object({
   contentId: uuidSchema,
@@ -75,5 +76,9 @@ export const saveSyntaxUpdateSchema = z.object({
 });
 
 export const cidSchema = z.object({
-  cid: z.string(),
+  cid: z
+    .string()
+    .refine((val) => isValidCid(val), {
+      message: "Invalid IPFS CID format",
+    }),
 });
