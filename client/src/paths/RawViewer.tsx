@@ -172,7 +172,6 @@ export function RawViewer() {
       <DoenetActivityViewer
         source={data.activityJson}
         requestedVariantIndex={1}
-        userId={"hi"}
         paginate={
           activityData.type === "sequence" ? activityData.paginate : false
         }
