@@ -76,9 +76,7 @@ export const saveSyntaxUpdateSchema = z.object({
 });
 
 export const cidSchema = z.object({
-  cid: z
-    .string()
-    .refine((val) => isValidCid(val), {
-      message: "Invalid IPFS CID format",
-    }),
+  cid: z.string().refine((val) => isValidCid(val), {
+    message: "Invalid IPFS CID format",
+  }),
 });
