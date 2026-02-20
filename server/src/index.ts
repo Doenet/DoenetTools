@@ -76,6 +76,9 @@ app.use(function (req, res, next) {
   next();
 });
 
+const awsSesArn = process.env.AWS_SES_ARN || "";
+const sendingEmailAddress = process.env.SENDING_EMAIL_ADDRESS || "";
+
 const googleClientId = process.env.GOOGLE_CLIENT_ID || "";
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET || "";
 
@@ -133,7 +136,8 @@ passport.use(
       email_html = email_html.replace(/CONFIRM_LINK/g, confirmURL);
 
       const params = {
-        Source: "Doenet Accounts <info@doenet.org>",
+        Source: sendingEmailAddress,
+        SourceArn: awsSesArn,
         Destination: {
           ToAddresses: [user.email],
         },
