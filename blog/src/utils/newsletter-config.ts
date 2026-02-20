@@ -2,12 +2,14 @@
   issueDate: Date;
   excerptMarker: string;
   manualOrder: string[];
+  eventsUrl: string;
 };
 
 const defaults: NewsletterConfig = {
   issueDate: new Date(),
   excerptMarker: "more",
   manualOrder: [],
+  eventsUrl: "",
 };
 
 function parseManualOrder(rawValue: string | undefined): string[] {
@@ -41,4 +43,5 @@ export const newsletterConfig: NewsletterConfig = {
   issueDate: parseIssueDate(env.NEWSLETTER_ISSUE_DATE),
   excerptMarker: env.NEWSLETTER_EXCERPT_MARKER || defaults.excerptMarker,
   manualOrder: parseManualOrder(env.NEWSLETTER_MANUAL_ORDER),
+  eventsUrl: env.NEWSLETTER_EVENTS_URL || defaults.eventsUrl,
 };

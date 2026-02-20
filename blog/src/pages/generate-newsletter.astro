@@ -2,6 +2,9 @@
 import { getCollection, render } from "astro:content";
 import { newsletterStyles } from "../utils/newsletterStyles";
 import { newsletterConfig } from "../utils/newsletter-config";
+import fs from "node:fs";
+import path from "node:path";
+import { Marked } from "marked";
 
 // Note: Helper functions (escapeRegExp, extractUntilMarker, cleanForEmail, applyEmailStyles)
 // are inlined directly in the client-side script to avoid eval and CSP issues.
@@ -64,6 +67,23 @@ const issueDateFormatted = newsletterConfig.issueDate.toLocaleDateString(
     month: "short",
   },
 );
+
+// Load events content from newsletter-events.md if it exists
+let eventsContent = "";
+let eventsUrl = "";
+try {
+  const eventsFilePath = path.join(process.cwd(), "newsletter-events.md");
+  if (fs.existsSync(eventsFilePath)) {
+    const eventsMarkdown = fs.readFileSync(eventsFilePath, "utf-8");
+    const marked = new Marked();
+    eventsContent = marked.parse(eventsMarkdown) as string;
+  }
+  eventsUrl =
+    newsletterConfig.eventsUrl ||
+    `${siteUrl}${blogBasePath}`.replace(/\/$/, "");
+} catch (error) {
+  console.warn("Could not load newsletter-events.md:", error);
+}
 ---
 
 <!doctype html>
@@ -190,7 +210,7 @@ const issueDateFormatted = newsletterConfig.issueDate.toLocaleDateString(
 
       <!-- Posts -->
       {
-        postsWithExcerpts.map(({ post, slug, Content, config }) => {
+        postsWithExcerpts.map(({ post, slug, Content, config }, index) => {
           return (
             <>
               {/* Render the full content in a hidden div so we can extract from it */}
@@ -213,6 +233,15 @@ const issueDateFormatted = newsletterConfig.issueDate.toLocaleDateString(
                 data-date={post.data.pubDate.toISOString()}
                 data-hero-image={post.data.heroImage || ""}
               />
+
+              {/* Events Section after first post */}
+              {index === 0 && eventsContent && (
+                <div
+                  id="events-section"
+                  data-events-content={eventsContent}
+                  data-events-url={eventsUrl}
+                />
+              )}
             </>
           );
         })
@@ -355,6 +384,25 @@ const issueDateFormatted = newsletterConfig.issueDate.toLocaleDateString(
 
       // Parse styles from JSON
       const styleSheet = JSON.parse(newsletterStylesJSON);
+
+      // Process events section if present
+      const eventsSection = document.getElementById("events-section");
+      if (eventsSection) {
+        const eventsContentRaw = eventsSection.getAttribute(
+          "data-events-content",
+        );
+        const eventsUrl = eventsSection.getAttribute("data-events-url");
+
+        if (eventsContentRaw) {
+          // We'll process events after applyEmailStyles is defined
+          // Store for later processing
+          window._eventsToProcess = {
+            section: eventsSection,
+            content: eventsContentRaw,
+            url: eventsUrl,
+          };
+        }
+      }
 
       // Apply inline styles for email compatibility
       function applyEmailStyles(html) {
@@ -577,6 +625,40 @@ const issueDateFormatted = newsletterConfig.issueDate.toLocaleDateString(
 
           targetDiv.innerHTML = postHtml;
         });
+
+        // Process events section if stored earlier
+        if (window._eventsToProcess) {
+          const { section, content, url } = window._eventsToProcess;
+
+          let processedEvents = cleanForEmail(content);
+          processedEvents = applyEmailStyles(processedEvents);
+          processedEvents = rewriteUrls(processedEvents);
+
+          const eventsHtml = `
+            <table role="presentation" style="${styleSheet.eventsSection}">
+              <tr>
+                <td style="${styleSheet.eventsHeader}">
+                  <h2 style="${styleSheet.eventsTitle}">Events</h2>
+                </td>
+              </tr>
+              <tr>
+                <td style="${styleSheet.eventsContent}">
+                  <div style="${styleSheet.eventsBody}">
+                    ${processedEvents}
+                  </div>
+                  <p style="${styleSheet.buttonWrap}">
+                    <a href="${url}" style="${styleSheet.button}" target="_blank" rel="noopener noreferrer">
+                      See All Events →
+                    </a>
+                  </p>
+                </td>
+              </tr>
+            </table>
+          `;
+
+          section.innerHTML = eventsHtml;
+          delete window._eventsToProcess;
+        }
 
         // Remove hidden content divs from the newsletter content
         hiddenContents.forEach((div) => div.remove());

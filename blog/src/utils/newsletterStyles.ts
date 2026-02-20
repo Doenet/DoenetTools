@@ -81,4 +81,14 @@ export const newsletterStyles = {
   buttonWrap: "margin: 27px 0 0 0; font-family: sans-serif; font-size: 18px;",
   button:
     "display: inline-block; padding: 11px 22px; background: #0066cc; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: 500; font-size: 18px;",
+
+  // Events section styles
+  eventsSection:
+    "width: 600px; margin: 0 auto 54px auto; border-collapse: collapse; table-layout: fixed; background: #f8f9fa;",
+  eventsHeader: "padding: 18px 22px; background: #0066cc; color: #ffffff;",
+  eventsTitle:
+    "margin: 0; font-size: 24px; line-height: 1.3; color: #ffffff; font-family: sans-serif; font-weight: bold;",
+  eventsContent: "padding: 36px 22px;",
+  eventsBody:
+    "margin: 0 0 18px 0; font-family: sans-serif; font-size: 18px; line-height: 1.6; color: #333;",
 };
