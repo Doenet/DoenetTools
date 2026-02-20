@@ -216,13 +216,13 @@ export async function getPublicContent({
 }
 
 /**
- * Attempts to find content that has a content revision with `cid`.
+ * Attempts to find public content that has a content revision with `cid`.
  */
-export async function getContentByCid({ cid }: { cid: string }) {
+export async function getPublicContentByCid({ cid }: { cid: string }) {
   const content = await prisma.contentRevisions.findFirstOrThrow({
     where: {
       cid,
-      content: { isDeletedOn: null, type: { not: "folder" } },
+      content: { isDeletedOn: null, isPublic: true, type: { not: "folder" } },
     },
     select: {
       contentId: true,

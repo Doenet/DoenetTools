@@ -3,7 +3,7 @@ import { queryOptionalLoggedIn } from "../middleware/queryMiddleware";
 import {
   getActivityViewerData,
   getPublicContent,
-  getContentByCid,
+  getPublicContentByCid,
 } from "../query/activity_edit_view";
 import { cidSchema, contentIdSchema } from "../schemas/contentSchema";
 import { getContentSource } from "../query/activity";
@@ -26,6 +26,6 @@ activityEditViewRouter.get(
 );
 
 activityEditViewRouter.get(
-  "/getContentByCid/:cid",
-  queryOptionalLoggedIn(getContentByCid, cidSchema),
+  "/getPublicContentByCid/:cid",
+  queryOptionalLoggedIn(getPublicContentByCid, cidSchema),
 );

@@ -53,7 +53,7 @@ export async function loader({ params }: any) {
     const {
       data: { activity: activityData },
     } = await axios.get(
-      `/api/activityEditView/getContentByCid/${params.viewId}`,
+      `/api/activityEditView/getPublicContentByCid/${params.viewId}`,
     );
 
     const contentId = activityData.contentId;

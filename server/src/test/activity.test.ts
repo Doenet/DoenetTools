@@ -21,7 +21,7 @@ import {
   getActivityViewerData,
   getContent,
   getPublicContent,
-  getContentByCid,
+  getPublicContentByCid,
 } from "../query/activity_edit_view";
 import { getMyContent, getMyTrash } from "../query/content_list";
 import { modifyContentSharedWith, setContentIsPublic } from "../query/share";
@@ -2133,7 +2133,7 @@ test("getPublicContent only gets public activity", async () => {
   ).rejects.toThrow("not found");
 });
 
-test("getContentByCid gets public and private activities", async () => {
+test("getPublicContentByCid only get public activities", async () => {
   const { userId: ownerId } = await createTestUser();
 
   const baseSource = DateTime.now().toISO();
@@ -2175,7 +2175,7 @@ test("getContentByCid gets public and private activities", async () => {
     revisionName: "Initial revision",
   });
 
-  const { activity: publicContent } = await getContentByCid({
+  const { activity: publicContent } = await getPublicContentByCid({
     cid: publicContentCid,
   });
 
@@ -2185,18 +2185,14 @@ test("getContentByCid gets public and private activities", async () => {
 
   expect(publicContent.doenetML).toBe(publicDoenetml);
 
-  const { activity: privateContent } = await getContentByCid({
-    cid: privateContentCid,
-  });
-
-  if (privateContent.type !== "singleDoc") {
-    throw Error("shouldn't happen");
-  }
-
-  expect(privateContent.doenetML).toBe(privateDoenetml);
+  await expect(
+    getPublicContentByCid({
+      cid: privateContentCid,
+    }),
+  ).rejects.toThrow("not found");
 });
 
-test("getContentByCid gets doenetml from correct revision", async () => {
+test("getPublicContentByCid gets doenetml from correct revision", async () => {
   const { userId: ownerId } = await createTestUser();
 
   const baseSource = DateTime.now().toISO();
@@ -2247,7 +2243,7 @@ test("getContentByCid gets doenetml from correct revision", async () => {
     revisionName: "revision 3",
   });
 
-  const { activity: publicContent } = await getContentByCid({
+  const { activity: publicContent } = await getPublicContentByCid({
     cid: revision2Cid,
   });
 
