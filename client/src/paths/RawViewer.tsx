@@ -86,6 +86,15 @@ export async function loader({ params }: any) {
   }
 }
 
+/**
+ * Serves the `embed/[contentId]` endpoint so external websites can embed a
+ * raw DoenetML activity without additional Doenet site chrome (navbar, menu,
+ * footer, etc.).
+ *
+ * This route is intended to be loaded in an iframe by another web app. When
+ * embedded, RawViewer relays SPLICE messages to `window.parent` (if present)
+ * so the containing app can communicate with the document.
+ */
 export function RawViewer() {
   const data = useLoaderData() as {
     contentId: string;
