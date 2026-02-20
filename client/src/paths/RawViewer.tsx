@@ -103,7 +103,7 @@ export function RawViewer() {
   );
 
   const baseUrl = window.location.protocol + "//" + window.location.host;
-  const doenetViewerUrl = `${baseUrl}/view`;
+  const doenetViewerUrl = `${baseUrl}/embed`;
 
   useEffect(() => {
     const handler = (event: MessageEvent) => {
