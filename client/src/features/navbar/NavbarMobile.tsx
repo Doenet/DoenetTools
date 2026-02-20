@@ -172,6 +172,7 @@ function NavbarMobileLeaf({
         as={RouterLink}
         data-test={navItem.label}
         to={navItem.to}
+        reloadDocument={navItem.reloadDocument}
         onClick={onClick}
         {...boxStyles}
       >

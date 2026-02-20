@@ -110,11 +110,13 @@ function DesktopNavMenuLinks({ navItem }: { navItem: NavItem }) {
       <MenuList borderRadius="0">
         {subItems?.map((option, index) => {
           const link = option.to!;
+          const reloadDocument = option.reloadDocument;
           return (
             <MenuItem
               key={index}
               as={RouterLink}
               to={link}
+              reloadDocument={reloadDocument}
               backgroundColor="transparent"
               _hover={{ backgroundColor: navItemHoverBg }}
             >
@@ -133,12 +135,13 @@ function DesktopNavMenuLinks({ navItem }: { navItem: NavItem }) {
  * Only visible on lg breakpoint and above.
  */
 function DesktopNavSingleLink({ navItem }: { navItem: NavItem }) {
-  const { to, label } = navItem;
+  const { to, label, reloadDocument } = navItem;
   const link = to!;
   return (
     <ChakraLink
       as={RouterLink}
       to={link}
+      reloadDocument={reloadDocument}
       data-test={label}
       h="100%"
       alignContent="center"

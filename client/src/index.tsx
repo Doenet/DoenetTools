@@ -124,6 +124,8 @@ import { editorUrl } from "./utils/url";
 import { ScratchPad, loader as scratchPadLoader } from "./paths/ScratchPad";
 import { About } from "./paths/About";
 import { RawViewer, loader as rawViewerLoader } from "./paths/RawViewer";
+import { GetInvolved } from "./paths/GetInvolved";
+import { Events } from "./paths/Events";
 
 const router = createBrowserRouter([
   {
@@ -161,6 +163,16 @@ const router = createBrowserRouter([
       {
         path: "about",
         element: <About />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "get-involved",
+        element: <GetInvolved />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "events",
+        element: <Events />,
         errorElement: <ErrorPage />,
       },
       {

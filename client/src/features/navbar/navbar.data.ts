@@ -5,11 +5,18 @@ export function mainSections(discussionsLink: string): NavSection[] {
     {
       items: [
         { label: "Explore", to: "/explore" },
-        { label: "About", to: "/about" },
+        {
+          label: "About",
+          subItems: [
+            { label: "About Doenet", to: "/about" },
+            { label: "Events", to: "/events" },
+            { label: "Blog", to: "/blog", reloadDocument: true },
+          ],
+        },
         {
           label: "Get Involved",
           subItems: [
-            { label: "How to get involved", to: "https://pages.doenet.org" },
+            { label: "How to get involved", to: "/get-involved" },
             { label: "Community discussions", to: discussionsLink },
             { label: "Software/technical", to: "https://github.com/Doenet" },
           ],
@@ -27,7 +34,9 @@ export function mainSections(discussionsLink: string): NavSection[] {
         {
           label: "Authors",
           subItems: [
+            { label: "Scratch pad", to: "/scratchPad" },
             { label: "Authoring documentation", to: "https://docs.doenet.org" },
+            { label: "Training workshops", to: "/events#workshops" },
             { label: "Get support", to: discussionsLink },
           ],
         },
