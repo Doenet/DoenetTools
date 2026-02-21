@@ -2,7 +2,7 @@ PROJECT=doenet
 FARGATE_CLUSTER=prod
 AWS_REGION=us-east-2
 TEMPLATE_BUCKET=doenet-cf-prod
-SSO_ACCOUNT_NAME=CSE-doenet
+SSO_ACCOUNT_NAME=CSE-doenet-prod
 SAM_CONFIG_ENV=prod
 
 declare -g -A STACKS
