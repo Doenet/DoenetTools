@@ -60,7 +60,7 @@ describe("Navbar", { tags: ["@group4"] }, () => {
       cy.contains('[role="menuitem"]', "Community discussions")
         .should("be.visible")
         .and("have.attr", "href")
-        .and("include", getDiscourseUrl(undefined).replace(/^\//, ""));
+        .and("include", getDiscourseUrl(undefined));
 
       cy.checkAccessibility("body");
     });
@@ -83,7 +83,7 @@ describe("Navbar", { tags: ["@group4"] }, () => {
       cy.contains('[role="menuitem"]', "Community discussions")
         .should("be.visible")
         .and("have.attr", "href")
-        .and("include", getDiscourseUrl(user).replace(/^\//, ""));
+        .and("include", getDiscourseUrl(user));
 
       cy.checkAccessibility("body");
     });
