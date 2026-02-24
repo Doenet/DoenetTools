@@ -285,6 +285,7 @@ export function Home() {
               Drop in anytime during the two hours to ask questions. Join us at{" "}
               <ChakraLink
                 href="https://mathtech.org/dropin"
+                isExternal
                 textDecoration="underline"
               >
                 this Zoom link
