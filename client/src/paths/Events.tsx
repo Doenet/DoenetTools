@@ -2,8 +2,6 @@ import { useEffect } from "react";
 import {
   Box,
   Heading,
-  List,
-  ListItem,
   Text,
   VStack,
   Button,
@@ -210,62 +208,6 @@ export function Events() {
                 hope to see you there!
               </Text>
 
-              {/* Event 1 */}
-              <VStack
-                align="start"
-                spacing={3}
-                mb={6}
-                pl={4}
-                borderLeft="3px solid"
-                borderColor="border"
-              >
-                <Heading size="md">
-                  2026 MAA Florida /FTYCMA Joint Annual Meeting
-                </Heading>
-                <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Dates:</strong> February 20 – 21, 2026
-                </Text>
-                <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Location:</strong> State College of Florida /
-                  Bradenton campus
-                </Text>
-                <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Doenet-related events:</strong>
-                </Text>
-                <List
-                  fontSize="1rem"
-                  lineHeight="1.4"
-                  spacing={1}
-                  pl={5}
-                  styleType="disc"
-                >
-                  <ListItem>
-                    Feb 20, 3:00–3:50pm:{" "}
-                    <em>Different Ways of Looking at the Familiar</em>, talk by
-                    Anurag Katyal
-                  </ListItem>
-                  <ListItem>
-                    Feb 21, 9:00–10:45am:{" "}
-                    <em>
-                      Creating AI–Resistant Interactive Activities to Facilitate
-                      Active Learning
-                    </em>
-                    , introduction to Doenet workshop by Anurag Katyal
-                  </ListItem>
-                </List>
-
-                <Text fontSize="1rem" lineHeight="1.4">
-                  <ChakraLink
-                    href="https://www.florida.maa.org/events/2026-maa-florida-ftycma-joint-annual-meeting"
-                    isExternal
-                    textDecoration="underline"
-                  >
-                    More information
-                  </ChakraLink>
-                </Text>
-              </VStack>
-
-              {/* Event 2 */}
               <VStack
                 align="start"
                 spacing={3}
@@ -286,7 +228,6 @@ export function Events() {
                 </Text>
               </VStack>
 
-              {/* Event 3 */}
               <VStack
                 align="start"
                 spacing={3}

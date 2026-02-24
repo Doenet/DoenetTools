@@ -9,7 +9,6 @@ export function mainSections(discussionsLink: string): NavSection[] {
           label: "About",
           subItems: [
             { label: "About Doenet", to: "/about" },
-            { label: "Events", to: "/events" },
             { label: "Blog", to: "/blog", reloadDocument: true },
           ],
         },
@@ -17,6 +16,7 @@ export function mainSections(discussionsLink: string): NavSection[] {
           label: "Get Involved",
           subItems: [
             { label: "How to get involved", to: "/get-involved" },
+            { label: "Events", to: "/events" },
             { label: "Community discussions", to: discussionsLink },
             { label: "Software/technical", to: "https://github.com/Doenet" },
           ],
