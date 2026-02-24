@@ -252,20 +252,39 @@ export function Home() {
         <Card>
           <CardHeader>
             <Heading size="sm">
-              <ChakraLink
-                href="https://prose.runestone.academy/"
-                textDecoration="underline"
-              >
-                PROSE Consortium
-              </ChakraLink>{" "}
-              weekly drop-in hours, Tuesdays 1-3pm CST
+              Getting started with Doenet virtual workshop, March 3, 1-3pm CST
+            </Heading>
+          </CardHeader>
+          <CardBody>
+            <Text fontSize={"18px"} fontWeight="500">
+              Learn the basics of how to write Doenet activities in this free
+              introductory workshop held on Zoom.
+            </Text>
+
+            <Button
+              as="a"
+              href="https://scholarlattice.org/collections/b428f8ce-9981-4f9b-bb32-526994c57caf"
+              colorScheme="blue"
+              target="_blank"
+              rel="noopener noreferrer"
+              mt="1em"
+            >
+              More information and registration
+            </Button>
+          </CardBody>
+        </Card>
+        <Card>
+          <CardHeader>
+            <Heading size="sm">
+              Virtual office hours, 2nd, 3rd, 4th, 5th Tuesdays of the month,
+              1-3pm CST
             </Heading>
           </CardHeader>
           <CardBody>
             <Text fontSize={"18px"} fontWeight="500">
               Drop in anytime during the two hours to ask questions. Join us at{" "}
               <ChakraLink
-                href="https://prose.runestone.academy/dropin/"
+                href="https://mathtech.org/dropin"
                 textDecoration="underline"
               >
                 this Zoom link
@@ -275,6 +294,14 @@ export function Home() {
           </CardBody>
         </Card>
       </Stack>
+
+      <Text fontSize={"24px"} mt="1em">
+        See the{" "}
+        <ChakraLink href="/events" textDecoration="underline">
+          events page
+        </ChakraLink>{" "}
+        for more upcoming events.
+      </Text>
     </WithSideBanners>
   );
 
