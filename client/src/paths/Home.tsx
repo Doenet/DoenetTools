@@ -261,6 +261,11 @@ export function Home() {
               introductory workshop held on Zoom.
             </Text>
 
+            <Text fontSize={"18px"} fontWeight="500" mt="1em">
+              We will hold these workshops on the first Tuesday of each month.
+              No prior experience with Doenet is necessary, and all are welcome.
+            </Text>
+
             <Button
               as="a"
               href="https://scholarlattice.org/collections/b428f8ce-9981-4f9b-bb32-526994c57caf"
