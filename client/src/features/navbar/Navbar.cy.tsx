@@ -42,9 +42,6 @@ describe("Navbar", { tags: ["@group4"] }, () => {
       cy.contains('[role="menuitem"]', "About Doenet")
         .should("be.visible")
         .and("have.attr", "href", "/about");
-      cy.contains('[role="menuitem"]', "Events")
-        .should("be.visible")
-        .and("have.attr", "href", "/events");
       cy.contains('[role="menuitem"]', "Blog")
         .should("be.visible")
         .and("have.attr", "href", "/blog");
@@ -158,9 +155,6 @@ describe("Navbar", { tags: ["@group4"] }, () => {
       cy.contains("About Doenet")
         .should("be.visible")
         .and("have.attr", "href", "/about");
-      cy.contains("Events")
-        .should("be.visible")
-        .and("have.attr", "href", "/events");
       cy.contains("Blog")
         .should("be.visible")
         .and("have.attr", "href", "/blog");

@@ -274,7 +274,7 @@ export function Home() {
               rel="noopener noreferrer"
               mt="1em"
             >
-              More information and registration
+              Details and registration at ScholarLattice
             </Button>
           </CardBody>
         </Card>
