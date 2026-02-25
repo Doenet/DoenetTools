@@ -108,7 +108,7 @@ export function Events() {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    More information and registration
+                    Details and registration at ScholarLattice
                   </Button>
                 </Text>
               </VStack>
@@ -151,7 +151,7 @@ export function Events() {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    More information and registration
+                    Details and registration at ScholarLattice
                   </Button>
                 </Text>
               </VStack>
@@ -191,7 +191,7 @@ export function Events() {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    More information and registration
+                    Details and registration at ScholarLattice
                   </Button>
                 </Text>
               </VStack>
