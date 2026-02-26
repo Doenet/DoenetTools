@@ -32,6 +32,7 @@ import {
   Tooltip,
   HStack,
   ButtonGroup,
+  IconButton,
 } from "@chakra-ui/react";
 import { SiteContext } from "./SiteHeader";
 import { SaveDoenetmlAndReportFinish } from "../popups/SaveDoenetmlAndReportFinish";
@@ -205,12 +206,13 @@ export function ScratchPad() {
   const helpButton = (
     <Menu>
       <Tooltip label="Help" openDelay={300} placement="bottom-end">
-        <MenuButton size="sm" colorScheme="blue" as={Button}>
-          <HStack>
-            {/* <Text>Help</Text> */}
-            <LuCircleHelp fontSize="1.2rem" />
-          </HStack>
-        </MenuButton>
+        <MenuButton
+          size="sm"
+          colorScheme="blue"
+          as={IconButton}
+          icon={<LuCircleHelp fontSize="1.2rem" />}
+          aria-label="Help"
+        />
       </Tooltip>
       <MenuList>
         <MenuItem as={ChakraLink} href="https://docs.doenet.org" isExternal>
