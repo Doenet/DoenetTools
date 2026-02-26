@@ -20,17 +20,23 @@ import {
   AlertTitle,
   AlertDescription,
   Box,
-  Flex,
   Button,
+  Flex,
+  Link as ChakraLink,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
   Text,
   useDisclosure,
+  Tooltip,
+  HStack,
+  ButtonGroup,
 } from "@chakra-ui/react";
 import { SiteContext } from "./SiteHeader";
 import { SaveDoenetmlAndReportFinish } from "../popups/SaveDoenetmlAndReportFinish";
+import { LuCircleHelp } from "react-icons/lu";
+import { getDiscourseUrl } from "../utils/discourse";
 
 export async function loader({ request }: { request: Request }) {
   const url = new URL(request.url);
@@ -95,12 +101,14 @@ export function ScratchPad() {
     document.title = `Scratch pad - Doenet`;
   }, []);
 
-  const [initialSource, setInitialSource] = useState(source);
-  const [resetNum, setResetNum] = useState(0);
+  const { user, setAddTo } = useOutletContext<SiteContext>();
+  const discussHref = getDiscourseUrl(user);
 
   const navigate = useNavigate();
   const fetcher = useFetcher();
-  const { user, setAddTo } = useOutletContext<SiteContext>();
+
+  const [initialSource, setInitialSource] = useState(source);
+  const [resetNum, setResetNum] = useState(0);
 
   const {
     isOpen: saveDialogIsOpen,
@@ -108,7 +116,7 @@ export function ScratchPad() {
     onClose: saveDialogOnClose,
   } = useDisclosure();
 
-  const saveDocumentDialog = (
+  const saveDocumentDialog = user && (
     <SaveDoenetmlAndReportFinish
       isOpen={saveDialogIsOpen}
       onClose={saveDialogOnClose}
@@ -194,7 +202,28 @@ export function ScratchPad() {
     </Menu>
   );
 
-  const saveScratchPad = user && (
+  const helpButton = (
+    <Menu>
+      <Tooltip label="Help" openDelay={300} placement="bottom-end">
+        <MenuButton size="sm" colorScheme="blue" as={Button}>
+          <HStack>
+            {/* <Text>Help</Text> */}
+            <LuCircleHelp fontSize="1.2rem" />
+          </HStack>
+        </MenuButton>
+      </Tooltip>
+      <MenuList>
+        <MenuItem as={ChakraLink} href="https://docs.doenet.org" isExternal>
+          Documentation
+        </MenuItem>
+        <MenuItem as={ChakraLink} href={discussHref} isExternal>
+          Ask a question
+        </MenuItem>
+      </MenuList>
+    </Menu>
+  );
+
+  const saveButton = user && (
     <Button
       data-test="Save to Document"
       colorScheme="blue"
@@ -223,27 +252,22 @@ export function ScratchPad() {
   return (
     <>
       {saveDocumentDialog}
-      <Box
+      <HStack
         position="fixed"
         top="40px"
         height="40px"
-        background="doenet.canvas"
+        background="orange.100"
         width="100%"
+        pr="10px"
         zIndex="300"
-        borderBottom="1px solid"
-        borderColor="doenet.mediumGray"
       >
-        <Flex
-          backgroundColor="var(--chakra-colors-orange-100);"
-          alignItems="center"
-          paddingRight="15px"
-        >
-          {scratchPadMessage}
-
+        {scratchPadMessage}
+        <ButtonGroup spacing="5px">
+          {helpButton}
           {loadButton}
-          {saveScratchPad}
-        </Flex>
-      </Box>
+          {saveButton}
+        </ButtonGroup>
+      </HStack>
       <Box
         position="absolute"
         top={"80px"}
