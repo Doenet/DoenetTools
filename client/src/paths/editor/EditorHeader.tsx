@@ -29,6 +29,10 @@ import {
   HStack,
   Spacer,
   Text,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
 } from "@chakra-ui/react";
 import {
   MdModeEditOutline,
@@ -37,7 +41,7 @@ import {
 } from "react-icons/md";
 import { FaHistory, FaCog, FaChevronRight, FaRegFolder } from "react-icons/fa";
 import { IoGitBranch } from "react-icons/io5";
-import { LuLibraryBig } from "react-icons/lu";
+import { LuCircleHelp, LuLibraryBig } from "react-icons/lu";
 
 import axios from "axios";
 import {
@@ -49,6 +53,7 @@ import {
 } from "../../types";
 import { contentTypeToName, getIconInfo } from "../../utils/activity";
 import { SiteContext } from "../SiteHeader";
+import { getDiscourseUrl } from "../../utils/discourse";
 import { ActivateAuthorMode } from "../../popups/ActivateAuthorMode";
 import { ConfirmAssignModal } from "../../popups/ConfirmAssignModal";
 import { ShareMyContentModal } from "../../popups/ShareMyContentModal";
@@ -254,6 +259,7 @@ export function EditorHeader() {
   const parent = contentDescription.parent;
   const isSubActivity = (parent?.type ?? "folder") !== "folder";
   const authorMode = context.user?.isAuthor || contentType !== "singleDoc";
+  const discussHref = getDiscourseUrl(context.user);
 
   useEffect(() => {
     document.title = `${contentName} - Doenet`;
@@ -491,6 +497,30 @@ export function EditorHeader() {
 
   const otherPages = (
     <ButtonGroup mr={{ base: "0rem", lg: "1.5rem" }} spacing="0" mt="2px">
+      {contentType === "singleDoc" && (
+        <Menu>
+          <Tooltip label="Help" openDelay={300} placement="bottom-end">
+            <MenuButton
+              as={IconButton}
+              icon={<LuCircleHelp />}
+              variant="ghost"
+              fontSize="1.3rem"
+              size="xs"
+              width="30px"
+              height="35px"
+              aria-label="Help"
+            />
+          </Tooltip>
+          <MenuList>
+            <MenuItem as={ChakraLink} href="https://docs.doenet.org" isExternal>
+              Documentation
+            </MenuItem>
+            <MenuItem as={ChakraLink} href={discussHref} isExternal>
+              Ask a question
+            </MenuItem>
+          </MenuList>
+        </Menu>
+      )}
       {contentType === "singleDoc" && (
         <Tooltip
           label="View edit history"
