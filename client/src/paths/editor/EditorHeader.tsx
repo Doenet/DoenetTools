@@ -497,28 +497,30 @@ export function EditorHeader() {
 
   const otherPages = (
     <ButtonGroup mr={{ base: "0rem", lg: "1.5rem" }} spacing="0" mt="2px">
-      <Menu>
-        <Tooltip label="Help" openDelay={300} placement="bottom-end">
-          <MenuButton
-            as={IconButton}
-            icon={<LuCircleHelp />}
-            variant="ghost"
-            fontSize="1.3rem"
-            size="xs"
-            width="30px"
-            height="35px"
-            aria-label="Help"
-          />
-        </Tooltip>
-        <MenuList>
-          <MenuItem as={ChakraLink} href="https://docs.doenet.org" isExternal>
-            Documentation
-          </MenuItem>
-          <MenuItem as={ChakraLink} href={discussHref} isExternal>
-            Ask a question
-          </MenuItem>
-        </MenuList>
-      </Menu>
+      {contentType === "singleDoc" && (
+        <Menu>
+          <Tooltip label="Help" openDelay={300} placement="bottom-end">
+            <MenuButton
+              as={IconButton}
+              icon={<LuCircleHelp />}
+              variant="ghost"
+              fontSize="1.3rem"
+              size="xs"
+              width="30px"
+              height="35px"
+              aria-label="Help"
+            />
+          </Tooltip>
+          <MenuList>
+            <MenuItem as={ChakraLink} href="https://docs.doenet.org" isExternal>
+              Documentation
+            </MenuItem>
+            <MenuItem as={ChakraLink} href={discussHref} isExternal>
+              Ask a question
+            </MenuItem>
+          </MenuList>
+        </Menu>
+      )}
       {contentType === "singleDoc" && (
         <Tooltip
           label="View edit history"
