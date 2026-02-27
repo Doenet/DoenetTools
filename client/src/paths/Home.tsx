@@ -604,35 +604,35 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
           />
 
           {/* Try me button positioned top-right on the video */}
-          <Button
+          <IconButton
             as={ReactRouterLink}
             to={currentTryLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            icon={<FaExternalLinkAlt />}
             position="absolute"
-            top="10px"
-            right="10px"
-            zIndex={3}
-            colorScheme="orange"
-            bg="#a84c00"
-            color="white"
+            top="2px"
+            right="2px"
+            zIndex={5}
+            color="text"
             _hover={{
-              bg: "#923d00",
-              boxShadow: "0 10px 24px rgba(0,0,0,0.28)",
               textDecoration: "none",
             }}
-            size="sm"
+            size="md"
             borderRadius="8px"
             aria-label="Try this activity"
             pointerEvents={overlayShown ? "none" : "auto"}
             aria-disabled={overlayShown}
             disabled={overlayShown}
-            _disabled={{ opacity: 1, cursor: "not-allowed" }}
-            border="2px solid rgba(0,0,0,0.12)"
-            boxShadow="0 6px 18px rgba(0,0,0,0.22)"
-            transition="box-shadow 150ms ease, transform 150ms ease"
-            style={{ transform: "scale(1.2)", transformOrigin: "top right" }}
-          >
-            <FaExternalLinkAlt />
-          </Button>
+            _disabled={{ opacity: 0.5, cursor: "not-allowed" }}
+            bg="transparent"
+            style={{
+              transform: "scale(1.2)",
+              transformOrigin: "top right",
+              backfaceVisibility: "hidden",
+              willChange: "transform",
+            }}
+          />
         </Box>
 
         {/* Right arrow */}
@@ -700,35 +700,35 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
           />
 
           {/* Try me button positioned top-right on the video */}
-          <Button
+          <IconButton
             as={ReactRouterLink}
             to={currentTryLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            icon={<FaExternalLinkAlt />}
             position="absolute"
-            top="10px"
-            right="10px"
-            zIndex={3}
-            colorScheme="orange"
-            bg="#a84c00"
-            color="white"
+            top="2px"
+            right="2px"
+            zIndex={5}
+            color="text"
             _hover={{
-              bg: "#923d00",
-              boxShadow: "0 10px 24px rgba(0,0,0,0.28)",
               textDecoration: "none",
             }}
-            size="sm"
+            size="md"
             borderRadius="8px"
             aria-label="Try this activity"
             pointerEvents={overlayShown ? "none" : "auto"}
             aria-disabled={overlayShown}
             disabled={overlayShown}
-            _disabled={{ opacity: 1, cursor: "not-allowed" }}
-            border="2px solid rgba(0,0,0,0.12)"
-            boxShadow="0 6px 18px rgba(0,0,0,0.22)"
-            transition="box-shadow 150ms ease, transform 150ms ease"
-            style={{ transform: "scale(1.2)", transformOrigin: "top right" }}
-          >
-            <FaExternalLinkAlt />
-          </Button>
+            _disabled={{ opacity: 0.5, cursor: "not-allowed" }}
+            bg="transparent"
+            style={{
+              transform: "scale(1.2)",
+              transformOrigin: "top right",
+              backfaceVisibility: "hidden",
+              willChange: "transform",
+            }}
+          />
         </Box>
 
         {/* Mobile navigation arrows underneath video */}
