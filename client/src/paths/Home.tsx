@@ -24,6 +24,7 @@ import { Link as ReactRouterLink, useOutletContext } from "react-router";
 import { SiteContext } from "./SiteHeader";
 import { getDiscourseUrl } from "../utils/discourse";
 import { WithSideBanners } from "../layout/WithSideBanners";
+import { FaExternalLinkAlt } from "react-icons/fa";
 
 export async function loader() {
   return {};
@@ -73,7 +74,7 @@ export function Home() {
 
   const heroSection = (
     <Box width="100%">
-      <WithSideBanners bgColor="#282a3aff" padding="40px">
+      <WithSideBanners bgColor="background" padding="40px">
         <Grid
           templateColumns={{ base: "1fr", lg: "1fr auto" }}
           w="100%"
@@ -89,7 +90,7 @@ export function Home() {
             order={{ base: 2, md: 1 }}
           >
             <Heading
-              color="white"
+              color="text"
               fontSize={{ base: "28px", sm: "34px", md: "44px", lg: "56px" }}
               fontWeight="700"
               mb={{ base: "24px", md: "40px", lg: "60px" }}
@@ -98,7 +99,7 @@ export function Home() {
             </Heading>
 
             <Heading
-              color="white"
+              color="text"
               fontSize={{
                 base: "16px",
                 sm: "18px",
@@ -116,6 +117,39 @@ export function Home() {
               {/* TODO: Find spot to mention AI, such as:
                 "Human-crafted activities in the age of AI" */}
             </Heading>
+
+            <HStack
+              spacing={{ base: "12px", md: "16px" }}
+              mt={{ base: "24px", md: "32px" }}
+              flexWrap="wrap"
+            >
+              <Button
+                as={ReactRouterLink}
+                to="/scratchPad"
+                colorScheme="blue"
+                size={{ base: "md", md: "lg" }}
+                fontSize={{ base: "16px", md: "18px" }}
+                px={{ base: "24px", md: "32px" }}
+                py={{ base: "12px", md: "16px" }}
+                height="auto"
+              >
+                Start writing
+              </Button>
+              <Button
+                as={ReactRouterLink}
+                to="/explore"
+                variant="outline"
+                colorScheme="blue"
+                size={{ base: "md", md: "lg" }}
+                fontSize={{ base: "16px", md: "18px" }}
+                px={{ base: "24px", md: "32px" }}
+                py={{ base: "12px", md: "16px" }}
+                height="auto"
+                borderWidth="2px"
+              >
+                Explore community activities
+              </Button>
+            </HStack>
 
             {/* Mobile video directly under text */}
             <Box
@@ -513,7 +547,7 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
           icon={<ThickChevronLeft size={iconSize} stroke={iconStroke} />}
           onClick={handlePrev}
           bg="transparent"
-          color="white"
+          color="text"
           _focus={{ boxShadow: "none" }}
           transition="none"
           _hover={{
@@ -529,7 +563,7 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
 
         <Box
           position="relative"
-          border="3px solid lightgray"
+          border="1px solid lightgray"
           width={`${VIDEO_WIDTH_PX}px`}
           aspectRatio={VIDEO_WIDTH_PX / VIDEO_HEIGHT_PX}
           overflow="hidden"
@@ -570,35 +604,34 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
           />
 
           {/* Try me button positioned top-right on the video */}
-          <Button
+          <IconButton
             as={ReactRouterLink}
             to={currentTryLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            icon={<FaExternalLinkAlt />}
             position="absolute"
-            top="10px"
-            right="10px"
-            zIndex={3}
-            colorScheme="orange"
-            bg="#a84c00"
-            color="white"
+            top="2px"
+            right="2px"
+            zIndex={5}
+            color="text"
             _hover={{
-              bg: "#923d00",
-              boxShadow: "0 10px 24px rgba(0,0,0,0.28)",
               textDecoration: "none",
             }}
-            size="sm"
+            size="md"
             borderRadius="8px"
             aria-label="Try this activity"
             pointerEvents={overlayShown ? "none" : "auto"}
             aria-disabled={overlayShown}
             disabled={overlayShown}
-            _disabled={{ opacity: 1, cursor: "not-allowed" }}
-            border="2px solid rgba(0,0,0,0.12)"
-            boxShadow="0 6px 18px rgba(0,0,0,0.22)"
-            transition="box-shadow 150ms ease, transform 150ms ease"
-            style={{ transform: "scale(1.2)", transformOrigin: "top right" }}
-          >
-            Try me
-          </Button>
+            _disabled={{ opacity: 0.5, cursor: "not-allowed" }}
+            bg="transparent"
+            style={{
+              transform: "scale(1.2)",
+              transformOrigin: "top right",
+              backfaceVisibility: "hidden",
+            }}
+          />
         </Box>
 
         {/* Right arrow */}
@@ -607,7 +640,7 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
           icon={<ThickChevronRight size={iconSize} stroke={iconStroke} />}
           onClick={handleNext}
           bg="transparent"
-          color="white"
+          color="text"
           transition="none"
           _hover={{
             transform: "none",
@@ -666,35 +699,34 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
           />
 
           {/* Try me button positioned top-right on the video */}
-          <Button
+          <IconButton
             as={ReactRouterLink}
             to={currentTryLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            icon={<FaExternalLinkAlt />}
             position="absolute"
-            top="10px"
-            right="10px"
-            zIndex={3}
-            colorScheme="orange"
-            bg="#a84c00"
-            color="white"
+            top="2px"
+            right="2px"
+            zIndex={5}
+            color="text"
             _hover={{
-              bg: "#923d00",
-              boxShadow: "0 10px 24px rgba(0,0,0,0.28)",
               textDecoration: "none",
             }}
-            size="sm"
+            size="md"
             borderRadius="8px"
             aria-label="Try this activity"
             pointerEvents={overlayShown ? "none" : "auto"}
             aria-disabled={overlayShown}
             disabled={overlayShown}
-            _disabled={{ opacity: 1, cursor: "not-allowed" }}
-            border="2px solid rgba(0,0,0,0.12)"
-            boxShadow="0 6px 18px rgba(0,0,0,0.22)"
-            transition="box-shadow 150ms ease, transform 150ms ease"
-            style={{ transform: "scale(1.2)", transformOrigin: "top right" }}
-          >
-            Try me
-          </Button>
+            _disabled={{ opacity: 0.5, cursor: "not-allowed" }}
+            bg="transparent"
+            style={{
+              transform: "scale(1.2)",
+              transformOrigin: "top right",
+              backfaceVisibility: "hidden",
+            }}
+          />
         </Box>
 
         {/* Mobile navigation arrows underneath video */}
@@ -703,39 +735,41 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
             aria-label="Previous video"
             icon={<ThickChevronLeft size={iconSize} stroke={iconStroke} />}
             onClick={handlePrev}
-            bg="rgba(255, 255, 255, 0.2)"
-            color="white"
+            bg="interact"
+            color="text"
             _focus={{ boxShadow: "none" }}
             transition="none"
             _hover={{
               transform: "none",
-              bg: "rgba(255, 255, 255, 0.3)",
+              bg: "border",
               "svg path": { strokeWidth: 5 },
             }}
             _active={{ transform: "none" }}
             h={`${ARROW_BUTTON_PX + 8}px`}
             w={`${ARROW_BUTTON_PX + 8}px`}
             borderRadius="full"
-            border="1px solid rgba(255, 255, 255, 0.3)"
+            border="1px solid"
+            borderColor="border"
           />
 
           <IconButton
             aria-label="Next video"
             icon={<ThickChevronRight size={iconSize} stroke={iconStroke} />}
             onClick={handleNext}
-            bg="rgba(255, 255, 255, 0.2)"
-            color="white"
+            bg="interact"
+            color="text"
             transition="none"
             _hover={{
               transform: "none",
-              bg: "rgba(255, 255, 255, 0.3)",
+              bg: "border",
               "svg path": { strokeWidth: 5 },
             }}
             _active={{ transform: "none" }}
             h={`${ARROW_BUTTON_PX + 8}px`}
             w={`${ARROW_BUTTON_PX + 8}px`}
             borderRadius="full"
-            border="1px solid rgba(255, 255, 255, 0.3)"
+            border="1px solid"
+            borderColor="border"
           />
         </HStack>
       </VStack>

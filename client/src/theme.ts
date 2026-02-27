@@ -66,7 +66,7 @@ const theme = extendTheme({
     interact: "#EFEFEF",
     border: "#e0e0e0",
     text: "#1F1F1F",
-    accent: "#5FD3EA",
+    accent: "#8cebff",
 
     doenet_blue: {
       100: "#a6f19f", //Ghost/Outline Click
