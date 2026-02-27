@@ -24,6 +24,7 @@ import { Link as ReactRouterLink, useOutletContext } from "react-router";
 import { SiteContext } from "./SiteHeader";
 import { getDiscourseUrl } from "../utils/discourse";
 import { WithSideBanners } from "../layout/WithSideBanners";
+import { FaExternalLinkAlt } from "react-icons/fa";
 
 export async function loader() {
   return {};
@@ -630,7 +631,7 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
             transition="box-shadow 150ms ease, transform 150ms ease"
             style={{ transform: "scale(1.2)", transformOrigin: "top right" }}
           >
-            Try me
+            <FaExternalLinkAlt />
           </Button>
         </Box>
 
@@ -726,6 +727,8 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
             transition="box-shadow 150ms ease, transform 150ms ease"
             style={{ transform: "scale(1.2)", transformOrigin: "top right" }}
           >
+            <FaExternalLinkAlt />
+
             Try me
           </Button>
         </Box>
