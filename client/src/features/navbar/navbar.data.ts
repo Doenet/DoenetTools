@@ -1,6 +1,12 @@
 import { NavSection } from "./navbar.types";
 
-export function mainSections(discussionsLink: string): NavSection[] {
+export function mainSections({
+  discussionsLink,
+  supportLink,
+}: {
+  discussionsLink: string;
+  supportLink: string;
+}): NavSection[] {
   return [
     {
       items: [
@@ -11,7 +17,7 @@ export function mainSections(discussionsLink: string): NavSection[] {
           subItems: [
             { label: "Documentation", to: "https://docs.doenet.org" },
             { label: "Events & Workshops", to: "/events" },
-            { label: "Ask a Question (Forums)", to: discussionsLink },
+            { label: "Ask a Question (Forums)", to: supportLink },
           ],
         },
         {
@@ -27,20 +33,6 @@ export function mainSections(discussionsLink: string): NavSection[] {
     {
       heading: "By Role",
       items: [
-        // TODO: Add Instructors link on header once we have pages for them.
-        // {
-        //   label: "Instructors",
-        //   subItems: [{ label: "Get support", to: ?? }],
-        // },
-        // {
-        //   label: "Authors",
-        //   subItems: [
-        //     { label: "Scratch pad", to: "/scratchPad" },
-        //     { label: "Authoring documentation", to: "https://docs.doenet.org" },
-        //     { label: "Training workshops", to: "/events#workshops" },
-        //     { label: "Get support", to: discussionsLink },
-        //   ],
-        // },
         {
           label: "Students",
           subItems: [{ label: "Join with code", to: "/code" }],
