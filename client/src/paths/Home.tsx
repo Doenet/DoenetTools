@@ -736,39 +736,41 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
             aria-label="Previous video"
             icon={<ThickChevronLeft size={iconSize} stroke={iconStroke} />}
             onClick={handlePrev}
-            bg="rgba(255, 255, 255, 0.2)"
-            color="white"
+            bg="interact"
+            color="text"
             _focus={{ boxShadow: "none" }}
             transition="none"
             _hover={{
               transform: "none",
-              bg: "rgba(255, 255, 255, 0.3)",
+              bg: "border",
               "svg path": { strokeWidth: 5 },
             }}
             _active={{ transform: "none" }}
             h={`${ARROW_BUTTON_PX + 8}px`}
             w={`${ARROW_BUTTON_PX + 8}px`}
             borderRadius="full"
-            border="1px solid rgba(255, 255, 255, 0.3)"
+            border="1px solid"
+            borderColor="border"
           />
 
           <IconButton
             aria-label="Next video"
             icon={<ThickChevronRight size={iconSize} stroke={iconStroke} />}
             onClick={handleNext}
-            bg="rgba(255, 255, 255, 0.2)"
-            color="white"
+            bg="interact"
+            color="text"
             transition="none"
             _hover={{
               transform: "none",
-              bg: "rgba(255, 255, 255, 0.3)",
+              bg: "border",
               "svg path": { strokeWidth: 5 },
             }}
             _active={{ transform: "none" }}
             h={`${ARROW_BUTTON_PX + 8}px`}
             w={`${ARROW_BUTTON_PX + 8}px`}
             borderRadius="full"
-            border="1px solid rgba(255, 255, 255, 0.3)"
+            border="1px solid"
+            borderColor="border"
           />
         </HStack>
       </VStack>
