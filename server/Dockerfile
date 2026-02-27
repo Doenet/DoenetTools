@@ -1,6 +1,7 @@
 FROM node:lts-trixie
 WORKDIR /DoenetTools/server
 
+
 COPY src ./src
 COPY scripts ./scripts
 COPY prisma ./prisma
@@ -13,8 +14,9 @@ COPY entrypoint.sh ./
 # Just for testing locally
 # COPY .env ./
 
-RUN npm install
-RUN npm run build
+# Assume a 'shared' directory exists on your host in the build context
+RUN --mount=type=bind,source=./shared,target=./shared npm install
+RUN --mount=type=bind,source=./shared,target=./shared npm run build
 
 RUN chmod +x ./entrypoint.sh
 
