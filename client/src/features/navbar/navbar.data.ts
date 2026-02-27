@@ -1,24 +1,32 @@
 import { NavSection } from "./navbar.types";
 
-export function mainSections(discussionsLink: string): NavSection[] {
+export function mainSections({
+  discussionsLink,
+  supportLink,
+}: {
+  discussionsLink: string;
+  supportLink: string;
+}): NavSection[] {
   return [
     {
       items: [
         { label: "Explore", to: "/explore" },
+        { label: "Try Writing", to: "/scratchPad" },
         {
-          label: "About",
+          label: "Help & Training",
           subItems: [
-            { label: "About Doenet", to: "/about" },
-            { label: "Blog", to: "/blog", reloadDocument: true },
+            { label: "Documentation", to: "https://docs.doenet.org" },
+            { label: "Events & Workshops", to: "/events" },
+            { label: "Ask a Question (Forums)", to: supportLink },
           ],
         },
         {
-          label: "Get Involved",
+          label: "Community",
           subItems: [
-            { label: "How to get involved", to: "/get-involved" },
-            { label: "Events", to: "/events" },
-            { label: "Community discussions", to: discussionsLink },
-            { label: "Software/technical", to: "https://github.com/Doenet" },
+            { label: "Community Discussions", to: discussionsLink },
+            { label: "Blog", to: "/blog", reloadDocument: true },
+            { label: "Get Involved", to: "/get-involved" },
+            { label: "About", to: "/about" },
           ],
         },
       ],
@@ -26,20 +34,6 @@ export function mainSections(discussionsLink: string): NavSection[] {
     {
       heading: "By Role",
       items: [
-        // TODO: Add Instructors link on header once we have pages for them.
-        // {
-        //   label: "Instructors",
-        //   subItems: [{ label: "Get support", to: ?? }],
-        // },
-        {
-          label: "Authors",
-          subItems: [
-            { label: "Scratch pad", to: "/scratchPad" },
-            { label: "Authoring documentation", to: "https://docs.doenet.org" },
-            { label: "Training workshops", to: "/events#workshops" },
-            { label: "Get support", to: discussionsLink },
-          ],
-        },
         {
           label: "Students",
           subItems: [{ label: "Join with code", to: "/code" }],
