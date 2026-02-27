@@ -1,5 +1,5 @@
 import { ReactNode, useEffect } from "react";
-import { useLoaderData } from "react-router";
+import { useLoaderData, useFetcher } from "react-router";
 import {
   Button,
   Heading,
@@ -90,6 +90,8 @@ export function Students() {
     onOpen: addStudentsOnOpen,
     onClose: onAddStudentsClose,
   } = useDisclosure();
+
+  const addStudentsFetcher = useFetcher();
 
   const { iconImage: folderIcon, iconColor: folderColor } = getIconInfo(
     "folder",
@@ -318,6 +320,7 @@ export function Students() {
         isOpen={addStudentsIsOpen}
         onClose={onAddStudentsClose}
         folderId={folder.contentId}
+        fetcher={addStudentsFetcher}
       />
     </Box>
   );

@@ -3,12 +3,10 @@ import { Box } from "@chakra-ui/react";
 import { DoenetViewer } from "@doenet/doenetml-iframe";
 import { DoenetmlVersion } from "../types";
 import { ActivitySource } from "@doenet-tools/shared";
-// @ts-expect-error assignment-viewer doesn't publish types, see https://github.com/Doenet/assignment-viewer/issues/20
 import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";
 
 export default function AssignmentPreview({
   data,
-  itemNumber,
   active = true,
   maxHeight = 600,
   disableShuffle = true,
@@ -23,7 +21,6 @@ export default function AssignmentPreview({
         type: "select" | "sequence";
         activityJson: ActivitySource;
       };
-  itemNumber: number;
   active?: boolean;
   maxHeight?: number;
   disableShuffle?: boolean;
@@ -60,7 +57,6 @@ export default function AssignmentPreview({
           generatedVariantCallback={setVariants}
           requestedVariantIndex={variants.index}
           doenetViewerUrl={doenetViewerUrl}
-          showAnswerTitles={true}
         />
       );
     } else {
@@ -87,8 +83,6 @@ export default function AssignmentPreview({
             allowLocalState: false,
             allowSaveEvents: false,
           }}
-          showAnswerTitles={true}
-          renderOnlyItem={itemNumber}
         />
       );
     }

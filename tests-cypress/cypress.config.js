@@ -1,5 +1,6 @@
 import { defineConfig } from "cypress";
 import addAccessibilityTasks from "wick-a11y/accessibility-tasks";
+import { plugin as cypressGrepPlugin } from "@cypress/grep/plugin";
 
 // // This is for db data testing/checking (CANNOT GET DATA AND CHECK VIA CYPRESS)
 // //For connecting to SQL Server
@@ -25,11 +26,11 @@ export default defineConfig({
   numTestsKeptInMemory: 20,
   defaultCommandTimeout: 10000,
   retries: {
-    runMode: 5,
+    runMode: 2, // Retry failed tests 2 times (3 total attempts) in CI
     openMode: 0,
   },
   e2e: {
-    setupNodeEvents(on) {
+    setupNodeEvents(on, config) {
       on("before:browser:launch", (browser = {}, launchOptions) => {
         if (browser.name === "chrome") {
           launchOptions.args.push("--mute-audio");
@@ -45,6 +46,9 @@ export default defineConfig({
       //     return queryTestDb(query, config);
       //   },
       // }); //For running sql query
+
+      cypressGrepPlugin(config);
+      return config;
     },
     supportFile: "support/e2e.ts",
     specPattern: "e2e/**/*.cy.ts",

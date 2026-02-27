@@ -29,6 +29,10 @@ import {
   HStack,
   Spacer,
   Text,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
 } from "@chakra-ui/react";
 import {
   MdModeEditOutline,
@@ -37,7 +41,7 @@ import {
 } from "react-icons/md";
 import { FaHistory, FaCog, FaChevronRight, FaRegFolder } from "react-icons/fa";
 import { IoGitBranch } from "react-icons/io5";
-import { LuLibraryBig } from "react-icons/lu";
+import { LuCircleHelp, LuLibraryBig } from "react-icons/lu";
 
 import axios from "axios";
 import {
@@ -49,10 +53,12 @@ import {
 } from "../../types";
 import { contentTypeToName, getIconInfo } from "../../utils/activity";
 import { SiteContext } from "../SiteHeader";
+import { getDiscourseUrl } from "../../utils/discourse";
 import { ActivateAuthorMode } from "../../popups/ActivateAuthorMode";
 import { ConfirmAssignModal } from "../../popups/ConfirmAssignModal";
 import { ShareMyContentModal } from "../../popups/ShareMyContentModal";
 import { NotificationDot } from "../../widgets/NotificationDot";
+import type { LibraryEditorData } from "../../widgets/editor/LibraryEditorControls";
 import { LibraryEditorControls } from "../../widgets/editor/LibraryEditorControls";
 import { editorUrl } from "../../utils/url";
 import { NameBar } from "../../widgets/NameBar";
@@ -128,33 +134,35 @@ export function EditorHeader() {
     contentDescription: ContentDescription;
   };
 
+  const nameBarFetcher = useFetcher();
+
   const location = useLocation();
   const tab = location.pathname.split("/").pop()?.toLowerCase();
 
   const [searchParams, _] = useSearchParams();
   const inCurateMode = searchParams.get("curate") === null ? false : true;
 
-  // Fetcher for settings to check if required categories are filled
-  const settingsFetcher = useFetcher<typeof settingsLoader>();
+  // Loads settings on mount to check if required categories are filled (for "Not browsable" warning)
+  const categoryCheckFetcher = useFetcher<typeof settingsLoader>();
 
   useEffect(() => {
     if (
       isPublic &&
       contentType !== "folder" &&
-      settingsFetcher.state === "idle" &&
-      !settingsFetcher.data
+      categoryCheckFetcher.state === "idle" &&
+      !categoryCheckFetcher.data
     ) {
-      settingsFetcher.load(editorUrl(contentId, contentType, "settings"));
+      categoryCheckFetcher.load(editorUrl(contentId, contentType, "settings"));
     }
-  }, [isPublic, contentType, contentId, settingsFetcher]);
+  }, [isPublic, contentType, contentId, categoryCheckFetcher]);
 
   // Check if required categories are filled out (similar to ShareMyContentModal)
   const notBrowsable =
     isPublic &&
-    settingsFetcher.data &&
+    categoryCheckFetcher.data &&
     !isActivityFullyCategorized({
-      allCategories: settingsFetcher.data.allCategories as CategoryGroup[],
-      categories: settingsFetcher.data.categories as Category[],
+      allCategories: categoryCheckFetcher.data.allCategories as CategoryGroup[],
+      categories: categoryCheckFetcher.data.categories as Category[],
     });
 
   const notBrowsableMessage = notBrowsable && (
@@ -204,22 +212,58 @@ export function EditorHeader() {
     onClose: confirmAssignOnClose,
   } = useDisclosure();
 
+  // Used by ActivateAuthorMode popup to submit author mode activation
+  const authorModeFetcher = useFetcher();
+
+  // Used by ConfirmAssignModal MoveCopyContent to copy/move content
+  const assignmentMoveCopyFetcher = useFetcher();
+
+  // Used by ConfirmAssignModal to submit assignment creation
+  const assignmentSubmitFetcher = useFetcher();
+
+  // Used by EditAssignmentSettings sub-components within ConfirmAssignModal
+  const assignmentMaxAttemptsFetcher = useFetcher();
+  const assignmentVariantFetcher = useFetcher();
+  const assignmentModeFetcher = useFetcher();
+
+  const navigate = useNavigate();
+
+  // Loads assignment settings when ConfirmAssignModal opens to populate the form
+  const assignmentSettingsFetcher = useFetcher<typeof settingsLoader>();
+  useEffect(() => {
+    if (
+      confirmAssignIsOpen &&
+      assignmentSettingsFetcher.state === "idle" &&
+      !assignmentSettingsFetcher.data
+    ) {
+      assignmentSettingsFetcher.load(
+        editorUrl(contentId, contentType, "settings"),
+      );
+    }
+  }, [confirmAssignIsOpen, assignmentSettingsFetcher, contentId, contentType]);
+
   const {
     isOpen: shareContentIsOpen,
     onOpen: shareContentOnOpen,
     onClose: shareContentOnClose,
   } = useDisclosure();
 
+  // Fetchers for library editor controls
+  const libraryEditorLoadFetcher = useFetcher<LibraryEditorData>({
+    key: `${contentId}-library-load`,
+  });
+  const libraryEditorSubmitFetcher = useFetcher({
+    key: `${contentId}-library-submit`,
+  });
+
   const parent = contentDescription.parent;
   const isSubActivity = (parent?.type ?? "folder") !== "folder";
   const authorMode = context.user?.isAuthor || contentType !== "singleDoc";
+  const discussHref = getDiscourseUrl(context.user);
 
   useEffect(() => {
     document.title = `${contentName} - Doenet`;
   }, [contentName]);
-
-  const fetcher = useFetcher();
-  const navigate = useNavigate();
 
   let editLabel: string;
   let editTooltip: string;
@@ -260,7 +304,7 @@ export function EditorHeader() {
         navigate(editorUrl(contentId, contentType, "edit", inCurateMode));
       }}
       allowNo={true}
-      fetcher={fetcher}
+      fetcher={authorModeFetcher}
     />
   );
 
@@ -393,6 +437,7 @@ export function EditorHeader() {
       contentName={contentName}
       leftIcon={typeIcon}
       dataTest="Activity Name Editable"
+      fetcher={nameBarFetcher}
     />
   );
 
@@ -452,6 +497,30 @@ export function EditorHeader() {
 
   const otherPages = (
     <ButtonGroup mr={{ base: "0rem", lg: "1.5rem" }} spacing="0" mt="2px">
+      {contentType === "singleDoc" && (
+        <Menu>
+          <Tooltip label="Help" openDelay={300} placement="bottom-end">
+            <MenuButton
+              as={IconButton}
+              icon={<LuCircleHelp />}
+              variant="ghost"
+              fontSize="1.3rem"
+              size="xs"
+              width="30px"
+              height="35px"
+              aria-label="Help"
+            />
+          </Tooltip>
+          <MenuList>
+            <MenuItem as={ChakraLink} href="https://docs.doenet.org" isExternal>
+              Documentation
+            </MenuItem>
+            <MenuItem as={ChakraLink} href={discussHref} isExternal>
+              Ask a question
+            </MenuItem>
+          </MenuList>
+        </Menu>
+      )}
       {contentType === "singleDoc" && (
         <Tooltip
           label="View edit history"
@@ -549,6 +618,17 @@ export function EditorHeader() {
         userId={context.user!.userId}
         isOpen={confirmAssignIsOpen}
         onClose={confirmAssignOnClose}
+        fetcher={assignmentMoveCopyFetcher}
+        onNavigate={(url) => navigate(url)}
+        maxAttempts={assignmentSettingsFetcher.data?.maxAttempts}
+        individualizeByStudent={
+          assignmentSettingsFetcher.data?.individualizeByStudent
+        }
+        mode={assignmentSettingsFetcher.data?.mode}
+        maxAttemptsFetcher={assignmentMaxAttemptsFetcher}
+        variantFetcher={assignmentVariantFetcher}
+        modeFetcher={assignmentModeFetcher}
+        assignmentFetcher={assignmentSubmitFetcher}
       />
       <ShareMyContentModal
         contentId={contentId}
@@ -596,6 +676,8 @@ export function EditorHeader() {
             <LibraryEditorControls
               contentId={contentId}
               contentType={contentType}
+              loadFetcher={libraryEditorLoadFetcher}
+              submitFetcher={libraryEditorSubmitFetcher}
             />
           </Flex>
         ) : (

@@ -1,4 +1,4 @@
-describe("Duplicate content Tests", function () {
+describe("Duplicate content Tests", { tags: ["@group3"] }, function () {
   it("Duplicate Document, in My Activities", () => {
     cy.loginAsTestUser({ isAuthor: true });
 
@@ -10,7 +10,7 @@ describe("Duplicate content Tests", function () {
 
     cy.visit("/");
 
-    cy.get('[data-test="Activities"]').click();
+    cy.get('[data-test="My Activities"]').click();
 
     cy.get(`[data-test="Content Card"]`).should("have.length", 1);
     cy.get(`[data-test="Content Card"]`)
@@ -51,7 +51,7 @@ describe("Duplicate content Tests", function () {
 
     cy.visit("/");
 
-    cy.get('[data-test="Activities"]').click();
+    cy.get('[data-test="My Activities"]').click();
 
     cy.get(`[data-test="Content Card"]`).should("have.length", 1);
     cy.get(`[data-test="Content Card"]`)
@@ -102,7 +102,7 @@ describe("Duplicate content Tests", function () {
 
     cy.visit("/");
 
-    cy.get('[data-test="Activities"]').click();
+    cy.get('[data-test="My Activities"]').click();
 
     cy.get(`[data-test="Content Card"]`).should("have.length", 3);
 
@@ -155,7 +155,7 @@ describe("Duplicate content Tests", function () {
     );
 
     cy.visit("/");
-    cy.get('[data-test="Activities"]').click();
+    cy.get('[data-test="My Activities"]').click();
     cy.get(`[data-test="Content Card"]`).should("have.length", 1);
 
     cy.get('[data-test="Card Menu Button"]').eq(0).click();

@@ -15,7 +15,7 @@ import {
   Textarea,
 } from "@chakra-ui/react";
 import { RefObject, useEffect, useState } from "react";
-import { useFetcher } from "react-router";
+import { FetcherWithComponents } from "react-router";
 import { ContentRevision } from "../types";
 
 export function CreateDocumentSavePoint({
@@ -25,6 +25,7 @@ export function CreateDocumentSavePoint({
   contentId,
   atLastRevision,
   finalFocusRef,
+  fetcher,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -32,9 +33,8 @@ export function CreateDocumentSavePoint({
   contentId: string;
   atLastRevision: boolean;
   finalFocusRef?: RefObject<HTMLElement | null>;
+  fetcher: FetcherWithComponents<any>;
 }) {
-  const fetcher = useFetcher();
-
   const [revisionName, setRevisionName] = useState("");
   const [note, setNote] = useState("");
   const [updateRevision, setUpdateRevision] = useState(false);

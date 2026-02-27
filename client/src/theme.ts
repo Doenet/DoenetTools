@@ -40,6 +40,13 @@ const theme = extendTheme({
   components: {
     Button,
     IconButton: Button,
+    FormError: {
+      baseStyle: {
+        text: {
+          color: "red.700",
+        },
+      },
+    },
   },
   fonts: {
     body: "Jost",
@@ -54,6 +61,13 @@ const theme = extendTheme({
     useSystemColorMode: false,
   },
   colors: {
+    background: "#FCFAF6",
+    surface: "#FFFFFF",
+    interact: "#EFEFEF",
+    border: "#e0e0e0",
+    text: "#1F1F1F",
+    accent: "#5FD3EA",
+
     doenet_blue: {
       100: "#a6f19f", //Ghost/Outline Click
       200: "#c1292e", //Normal Button - Dark Mode - Background

@@ -11,6 +11,9 @@
 
 import { DoenetDateTime, isUuid, Uuid } from "./types_module_specific";
 
+export type { DoenetDateTime, Uuid };
+export { isUuid };
+
 export type DoenetmlVersion = {
   id: number;
   displayedVersion: string;

@@ -101,7 +101,7 @@ export function CreateLocalContent({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader textAlign="center">
-          New {contentTypeToName[contentType]}{" "}
+          New {contentTypeToName[contentType]}
         </ModalHeader>
         <ModalBody>
           <HStack>
@@ -110,6 +110,7 @@ export function CreateLocalContent({
               ref={inputRef}
               maxLength={191}
               data-test="New Content Input"
+              aria-label={`${contentTypeToName[contentType]} Name`}
               onChange={(e) => setContentName(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key == "Enter") {

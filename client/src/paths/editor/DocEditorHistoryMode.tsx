@@ -21,6 +21,7 @@ import {
 } from "@chakra-ui/react";
 import { MdOutlineCameraAlt } from "react-icons/md";
 import {
+  FetcherWithComponents,
   useFetcher,
   useLoaderData,
   useNavigate,
@@ -43,21 +44,31 @@ export async function loader({ params }: { params: any }) {
   return data;
 }
 
+export interface DocEditorHistoryModeComponentProps {
+  doenetML: string;
+  doenetmlVersion: DoenetmlVersion;
+  revisions: ContentRevision[];
+  contentId: string;
+  contentName: string;
+  onClose: () => void;
+  fetcher: FetcherWithComponents<any>;
+  editorComponent?: React.ComponentType<any>;
+}
+
 /**
- * This page allows you to create save points (revisions) of your document and revert back to them.
- * Context: `documentEditor`
+ * Presentational component for document history editor.
+ * Allows you to create save points (revisions) of your document and revert back to them.
  */
-export function DocEditorHistoryMode() {
-  const { doenetML, doenetmlVersion, revisions } = useLoaderData() as {
-    doenetML: string;
-    doenetmlVersion: DoenetmlVersion;
-    revisions: ContentRevision[];
-  };
-  const { contentId, contentName } = useOutletContext<EditorContext>();
-
-  const fetcher = useFetcher();
-  const navigate = useNavigate();
-
+export function DocEditorHistoryModeComponent({
+  doenetML,
+  doenetmlVersion,
+  revisions,
+  contentId,
+  contentName,
+  onClose,
+  fetcher,
+  editorComponent: EditorComponent = DoenetEditor,
+}: DocEditorHistoryModeComponentProps) {
   const [revNum, setRevNum] = useState(0);
 
   const selectedRevision = useMemo(() => {
@@ -126,6 +137,7 @@ export function DocEditorHistoryMode() {
       revisions={revisions}
       contentId={contentId}
       atLastRevision={atLastRevision}
+      fetcher={fetcher}
     />
   );
 
@@ -158,6 +170,7 @@ export function DocEditorHistoryMode() {
       contentId={contentId}
       revision={selectedRevision}
       setRevNum={setRevNum}
+      fetcher={fetcher}
     />
   );
 
@@ -219,7 +232,7 @@ export function DocEditorHistoryMode() {
         </Tooltip>
       </Flex>
 
-      <DoenetEditor
+      <EditorComponent
         height="calc(100% - 30px)"
         width="100%"
         doenetML={doenetML}
@@ -257,6 +270,9 @@ export function DocEditorHistoryMode() {
         marginLeft="5px"
         width="200px"
         value={revNum}
+        aria-label={
+          revisions.length > 0 ? "Select save point" : "No save point available"
+        }
         onChange={(e) => {
           setRevNum(Number(e.target.value));
         }}
@@ -303,7 +319,7 @@ export function DocEditorHistoryMode() {
       {selectorBar}
       {haveOtherDoc ? (
         <>
-          <DoenetEditor
+          <EditorComponent
             height="calc(100% - 30px)"
             width="100%"
             doenetML={otherDoenetML}
@@ -332,14 +348,7 @@ export function DocEditorHistoryMode() {
       {createRevisionModel}
       {revisionRemixInfoModal}
       {setToRevisionModal}
-      <Modal
-        size="full"
-        motionPreset="none"
-        isOpen={true}
-        onClose={() => {
-          navigate(-1);
-        }}
-      >
+      <Modal size="full" motionPreset="none" isOpen={true} onClose={onClose}>
         <ModalContent>
           <ModalHeader>
             <Center>{contentName} - Document history</Center>
@@ -355,5 +364,31 @@ export function DocEditorHistoryMode() {
         </ModalContent>
       </Modal>
     </>
+  );
+}
+
+/**
+ * Container component that handles React Router integration.
+ */
+export function DocEditorHistoryMode() {
+  const { doenetML, doenetmlVersion, revisions } = useLoaderData() as {
+    doenetML: string;
+    doenetmlVersion: DoenetmlVersion;
+    revisions: ContentRevision[];
+  };
+  const { contentId, contentName } = useOutletContext<EditorContext>();
+  const navigate = useNavigate();
+  const fetcher = useFetcher();
+
+  return (
+    <DocEditorHistoryModeComponent
+      doenetML={doenetML}
+      doenetmlVersion={doenetmlVersion}
+      revisions={revisions}
+      contentId={contentId}
+      contentName={contentName}
+      onClose={() => navigate(-1)}
+      fetcher={fetcher}
+    />
   );
 }

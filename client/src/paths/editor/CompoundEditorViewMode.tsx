@@ -1,7 +1,6 @@
 import { useLoaderData, useOutletContext } from "react-router";
 import { BlueBanner } from "../../widgets/BlueBanner";
 import axios from "axios";
-// @ts-expect-error assignment-viewer doesn't publish types, see https://github.com/Doenet/assignment-viewer/issues/20
 import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";
 import { ActivitySource } from "@doenet-tools/shared";
 import { EditorContext } from "./EditorHeader";

@@ -17,7 +17,12 @@ import {
   getDescendantIds,
   getDefaultDoenetmlVersion,
 } from "../query/activity";
-import { getActivityViewerData, getContent } from "../query/activity_edit_view";
+import {
+  getActivityViewerData,
+  getContent,
+  getPublicContent,
+  getPublicContentByCid,
+} from "../query/activity_edit_view";
 import { getMyContent, getMyTrash } from "../query/content_list";
 import { modifyContentSharedWith, setContentIsPublic } from "../query/share";
 import {
@@ -103,7 +108,7 @@ test("New activity starts out private, then delete it", async () => {
     categories: [],
     classifications: [],
     doenetmlVersionId: currentDoenetmlVersion.id,
-    individualizeByStudent: false,
+    individualizeByStudent: true,
     maxAttempts: 1,
     mode: "formative",
   });
@@ -870,7 +875,7 @@ test.skip("activity editor data and my folder contents before and after assigned
     licenseCode: "CCDUAL",
     classifications: [],
     doenetmlVersionId: currentDoenetmlVersion.id,
-    individualizeByStudent: false,
+    individualizeByStudent: true,
     maxAttempts: 1,
     mode: "formative",
   });
@@ -926,7 +931,7 @@ test.skip("activity editor data and my folder contents before and after assigned
     licenseCode: "CCDUAL",
     classifications: [],
     maxAttempts: 1,
-    individualizeByStudent: false,
+    individualizeByStudent: true,
     mode: "formative",
   });
   expect(header2.assignmentStatus).eqls("Open");
@@ -963,7 +968,7 @@ test.skip("activity editor data and my folder contents before and after assigned
       hasScoreData: false,
       maxAttempts: 1,
       mode: "formative",
-      individualizeByStudent: false,
+      individualizeByStudent: true,
     },
   });
 
@@ -1010,7 +1015,7 @@ test.skip("activity editor data and my folder contents before and after assigned
       hasScoreData: false,
       maxAttempts: 1,
       mode: "formative",
-      individualizeByStudent: false,
+      individualizeByStudent: true,
     },
   });
 
@@ -1060,7 +1065,7 @@ test.skip("activity editor data and my folder contents before and after assigned
       hasScoreData: false,
       maxAttempts: 1,
       mode: "formative",
-      individualizeByStudent: false,
+      individualizeByStudent: true,
     },
   });
 
@@ -1120,7 +1125,7 @@ test.skip("activity editor data and my folder contents before and after assigned
       hasScoreData: true,
       maxAttempts: 1,
       mode: "formative",
-      individualizeByStudent: false,
+      individualizeByStudent: true,
     },
   });
 
@@ -1167,7 +1172,7 @@ test.skip("activity editor data and my folder contents before and after assigned
       hasScoreData: true,
       maxAttempts: 1,
       mode: "formative",
-      individualizeByStudent: false,
+      individualizeByStudent: true,
     },
   });
 });
@@ -2086,6 +2091,167 @@ test("Create new activity with DoenetML", async () => {
   expect(newDoc.contentId).toStrictEqual(contentId);
   expect(newDoc.name).toBe("The new document");
   expect(newDoc.doenetML).toBe("My DoenetML source");
+});
+
+test("getPublicContent only gets public activity", async () => {
+  const { userId: ownerId } = await createTestUser();
+
+  const [publicContentId, privateContentId, publicFolderId] =
+    await setupTestContent(ownerId, {
+      "public content": doc(""),
+      "private content": doc(""),
+      "public folder": fold({}),
+    });
+
+  await setContentIsPublic({
+    contentId: publicContentId,
+    loggedInUserId: ownerId,
+    isPublic: true,
+  });
+
+  await setContentIsPublic({
+    contentId: publicFolderId,
+    loggedInUserId: ownerId,
+    isPublic: true,
+  });
+
+  const { activity: publicContent } = await getPublicContent({
+    contentId: publicContentId,
+  });
+  expect(publicContent.contentId).eqls(publicContentId);
+
+  await expect(
+    getPublicContent({
+      contentId: privateContentId,
+    }),
+  ).rejects.toThrow("not found");
+
+  await expect(
+    getPublicContent({
+      contentId: publicFolderId,
+    }),
+  ).rejects.toThrow("not found");
+});
+
+test("getPublicContentByCid only get public activities", async () => {
+  const { userId: ownerId } = await createTestUser();
+
+  const baseSource = DateTime.now().toISO();
+
+  const publicDoenetml = `<text>Public content for this test: ${baseSource}</text>`;
+  const privateDoenetml = `<text>Private content for this test: ${baseSource}</text>`;
+
+  const { contentId: publicContentId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+    doenetml: publicDoenetml,
+  });
+
+  const { contentId: privateContentId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+    doenetml: privateDoenetml,
+  });
+
+  await setContentIsPublic({
+    contentId: publicContentId,
+    loggedInUserId: ownerId,
+    isPublic: true,
+  });
+
+  const { cid: publicContentCid } = await createContentRevision({
+    contentId: publicContentId,
+    loggedInUserId: ownerId,
+    autoGenerated: true,
+    revisionName: "Initial revision",
+  });
+
+  const { cid: privateContentCid } = await createContentRevision({
+    contentId: privateContentId,
+    loggedInUserId: ownerId,
+    autoGenerated: true,
+    revisionName: "Initial revision",
+  });
+
+  const { activity: publicContent } = await getPublicContentByCid({
+    cid: publicContentCid,
+  });
+
+  if (publicContent.type !== "singleDoc") {
+    throw Error("shouldn't happen");
+  }
+
+  expect(publicContent.doenetML).toBe(publicDoenetml);
+
+  await expect(
+    getPublicContentByCid({
+      cid: privateContentCid,
+    }),
+  ).rejects.toThrow("not found");
+});
+
+test("getPublicContentByCid gets doenetml from correct revision", async () => {
+  const { userId: ownerId } = await createTestUser();
+
+  const baseSource = DateTime.now().toISO();
+
+  const { contentId: publicContentId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+    doenetml: `${baseSource} source 1`,
+  });
+
+  await setContentIsPublic({
+    contentId: publicContentId,
+    loggedInUserId: ownerId,
+    isPublic: true,
+  });
+
+  await createContentRevision({
+    contentId: publicContentId,
+    loggedInUserId: ownerId,
+    autoGenerated: true,
+    revisionName: "revision 1",
+  });
+
+  await updateContent({
+    contentId: publicContentId,
+    source: `${baseSource} source 2`,
+    loggedInUserId: ownerId,
+  });
+
+  const { cid: revision2Cid } = await createContentRevision({
+    contentId: publicContentId,
+    loggedInUserId: ownerId,
+    autoGenerated: true,
+    revisionName: "revision 2",
+  });
+
+  await updateContent({
+    contentId: publicContentId,
+    source: `${baseSource} source 3`,
+    loggedInUserId: ownerId,
+  });
+
+  await createContentRevision({
+    contentId: publicContentId,
+    loggedInUserId: ownerId,
+    autoGenerated: true,
+    revisionName: "revision 3",
+  });
+
+  const { activity: publicContent } = await getPublicContentByCid({
+    cid: revision2Cid,
+  });
+
+  if (publicContent.type !== "singleDoc") {
+    throw Error("shouldn't happen");
+  }
+
+  expect(publicContent.doenetML).toBe(`${baseSource} source 2`);
 });
 
 describe("createContent", () => {

@@ -122,6 +122,10 @@ import {
 } from "./paths/SharedWithMe";
 import { editorUrl } from "./utils/url";
 import { ScratchPad, loader as scratchPadLoader } from "./paths/ScratchPad";
+import { About } from "./paths/About";
+import { RawViewer, loader as rawViewerLoader } from "./paths/RawViewer";
+import { GetInvolved } from "./paths/GetInvolved";
+import { Events } from "./paths/Events";
 
 const router = createBrowserRouter([
   {
@@ -154,6 +158,21 @@ const router = createBrowserRouter([
         loader: exploreLoader,
         action: genericAction,
         element: <Explore />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "about",
+        element: <About />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "get-involved",
+        element: <GetInvolved />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "events",
+        element: <Events />,
         errorElement: <ErrorPage />,
       },
       {
@@ -393,6 +412,16 @@ const router = createBrowserRouter([
         element: <ScratchPad />,
       },
     ],
+  },
+  {
+    path: "/embed/:viewId",
+    element: <RawViewer />,
+    loader: rawViewerLoader,
+    errorElement: (
+      <ChakraProvider theme={theme}>
+        <ErrorPage />
+      </ChakraProvider>
+    ),
   },
 ]);
 

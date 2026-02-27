@@ -90,7 +90,7 @@ export function SavePointInfo({
             isDisabled={
               (note === revision.note &&
                 revisionName === revision.revisionName) ||
-              revision.revisionName === ""
+              revisionName === ""
             }
             onClick={() => {
               fetcher.submit(

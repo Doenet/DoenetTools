@@ -27,7 +27,7 @@ import {
   reformatClassificationData,
   getClassificationAugmentedDescription,
 } from "../utils/activity";
-import { useFetcher } from "react-router";
+import { FetcherWithComponents } from "react-router";
 
 /**
  * This modal allows you to search for applicable classifications that you can add to your content.
@@ -42,14 +42,14 @@ export function AddClassificationModal({
   existingClassifications,
   isOpen,
   onClose,
+  fetcher,
 }: {
   contentId: string;
   existingClassifications: ContentClassification[];
   isOpen: boolean;
   onClose: () => void;
+  fetcher: FetcherWithComponents<any>;
 }) {
-  const fetcher = useFetcher();
-
   // ==== Load classification categories ====
   const [classificationCategories, setClassificationCategories] = useState<
     ClassificationCategoryTree[]
@@ -203,6 +203,7 @@ export function AddClassificationModal({
               value={categoryFilter.systemTreeIndex ?? ""}
               placeholder="Filter by system"
               data-test="Filter By System"
+              aria-label="Filter By System"
               onChange={(event) => {
                 if (event.target.value) {
                   const treeIndex = Number(event.target.value);
@@ -232,6 +233,11 @@ export function AddClassificationModal({
               maxWidth="30rem"
               value={categoryFilter.categoryTreeIndex ?? ""}
               placeholder={
+                selectedClassification === null
+                  ? "-"
+                  : `Filter by ${selectedClassification.categoryLabel}`
+              }
+              aria-label={
                 selectedClassification === null
                   ? "-"
                   : `Filter by ${selectedClassification.categoryLabel}`
@@ -296,6 +302,11 @@ export function AddClassificationModal({
                   ? "-"
                   : `Filter by ${selectedClassification!.subCategoryLabel}`
               }
+              aria-label={
+                categoryFilter.categoryId === undefined
+                  ? "-"
+                  : `Filter by ${selectedClassification!.subCategoryLabel}`
+              }
               data-test="Filter By Subcategory"
               isDisabled={categoryFilter.categoryId === undefined}
               onChange={(event) => {
@@ -349,6 +360,7 @@ export function AddClassificationModal({
             type="search"
             data-test="Search Terms"
             placeholder="Filter by search terms"
+            aria-label="Filter by search terms"
             maxWidth="30rem"
             onInput={updateSearchTerms}
             onKeyDown={(e) => {

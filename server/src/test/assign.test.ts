@@ -647,7 +647,7 @@ test("cannot change closedOn, maxAttempts, mode, individualizeByStudent of a non
   const closedOn = DateTime.now().plus({ days: 1 });
   const maxAttempts = 2;
   const mode: AssignmentMode = "summative";
-  const individualizeByStudent = true;
+  const individualizeByStudent = false;
 
   for (const nonRootId of nonRootIds) {
     await expect(
@@ -705,7 +705,7 @@ test("cannot change closedOn, maxAttempts, mode, individualizeByStudent of a non
   expect(content.assignmentInfo?.assignmentClosedOn).eqls(closedOn.toJSDate());
   expect(content.assignmentInfo?.maxAttempts).eq(2);
   expect(content.assignmentInfo?.mode).eq("formative");
-  expect(content.assignmentInfo?.individualizeByStudent).eq(false);
+  expect(content.assignmentInfo?.individualizeByStudent).eq(true);
 });
 
 function scoreFromStudentAttempts(

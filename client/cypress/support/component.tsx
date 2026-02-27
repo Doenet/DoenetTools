@@ -30,10 +30,34 @@ Cypress.on("uncaught:exception", (err) => {
 // Import commands.js using ES2015 syntax:
 import { ChakraProvider } from "@chakra-ui/react";
 import "./commands";
+import "cypress-axe";
+import "wick-a11y";
+import { register as registerCypressGrep } from "@cypress/grep";
+registerCypressGrep();
 
-import { mount } from "cypress/react";
+// Configure cypress-axe to use the correct path for axe-core in monorepo
+// axe-core is installed in the root node_modules, not in client/node_modules
+Cypress.Commands.overwrite("injectAxe", () => {
+  // Load the trusted axe-core bundle from disk and inject it via a <script> tag
+  // instead of using window.eval. This keeps the standard cypress-axe behavior
+  // while avoiding eval and clearly scopes execution to this window.
+  cy.readFile("../node_modules/axe-core/axe.min.js").then((source) => {
+    return cy.window({ log: false }).then((window) => {
+      const script = window.document.createElement("script");
+      script.type = "text/javascript";
+      script.textContent = source;
+      window.document.head.appendChild(script);
+    });
+  });
+});
 
-import { createMemoryRouter, RouterProvider } from "react-router-dom";
+import { mount, MountOptions } from "cypress/react";
+
+import {
+  createMemoryRouter,
+  RouterProvider,
+  MemoryRouterProps,
+} from "react-router-dom";
 import { MathJaxContext } from "better-react-mathjax";
 import { mathjaxConfig } from "@doenet/doenetml-iframe";
 import { theme } from "../../src/theme";
@@ -49,8 +73,13 @@ Cypress.Commands.add("mount", (component, options = {}) => {
   const {
     routerProps = { initialEntries: ["/"] },
     action,
+    routes,
     ...mountOptions
-  } = options;
+  } = options as MountOptions & {
+    routerProps?: MemoryRouterProps;
+    action?: (data: { request: Request }) => Promise<any>;
+    routes?: any[];
+  };
 
   const safeActionWithDefault = async ({ request }: { request: Request }) => {
     try {
@@ -80,22 +109,24 @@ Cypress.Commands.add("mount", (component, options = {}) => {
     }
   };
 
-  const router = createMemoryRouter(
-    [
-      {
-        path: "/",
-        element: (
-          <ChakraProvider theme={theme}>
-            <MathJaxContext version={4} config={mathjaxConfig}>
-              {component as any}
-            </MathJaxContext>
-          </ChakraProvider>
-        ),
-        action: safeActionWithDefault,
-      },
-    ],
-    routerProps as any,
-  );
+  // Build the routes array
+  const routesArray = [
+    {
+      path: "/",
+      element: (
+        <ChakraProvider theme={theme}>
+          <MathJaxContext version={4} config={mathjaxConfig}>
+            {component as any}
+          </MathJaxContext>
+        </ChakraProvider>
+      ),
+      action: safeActionWithDefault,
+    },
+    // Add any additional routes provided by the test
+    ...(routes || []),
+  ];
+
+  const router = createMemoryRouter(routesArray, routerProps as any);
 
   const wrapped = <RouterProvider router={router} />;
 
