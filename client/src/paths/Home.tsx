@@ -73,7 +73,7 @@ export function Home() {
 
   const heroSection = (
     <Box width="100%">
-      <WithSideBanners bgColor="#282a3aff" padding="40px">
+      <WithSideBanners bgColor="background" padding="40px">
         <Grid
           templateColumns={{ base: "1fr", lg: "1fr auto" }}
           w="100%"
@@ -89,7 +89,7 @@ export function Home() {
             order={{ base: 2, md: 1 }}
           >
             <Heading
-              color="white"
+              color="text"
               fontSize={{ base: "28px", sm: "34px", md: "44px", lg: "56px" }}
               fontWeight="700"
               mb={{ base: "24px", md: "40px", lg: "60px" }}
@@ -98,7 +98,7 @@ export function Home() {
             </Heading>
 
             <Heading
-              color="white"
+              color="text"
               fontSize={{
                 base: "16px",
                 sm: "18px",
@@ -116,6 +116,39 @@ export function Home() {
               {/* TODO: Find spot to mention AI, such as:
                 "Human-crafted activities in the age of AI" */}
             </Heading>
+
+            <HStack
+              spacing={{ base: "12px", md: "16px" }}
+              mt={{ base: "24px", md: "32px" }}
+              flexWrap="wrap"
+            >
+              <Button
+                as={ReactRouterLink}
+                to="/scratchpad"
+                colorScheme="blue"
+                size={{ base: "md", md: "lg" }}
+                fontSize={{ base: "16px", md: "18px" }}
+                px={{ base: "24px", md: "32px" }}
+                py={{ base: "12px", md: "16px" }}
+                height="auto"
+              >
+                Start writing
+              </Button>
+              <Button
+                as={ReactRouterLink}
+                to="/explore"
+                variant="outline"
+                colorScheme="blue"
+                size={{ base: "md", md: "lg" }}
+                fontSize={{ base: "16px", md: "18px" }}
+                px={{ base: "24px", md: "32px" }}
+                py={{ base: "12px", md: "16px" }}
+                height="auto"
+                borderWidth="2px"
+              >
+                Explore community activities
+              </Button>
+            </HStack>
 
             {/* Mobile video directly under text */}
             <Box
@@ -513,7 +546,7 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
           icon={<ThickChevronLeft size={iconSize} stroke={iconStroke} />}
           onClick={handlePrev}
           bg="transparent"
-          color="white"
+          color="text"
           _focus={{ boxShadow: "none" }}
           transition="none"
           _hover={{
@@ -529,7 +562,7 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
 
         <Box
           position="relative"
-          border="3px solid lightgray"
+          border="1px solid lightgray"
           width={`${VIDEO_WIDTH_PX}px`}
           aspectRatio={VIDEO_WIDTH_PX / VIDEO_HEIGHT_PX}
           overflow="hidden"
@@ -607,7 +640,7 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
           icon={<ThickChevronRight size={iconSize} stroke={iconStroke} />}
           onClick={handleNext}
           bg="transparent"
-          color="white"
+          color="text"
           transition="none"
           _hover={{
             transform: "none",
