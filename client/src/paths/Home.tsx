@@ -125,7 +125,7 @@ export function Home() {
             >
               <Button
                 as={ReactRouterLink}
-                to="/scratchpad"
+                to="/scratchPad"
                 colorScheme="blue"
                 size={{ base: "md", md: "lg" }}
                 fontSize={{ base: "16px", md: "18px" }}
@@ -630,7 +630,6 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
               transform: "scale(1.2)",
               transformOrigin: "top right",
               backfaceVisibility: "hidden",
-              willChange: "transform",
             }}
           />
         </Box>
@@ -726,7 +725,6 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
               transform: "scale(1.2)",
               transformOrigin: "top right",
               backfaceVisibility: "hidden",
-              willChange: "transform",
             }}
           />
         </Box>
