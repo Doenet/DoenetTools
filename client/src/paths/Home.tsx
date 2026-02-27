@@ -728,8 +728,6 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
             style={{ transform: "scale(1.2)", transformOrigin: "top right" }}
           >
             <FaExternalLinkAlt />
-
-            Try me
           </Button>
         </Box>
 
