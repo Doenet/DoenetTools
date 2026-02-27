@@ -26,6 +26,7 @@ export function mainSections({
             { label: "Community Discussions", to: discussionsLink },
             { label: "Blog", to: "/blog", reloadDocument: true },
             { label: "Get Involved", to: "/get-involved" },
+            { label: "About", to: "/about" },
           ],
         },
       ],
