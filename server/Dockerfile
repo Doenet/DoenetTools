@@ -2,12 +2,13 @@ FROM node:lts-trixie
 WORKDIR /DoenetTools/server
 
 
-COPY src ./src
-COPY scripts ./scripts
-COPY prisma ./prisma
-COPY passport-anonymous ./passport-anonymous
-COPY tsconfig.json ./
-COPY package*.json ./
+COPY dist ./dist
+# COPY src ./src
+# COPY scripts ./scripts
+# COPY prisma ./prisma
+# COPY passport-anonymous ./passport-anonymous
+# COPY tsconfig.json ./
+# COPY package*.json ./
 COPY entrypoint.sh ./
 
 
@@ -15,8 +16,8 @@ COPY entrypoint.sh ./
 # COPY .env ./
 
 # Assume a 'shared' directory exists on your host in the build context
-RUN --mount=type=bind,source=./shared,target=./shared npm install
-RUN --mount=type=bind,source=./shared,target=./shared npm run build
+# RUN --mount=type=bind,source=./shared,target=./shared npm install
+# RUN --mount=type=bind,source=./shared,target=./shared npm run build
 
 RUN chmod +x ./entrypoint.sh
 
