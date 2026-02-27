@@ -38,3 +38,10 @@ Policies:
           Resource:
             - Fn::Sub: "arn:aws:s3:::${S3AppBucket}"
             - Fn::Sub: "arn:aws:s3:::${S3AppBucket}/*"
+  - PolicyName: SESPolicy
+    PolicyDocument:
+      Statement:
+        - Effect: Allow
+          Action:
+            - "ses:SendEmail*"
+          Resource: "*"
