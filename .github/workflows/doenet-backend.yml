@@ -29,12 +29,11 @@ jobs:
       - name: Npm clean install
         run: npm ci
 
-      - run: npx prisma generate
-        working-directory: ./server
+      # Generate TS types for Prisma
+      - run: npm run prisma:generate --workspace server
 
-      - name: Build
-        run: npm run build
-        working-directory: ./server
+      - name: Build server
+        run: npm run build --workspace server
 
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v5
