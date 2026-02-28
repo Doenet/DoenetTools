@@ -1,15 +1,17 @@
 {
-  "extends": "../tsconfig.json",
+  "extends": "../tsconfig.node.json",
   "compilerOptions": {
+    "composite": true,
     "allowSyntheticDefaultImports": true,
     "outDir": "dist",
+    "resolveJsonModule": true,
+
+    // Only include types that the server actually uses (excludes cypress)
+    "types": ["node", "express", "passport", "chai"],
 
     // The following settings are only used because of Passport
     "esModuleInterop": true,
-    "typeRoots": ["../node_modules/@types", "src/types"],
-    "skipLibCheck": true,
-    // Only include types that the server actually uses (excludes cypress)
-    "types": ["node", "express", "passport", "chai"]
+    "typeRoots": ["../node_modules/@types", "src/types"]
   },
-  "include": ["src", "prisma", "scripts"]
+  "include": ["src", "prisma", "scripts", "prisma/seed/**/*.json"]
 }

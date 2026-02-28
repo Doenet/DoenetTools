@@ -1,17 +1,20 @@
 {
-  "extends": "../tsconfig.json",
+  "extends": "../tsconfig.base.json",
   "compilerOptions": {
+    "composite": true,
+    "declaration": true,
     "outDir": "./dist/",
     "rootDir": "./src"
   },
-  "include": ["./**/*.ts", "./**/*.js"],
-  "exclude": [
-    "./**/*.test.ts",
-    "./**/*.stub.ts",
-    "node_modules",
-    "**/test/",
-    "**/dist/**/*",
-    "./vite.config.ts"
-  ],
+  "include": ["src"],
+  // "include": ["./**/*.ts", "./**/*.js"],
+  // "exclude": [
+  //   "./**/*.test.ts",
+  //   "./**/*.stub.ts",
+  //   "node_modules",
+  //   "**/test/",
+  //   "**/dist/**/*",
+  //   "./vite.config.ts"
+  // ],
   "references": []
 }

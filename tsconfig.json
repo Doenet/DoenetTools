@@ -1,27 +1,5 @@
-// This is the base tsconfig file that is extended by both client and server tsconfig files.
+// This is the root tsconfig file that references all packages. It does not contain any compiler options itself, but it allows us to build all packages at once using `tsc -b`.
 {
-  "compilerOptions": {
-    "target": "esnext",
-    "useDefineForClassFields": true,
-
-    /* Module settings */
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
-
-    "allowJs": false,
-
-    "sourceMap": true,
-
-    /* Strictness */
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-
-    "baseUrl": "."
-  },
   "files": [],
   "references": [
     { "path": "blog" },
