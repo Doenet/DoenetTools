@@ -1,8 +1,11 @@
 {
   "extends": "../tsconfig.react.json",
   "compilerOptions": {
+    "composite": true,
+    "declaration": true,
     "sourceMap": true,
-    "types": ["node", "cypress", "cypress-axe"]
+    "types": ["node", "cypress", "cypress-axe"],
+    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo/tests-cypress.tsbuildinfo"
   },
   "include": ["**/*.ts"]
 }

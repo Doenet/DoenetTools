@@ -2,6 +2,8 @@
   "extends": "../tsconfig.node.json",
   "compilerOptions": {
     "composite": true,
+    "declaration": true,
+
     "allowSyntheticDefaultImports": true,
     "outDir": "dist",
     "resolveJsonModule": true,
@@ -13,5 +15,16 @@
     "esModuleInterop": true,
     "typeRoots": ["../node_modules/@types", "src/types"]
   },
-  "include": ["src", "prisma", "scripts", "prisma/seed/**/*.json"]
+  "include": [
+    "src",
+    "prisma",
+    "scripts",
+    "prisma/seed/**/*.json",
+    "passport-anonymous/lib"
+  ],
+  "references": [
+    {
+      "path": "../shared"
+    }
+  ]
 }

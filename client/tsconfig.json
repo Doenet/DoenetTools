@@ -1,7 +1,9 @@
 {
   "extends": "../tsconfig.react.json",
   "compilerOptions": {
-    // "composite": true
+    "composite": true,
+    "declaration": true,
+    "outDir": "dist"
   },
   "include": [
     "src/**/*.ts",
@@ -9,5 +11,10 @@
     "cypress/**/*.ts",
     "cypress/**/*.tsx",
     "cypress.config.ts"
+  ],
+  "references": [
+    {
+      "path": "../shared"
+    }
   ]
 }
