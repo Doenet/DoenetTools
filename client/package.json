@@ -20,27 +20,6 @@
     "test:mistagged": "cypress run --component -b 'chrome' --config video=false --headless --expose grepTags='-@group1+-@group2+-@group3+-@group4',grepFilterSpecs=true,grepOmitFiltered=true",
     "test:all": "cypress run --component -b 'chrome' --config video=false --headless"
   },
-  "wireit": {
-    "build": {
-      "command": "tsc && vite build",
-      "files": [
-        "src/**/*.ts",
-        "src/**/*.js",
-        "src/**/*.tsx",
-        "src/**/*.jsx",
-        "src/**/*.css",
-        "vite.config.ts",
-        "tsconfig.json"
-      ],
-      "output": [
-        "dist/**/*.js",
-        "dist/**/*.d.ts"
-      ],
-      "dependencies": [
-        "../shared:build"
-      ]
-    }
-  },
   "dependencies": {
     "@chakra-ui/icons": "^2.2.4",
     "@chakra-ui/react": "^2.10.9",

@@ -19,24 +19,6 @@
     "start": "node dist/src/index.js",
     "test": "vitest"
   },
-  "wireit": {
-    "build": {
-      "command": "tsc && cp src/signin_email.html dist/src/",
-      "files": [
-        "src/**/*.ts",
-        "src/**/*.js",
-        "vite.config.ts",
-        "tsconfig.json"
-      ],
-      "output": [
-        "dist/**/*.js",
-        "dist/**/*.d.ts"
-      ],
-      "dependencies": [
-        "../shared:build"
-      ]
-    }
-  },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },
