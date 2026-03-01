@@ -16,24 +16,9 @@
     }
   },
   "scripts": {
-    "build": "wireit",
     "lint": "eslint --fix",
-    "lint:check": "eslint"
-  },
-  "wireit": {
-    "build": {
-      "command": "vite build",
-      "files": [
-        "src/**/*.ts",
-        "src/**/*.js",
-        "vite.config.ts",
-        "tsconfig.json"
-      ],
-      "output": [
-        "dist/**/*.js",
-        "dist/**/*.d.ts"
-      ]
-    }
+    "lint:check": "eslint",
+    "build:only-me": "tsc --build"
   },
   "dependencies": {
     "ipfs-only-hash": "^4.0.0"

@@ -20,8 +20,7 @@
     "test:parallel": "cypress-parallel -s test:all -t 4 -d e2e -n ../../node_modules/cypress-multi-reporters"
   },
   "dependencies": {
-    "@doenet-tools/client": "*",
-    "@doenet-tools/server": "*"
+    "cssesc": "^3.0.0"
   },
   "devDependencies": {}
 }

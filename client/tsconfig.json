@@ -1,17 +1,9 @@
 {
-  "extends": "../tsconfig.json",
+  "extends": "../tsconfig.react.json",
   "compilerOptions": {
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "jsx": "react-jsx",
-    "types": ["vite/client", "cypress", "node"],
-
-    // We're using Vite to build, therefore we don't need TS to create the files,
-    // we only want TS to type check
-    "noEmit": true,
-
-    // Some dependencies don't pass strict mode
-    "skipLibCheck": true
+    "composite": true,
+    "declaration": true,
+    "outDir": "dist"
   },
   "include": [
     "src/**/*.ts",
@@ -19,5 +11,10 @@
     "cypress/**/*.ts",
     "cypress/**/*.tsx",
     "cypress.config.ts"
+  ],
+  "references": [
+    {
+      "path": "../shared"
+    }
   ]
 }

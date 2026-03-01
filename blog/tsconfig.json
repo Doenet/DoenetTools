@@ -1,11 +1,10 @@
 {
-  "extends": ["../tsconfig.json", "astro/tsconfigs/strict"],
-  "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist"],
+  "extends": ["../tsconfig.react.json", "astro/tsconfigs/strict"],
   "compilerOptions": {
-    "moduleResolution": "bundler",
-    "strictNullChecks": true,
-    "jsx": "react-jsx",
-    "jsxImportSource": "react"
-  }
+    "composite": true,
+    "declaration": true,
+    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo/blog.tsbuildinfo"
+  },
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist"]
 }

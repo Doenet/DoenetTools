@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "prepare": "astro sync",
     "dev": "astro dev",
-    "build": "astro build",
+    "build:assets": "astro build",
+    "build:only-me": "npm run build:assets",
     "preview": "astro preview",
     "astro": "astro",
     "lint": "eslint --fix",
