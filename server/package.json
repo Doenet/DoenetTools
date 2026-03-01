@@ -8,7 +8,8 @@
   "author": "",
   "main": "dist/src/index.js",
   "scripts": {
-    "build": "wireit",
+    "build:assets": "cp src/signin_email.html dist/src/",
+    "build:only-me": "tsc --build && npm run build:assets",
     "dev": "tsx watch src/index.ts",
     "lint": "eslint --fix",
     "lint:check": "eslint",

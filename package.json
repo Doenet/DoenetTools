@@ -13,7 +13,10 @@
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "lint": "npm run lint --workspaces",
-    "lint:check": "npm run lint:check --workspaces"
+    "lint:check": "npm run lint:check --workspaces",
+    "build:ts": "tsc --build",
+    "build:assets": "npm run build:assets --workspaces --if-present",
+    "build": "npm run build:ts && npm run build:assets"
   },
   "devDependencies": {
     "@cypress/grep": "^6.0.0",
