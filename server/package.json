@@ -13,7 +13,7 @@
     "dev": "tsx watch src/index.ts",
     "lint": "eslint --fix",
     "lint:check": "eslint",
-    "prisma:generate": "prisma generate",
+    "prepare": "prisma generate",
     "prisma:migrate-dev": "prisma migrate dev",
     "prisma:seed": "prisma db seed",
     "start": "node dist/src/index.js",

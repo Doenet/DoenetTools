@@ -27,8 +27,8 @@ jobs:
       # Install dependencies once
       - run: npm ci
 
-      # Generate TS types for Prisma
-      - run: npm run prisma:generate --workspace server
+      # Prepare (generate types)
+      - run: npm run prepare
 
       # -----------------------------
       # Format check

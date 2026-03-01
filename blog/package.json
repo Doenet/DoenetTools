@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "prepare": "astro sync",
     "dev": "astro dev",
     "build:assets": "astro build",
     "build:only-me": "npm run build:assets",
