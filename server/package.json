@@ -8,7 +8,7 @@
   "author": "",
   "main": "dist/src/index.js",
   "scripts": {
-    "build:assets": "cp src/signin_email.html dist/src/",
+    "build:assets": "node scripts/build-email-asset.js",
     "build:only-me": "tsc --build && npm run build:assets",
     "dev": "tsx watch src/index.ts",
     "lint": "eslint --fix",
