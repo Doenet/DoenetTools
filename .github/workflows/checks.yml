@@ -45,14 +45,8 @@ jobs:
       # -----------------------------
       # Build
       # -----------------------------
-      - name: Build client
-        run: npm run build --workspace client
-
-      - name: Build server
-        run: npm run build --workspace server
-
-      - name: Build blog
-        run: npm run build --workspace blog
+      - name: Build
+        run: npm run build
 
       # -----------------------------
       # Start MySQL + Test server
