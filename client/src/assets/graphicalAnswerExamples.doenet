@@ -11,7 +11,9 @@
     <p>Move the point to the second quadrant.</p>
 
     <graph>
-      <shortDescription>A graph with point $P that is movable</shortDescription>
+      <shortDescription>
+      A graph of a movable point, with coordinates <number extend="$P.x" />, <number extend="$P.y" />
+      </shortDescription>
       <point name="P">(0,0)</point>
     </graph>
 
@@ -27,11 +29,13 @@
 
     <graph fixAxes>
       <shortDescription>
-        A graph of a function that increases until x=-7,
-        then decreases until x=-2
-        then increases until x = 4
+        A graph of a function that increases until x equals negative 7,
+        then decreases until x equals negative 2
+        then increases until x equals 4
         and then decreases.
-        Two movable points $A and $B are shown.
+        Two movable points are shown,
+        with coordinates <number extend="$A.x" />, <number extend="$A.y" />,
+        and with coordinates <number extend="$B.x" />, <number extend="$B.y" />.
       </shortDescription>
       <function name="f" maxima="(-7,1) (4,4)" minima="(-2,-5)" />
 

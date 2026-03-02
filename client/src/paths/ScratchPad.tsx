@@ -13,6 +13,7 @@ import defaultSource from "../assets/scratchPadDefault.doenet?raw";
 import multipleChoice from "../assets/multipleChoiceExamples.doenet?raw";
 import mathAnswers from "../assets/mathAnswerExamples.doenet?raw";
 import graphicalAnswers from "../assets/graphicalAnswerExamples.doenet?raw";
+import accessibilityPointers from "../assets/accessibilityPointers.doenet?raw";
 
 import {
   Alert,
@@ -201,6 +202,21 @@ export function ScratchPad() {
           }}
         >
           Graphical Answer Examples
+        </MenuItem>
+        <MenuItem
+          data-test="Add Accessibility Pointers Button"
+          onClick={() => {
+            try {
+              localStorage.setItem("scratchPad", accessibilityPointers);
+            } catch (e) {
+              console.error(e);
+            }
+            setInitialSource(accessibilityPointers);
+            // We update reset num to make sure editor updates.
+            setResetNum((was) => was + 1);
+          }}
+        >
+          Accessibility Pointers
         </MenuItem>
       </MenuList>
     </Menu>
