@@ -7,4 +7,7 @@ async function copy() {
   await cp("src/signin_email.html", "dist/src/signin_email.html");
 }
 
-copy();
+copy().catch((err) => {
+  console.error("Failed to copy signin_email.html:", err);
+  process.exitCode = 1;
+});
