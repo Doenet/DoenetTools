@@ -38,6 +38,7 @@ import { SiteContext } from "./SiteHeader";
 import { SaveDoenetmlAndReportFinish } from "../popups/SaveDoenetmlAndReportFinish";
 import { LuCircleHelp } from "react-icons/lu";
 import { getDiscourseUrl } from "../utils/discourse";
+import { IoAccessibility } from "react-icons/io5";
 
 export async function loader({ request }: { request: Request }) {
   const url = new URL(request.url);
@@ -116,6 +117,8 @@ export function ScratchPad() {
     onOpen: saveDialogOnOpen,
     onClose: saveDialogOnClose,
   } = useDisclosure();
+
+  const [accessibilityStrictMode, setAccessibilityStrictMode] = useState(false);
 
   const saveDocumentDialog = user && (
     <SaveDoenetmlAndReportFinish
@@ -207,10 +210,13 @@ export function ScratchPad() {
     <Menu>
       <Tooltip label="Help" openDelay={300} placement="bottom-end">
         <MenuButton
-          size="sm"
-          colorScheme="blue"
           as={IconButton}
-          icon={<LuCircleHelp fontSize="1.2rem" />}
+          icon={<LuCircleHelp />}
+          variant="ghost"
+          fontSize="1.3rem"
+          size="xs"
+          width="30px"
+          height="35px"
           aria-label="Help"
         />
       </Tooltip>
@@ -223,6 +229,31 @@ export function ScratchPad() {
         </MenuItem>
       </MenuList>
     </Menu>
+  );
+
+  const accessibilityButton = (
+    <Tooltip
+      label={
+        accessibilityStrictMode
+          ? "Accessibility strict mode is on"
+          : "Turn on accessibility strict mode"
+      }
+      openDelay={300}
+      placement="bottom-end"
+    >
+      <IconButton
+        icon={<IoAccessibility />}
+        variant="ghost"
+        fontSize="1.2rem"
+        size="xs"
+        width="30px"
+        height="35px"
+        aria-label="Toggle accessibility strict mode"
+        aria-pressed={accessibilityStrictMode}
+        border={accessibilityStrictMode ? "1px solid" : "none"}
+        onClick={() => setAccessibilityStrictMode((prev) => !prev)}
+      />
+    </Tooltip>
   );
 
   const saveButton = user && (
@@ -266,6 +297,9 @@ export function ScratchPad() {
         {scratchPadMessage}
         <ButtonGroup spacing="5px">
           {helpButton}
+          {accessibilityButton}
+        </ButtonGroup>
+        <ButtonGroup spacing="5px" pl="10px">
           {loadButton}
           {saveButton}
         </ButtonGroup>
@@ -283,6 +317,7 @@ export function ScratchPad() {
           source={initialSource}
           doenetmlVersion={doenetmlVersion}
           key={resetNum}
+          accessibilityStrictMode={accessibilityStrictMode}
         />
       </Box>
     </>
@@ -292,9 +327,11 @@ export function ScratchPad() {
 function DocumentEditor({
   source,
   doenetmlVersion,
+  accessibilityStrictMode,
 }: {
   source: string;
   doenetmlVersion: DoenetmlVersion;
+  accessibilityStrictMode: boolean;
 }) {
   const textEditorDoenetML = useRef(source);
   const savedDoenetML = useRef(source);
@@ -340,6 +377,7 @@ function DocumentEditor({
       doenetmlVersion={doenetmlVersion.fullVersion}
       border="none"
       doenetViewerUrl={doenetViewerUrl}
+      upgradeAccessibilityWarningsToErrors={accessibilityStrictMode}
     />
   );
 }

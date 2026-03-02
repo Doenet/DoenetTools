@@ -21,7 +21,8 @@ export async function loader({ params }: { params: any }) {
  * Context: `documentEditor`
  */
 export function DocEditorEditMode() {
-  const { contentId, assignmentStatus } = useOutletContext<EditorContext>();
+  const { contentId, assignmentStatus, accessibilityStrictMode } =
+    useOutletContext<EditorContext>();
   const readOnly = assignmentStatus !== "Unassigned";
 
   const { source, doenetmlVersion } = useLoaderData() as {
@@ -35,6 +36,7 @@ export function DocEditorEditMode() {
       source={source}
       readOnly={readOnly}
       doenetmlVersion={doenetmlVersion}
+      accessibilityStrictMode={accessibilityStrictMode}
     />
   );
 }
@@ -44,11 +46,13 @@ function DocumentEditor({
   source,
   readOnly,
   doenetmlVersion,
+  accessibilityStrictMode,
 }: {
   contentId: string;
   source: string;
   readOnly: boolean;
   doenetmlVersion: DoenetmlVersion;
+  accessibilityStrictMode: boolean;
 }) {
   const textEditorDoenetML = useRef(source);
   const savedDoenetML = useRef(source);
@@ -173,6 +177,7 @@ function DocumentEditor({
       border="none"
       readOnly={readOnly}
       doenetViewerUrl={doenetViewerUrl}
+      upgradeAccessibilityWarningsToErrors={accessibilityStrictMode}
     />
   );
 }
