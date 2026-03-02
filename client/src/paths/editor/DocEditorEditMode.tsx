@@ -36,7 +36,7 @@ export function DocEditorEditMode() {
       source={source}
       readOnly={readOnly}
       doenetmlVersion={doenetmlVersion}
-      accesssibilityStrictMode={accessibilityStrictMode}
+      accessibilityStrictMode={accessibilityStrictMode}
     />
   );
 }
@@ -46,13 +46,13 @@ function DocumentEditor({
   source,
   readOnly,
   doenetmlVersion,
-  accesssibilityStrictMode,
+  accessibilityStrictMode,
 }: {
   contentId: string;
   source: string;
   readOnly: boolean;
   doenetmlVersion: DoenetmlVersion;
-  accesssibilityStrictMode: boolean;
+  accessibilityStrictMode: boolean;
 }) {
   const textEditorDoenetML = useRef(source);
   const savedDoenetML = useRef(source);
@@ -177,7 +177,7 @@ function DocumentEditor({
       border="none"
       readOnly={readOnly}
       doenetViewerUrl={doenetViewerUrl}
-      upgradeAccessibilityWarningsToErrors={accesssibilityStrictMode}
+      upgradeAccessibilityWarningsToErrors={accessibilityStrictMode}
     />
   );
 }
