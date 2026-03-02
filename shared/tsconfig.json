@@ -7,7 +7,7 @@
     "module": "esnext",
     "outDir": "dist",
     "rootDir": "src",
-    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo/shared.tsbuildinfo"
+    "tsBuildInfoFile": "../.tsbuildinfo/shared.tsbuildinfo"
   },
   "include": ["src"]
 }

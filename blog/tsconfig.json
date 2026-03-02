@@ -3,7 +3,7 @@
   "compilerOptions": {
     "composite": true,
     "declaration": true,
-    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo/blog.tsbuildinfo"
+    "tsBuildInfoFile": "../.tsbuildinfo/blog.tsbuildinfo"
   },
   "include": [".astro/types.d.ts", "**/*"],
   "exclude": ["dist"]

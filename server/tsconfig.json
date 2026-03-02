@@ -7,6 +7,7 @@
     "allowSyntheticDefaultImports": true,
     "outDir": "dist",
     "resolveJsonModule": true,
+    "tsBuildInfoFile": "../.tsbuildinfo/server.tsbuildinfo",
 
     // Only include types that the server actually uses (excludes cypress)
     "types": ["node", "express", "passport", "chai"],
