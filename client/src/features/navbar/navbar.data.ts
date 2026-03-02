@@ -2,10 +2,8 @@ import { NavSection } from "./navbar.types";
 
 export function mainSections({
   discussionsLink,
-  supportLink,
 }: {
   discussionsLink: string;
-  supportLink: string;
 }): NavSection[] {
   return [
     {
@@ -17,7 +15,7 @@ export function mainSections({
           subItems: [
             { label: "Documentation", to: "https://docs.doenet.org" },
             { label: "Events & Workshops", to: "/events" },
-            { label: "Ask a Question (Forums)", to: supportLink },
+            { label: "Ask a Question (Forums)", to: discussionsLink },
           ],
         },
         {
