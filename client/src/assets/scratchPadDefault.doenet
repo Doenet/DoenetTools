@@ -13,23 +13,31 @@
     <section>
         <title>Auto-graded answers</title>
 
-        <p>1+1 = <answer>2</answer></p>
+        <p><answer>
+            <label>1+1 = </label>
+            2
+        </answer></p>
 
         <p>The point <math>(5,-7)</math> is in the
-          <answer inline>
-            <choice>first</choice>
-            <choice>second</choice>
-            <choice>third</choice>
-            <choice credit="1">fourth</choice>
-          </answer>
-          quadrant.
+            <answer inline>
+                <shortDescription>
+                    Quadrant of the point at coordinates 5, negative 7
+                </shortDescription>
+                <choice>first</choice>
+                <choice>second</choice>
+                <choice>third</choice>
+                <choice credit="1">fourth</choice>
+            </answer>
+            quadrant.
         </p>
     </section>
 
     <section>
         <title>References</title>
 
-        <p>What is your name? <textInput name="yourName" /></p>
+        <p><textInput name="yourName">
+            <label>What is your name?</label>
+        </textInput></p>
 
         <p>Hello, $yourName!</p>
     </section>
@@ -40,10 +48,16 @@
         <p>Move the point. The change will be reflected here. The point is $P.</p>
       
         <graph>
+            <shortDescription>
+                A graph of a changeable point, with coordinates <number extend="$P.x" />, <number extend="$P.y" />.
+            </shortDescription>
             <point name="P">(3,4)</point>
         </graph>
 
-        <p>Change the point by typing: <mathInput displayDigits="5">$P</mathInput></p>
+        <p><mathInput displayDigits="5">
+            <label>Change the point by typing:</label>
+            $P
+        </mathInput></p>
 
     </section>
 
