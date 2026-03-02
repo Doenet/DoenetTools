@@ -542,9 +542,14 @@ export function EditorHeader() {
             size="xs"
             width="30px"
             height="35px"
-            aria-label="Toggle accessibility strict mode"
+            aria-label={
+              accessibilityStrictMode
+                ? "Turn off accessibility strict mode"
+                : "Turn on accessibility strict mode"
+            }
+            aria-pressed={accessibilityStrictMode}
             border={accessibilityStrictMode ? "1px solid" : "none"}
-            onClick={() => setAccessibilityStrictMode(!accessibilityStrictMode)}
+            onClick={() => setAccessibilityStrictMode((prev) => !prev)}
           />
         </Tooltip>
       )}
