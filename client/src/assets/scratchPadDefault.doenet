@@ -49,7 +49,7 @@
       
         <graph>
             <shortDescription>
-                A graph of a changeable point, with coordinates <number extend="$P.x" />, <number extend="$P.y" />.
+                A graph of a changeable point, with coordinates <number extend="$P.x" />, <number extend="$P.y" />
             </shortDescription>
             <point name="P">(3,4)</point>
         </graph>
