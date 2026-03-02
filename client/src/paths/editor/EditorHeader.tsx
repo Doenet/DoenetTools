@@ -543,7 +543,7 @@ export function EditorHeader() {
             width="30px"
             height="35px"
             aria-label="Toggle accessibility strict mode"
-            color={accessibilityStrictMode ? "doenet.mainGreen" : undefined}
+            border={accessibilityStrictMode ? "1px solid" : "none"}
             onClick={() => setAccessibilityStrictMode(!accessibilityStrictMode)}
           />
         </Tooltip>
