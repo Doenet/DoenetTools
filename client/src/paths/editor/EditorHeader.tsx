@@ -1,4 +1,4 @@
-import { ReactElement, useEffect } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import {
   useFetcher,
   Link as ReactRouterLink,
@@ -40,7 +40,7 @@ import {
   MdRemoveRedEye,
 } from "react-icons/md";
 import { FaHistory, FaCog, FaChevronRight, FaRegFolder } from "react-icons/fa";
-import { IoGitBranch } from "react-icons/io5";
+import { IoGitBranch, IoAccessibility } from "react-icons/io5";
 import { LuCircleHelp, LuLibraryBig } from "react-icons/lu";
 
 import axios from "axios";
@@ -108,6 +108,7 @@ export type EditorContext = SiteContext & {
   assignmentStatus: AssignmentStatus;
   inLibrary: boolean;
   headerHeight: string;
+  accessibilityStrictMode: boolean;
 };
 
 /**
@@ -165,6 +166,8 @@ export function EditorHeader() {
       categories: categoryCheckFetcher.data.categories as Category[],
     });
 
+  const [accessibilityStrictMode, setAccessibilityStrictMode] = useState(false);
+
   const notBrowsableMessage = notBrowsable && (
     <Alert status="warning" height="40px">
       <AlertIcon />
@@ -198,6 +201,7 @@ export function EditorHeader() {
     assignmentStatus,
     inLibrary,
     headerHeight: totalHeaderHeight,
+    accessibilityStrictMode,
   };
 
   const {
@@ -521,6 +525,35 @@ export function EditorHeader() {
           </MenuList>
         </Menu>
       )}
+      {contentType === "singleDoc" && (
+        <Tooltip
+          label={
+            accessibilityStrictMode
+              ? "Accessibility strict mode is on"
+              : "Turn on accessibility strict mode"
+          }
+          openDelay={300}
+          placement="bottom-end"
+        >
+          <IconButton
+            icon={<IoAccessibility />}
+            variant="ghost"
+            fontSize="1.2rem"
+            size="xs"
+            width="30px"
+            height="35px"
+            aria-label={
+              accessibilityStrictMode
+                ? "Turn off accessibility strict mode"
+                : "Turn on accessibility strict mode"
+            }
+            aria-pressed={accessibilityStrictMode}
+            border={accessibilityStrictMode ? "1px solid" : "none"}
+            onClick={() => setAccessibilityStrictMode((prev) => !prev)}
+          />
+        </Tooltip>
+      )}
+
       {contentType === "singleDoc" && (
         <Tooltip
           label="View edit history"
