@@ -34,30 +34,43 @@ describe("Navbar", { tags: ["@group4"] }, () => {
       cy.checkAccessibility("body");
     });
 
-    it("opens About submenu and shows expected links", () => {
+    it("opens Help & Training submenu and shows expected links", () => {
       cy.mount(<Navbar />);
 
-      cy.contains("button", "About").click();
+      cy.contains("button", "Help & Training").click();
 
-      cy.contains('[role="menuitem"]', "About Doenet")
+      cy.contains('[role="menuitem"]', "Documentation")
         .should("be.visible")
-        .and("have.attr", "href", "/about");
-      cy.contains('[role="menuitem"]', "Blog")
+        .and("have.attr", "href", "https://docs.doenet.org");
+      cy.contains('[role="menuitem"]', "Events & Workshops")
         .should("be.visible")
-        .and("have.attr", "href", "/blog");
+        .and("have.attr", "href", "/events");
+      cy.contains('[role="menuitem"]', "Ask a Question (Forums)")
+        .should("be.visible")
+        .and("have.attr", "href")
+        .and("include", getDiscourseUrl(undefined));
 
       cy.checkAccessibility("body");
     });
 
-    it("uses anonymous discourse URL when user is not authenticated", () => {
+    it("opens Community submenu and shows expected links", () => {
       cy.mount(<Navbar />);
 
-      cy.contains("button", "Get Involved").click();
+      cy.contains("button", "Community").click();
 
-      cy.contains('[role="menuitem"]', "Community discussions")
+      cy.contains('[role="menuitem"]', "Community Discussions")
         .should("be.visible")
         .and("have.attr", "href")
         .and("include", getDiscourseUrl(undefined));
+      cy.contains('[role="menuitem"]', "Blog")
+        .should("be.visible")
+        .and("have.attr", "href", "/blog");
+      cy.contains('[role="menuitem"]', "Get Involved")
+        .should("be.visible")
+        .and("have.attr", "href", "/get-involved");
+      cy.contains('[role="menuitem"]', "About")
+        .should("be.visible")
+        .and("have.attr", "href", "/about");
 
       cy.checkAccessibility("body");
     });
@@ -76,8 +89,8 @@ describe("Navbar", { tags: ["@group4"] }, () => {
       cy.contains("a", "Curate").should("not.exist");
       cy.contains("a", "Sign up/Log In").should("not.exist");
 
-      cy.contains("button", "Get Involved").click();
-      cy.contains('[role="menuitem"]', "Community discussions")
+      cy.contains("button", "Community").click();
+      cy.contains('[role="menuitem"]', "Community Discussions")
         .should("be.visible")
         .and("have.attr", "href")
         .and("include", getDiscourseUrl(user));
@@ -136,9 +149,9 @@ describe("Navbar", { tags: ["@group4"] }, () => {
       cy.get('button[aria-label="Open navigation menu"]').click();
       cy.contains("Menu").should("be.visible");
       cy.contains("Explore").should("be.visible");
-      cy.contains("About").should("be.visible");
-      cy.contains("Get Involved").should("be.visible");
-      cy.contains("Authors").should("be.visible");
+      cy.contains("Try Writing").should("be.visible");
+      cy.contains("Help & Training").should("be.visible");
+      cy.contains("Community").should("be.visible");
       cy.contains("Students").should("be.visible");
       cy.contains("Sign up/Log In").should("be.visible");
 
@@ -149,19 +162,26 @@ describe("Navbar", { tags: ["@group4"] }, () => {
       cy.mount(<Navbar />);
 
       cy.get('button[aria-label="Open navigation menu"]').click();
-      cy.contains("About").click();
+      cy.contains("Community").click();
 
-      cy.contains("About").should("be.visible");
-      cy.contains("About Doenet")
+      cy.contains("Community").should("be.visible");
+      cy.contains("Community Discussions")
         .should("be.visible")
-        .and("have.attr", "href", "/about");
+        .and("have.attr", "href")
+        .and("include", getDiscourseUrl(undefined));
       cy.contains("Blog")
         .should("be.visible")
         .and("have.attr", "href", "/blog");
+      cy.contains("Get Involved")
+        .should("be.visible")
+        .and("have.attr", "href", "/get-involved");
+      cy.contains("About")
+        .should("be.visible")
+        .and("have.attr", "href", "/about");
 
       cy.contains("button", "Back").click();
       cy.contains("Menu").should("be.visible");
-      cy.contains("Get Involved").should("be.visible");
+      cy.contains("Help & Training").should("be.visible");
 
       cy.checkAccessibility("body");
     });
