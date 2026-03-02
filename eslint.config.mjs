@@ -3,6 +3,7 @@
 import eslint from "@eslint/js";
 import tseslint from "typescript-eslint";
 import unusedImports from "eslint-plugin-unused-imports";
+import importPlugin from "eslint-plugin-import";
 
 export default tseslint.config(
   // Global ignores
@@ -35,6 +36,14 @@ export default tseslint.config(
     },
     plugins: {
       "unused-imports": unusedImports,
+      import: importPlugin,
+    },
+    settings: {
+      "import/resolver": {
+        typescript: {
+          project: ["./tsconfig.json", "./*/tsconfig.json"],
+        },
+      },
     },
     rules: {
       "@typescript-eslint/no-unused-vars": "off",
@@ -52,6 +61,18 @@ export default tseslint.config(
           destructuredArrayIgnorePattern: "^_",
           varsIgnorePattern: "^_",
           ignoreRestSiblings: true,
+        },
+      ],
+      "import/no-extraneous-dependencies": [
+        "error",
+        {
+          packageDir: ["./", "./*"],
+          devDependencies: [
+            "**/*.test.ts",
+            "**/*.spec.ts",
+            "**/test/**",
+            "**/__tests__/**",
+          ],
         },
       ],
     },
