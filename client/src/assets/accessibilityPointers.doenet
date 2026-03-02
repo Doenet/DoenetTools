@@ -68,7 +68,7 @@
 <section>
   <title>Image accessibility</title>
 
-  <p>For an image to accessible, it must typically have a <tag>shortDescription</tag> that captures the key features of the image.
+  <p>For an image to be accessible, it must typically have a <tag>shortDescription</tag> that captures the key features of the image.
 <footnote>If the image is purely decorative and can be ignored by screen readers, you can set the <attr>decorative</attr> attribute instead.</footnote> You can optionally add a longer <tag>description</tag> that gives more information for both sighted readers and screen readers.
   </p>
     <p>
@@ -89,7 +89,7 @@ See <ref to="https://pretextbook.org/doc/guide/html/topic-accessibility.html#sub
 
   <p>At present, a <tag>graph</tag> is treated by a screen reader in the same way as an image. The screen reader cannot access the graph, and it must rely on a <tag>shortDescription</tag> and <tag>description</tag> to get information about the graph.</p>
 
-  <p>If a graph has a <tag>shortDescription</tag>,<footnote>or has the <attr>decorative</attr> attribute set</footnote> then it will pass the accessibility tests. But, that doesn't necessarily mean your activity will be accessibile to screen reader users, since they will be unable to manipulate any interactive parts of the graph (such as draggable points). At present, the only available way to give screen reader users the ability to manipulate interactive graph parts is to attach them to a control outside a graph, such as a <tag>slider</tag> or <tag>mathInput</tag>.</p>
+  <p>If a graph has a <tag>shortDescription</tag>,<footnote>or has the <attr>decorative</attr> attribute set</footnote> then it will pass the accessibility tests. But, that doesn't necessarily mean your activity will be accessible to screen reader users, since they will be unable to manipulate any interactive parts of the graph (such as draggable points). At present, the only available way to give screen reader users the ability to manipulate interactive graph parts is to attach them to a control outside a graph, such as a <tag>slider</tag> or <tag>mathInput</tag>.</p>
   
 </section>
 
@@ -103,7 +103,7 @@ See <ref to="https://pretextbook.org/doc/guide/html/topic-accessibility.html#sub
 <section>
   <title>Color contrast</title>
 
-  <p>When designing your <tag>styleDefinition</tag>s, make sure that your color choices have sufficient contrast. In the future, Doenet will give warnings or errors if you create a style with insufficent contrast.
+  <p>When designing your <tag>styleDefinition</tag>s, make sure that your color choices have sufficient contrast. In the future, Doenet will give warnings or errors if you create a style with insufficient contrast.
   
   </p>
 </section>
