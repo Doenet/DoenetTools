@@ -249,8 +249,9 @@ export function ScratchPad() {
         width="30px"
         height="35px"
         aria-label="Toggle accessibility strict mode"
+        aria-pressed={accessibilityStrictMode}
         border={accessibilityStrictMode ? "1px solid" : "none"}
-        onClick={() => setAccessibilityStrictMode(!accessibilityStrictMode)}
+        onClick={() => setAccessibilityStrictMode((prev) => !prev)}
       />
     </Tooltip>
   );
