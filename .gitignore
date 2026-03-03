@@ -11,7 +11,6 @@ node_modules
 **/.env
 
 .vite
-.wireit
 
 # misc
 .DS_Store

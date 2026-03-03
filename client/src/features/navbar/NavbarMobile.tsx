@@ -14,7 +14,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { NavItem, NavSection } from "./navbar.types";
-import { UserInfoWithEmail } from "client/src/types";
+import { UserInfoWithEmail } from "../../types";
 import { useState } from "react";
 import { Link as RouterLink } from "react-router";
 import { AccountIconAndCard } from "./AccountIconAndCard";

@@ -8,33 +8,16 @@
   "author": "",
   "main": "dist/src/index.js",
   "scripts": {
-    "build": "wireit",
+    "build:assets": "node scripts/build-email-asset.js",
+    "build:only-me": "tsc --build && npm run build:assets",
     "dev": "tsx watch src/index.ts",
     "lint": "eslint --fix",
     "lint:check": "eslint",
-    "prisma:generate": "prisma generate",
+    "prepare": "prisma generate",
     "prisma:migrate-dev": "prisma migrate dev",
     "prisma:seed": "prisma db seed",
     "start": "node dist/src/index.js",
     "test": "vitest"
-  },
-  "wireit": {
-    "build": {
-      "command": "tsc && cp src/signin_email.html dist/src/",
-      "files": [
-        "src/**/*.ts",
-        "src/**/*.js",
-        "vite.config.ts",
-        "tsconfig.json"
-      ],
-      "output": [
-        "dist/**/*.js",
-        "dist/**/*.d.ts"
-      ],
-      "dependencies": [
-        "../shared:build"
-      ]
-    }
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

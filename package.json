@@ -13,7 +13,11 @@
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "lint": "npm run lint --workspaces",
-    "lint:check": "npm run lint:check --workspaces"
+    "lint:check": "npm run lint:check --workspaces",
+    "prepare": "npm run prepare --workspaces --if-present",
+    "build:ts": "tsc --build",
+    "build:assets": "npm run build:assets --workspaces --if-present",
+    "build": "npm run build:ts && npm run build:assets"
   },
   "devDependencies": {
     "@cypress/grep": "^6.0.0",
@@ -41,7 +45,6 @@
     "vite-plugin-mpa": "^1.2.0",
     "vite-plugin-static-copy": "^3.1.5",
     "wait-on": "^9.0.3",
-    "wick-a11y": "^2.5.0",
-    "wireit": "^0.14.12"
+    "wick-a11y": "^2.5.0"
   }
 }
