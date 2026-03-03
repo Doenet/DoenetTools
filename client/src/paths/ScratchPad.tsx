@@ -14,6 +14,8 @@ import multipleChoice from "../assets/multipleChoiceExamples.doenet?raw";
 import mathAnswers from "../assets/mathAnswerExamples.doenet?raw";
 import graphicalAnswers from "../assets/graphicalAnswerExamples.doenet?raw";
 import accessibilityPointers from "../assets/accessibilityPointers.doenet?raw";
+import mathTags from "../assets/mathTags.doenet?raw";
+import pretzelDemo from "../assets/pretzelDemo.doenet?raw";
 
 import {
   Alert,
@@ -217,6 +219,36 @@ export function ScratchPad() {
           }}
         >
           Accessibility Pointers
+        </MenuItem>
+        <MenuItem
+          data-test="Add Math Tags Button"
+          onClick={() => {
+            try {
+              localStorage.setItem("scratchPad", mathTags);
+            } catch (e) {
+              console.error(e);
+            }
+            setInitialSource(mathTags);
+            // We update reset num to make sure editor updates.
+            setResetNum((was) => was + 1);
+          }}
+        >
+          Mathematical Tags In Doenet
+        </MenuItem>
+        <MenuItem
+          data-test="Add Pretzel Demo Button"
+          onClick={() => {
+            try {
+              localStorage.setItem("scratchPad", pretzelDemo);
+            } catch (e) {
+              console.error(e);
+            }
+            setInitialSource(pretzelDemo);
+            // We update reset num to make sure editor updates.
+            setResetNum((was) => was + 1);
+          }}
+        >
+          Pretzel Demo
         </MenuItem>
       </MenuList>
     </Menu>
