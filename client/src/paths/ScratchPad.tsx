@@ -112,6 +112,11 @@ export function ScratchPad() {
 
   const [initialSource, setInitialSource] = useState(source);
   const [resetNum, setResetNum] = useState(0);
+  const currentSourceRef = useRef(initialSource);
+
+  useEffect(() => {
+    currentSourceRef.current = initialSource;
+  }, [initialSource]);
 
   const {
     isOpen: saveDialogIsOpen,
@@ -125,7 +130,7 @@ export function ScratchPad() {
     <SaveDoenetmlAndReportFinish
       isOpen={saveDialogIsOpen}
       onClose={saveDialogOnClose}
-      DoenetML={initialSource}
+      DoenetML={currentSourceRef.current}
       documentName={"Scratch Pad Document"}
       navigate={navigate}
       user={user}
@@ -334,6 +339,9 @@ export function ScratchPad() {
           doenetmlVersion={doenetmlVersion}
           key={resetNum}
           accessibilityStrictMode={accessibilityStrictMode}
+          sourceChangedCallback={(source) =>
+            (currentSourceRef.current = source)
+          }
         />
       </Box>
     </>
@@ -344,10 +352,12 @@ function DocumentEditor({
   source,
   doenetmlVersion,
   accessibilityStrictMode,
+  sourceChangedCallback,
 }: {
   source: string;
   doenetmlVersion: DoenetmlVersion;
   accessibilityStrictMode: boolean;
+  sourceChangedCallback?: (newSource: string) => void;
 }) {
   const textEditorDoenetML = useRef(source);
   const savedDoenetML = useRef(source);
@@ -389,6 +399,7 @@ function DocumentEditor({
       }}
       immediateDoenetmlChangeCallback={(newDoenetML: string) => {
         textEditorDoenetML.current = newDoenetML;
+        sourceChangedCallback?.(newDoenetML);
       }}
       doenetmlVersion={doenetmlVersion.fullVersion}
       border="none"
