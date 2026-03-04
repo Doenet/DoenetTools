@@ -43,18 +43,13 @@ import {
   IconButton,
 } from "@chakra-ui/react";
 import { SiteContext } from "./SiteHeader";
-import { SaveDoenetmlAndReportFinish } from "../popups/SaveDoenetmlAndReportFinish";
+import {
+  SaveDoenetmlAndReportFinish,
+  type CreateContentResponse,
+} from "../popups/SaveDoenetmlAndReportFinish";
 import { LuCircleHelp } from "react-icons/lu";
 import { getDiscourseUrl } from "../utils/discourse";
 import { IoAccessibility } from "react-icons/io5";
-
-type CreateContentResponse = {
-  status: number;
-  data?: {
-    contentId: string;
-  };
-  message?: string;
-};
 
 export type DocumentEditorProps = {
   source: string;

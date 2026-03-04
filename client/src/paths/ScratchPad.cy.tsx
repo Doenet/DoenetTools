@@ -1,15 +1,8 @@
 import { FetcherWithComponents } from "react-router";
 import { ScratchPadComponent, type DocumentEditorProps } from "./ScratchPad";
 import { DoenetmlVersion, UserInfoWithEmail } from "../types";
+import { type CreateContentResponse } from "../popups/SaveDoenetmlAndReportFinish";
 import defaultSource from "../assets/scratchPadDefault.doenet?raw";
-
-type CreateContentResponse = {
-  status: number;
-  data?: {
-    contentId: string;
-  };
-  message?: string;
-};
 
 const initialSource = "<document><p>Initial scratch pad source</p></document>";
 const changedSource = "<document><p>Edited source</p></document>";
