@@ -126,7 +126,7 @@ function expectLatestRequest(
 ) {
   cy.wrap(null).should(() => {
     const request = getLatestRequest();
-    expect(request).to.not.be.undefined;
+    expect(request).to.not.equal(undefined);
     expect(request?.method).to.equal("POST");
     expect(request?.contentType).to.contain("application/json");
     expect(request?.body.path).to.equal("updateContent/createContent");
