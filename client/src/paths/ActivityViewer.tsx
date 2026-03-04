@@ -79,6 +79,10 @@ import { ImCheckmark } from "react-icons/im";
 import { DoenetEditor, DoenetViewer } from "@doenet/doenetml-iframe";
 import { BlueBanner } from "../widgets/BlueBanner";
 import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";
+import { useIframeMenuDismissOverlay } from "../utils/useIframeMenuDismissOverlay";
+import { IFRAME_MENU_IDS } from "../utils/iframeMenuIds";
+import { useControlledMenu } from "../utils/useControlledMenu";
+import { MenuDismissOverlay } from "../components/MenuDismissOverlay";
 
 export async function loader({ params }: { params: any }) {
   const {
@@ -160,6 +164,19 @@ export function ActivityViewer() {
 
   const [mode, setMode] = useState<"Edit" | "View">(
     authorMode ? "Edit" : "View",
+  );
+  const { anyMenuOpen, getMenuControl } = useIframeMenuDismissOverlay();
+  const addToMenuControl = useControlledMenu(
+    getMenuControl,
+    IFRAME_MENU_IDS.activityViewerAddTo,
+  );
+  const addContentMenuControl = useControlledMenu(
+    getMenuControl,
+    IFRAME_MENU_IDS.activityViewerAddContent,
+  );
+  const contributorsMenuControl = useControlledMenu(
+    getMenuControl,
+    IFRAME_MENU_IDS.activityViewerContributors,
   );
 
   useEffect(() => {
@@ -411,7 +428,7 @@ export function ActivityViewer() {
 
   if (addTo) {
     addToMenu = (
-      <Menu>
+      <Menu {...addToMenuControl.menuProps}>
         <MenuButton
           as={Button}
           size="sm"
@@ -463,6 +480,8 @@ export function ActivityViewer() {
         user={user ?? null}
         onNavigate={(url) => navigate(url)}
         setAddTo={setAddTo}
+        isOpen={addContentMenuControl.menuProps.isOpen}
+        onMenuOpenChange={addContentMenuControl.onMenuOpenChange}
       />
     );
   }
@@ -696,11 +715,20 @@ export function ActivityViewer() {
             <ContributorsMenu
               activity={activityData}
               contributorHistory={contributorHistory}
+              isOpen={contributorsMenuControl.menuProps.isOpen}
+              onMenuOpenChange={contributorsMenuControl.onMenuOpenChange}
             />
           </Flex>
         </GridItem>
 
-        <GridItem area="centerContent">
+        <GridItem area="centerContent" position="relative">
+          {/*
+            Dismiss layer used for iframe-safe menu close behavior.
+            Keep in sync with menu-open tracking and e2e overlay assertions.
+          */}
+          {anyMenuOpen && (
+            <MenuDismissOverlay dataTest="ActivityViewer Menu Dismiss Overlay" />
+          )}
           <VStack gap={0}>
             <Box
               background="var(--canvas)"

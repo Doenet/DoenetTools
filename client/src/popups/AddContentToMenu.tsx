@@ -280,7 +280,6 @@ export function AddContentToMenu({
       {copyContentModal}
       {moveCopyContentModal}
       <Menu
-        returnFocusOnClose={false}
         isOpen={isOpen}
         onOpen={handleMenuOpenWithTooltipSuppression}
         onClose={handleMenuCloseWithTooltipSuppression}

@@ -49,6 +49,11 @@ import {
 import { LuCircleHelp } from "react-icons/lu";
 import { getDiscourseUrl } from "../utils/discourse";
 import { IoAccessibility } from "react-icons/io5";
+import { MenuDismissOverlay } from "../components/MenuDismissOverlay";
+import { useIframeMenuDismissOverlay } from "../utils/useIframeMenuDismissOverlay";
+import { IFRAME_MENU_IDS } from "../utils/iframeMenuIds";
+import { useControlledMenu } from "../utils/useControlledMenu";
+import { useMenuTooltipSuppression } from "../utils/useMenuTooltipSuppression";
 
 export type DocumentEditorProps = {
   source: string;
@@ -178,6 +183,27 @@ export function ScratchPadComponent({
     onClose: saveDialogOnClose,
   } = useDisclosure();
 
+  const { anyMenuOpen, getMenuControl } = useIframeMenuDismissOverlay();
+  const helpMenuControl = useControlledMenu(
+    getMenuControl,
+    IFRAME_MENU_IDS.scratchPadHelp,
+  );
+  const loadMenuControl = useControlledMenu(
+    getMenuControl,
+    IFRAME_MENU_IDS.scratchPadLoad,
+  );
+  // Menu + Tooltip share a trigger; use shared suppression so tooltip
+  // does not persist/re-open during menu close focus/hover transitions.
+  const {
+    suppressTooltip: suppressHelpTooltip,
+    handleMenuOpen: handleHelpMenuOpen,
+    handleMenuClose: handleHelpMenuClose,
+    handleTriggerMouseEnter: handleHelpMouseEnter,
+  } = useMenuTooltipSuppression({
+    onOpen: helpMenuControl.menuProps.onOpen,
+    onClose: helpMenuControl.menuProps.onClose,
+  });
+
   const [accessibilityStrictMode, setAccessibilityStrictMode] = useState(false);
 
   const loadScratchPadSource = useCallback(
@@ -213,7 +239,7 @@ export function ScratchPadComponent({
   );
 
   const loadButton = (
-    <Menu>
+    <Menu {...loadMenuControl.menuProps}>
       <MenuButton
         as={Button}
         size="sm"
@@ -222,7 +248,7 @@ export function ScratchPadComponent({
       >
         <Text>Load</Text>
       </MenuButton>
-      <MenuList>
+      <MenuList data-test="ScratchPad Load Menu List">
         <MenuItem
           data-test="Add Default Button"
           onClick={() => {
@@ -284,8 +310,17 @@ export function ScratchPadComponent({
   );
 
   const helpButton = (
-    <Menu>
-      <Tooltip label="Help" openDelay={300} placement="bottom-end">
+    <Menu
+      isOpen={helpMenuControl.menuProps.isOpen}
+      onOpen={handleHelpMenuOpen}
+      onClose={handleHelpMenuClose}
+    >
+      <Tooltip
+        label="Help"
+        openDelay={300}
+        placement="bottom-end"
+        isDisabled={suppressHelpTooltip}
+      >
         <MenuButton
           as={IconButton}
           icon={<LuCircleHelp />}
@@ -295,9 +330,10 @@ export function ScratchPadComponent({
           width="30px"
           height="35px"
           aria-label="Help"
+          onMouseEnter={handleHelpMouseEnter}
         />
       </Tooltip>
-      <MenuList>
+      <MenuList data-test="ScratchPad Help Menu List">
         <MenuItem as={ChakraLink} href="https://docs.doenet.org" isExternal>
           Documentation
         </MenuItem>
@@ -390,6 +426,13 @@ export function ScratchPadComponent({
         background="doenet.lightBlue"
         overflow="auto"
       >
+        {/*
+          Dismiss layer used for iframe-safe menu close behavior.
+          Keep in sync with menu-open tracking and e2e overlay assertions.
+        */}
+        {anyMenuOpen && (
+          <MenuDismissOverlay dataTest="ScratchPad Menu Dismiss Overlay" />
+        )}
         <EditorComponent
           source={source}
           doenetmlVersion={doenetmlVersion}
