@@ -5,7 +5,6 @@ import {
   useOutletContext,
   useNavigate,
   useFetcher,
-  FetcherWithComponents,
 } from "react-router";
 import {
   ContentDescription,
@@ -127,7 +126,6 @@ export function ScratchPad() {
   const discussHref = getDiscourseUrl(user);
 
   const navigate = useNavigate();
-  const fetcher = useFetcher();
 
   return (
     <ScratchPadComponent
@@ -136,7 +134,6 @@ export function ScratchPad() {
       user={user}
       setAddTo={setAddTo}
       navigate={navigate}
-      fetcher={fetcher}
       discussHref={discussHref}
     />
   );
@@ -148,7 +145,6 @@ export function ScratchPadComponent({
   user,
   setAddTo,
   navigate,
-  fetcher,
   discussHref,
   editorComponent = DocumentEditor,
 }: {
@@ -157,10 +153,10 @@ export function ScratchPadComponent({
   user?: UserInfoWithEmail;
   setAddTo: (value: ContentDescription | null) => void;
   navigate: (path: string) => void;
-  fetcher: FetcherWithComponents<CreateContentResponse>;
   discussHref: string;
   editorComponent?: ScratchPadEditorComponent;
 }) {
+  const fetcher = useFetcher<CreateContentResponse>();
   const EditorComponent = editorComponent;
 
   const [source, setSource] = useState(initialSource);

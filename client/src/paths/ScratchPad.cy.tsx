@@ -1,31 +1,18 @@
-import { FetcherWithComponents } from "react-router";
 import { ScratchPadComponent, type DocumentEditorProps } from "./ScratchPad";
 import { DoenetmlVersion, UserInfoWithEmail } from "../types";
-import { type CreateContentResponse } from "../popups/SaveDoenetmlAndReportFinish";
 import defaultSource from "../assets/scratchPadDefault.doenet?raw";
 
 const initialSource = "<document><p>Initial scratch pad source</p></document>";
 const changedSource = "<document><p>Edited source</p></document>";
 
-function createMockFetcher(
-  state: "idle" | "loading",
-  data?: CreateContentResponse,
-): FetcherWithComponents<CreateContentResponse> {
-  return {
-    state,
-    data,
-    formData: undefined,
-    json: undefined,
-    text: undefined,
-    formAction: undefined,
-    formMethod: undefined,
-    formEncType: undefined,
-    submit: cy.stub().as("fetcherSubmit"),
-    load: cy.stub(),
-    reset: cy.stub(),
-    Form: (() => null) as any,
-  } as FetcherWithComponents<CreateContentResponse>;
-}
+const selectors = {
+  loadButton: '[data-test="Load Button"]',
+  addDefaultButton: '[data-test="Add Default Button"]',
+  saveToDocumentButton: '[data-test="Save to Document"]',
+  mockEditorChangeButton: '[data-test="Mock Editor Change"]',
+  copyHeader: '[data-test="Copy Header"]',
+  accessibilityToggle: '[aria-label="Toggle accessibility strict mode"]',
+};
 
 const mockVersion: DoenetmlVersion = {
   id: 2,
@@ -58,8 +45,24 @@ const MockEditor = ({ sourceChangedCallback }: DocumentEditorProps) => {
 };
 
 function mountScratchPad(
-  overrides?: Partial<React.ComponentProps<typeof ScratchPadComponent>>,
+  overrides?: Partial<{
+    user?: UserInfoWithEmail;
+    setAddTo: (value: any) => void;
+    navigate: (path: string) => void;
+    discussHref: string;
+    editorComponent: typeof MockEditor;
+  }>,
+  captureRequest = false,
+  actionOverride?: (data: { request: Request }) => Promise<any>,
 ) {
+  let latestRequest:
+    | {
+        method: string;
+        contentType: string;
+        body: Record<string, any>;
+      }
+    | undefined;
+
   cy.mount(
     <ScratchPadComponent
       doenetmlVersion={mockVersion}
@@ -67,34 +70,70 @@ function mountScratchPad(
       user={mockUser}
       setAddTo={cy.spy().as("setAddTo")}
       navigate={cy.spy().as("navigate")}
-      fetcher={createMockFetcher("idle")}
       discussHref="https://example.com/discuss"
       editorComponent={MockEditor}
       {...overrides}
     />,
+    {
+      action: actionOverride ?? (async ({ request }) => {
+        if (captureRequest) {
+          latestRequest = {
+            method: request.method,
+            contentType: request.headers.get("content-type") || "",
+            body: (await request.json()) as Record<string, any>,
+          };
+        }
+
+        return {
+          status: 200,
+          data: {
+            contentId: "content123",
+          },
+        };
+      }),
+    },
   );
+
+  return {
+    getLatestRequest: () => latestRequest,
+  };
 }
 
 function loadWelcomeTemplate() {
-  cy.get('[data-test="Load Button"]').click();
-  cy.get('[data-test="Add Default Button"]').click();
+  cy.get(selectors.loadButton).click();
+  cy.get(selectors.addDefaultButton).click();
 }
 
 function saveToDocument() {
-  cy.get('[data-test="Save to Document"]').click();
+  cy.get(selectors.saveToDocumentButton).click();
 }
 
-function getFirstSubmitPayload() {
-  return cy.get("@fetcherSubmit").its("firstCall.args.0");
+function triggerEditorChange() {
+  cy.get(selectors.mockEditorChangeButton).click({ force: true });
 }
 
-function expectPostJsonSubmitOptions() {
-  cy.get("@fetcherSubmit")
-    .its("firstCall.args.1")
-    .should((options) => {
-      expect(options.method).to.equal("post");
-      expect(options.encType).to.equal("application/json");
+function expectLatestRequest(
+  getLatestRequest: () =>
+    | {
+        method: string;
+        contentType: string;
+        body: Record<string, any>;
+      }
+    | undefined,
+  expectedBody: Record<string, any>,
+) {
+  cy.wrap(null).should(() => {
+    const request = getLatestRequest();
+    expect(request).to.not.be.undefined;
+    expect(request?.method).to.equal("POST");
+    expect(request?.contentType).to.contain("application/json");
+    expect(request?.body.path).to.equal("updateContent/createContent");
+    expect(request?.body.contentType).to.equal("singleDoc");
+
+    Object.entries(expectedBody).forEach(([key, value]) => {
+      expect(request?.body[key]).to.equal(value);
     });
+  });
 }
 
 describe("ScratchPad tests", { tags: ["@group2"] }, () => {
@@ -102,66 +141,55 @@ describe("ScratchPad tests", { tags: ["@group2"] }, () => {
     it("does not show save button when user is not logged in", () => {
       mountScratchPad({ user: undefined });
 
-      cy.get('[data-test="Load Button"]').should("exist");
-      cy.get('[data-test="Save to Document"]').should("not.exist");
+      cy.get(selectors.loadButton).should("exist");
+      cy.get(selectors.saveToDocumentButton).should("not.exist");
     });
 
     it("sends Welcome source when save occurs immediately after setInitialSource", () => {
-      mountScratchPad();
+      const { getLatestRequest } = mountScratchPad(undefined, true);
 
       loadWelcomeTemplate();
       saveToDocument();
 
-      cy.get("@fetcherSubmit").should("have.been.calledOnce");
-      getFirstSubmitPayload().should((payload) => {
-        expect(payload.path).to.equal("updateContent/createContent");
-        expect(payload.contentType).to.equal("singleDoc");
-        expect(payload.doenetml).to.equal(defaultSource);
-        expect(payload.doenetml).to.not.equal(initialSource);
-        expect(payload.name).to.equal("Scratch Pad Document");
+      expectLatestRequest(getLatestRequest, {
+        doenetml: defaultSource,
+        name: "Scratch Pad Document",
       });
-      expectPostJsonSubmitOptions();
+      cy.wrap(null).should(() => {
+        expect(getLatestRequest()?.body.doenetml).to.not.equal(initialSource);
+      });
     });
 
     it("sends latest editor source after an editor callback", () => {
-      mountScratchPad();
+      const { getLatestRequest } = mountScratchPad(undefined, true);
 
-      cy.get('[data-test="Mock Editor Change"]').click({ force: true });
+      triggerEditorChange();
       saveToDocument();
 
-      cy.get("@fetcherSubmit").should("have.been.calledOnce");
-      getFirstSubmitPayload().should((payload) => {
-        expect(payload.path).to.equal("updateContent/createContent");
-        expect(payload.contentType).to.equal("singleDoc");
-        expect(payload.doenetml).to.equal(changedSource);
-        expect(payload.doenetml).to.not.equal(initialSource);
+      expectLatestRequest(getLatestRequest, { doenetml: changedSource });
+      cy.wrap(null).should(() => {
+        expect(getLatestRequest()?.body.doenetml).to.not.equal(initialSource);
       });
     });
 
     it("sends initial source when no load or editor callback occurs", () => {
-      mountScratchPad();
+      const { getLatestRequest } = mountScratchPad(undefined, true);
 
       saveToDocument();
 
-      cy.get("@fetcherSubmit").should("have.been.calledOnce");
-      getFirstSubmitPayload().should((payload) => {
-        expect(payload.path).to.equal("updateContent/createContent");
-        expect(payload.contentType).to.equal("singleDoc");
-        expect(payload.doenetml).to.equal(initialSource);
-      });
+      expectLatestRequest(getLatestRequest, { doenetml: initialSource });
     });
 
     it("uses Welcome loaded source when load occurs after an editor change", () => {
-      mountScratchPad();
+      const { getLatestRequest } = mountScratchPad(undefined, true);
 
-      cy.get('[data-test="Mock Editor Change"]').click({ force: true });
+      triggerEditorChange();
       loadWelcomeTemplate();
       saveToDocument();
 
-      cy.get("@fetcherSubmit").should("have.been.calledOnce");
-      getFirstSubmitPayload().should((payload) => {
-        expect(payload.doenetml).to.equal(defaultSource);
-        expect(payload.doenetml).to.not.equal(changedSource);
+      expectLatestRequest(getLatestRequest, { doenetml: defaultSource });
+      cy.wrap(null).should(() => {
+        expect(getLatestRequest()?.body.doenetml).to.not.equal(changedSource);
       });
     });
   });
@@ -177,7 +205,7 @@ describe("ScratchPad tests", { tags: ["@group2"] }, () => {
     it("is accessible with load menu open", () => {
       mountScratchPad();
 
-      cy.get('[data-test="Load Button"]').click();
+      cy.get(selectors.loadButton).click();
       cy.contains("Multiple Choice Examples").should("be.visible");
       cy.checkAccessibility("body");
     });
@@ -185,7 +213,7 @@ describe("ScratchPad tests", { tags: ["@group2"] }, () => {
     it("toggles accessibility strict mode state", () => {
       mountScratchPad();
 
-      cy.get('[aria-label="Toggle accessibility strict mode"]')
+      cy.get(selectors.accessibilityToggle)
         .should("have.attr", "aria-pressed", "false")
         .click()
         .should("have.attr", "aria-pressed", "true")
@@ -194,10 +222,14 @@ describe("ScratchPad tests", { tags: ["@group2"] }, () => {
     });
 
     it("is accessible while save modal is open", () => {
-      mountScratchPad();
+      mountScratchPad(
+        undefined,
+        false,
+        () => new Promise(() => undefined),
+      );
 
       saveToDocument();
-      cy.get('[data-test="Copy Header"]').should("contain.text", "Saving...");
+      cy.get(selectors.copyHeader).should("contain.text", "Saving...");
       cy.checkAccessibility("body");
     });
   });
