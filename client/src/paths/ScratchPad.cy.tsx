@@ -75,22 +75,24 @@ function mountScratchPad(
       {...overrides}
     />,
     {
-      action: actionOverride ?? (async ({ request }) => {
-        if (captureRequest) {
-          latestRequest = {
-            method: request.method,
-            contentType: request.headers.get("content-type") || "",
-            body: (await request.json()) as Record<string, any>,
-          };
-        }
+      action:
+        actionOverride ??
+        (async ({ request }) => {
+          if (captureRequest) {
+            latestRequest = {
+              method: request.method,
+              contentType: request.headers.get("content-type") || "",
+              body: (await request.json()) as Record<string, any>,
+            };
+          }
 
-        return {
-          status: 200,
-          data: {
-            contentId: "content123",
-          },
-        };
-      }),
+          return {
+            status: 200,
+            data: {
+              contentId: "content123",
+            },
+          };
+        }),
     },
   );
 
@@ -222,11 +224,7 @@ describe("ScratchPad tests", { tags: ["@group2"] }, () => {
     });
 
     it("is accessible while save modal is open", () => {
-      mountScratchPad(
-        undefined,
-        false,
-        () => new Promise(() => undefined),
-      );
+      mountScratchPad(undefined, false, () => new Promise(() => undefined));
 
       saveToDocument();
       cy.get(selectors.copyHeader).should("contain.text", "Saving...");
