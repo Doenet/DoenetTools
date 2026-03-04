@@ -70,8 +70,11 @@ export default tseslint.config(
           devDependencies: [
             "**/*.test.ts",
             "**/*.spec.ts",
+            "**/*.cy.ts",
             "**/test/**",
             "**/__tests__/**",
+            "**/cypress/**",
+            "cypress.config.ts",
           ],
         },
       ],
