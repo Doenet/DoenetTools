@@ -19,6 +19,7 @@ import {
   Button,
   Stack,
   VStack,
+  Spacer,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink, useOutletContext } from "react-router";
 import { SiteContext } from "./SiteHeader";
@@ -92,8 +93,9 @@ export function Home() {
             <Heading
               color="text"
               fontSize={{ base: "28px", sm: "34px", md: "44px", lg: "56px" }}
-              fontWeight="700"
-              mb={{ base: "24px", md: "40px", lg: "60px" }}
+              fontWeight="500"
+              // mb={{ base: "24px", md: "40px", lg: "60px" }}
+              mb="24px"
             >
               Richly interactive classroom activities
             </Heading>
@@ -105,18 +107,20 @@ export function Home() {
                 sm: "18px",
                 md: "20px",
                 lg: "24px",
-                xl: "28px",
               }}
               fontWeight="400"
               mb={{ base: "12px", md: "16px", lg: "20px" }}
-              lineHeight={{ base: "1.3", md: "1.4" }}
+              // lineHeight={{ base: "1.3", md: "1.4" }}
               maxW={{ base: "100%", md: "680px", lg: "800px" }}
             >
-              Find, create, and share meaningfully interactive content using a
-              free community-driven tool
+              We're a community of STEM instructors and authors. Find, create,
+              and share meaningfully interactive content using a free
+              community-driven tool.
               {/* TODO: Find spot to mention AI, such as:
                 "Human-crafted activities in the age of AI" */}
             </Heading>
+
+            <Spacer />
 
             <HStack
               spacing={{ base: "12px", md: "16px" }}
@@ -239,6 +243,22 @@ export function Home() {
           </Flex>
         </Flex>
       </VStack>
+      <Button
+        as="a"
+        href="https://docs.google.com/forms/d/e/1FAIpQLSc9VSrYnybkB5WC5YpPKicclF_z14UIq5O7l19f1Vxz8EFXCw/viewform?usp=header"
+        colorScheme="blue"
+        target="_blank"
+        rel="noopener noreferrer"
+        mt="1em"
+        mb="2em"
+        size={{ base: "md", md: "lg" }}
+        fontSize={{ base: "16px", md: "18px" }}
+        px={{ base: "24px", md: "32px" }}
+        py={{ base: "12px", md: "16px" }}
+        height="auto"
+      >
+        Interested in Doenet? Stay in the loop
+      </Button>
     </WithSideBanners>
   );
 
@@ -246,7 +266,10 @@ export function Home() {
 
   const communitySection = (
     <WithSideBanners bgColor="white" padding="70px">
-      <Heading size="lg">Join the community - get support, contribute</Heading>
+      <Heading size="lg">Interested in Doenet?</Heading>
+
+      <Heading size="lg">Join the community</Heading>
+
       <Text marginTop="10px" fontSize="1.4rem">
         Doenet—as a free and open-source platform—derives its value from its
         community of authors and contributors.
@@ -269,13 +292,6 @@ export function Home() {
         To learn how to get involved, check out{" "}
         <ChakraLink href="/get-involved" textDecoration="underline">
           How to get involved with Doenet
-        </ChakraLink>
-        .
-      </Text>
-      <Text marginTop="10px" fontSize="1.4rem">
-        To experiment with writing Doenet activities, visit the{" "}
-        <ChakraLink href="/scratchPad" textDecoration="underline">
-          Scratch Pad
         </ChakraLink>
         .
       </Text>
