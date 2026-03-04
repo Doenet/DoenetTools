@@ -10,7 +10,7 @@
 <section>
     <title>Examples</title>
 
-    <section>
+    <subsection>
         <title>Auto-graded answers</title>
 
         <p><answer>
@@ -30,9 +30,9 @@
             </answer>
             quadrant.
         </p>
-    </section>
+    </subsection>
 
-    <section>
+    <subsection>
         <title>References</title>
 
         <p><textInput name="yourName">
@@ -40,16 +40,17 @@
         </textInput></p>
 
         <p>Hello, $yourName!</p>
-    </section>
+    </subsection>
 
-    <section>
+    <subsection>
         <title>A graph</title>
 
         <p>Move the point. The change will be reflected here. The point is $P.</p>
       
         <graph>
             <shortDescription>
-                A graph of a changeable point, with coordinates <number extend="$P.x" />, <number extend="$P.y" />
+                A graph of a changeable point, with coordinates
+                <number extend="$P.x" />, <number extend="$P.y" />
             </shortDescription>
             <point name="P">(3,4)</point>
         </graph>
@@ -59,7 +60,7 @@
             $P
         </mathInput></p>
 
-    </section>
+    </subsection>
 
 </section>
 
