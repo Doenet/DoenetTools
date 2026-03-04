@@ -1,4 +1,4 @@
-import { ReactElement, useCallback, useEffect, useRef, useState } from "react";
+import { ComponentType, useCallback, useEffect, useRef, useState } from "react";
 import {
   redirect,
   useLoaderData,
@@ -58,7 +58,7 @@ export type DocumentEditorProps = {
   sourceChangedCallback?: (newSource: string) => void;
 };
 
-type ScratchPadEditorComponent = (props: DocumentEditorProps) => ReactElement;
+type ScratchPadEditorComponent = ComponentType<DocumentEditorProps>;
 
 export async function loader({ request }: { request: Request }) {
   const url = new URL(request.url);
