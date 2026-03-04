@@ -70,7 +70,7 @@ function mountScratchPad(
   cy.mount(
     <ScratchPadComponent
       doenetmlVersion={mockVersion}
-      source={initialSource}
+      initialSource={initialSource}
       user={mockUser}
       setAddTo={cy.spy().as("setAddTo")}
       navigate={cy.spy().as("navigate")}

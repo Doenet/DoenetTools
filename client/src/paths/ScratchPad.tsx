@@ -137,7 +137,7 @@ export function ScratchPad() {
   return (
     <ScratchPadComponent
       doenetmlVersion={doenetmlVersion}
-      source={source}
+      initialSource={source}
       user={user}
       setAddTo={setAddTo}
       navigate={navigate}
@@ -149,7 +149,7 @@ export function ScratchPad() {
 
 export function ScratchPadComponent({
   doenetmlVersion,
-  source,
+  initialSource,
   user,
   setAddTo,
   navigate,
@@ -158,7 +158,7 @@ export function ScratchPadComponent({
   editorComponent = DocumentEditor,
 }: {
   doenetmlVersion: DoenetmlVersion;
-  source: string;
+  initialSource: string;
   user?: UserInfoWithEmail;
   setAddTo: (value: ContentDescription | null) => void;
   navigate: (path: string) => void;
@@ -168,13 +168,13 @@ export function ScratchPadComponent({
 }) {
   const EditorComponent = editorComponent;
 
-  const [initialSource, setInitialSource] = useState(source);
+  const [source, setSource] = useState(initialSource);
   const [resetNum, setResetNum] = useState(0);
-  const currentSourceRef = useRef(source);
+  const currentSourceRef = useRef(initialSource);
 
-  const updateInitialSource = useCallback((nextSource: string) => {
+  const updateSource = useCallback((nextSource: string) => {
     currentSourceRef.current = nextSource;
-    setInitialSource(nextSource);
+    setSource(nextSource);
   }, []);
 
   const updateCurrentSource = useCallback((nextSource: string) => {
@@ -201,11 +201,11 @@ export function ScratchPadComponent({
         console.error(e);
       }
 
-      updateInitialSource(nextSource);
+      updateSource(nextSource);
       // We update reset num to make sure editor updates.
       setResetNum((was) => was + 1);
     },
-    [updateInitialSource],
+    [updateSource],
   );
 
   const saveDocumentDialog = user && (
@@ -400,7 +400,7 @@ export function ScratchPadComponent({
         overflow="auto"
       >
         <EditorComponent
-          source={initialSource}
+          source={source}
           doenetmlVersion={doenetmlVersion}
           key={resetNum}
           accessibilityStrictMode={accessibilityStrictMode}
