@@ -170,11 +170,16 @@ export function ScratchPadComponent({
 
   const [initialSource, setInitialSource] = useState(source);
   const [resetNum, setResetNum] = useState(0);
-  const currentSourceRef = useRef(initialSource);
+  const currentSourceRef = useRef(source);
 
-  useEffect(() => {
-    currentSourceRef.current = initialSource;
-  }, [initialSource]);
+  const updateInitialSource = useCallback((nextSource: string) => {
+    currentSourceRef.current = nextSource;
+    setInitialSource(nextSource);
+  }, []);
+
+  const updateCurrentSource = useCallback((nextSource: string) => {
+    currentSourceRef.current = nextSource;
+  }, []);
 
   const {
     isOpen: saveDialogIsOpen,
@@ -196,11 +201,11 @@ export function ScratchPadComponent({
         console.error(e);
       }
 
-      setInitialSource(nextSource);
+      updateInitialSource(nextSource);
       // We update reset num to make sure editor updates.
       setResetNum((was) => was + 1);
     },
-    [],
+    [updateInitialSource],
   );
 
   const saveDocumentDialog = user && (
@@ -399,9 +404,7 @@ export function ScratchPadComponent({
           doenetmlVersion={doenetmlVersion}
           key={resetNum}
           accessibilityStrictMode={accessibilityStrictMode}
-          sourceChangedCallback={(source) =>
-            (currentSourceRef.current = source)
-          }
+          sourceChangedCallback={updateCurrentSource}
         />
       </Box>
     </>
