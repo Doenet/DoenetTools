@@ -123,6 +123,25 @@ export function ScratchPad() {
 
   const [accessibilityStrictMode, setAccessibilityStrictMode] = useState(false);
 
+  const loadScratchPadSource = useCallback(
+    (nextSource: string, removeFromLocalStorage = false) => {
+      try {
+        if (removeFromLocalStorage) {
+          localStorage.removeItem("scratchPad");
+        } else {
+          localStorage.setItem("scratchPad", nextSource);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+
+      setInitialSource(nextSource);
+      // We update reset num to make sure editor updates.
+      setResetNum((was) => was + 1);
+    },
+    [],
+  );
+
   const saveDocumentDialog = user && (
     <SaveDoenetmlAndReportFinish
       isOpen={saveDialogIsOpen}
@@ -150,12 +169,7 @@ export function ScratchPad() {
         <MenuItem
           data-test="Add Default Button"
           onClick={() => {
-            localStorage.removeItem("scratchPad");
-            setInitialSource(defaultSource);
-            // We update reset num to make sure editor updates.
-            // If started with defaultSource and then we try to reset it back to defaultSource
-            // no change is detected in initialSource even though we want to reset
-            setResetNum((was) => was + 1);
+            loadScratchPadSource(defaultSource, true);
           }}
         >
           Scratch Pad Welcome
@@ -163,14 +177,7 @@ export function ScratchPad() {
         <MenuItem
           data-test="Add Multiple Choice Examples Button"
           onClick={() => {
-            try {
-              localStorage.setItem("scratchPad", multipleChoice);
-            } catch (e) {
-              console.error(e);
-            }
-            setInitialSource(multipleChoice);
-            // We update reset num to make sure editor updates.
-            setResetNum((was) => was + 1);
+            loadScratchPadSource(multipleChoice);
           }}
         >
           Multiple Choice Examples
@@ -178,14 +185,7 @@ export function ScratchPad() {
         <MenuItem
           data-test="Add Math Answer Examples Button"
           onClick={() => {
-            try {
-              localStorage.setItem("scratchPad", mathAnswers);
-            } catch (e) {
-              console.error(e);
-            }
-            setInitialSource(mathAnswers);
-            // We update reset num to make sure editor updates.
-            setResetNum((was) => was + 1);
+            loadScratchPadSource(mathAnswers);
           }}
         >
           Math Answer Examples
@@ -193,14 +193,7 @@ export function ScratchPad() {
         <MenuItem
           data-test="Add Graphical Answer Examples Button"
           onClick={() => {
-            try {
-              localStorage.setItem("scratchPad", graphicalAnswers);
-            } catch (e) {
-              console.error(e);
-            }
-            setInitialSource(graphicalAnswers);
-            // We update reset num to make sure editor updates.
-            setResetNum((was) => was + 1);
+            loadScratchPadSource(graphicalAnswers);
           }}
         >
           Graphical Answer Examples
@@ -208,14 +201,7 @@ export function ScratchPad() {
         <MenuItem
           data-test="Add Accessibility Pointers Button"
           onClick={() => {
-            try {
-              localStorage.setItem("scratchPad", accessibilityPointers);
-            } catch (e) {
-              console.error(e);
-            }
-            setInitialSource(accessibilityPointers);
-            // We update reset num to make sure editor updates.
-            setResetNum((was) => was + 1);
+            loadScratchPadSource(accessibilityPointers);
           }}
         >
           Accessibility Pointers
@@ -223,14 +209,7 @@ export function ScratchPad() {
         <MenuItem
           data-test="Add Math Tags Button"
           onClick={() => {
-            try {
-              localStorage.setItem("scratchPad", mathTags);
-            } catch (e) {
-              console.error(e);
-            }
-            setInitialSource(mathTags);
-            // We update reset num to make sure editor updates.
-            setResetNum((was) => was + 1);
+            loadScratchPadSource(mathTags);
           }}
         >
           Mathematical Tags In Doenet
@@ -238,14 +217,7 @@ export function ScratchPad() {
         <MenuItem
           data-test="Add Pretzel Demo Button"
           onClick={() => {
-            try {
-              localStorage.setItem("scratchPad", pretzelDemo);
-            } catch (e) {
-              console.error(e);
-            }
-            setInitialSource(pretzelDemo);
-            // We update reset num to make sure editor updates.
-            setResetNum((was) => was + 1);
+            loadScratchPadSource(pretzelDemo);
           }}
         >
           Pretzel Demo
