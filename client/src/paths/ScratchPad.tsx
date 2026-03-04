@@ -1,12 +1,17 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { ReactElement, useCallback, useEffect, useRef, useState } from "react";
 import {
   redirect,
   useLoaderData,
   useOutletContext,
   useNavigate,
   useFetcher,
+  FetcherWithComponents,
 } from "react-router";
-import { DoenetmlVersion } from "../types";
+import {
+  ContentDescription,
+  DoenetmlVersion,
+  UserInfoWithEmail,
+} from "../types";
 import { DoenetEditor } from "@doenet/doenetml-iframe";
 import axios from "axios";
 import defaultSource from "../assets/scratchPadDefault.doenet?raw";
@@ -40,6 +45,23 @@ import { SaveDoenetmlAndReportFinish } from "../popups/SaveDoenetmlAndReportFini
 import { LuCircleHelp } from "react-icons/lu";
 import { getDiscourseUrl } from "../utils/discourse";
 import { IoAccessibility } from "react-icons/io5";
+
+type CreateContentResponse = {
+  status: number;
+  data?: {
+    contentId: string;
+  };
+  message?: string;
+};
+
+export type DocumentEditorProps = {
+  source: string;
+  doenetmlVersion: DoenetmlVersion;
+  accessibilityStrictMode: boolean;
+  sourceChangedCallback?: (newSource: string) => void;
+};
+
+type ScratchPadEditorComponent = (props: DocumentEditorProps) => ReactElement;
 
 export async function loader({ request }: { request: Request }) {
   const url = new URL(request.url);
@@ -109,6 +131,40 @@ export function ScratchPad() {
 
   const navigate = useNavigate();
   const fetcher = useFetcher();
+
+  return (
+    <ScratchPadComponent
+      doenetmlVersion={doenetmlVersion}
+      source={source}
+      user={user}
+      setAddTo={setAddTo}
+      navigate={navigate}
+      fetcher={fetcher}
+      discussHref={discussHref}
+    />
+  );
+}
+
+export function ScratchPadComponent({
+  doenetmlVersion,
+  source,
+  user,
+  setAddTo,
+  navigate,
+  fetcher,
+  discussHref,
+  editorComponent = DocumentEditor,
+}: {
+  doenetmlVersion: DoenetmlVersion;
+  source: string;
+  user?: UserInfoWithEmail;
+  setAddTo: (value: ContentDescription | null) => void;
+  navigate: (path: string) => void;
+  fetcher: FetcherWithComponents<CreateContentResponse>;
+  discussHref: string;
+  editorComponent?: ScratchPadEditorComponent;
+}) {
+  const EditorComponent = editorComponent;
 
   const [initialSource, setInitialSource] = useState(source);
   const [resetNum, setResetNum] = useState(0);
@@ -334,7 +390,7 @@ export function ScratchPad() {
         background="doenet.lightBlue"
         overflow="auto"
       >
-        <DocumentEditor
+        <EditorComponent
           source={initialSource}
           doenetmlVersion={doenetmlVersion}
           key={resetNum}
@@ -353,12 +409,7 @@ function DocumentEditor({
   doenetmlVersion,
   accessibilityStrictMode,
   sourceChangedCallback,
-}: {
-  source: string;
-  doenetmlVersion: DoenetmlVersion;
-  accessibilityStrictMode: boolean;
-  sourceChangedCallback?: (newSource: string) => void;
-}) {
+}: DocumentEditorProps) {
   const textEditorDoenetML = useRef(source);
   const savedDoenetML = useRef(source);
 
