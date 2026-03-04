@@ -30,7 +30,7 @@
     
     <ul>
       <li>Trig functions: <math>sin(x^2) + arcsin(3)</math></li>
-      <li>A rational expressions: <math>(x^2-2)/(y+z)</math></li>
+      <li>A rational expression: <math>(x^2-2)/(y+z)</math></li>
       <li>An integral: <math>int_a^b f(x) dx</math></li>
     </ul>
   </subsection>
