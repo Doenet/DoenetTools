@@ -11,6 +11,7 @@ export default tseslint.config(
       "**/dist/**",
       "**/.wireit/**",
       "**/.astro/**",
+      "vite.config.ts",
       "**/cypress/screenshots/**",
       "**/cypress/videos/**",
       "**/cypress/downloads/**",
