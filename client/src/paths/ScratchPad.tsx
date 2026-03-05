@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { ComponentType, useCallback, useEffect, useRef, useState } from "react";
 import {
   redirect,
   useLoaderData,
@@ -6,7 +6,11 @@ import {
   useNavigate,
   useFetcher,
 } from "react-router";
-import { DoenetmlVersion } from "../types";
+import {
+  ContentDescription,
+  DoenetmlVersion,
+  UserInfoWithEmail,
+} from "../types";
 import { DoenetEditor } from "@doenet/doenetml-iframe";
 import axios from "axios";
 import defaultSource from "../assets/scratchPadDefault.doenet?raw";
@@ -38,10 +42,22 @@ import {
   IconButton,
 } from "@chakra-ui/react";
 import { SiteContext } from "./SiteHeader";
-import { SaveDoenetmlAndReportFinish } from "../popups/SaveDoenetmlAndReportFinish";
+import {
+  SaveDoenetmlAndReportFinish,
+  type CreateContentResponse,
+} from "../popups/SaveDoenetmlAndReportFinish";
 import { LuCircleHelp } from "react-icons/lu";
 import { getDiscourseUrl } from "../utils/discourse";
 import { IoAccessibility } from "react-icons/io5";
+
+export type DocumentEditorProps = {
+  source: string;
+  doenetmlVersion: DoenetmlVersion;
+  accessibilityStrictMode: boolean;
+  sourceChangedCallback?: (newSource: string) => void;
+};
+
+type ScratchPadEditorComponent = ComponentType<DocumentEditorProps>;
 
 export async function loader({ request }: { request: Request }) {
   const url = new URL(request.url);
@@ -110,10 +126,51 @@ export function ScratchPad() {
   const discussHref = getDiscourseUrl(user);
 
   const navigate = useNavigate();
-  const fetcher = useFetcher();
 
-  const [initialSource, setInitialSource] = useState(source);
+  return (
+    <ScratchPadComponent
+      doenetmlVersion={doenetmlVersion}
+      initialSource={source}
+      user={user}
+      setAddTo={setAddTo}
+      navigate={navigate}
+      discussHref={discussHref}
+    />
+  );
+}
+
+export function ScratchPadComponent({
+  doenetmlVersion,
+  initialSource,
+  user,
+  setAddTo,
+  navigate,
+  discussHref,
+  editorComponent = DocumentEditor,
+}: {
+  doenetmlVersion: DoenetmlVersion;
+  initialSource: string;
+  user?: UserInfoWithEmail;
+  setAddTo: (value: ContentDescription | null) => void;
+  navigate: (path: string) => void;
+  discussHref: string;
+  editorComponent?: ScratchPadEditorComponent;
+}) {
+  const fetcher = useFetcher<CreateContentResponse>();
+  const EditorComponent = editorComponent;
+
+  const [source, setSource] = useState(initialSource);
   const [resetNum, setResetNum] = useState(0);
+  const currentSourceRef = useRef(initialSource);
+
+  const updateSource = useCallback((nextSource: string) => {
+    currentSourceRef.current = nextSource;
+    setSource(nextSource);
+  }, []);
+
+  const updateCurrentSource = useCallback((nextSource: string) => {
+    currentSourceRef.current = nextSource;
+  }, []);
 
   const {
     isOpen: saveDialogIsOpen,
@@ -135,18 +192,18 @@ export function ScratchPad() {
         console.error(e);
       }
 
-      setInitialSource(nextSource);
+      updateSource(nextSource);
       // We update reset num to make sure editor updates.
       setResetNum((was) => was + 1);
     },
-    [],
+    [updateSource],
   );
 
   const saveDocumentDialog = user && (
     <SaveDoenetmlAndReportFinish
       isOpen={saveDialogIsOpen}
       onClose={saveDialogOnClose}
-      DoenetML={initialSource}
+      DoenetML={currentSourceRef.current}
       documentName={"Scratch Pad Document"}
       navigate={navigate}
       user={user}
@@ -333,11 +390,12 @@ export function ScratchPad() {
         background="doenet.lightBlue"
         overflow="auto"
       >
-        <DocumentEditor
-          source={initialSource}
+        <EditorComponent
+          source={source}
           doenetmlVersion={doenetmlVersion}
           key={resetNum}
           accessibilityStrictMode={accessibilityStrictMode}
+          sourceChangedCallback={updateCurrentSource}
         />
       </Box>
     </>
@@ -348,11 +406,8 @@ function DocumentEditor({
   source,
   doenetmlVersion,
   accessibilityStrictMode,
-}: {
-  source: string;
-  doenetmlVersion: DoenetmlVersion;
-  accessibilityStrictMode: boolean;
-}) {
+  sourceChangedCallback,
+}: DocumentEditorProps) {
   const textEditorDoenetML = useRef(source);
   const savedDoenetML = useRef(source);
 
@@ -393,6 +448,7 @@ function DocumentEditor({
       }}
       immediateDoenetmlChangeCallback={(newDoenetML: string) => {
         textEditorDoenetML.current = newDoenetML;
+        sourceChangedCallback?.(newDoenetML);
       }}
       doenetmlVersion={doenetmlVersion.fullVersion}
       border="none"

@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { UserInfoWithEmail, ContentDescription } from "../types";
 
-type CreateContentResponse = {
+export type CreateContentResponse = {
   status: number;
   data?: {
     contentId: string;
