@@ -244,7 +244,7 @@ export function Home() {
   );
 
   const newsletterSection = (
-    <WithSideBanners bgColor="doenet.mainBlue" padding="70px">
+    <WithSideBanners bgColor="doenet.mainBlue" padding="45px">
       <Heading size="lg" color="white">
         Interested? Stay in the loop
       </Heading>
