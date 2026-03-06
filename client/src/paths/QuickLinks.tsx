@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { Heading, Text, Link, VStack } from "@chakra-ui/react";
-import { useOutletContext } from "react-router";
+import { Heading, Text, Link as ChakraLink, VStack } from "@chakra-ui/react";
+import { Link as ReactRouterLink, useOutletContext } from "react-router";
 import { SiteContext } from "./SiteHeader";
 import { getDiscourseUrl } from "../utils/discourse";
 import { WithSideBanners } from "../layout/WithSideBanners";
@@ -8,9 +8,11 @@ import { WithSideBanners } from "../layout/WithSideBanners";
 const StyledLink = ({
   children,
   ...props
-}: React.ComponentProps<typeof Link>) => (
+}: React.ComponentProps<typeof ReactRouterLink>) => (
   <Text pl="24px" fontSize="lg" textDecoration="underline">
-    <Link {...props}>{children}</Link>
+    <ChakraLink as={ReactRouterLink} {...props}>
+      {children}
+    </ChakraLink>
   </Text>
 );
 
@@ -36,45 +38,42 @@ export function QuickLinks() {
         <Heading size="lg">Links</Heading>
 
         <Heading size="md">General</Heading>
-        <StyledLink href="https://forms.gle/wSqsd8v355mj3GBH8">
+        <StyledLink to="https://forms.gle/wSqsd8v355mj3GBH8">
           Sign up to receive email updates
         </StyledLink>
-        <StyledLink href="/events">Upcoming events and workshops</StyledLink>
+        <StyledLink to="/events">Upcoming events and workshops</StyledLink>
 
         <Heading size="md">Authoring resources</Heading>
-        <StyledLink href="/scratchPad">Scratch pad</StyledLink>
-        <StyledLink href="https://docs.doenet.org/">Documentation</StyledLink>
+        <StyledLink to="/scratchPad">Scratch pad</StyledLink>
+        <StyledLink to="https://docs.doenet.org/">Documentation</StyledLink>
 
         <Heading size="md">Authoring support</Heading>
-        <StyledLink href={discussHref}>Community discussions</StyledLink>
-        <StyledLink href="https://mathtech.org/dropin">
+        <StyledLink to={discussHref}>Community discussions</StyledLink>
+        <StyledLink to="https://mathtech.org/dropin">
           Office hours (Zoom link)
         </StyledLink>
 
         <Heading size="md">Social</Heading>
-        <StyledLink href="https://www.facebook.com/groups/1592878455245652">
+        <StyledLink to="https://www.facebook.com/groups/1592878455245652">
           Facebook
         </StyledLink>
-        <StyledLink href="https://discord.gg/PUduwtKJ5h">Discord</StyledLink>
-        <StyledLink href="/blog">Blog</StyledLink>
+        <StyledLink to="https://discord.gg/PUduwtKJ5h">Discord</StyledLink>
+        <StyledLink to="/blog">Blog</StyledLink>
 
         <Heading size="md">Community</Heading>
-        <StyledLink href="/get-involved">Get Involved</StyledLink>
-        <StyledLink href="/about">About Doenet</StyledLink>
+        <StyledLink to="/get-involved">Get Involved</StyledLink>
+        <StyledLink to="/about">About Doenet</StyledLink>
 
         <Heading size="md">Software developers</Heading>
-        <StyledLink href="https://github.com/Doenet">
+        <StyledLink to="https://github.com/Doenet">
           GitHub (Doenet organization)
         </StyledLink>
-        <StyledLink href="https://github.com/Doenet/DoenetML">
+        <StyledLink to="https://github.com/Doenet/DoenetML">
           GitHub (DoenetML)
         </StyledLink>
-        <StyledLink href="https://github.com/Doenet/DoenetTools">
+        <StyledLink to="https://github.com/Doenet/DoenetTools">
           GitHub (web app)
         </StyledLink>
-        {/* <StyledLink href="https://github.com/Doenet/discussions">
-          GitHub discussions
-        </StyledLink> */}
       </VStack>
     </WithSideBanners>
   );
