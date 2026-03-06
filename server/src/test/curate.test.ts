@@ -1368,7 +1368,7 @@ test("Editor cannot move content between library and their folders", async () =>
   await expect(() =>
     moveContent({
       contentId: draftId,
-      parentId: folderId,
+      changeParentIdTo: folderId,
       desiredPosition: 0,
       loggedInUserId: editorId,
     }),
@@ -1379,7 +1379,7 @@ test("Editor cannot move content between library and their folders", async () =>
   await expect(() =>
     moveContent({
       contentId,
-      parentId: libraryFolderId,
+      changeParentIdTo: libraryFolderId,
       desiredPosition: 0,
       loggedInUserId: editorId,
     }),
