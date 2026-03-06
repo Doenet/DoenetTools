@@ -249,7 +249,7 @@ export function Home() {
         Interested? Stay in the loop
       </Heading>
       <Text fontSize="22px" fontWeight="400" mb="15px" color="white">
-        Receive occasional emails about Doenet, upcoming training workshops, and
+        Receive monthly emails about Doenet, upcoming training workshops, and
         what's going on in the community.
       </Text>
       <Button
