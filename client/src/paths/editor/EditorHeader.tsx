@@ -736,7 +736,6 @@ export function EditorHeader() {
       >
         {/*
           Dismiss layer used for iframe-safe menu close behavior.
-          Keep in sync with menu-open tracking and e2e overlay assertions.
         */}
         {anyMenuOpen && (
           <MenuDismissOverlay dataTest="Editor Header Menu Dismiss Overlay" />

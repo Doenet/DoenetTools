@@ -428,7 +428,6 @@ export function ScratchPadComponent({
       >
         {/*
           Dismiss layer used for iframe-safe menu close behavior.
-          Keep in sync with menu-open tracking and e2e overlay assertions.
         */}
         {anyMenuOpen && (
           <MenuDismissOverlay dataTest="ScratchPad Menu Dismiss Overlay" />
