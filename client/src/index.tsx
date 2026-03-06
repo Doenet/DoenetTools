@@ -126,6 +126,7 @@ import { About } from "./paths/About";
 import { RawViewer, loader as rawViewerLoader } from "./paths/RawViewer";
 import { GetInvolved } from "./paths/GetInvolved";
 import { Events } from "./paths/Events";
+import { QuickLinks } from "./paths/QuickLinks";
 
 const router = createBrowserRouter([
   {
@@ -173,6 +174,11 @@ const router = createBrowserRouter([
       {
         path: "events",
         element: <Events />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "links",
+        element: <QuickLinks />,
         errorElement: <ErrorPage />,
       },
       {
