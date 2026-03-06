@@ -1,7 +1,7 @@
 import { BlueBanner } from "./BlueBanner";
 import { Text } from "@chakra-ui/react";
 
-describe("BlueBanner Component", () => {
+describe("BlueBanner Component", { tags: ["@group3"] }, () => {
   it("renders children and is accessible", () => {
     cy.mount(
       <BlueBanner>

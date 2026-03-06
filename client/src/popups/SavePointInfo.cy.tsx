@@ -33,7 +33,7 @@ function getDefaultProps() {
   };
 }
 
-describe("SavePointInfo component", () => {
+describe("SavePointInfo component", { tags: ["@group3"] }, () => {
   it("shows modal when open", () => {
     const props = getDefaultProps();
     cy.mount(<SavePointInfo {...props} />);

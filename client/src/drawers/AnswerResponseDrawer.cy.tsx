@@ -2,7 +2,7 @@ import { AnswerResponseDrawer } from "./AnswerResponseDrawer";
 import { toMathJaxString } from "@doenet-tools/shared";
 import { DateTime } from "luxon";
 
-describe("AnswerResponseDrawer component tests", () => {
+describe("AnswerResponseDrawer component tests", { tags: ["@group1"] }, () => {
   it("renders math correctly", () => {
     const responses = [
       {
@@ -68,6 +68,8 @@ describe("AnswerResponseDrawer component tests", () => {
           DateTime.DATETIME_MED,
         ),
       );
+
+    cy.checkAccessibility("body");
   });
 
   it("renders text correctly", () => {
@@ -131,6 +133,7 @@ describe("AnswerResponseDrawer component tests", () => {
           DateTime.DATETIME_MED,
         ),
       );
+    cy.checkAccessibility("body");
   });
 
   it("multiple part response", () => {
@@ -193,5 +196,6 @@ describe("AnswerResponseDrawer component tests", () => {
           DateTime.DATETIME_MED,
         ),
       );
+    cy.checkAccessibility("body");
   });
 });

@@ -5,7 +5,7 @@ import { DateTime } from "luxon";
 describe("Assignment workflow Tests", function () {
   it(
     "instructor creates assignment, anonymous user takes it, instructor views data",
-    { tags: ["@brittle"] },
+    { tags: ["@brittle2"] },
     () => {
       const code = Date.now().toString();
       const instructorEmail = `test${code}@doenet.org`;
@@ -22,7 +22,7 @@ describe("Assignment workflow Tests", function () {
 
       // Instructor creates document
       cy.visit("/");
-      cy.get('[data-test="Activities"]').click();
+      cy.get('[data-test="My Activities"]').click();
       cy.get('[data-test="New Button"]').click();
       cy.get('[data-test="Add Document Button"]').click();
 
@@ -86,7 +86,7 @@ describe("Assignment workflow Tests", function () {
         .should("contain.text", toMathJaxString("x+x ="));
 
       // Navigate to My Activities to find assignment
-      cy.get('[data-test="Activities"]').click();
+      cy.get('[data-test="My Activities"]').click();
       cy.get(`[data-test="Content Card"]`).eq(1).click();
       cy.get('[data-test="Class Code"]')
         .invoke("text")
@@ -193,7 +193,7 @@ describe("Assignment workflow Tests", function () {
 
         cy.visit("/");
         // Navigate to My Activities to find assignment
-        cy.get('[data-test="Activities"]').click();
+        cy.get('[data-test="My Activities"]').click();
         cy.get(`[data-test="Content Card"]`).eq(1).click();
 
         cy.get(`td:contains("${studentUser!.lastNames}")`).click();
@@ -271,7 +271,7 @@ describe("Assignment workflow Tests", function () {
 
   it(
     "Anonymous user takes problem set assignment, instructor view data",
-    { tags: ["@brittle"] },
+    { tags: ["@brittle3"] },
     () => {
       const code = Date.now().toString();
       const instructorEmail = `test${code}@doenet.org`;
@@ -442,7 +442,7 @@ describe("Assignment workflow Tests", function () {
 
         cy.visit("/");
         // Navigate to My Activities to find assignment
-        cy.get('[data-test="Activities"]').click();
+        cy.get('[data-test="My Activities"]').click();
         cy.get(`[data-test="Content Card"]`).eq(1).click();
 
         cy.get(`[data-test="Student Row ${studentUser2!.userId}"]`).within(

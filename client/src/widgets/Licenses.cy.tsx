@@ -1,7 +1,7 @@
 import { AuthorLicenseBox } from "./Licenses";
 import { License } from "../types";
 
-describe("AuthorLicenseBox Component", () => {
+describe("AuthorLicenseBox Component", { tags: ["@group4"] }, () => {
   const mockSingleLicense: License = {
     code: "CCBYSA",
     name: "Creative Commons Attribution-ShareAlike",

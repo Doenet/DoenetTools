@@ -32,6 +32,8 @@ import { ChakraProvider } from "@chakra-ui/react";
 import "./commands";
 import "cypress-axe";
 import "wick-a11y";
+import { register as registerCypressGrep } from "@cypress/grep";
+registerCypressGrep();
 
 // Configure cypress-axe to use the correct path for axe-core in monorepo
 // axe-core is installed in the root node_modules, not in client/node_modules
@@ -49,9 +51,13 @@ Cypress.Commands.overwrite("injectAxe", () => {
   });
 });
 
-import { mount } from "cypress/react";
+import { mount, MountOptions } from "cypress/react";
 
-import { createMemoryRouter, RouterProvider } from "react-router-dom";
+import {
+  createMemoryRouter,
+  RouterProvider,
+  MemoryRouterProps,
+} from "react-router-dom";
 import { MathJaxContext } from "better-react-mathjax";
 import { mathjaxConfig } from "@doenet/doenetml-iframe";
 import { theme } from "../../src/theme";
@@ -67,8 +73,13 @@ Cypress.Commands.add("mount", (component, options = {}) => {
   const {
     routerProps = { initialEntries: ["/"] },
     action,
+    routes,
     ...mountOptions
-  } = options;
+  } = options as MountOptions & {
+    routerProps?: MemoryRouterProps;
+    action?: (data: { request: Request }) => Promise<any>;
+    routes?: any[];
+  };
 
   const safeActionWithDefault = async ({ request }: { request: Request }) => {
     try {
@@ -98,22 +109,24 @@ Cypress.Commands.add("mount", (component, options = {}) => {
     }
   };
 
-  const router = createMemoryRouter(
-    [
-      {
-        path: "/",
-        element: (
-          <ChakraProvider theme={theme}>
-            <MathJaxContext version={4} config={mathjaxConfig}>
-              {component as any}
-            </MathJaxContext>
-          </ChakraProvider>
-        ),
-        action: safeActionWithDefault,
-      },
-    ],
-    routerProps as any,
-  );
+  // Build the routes array
+  const routesArray = [
+    {
+      path: "/",
+      element: (
+        <ChakraProvider theme={theme}>
+          <MathJaxContext version={4} config={mathjaxConfig}>
+            {component as any}
+          </MathJaxContext>
+        </ChakraProvider>
+      ),
+      action: safeActionWithDefault,
+    },
+    // Add any additional routes provided by the test
+    ...(routes || []),
+  ];
+
+  const router = createMemoryRouter(routesArray, routerProps as any);
 
   const wrapped = <RouterProvider router={router} />;
 

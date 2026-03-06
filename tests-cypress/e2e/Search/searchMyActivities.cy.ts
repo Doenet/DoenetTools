@@ -1,4 +1,4 @@
-describe("Search My Activities Tests", function () {
+describe("Search My Activities Tests", { tags: ["@group3"] }, function () {
   it("test search button", () => {
     cy.loginAsTestUser();
 
@@ -33,7 +33,7 @@ describe("Search My Activities Tests", function () {
 
     cy.visit("/");
 
-    cy.get('[data-test="Activities"]').click();
+    cy.get('[data-test="My Activities"]').click();
 
     // Make sure bug where didn't search didn't activate on first enter press is fixed
     cy.get('[data-test="Search Input"]').type("fish{enter}");

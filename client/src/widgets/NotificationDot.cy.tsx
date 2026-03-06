@@ -1,7 +1,7 @@
 import { Button } from "@chakra-ui/react";
 import { NotificationDot } from "./NotificationDot";
 
-describe("NotificationDot", () => {
+describe("NotificationDot", { tags: ["@group4"] }, () => {
   describe("visibility", () => {
     it("displays the red dot when show is true", () => {
       cy.mount(

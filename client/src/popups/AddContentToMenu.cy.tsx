@@ -6,7 +6,7 @@ import { UserInfo, ContentDescription } from "../types";
 // intercepts can accumulate causing "onResponse cannot be called twice" errors.
 // This is a Cypress issue, not a test issue. Workaround: restart Cypress to clear state.
 // Tests pass correctly on initial run and in CI.
-describe("AddContentToMenu component tests", () => {
+describe("AddContentToMenu component tests", { tags: ["@group2"] }, () => {
   beforeEach(() => {
     // Set up default intercepts that most tests use
     // Tests can override these by setting up their own intercepts before mounting

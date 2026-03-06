@@ -1,6 +1,6 @@
 import { AccessibleAvatar } from "./AccessibleAvatar";
 
-describe("AccessibleAvatar Component", () => {
+describe("AccessibleAvatar Component", { tags: ["@group3"] }, () => {
   it("renders initials and is accessible", () => {
     cy.mount(<AccessibleAvatar name="Ada Lovelace" />);
 

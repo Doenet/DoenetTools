@@ -16,7 +16,7 @@ const MockEditor = (props: any) => (
   </div>
 );
 
-describe("DocEditorHistoryModeContent", () => {
+describe("DocEditorHistoryModeContent", { tags: ["@group1"] }, () => {
   const mockVersion: DoenetmlVersion = {
     id: 2,
     displayedVersion: "0.7",

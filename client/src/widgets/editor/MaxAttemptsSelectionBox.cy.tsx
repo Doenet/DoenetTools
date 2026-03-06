@@ -43,7 +43,7 @@ function MaxAttemptsWrapper({ initialAttempts }: { initialAttempts: number }) {
   );
 }
 
-describe("MaxAttemptsSelectionBox Component", () => {
+describe("MaxAttemptsSelectionBox Component", { tags: ["@group3"] }, () => {
   it("should restore the new value when user deletes input and presses enter", () => {
     // Mount the component with initial attempts of 5
     cy.mount(<MaxAttemptsWrapper initialAttempts={5} />);
