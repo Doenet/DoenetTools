@@ -213,13 +213,14 @@ export function AddContentToMenu({
     onMenuOpenChange?.(false);
   }
 
-  // The hook `useMenuTooltipSuppression`suppresses tooltip re-open on menu transitions and
+  // The hook `useMenuTooltipSuppression` suppresses tooltip re-open on menu transitions and
   // restores normal tooltip behavior automatically after a short delay.
   const {
     suppressTooltip: suppressTriggerTooltip,
     handleMenuOpen: handleMenuOpenWithTooltipSuppression,
     handleMenuClose: handleMenuCloseWithTooltipSuppression,
     handleTriggerMouseEnter,
+    setTriggerRef: setAddToTriggerRef,
   } = useMenuTooltipSuppression({
     onOpen: handleMenuOpen,
     onClose: handleMenuClose,
@@ -228,11 +229,13 @@ export function AddContentToMenu({
   let menuButton = (
     <MenuButton
       as={Button}
+      ref={setAddToTriggerRef}
       size={size}
       colorScheme={colorScheme}
       leftIcon={leftIcon}
       paddingRight={addRightPadding ? { base: "0px", md: "10px" } : undefined}
       data-test="Add To"
+      onMouseEnter={handleTriggerMouseEnter}
     >
       {label}
     </MenuButton>
@@ -246,7 +249,7 @@ export function AddContentToMenu({
         placement="bottom-end"
         isDisabled={suppressTriggerTooltip}
       >
-        <span onMouseEnter={handleTriggerMouseEnter}>{menuButton}</span>
+        {menuButton}
       </Tooltip>
     );
   }

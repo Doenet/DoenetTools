@@ -199,6 +199,7 @@ export function ScratchPadComponent({
     handleMenuOpen: handleHelpMenuOpen,
     handleMenuClose: handleHelpMenuClose,
     handleTriggerMouseEnter: handleHelpMouseEnter,
+    setTriggerRef: setHelpTriggerRef,
   } = useMenuTooltipSuppression({
     onOpen: helpMenuControl.menuProps.onOpen,
     onClose: helpMenuControl.menuProps.onClose,
@@ -323,6 +324,7 @@ export function ScratchPadComponent({
       >
         <MenuButton
           as={IconButton}
+          ref={setHelpTriggerRef}
           icon={<LuCircleHelp />}
           variant="ghost"
           fontSize="1.3rem"

@@ -253,5 +253,27 @@ describe("ScratchPad tests", { tags: ["@group2"] }, () => {
       );
       cy.get('[role="tooltip"]:visible').should("not.exist");
     });
+
+    it("keeps focus on outside control when it closes Help menu", () => {
+      mountScratchPad();
+
+      cy.get('[aria-label="Help"]').click();
+      cy.get('[data-test="ScratchPad Help Menu List"]:visible')
+        .contains("Documentation")
+        .should("exist");
+
+      cy.get(selectors.accessibilityToggle).click();
+
+      cy.get('[aria-label="Help"]').should(
+        "have.attr",
+        "aria-expanded",
+        "false",
+      );
+      cy.get('[data-test="ScratchPad Help Menu List"]:visible').should(
+        "not.exist",
+      );
+      cy.get('[role="tooltip"]:visible').should("not.exist");
+      cy.get(selectors.accessibilityToggle).should("be.focused");
+    });
   });
 });
