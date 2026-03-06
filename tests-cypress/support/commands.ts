@@ -276,7 +276,7 @@ Cypress.Commands.add(
     assertTooltipClosed?: boolean;
   }) => {
     cy.get(`[data-test="${overlayTestId}"]:visible`).should("exist");
-    cy.get(`[data-test="${overlayTestId}"]`).click({ force: true });
+    cy.get(`[data-test="${overlayTestId}"]:visible`).click({ force: true });
     cy.get(`[data-test="${menuListTestId}"]:visible`).should("not.exist");
     if (assertTooltipClosed) {
       cy.get('[role="tooltip"]:visible').should("not.exist");

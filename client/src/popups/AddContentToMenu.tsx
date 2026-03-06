@@ -213,8 +213,8 @@ export function AddContentToMenu({
     onMenuOpenChange?.(false);
   }
 
-  // The hook `useMenuTooltipSuppression` suppresses tooltip re-open on menu transitions and
-  // restores normal tooltip behavior automatically after a short delay.
+  // The hook `useMenuTooltipSuppression` suppresses tooltip re-open on menu transitions
+  // and restores normal tooltip behavior automatically after a short delay.
   const {
     suppressTooltip: suppressTriggerTooltip,
     handleMenuOpen: handleMenuOpenWithTooltipSuppression,
