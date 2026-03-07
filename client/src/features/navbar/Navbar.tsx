@@ -13,8 +13,9 @@ import { NavSection } from "./navbar.types";
 import { NavbarMobile } from "./NavbarMobile";
 
 export function Navbar({ user }: { user?: UserInfoWithEmail }) {
-  const discussHref = getDiscourseUrl(user);
-  const main = mainSections(discussHref);
+  const discussionsLink = getDiscourseUrl(user);
+
+  const main = mainSections({ discussionsLink });
 
   let account: NavSection;
   if (!user) {
