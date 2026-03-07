@@ -1,23 +1,22 @@
-FROM node:lts-trixie
+# Dockerfile for the `server` of the Doenet web app.
+# 
+# NOTE: 
+# 
+# This Dockerfile assumes that the `dist` directory has already
+# been built and contains the necessary files for the server to run.
+# This only works if `dist` was built on a compatible system.
+#
+# Right now, this is fine since we're only planning to use the Dockerfile
+# to deploy to AWS, which means the build is done in a reproducible
+# environment (Github Actions).
+#
+# If you want to use Docker in development, you will most likely need
+# to modify this Dockerfile or create another Dockerfile.
+
 WORKDIR /DoenetTools/server
 
-
 COPY dist ./dist
-# COPY src ./src
-# COPY scripts ./scripts
-# COPY prisma ./prisma
-# COPY passport-anonymous ./passport-anonymous
-# COPY tsconfig.json ./
-# COPY package*.json ./
 COPY entrypoint.sh ./
-
-
-# Just for testing locally
-# COPY .env ./
-
-# Assume a 'shared' directory exists on your host in the build context
-# RUN --mount=type=bind,source=./shared,target=./shared npm install
-# RUN --mount=type=bind,source=./shared,target=./shared npm run build
 
 RUN chmod +x ./entrypoint.sh
 
