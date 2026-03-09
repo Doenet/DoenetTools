@@ -27,22 +27,25 @@ import { getLibraryAccountId } from "./curate";
 import { generateClassCode } from "./assign";
 
 /**
- * Move the content with `id` to position `desiredPosition` in the folder `parentId`
- * (where an undefined `parentId` indicates the root folder of `ownerId`).
+ * Move the content with `id` to position `desiredPosition` in the folder `changeParentIdTo`.
  *
- * `desiredPosition` is the 0-based index in the array of content with parent folder `parentId`
- * and owner `ownerId` sorted by `sortIndex`.
+ * If `changeParentIdTo` is `undefined` (not specified), the parent is not changed.
+ * If `changeParentIdTo` is `null`, the content is moved to the root folder.
+ * If `changeParentIdTo` is a folder ID, the content is moved to that folder.
+ *
+ * `desiredPosition` is the 0-based index in array of content in the destination parent.
  *
  * For the library, content must be public before it is moved inside a public parent. We don't allow implicit publishing of curated content.
  */
 export async function moveContent({
   contentId,
-  parentId,
+  changeParentIdTo,
   desiredPosition,
   loggedInUserId,
 }: {
   contentId: Uint8Array;
-  parentId: Uint8Array | null;
+  /** If changeParentIdTo is not specified (undefined), the parent is not changed. */
+  changeParentIdTo?: Uint8Array | null;
   desiredPosition: number;
   loggedInUserId: Uint8Array;
 }) {
@@ -61,6 +64,7 @@ export async function moveContent({
     select: {
       id: true,
       type: true,
+      parentId: true,
       licenseCode: true,
       courseRootId: true,
       owner: {
@@ -89,6 +93,9 @@ export async function moveContent({
   let desiredParentShares: Uint8Array[] = [];
 
   let parentCourseId: Uint8Array | null = null;
+
+  const parentId: Uint8Array | null =
+    changeParentIdTo === undefined ? content.parentId : changeParentIdTo;
 
   if (parentId !== null) {
     // if desired parent is specified, make sure it exists, is owned by the same owner as the content,

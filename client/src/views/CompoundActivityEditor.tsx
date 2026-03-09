@@ -5,20 +5,18 @@ import {
   ContentType,
   LicenseCode,
   UserInfo,
+  ProblemSet,
 } from "../types";
 import {
   Button,
-  CloseButton,
   Flex,
-  HStack,
   Menu,
   MenuButton,
-  MenuDivider,
   MenuItem,
   MenuList,
+  Show,
   Spacer,
   Spinner,
-  Text,
   useDisclosure,
 } from "@chakra-ui/react";
 import { CardContent } from "../widgets/Card";
@@ -30,18 +28,25 @@ import {
 } from "react-router";
 import { MoveCopyContent } from "../popups/MoveCopyContent";
 import CardList from "../widgets/CardList";
-import {
-  contentTypeToName,
-  getAllowedParentTypes,
-  menuIcons,
-} from "../utils/activity";
+import { contentTypeToName, getAllowedParentTypes } from "../utils/activity";
 import { CopyContentAndReportFinish } from "../popups/CopyContentAndReportFinish";
-import { CreateContentMenu } from "../dropdowns/CreateContentMenu";
-import { AddContentToMenu } from "../popups/AddContentToMenu";
 import { DeleteContent } from "../popups/DeleteContent";
 import { ActivateAuthorMode } from "../popups/ActivateAuthorMode";
 import { editorUrl } from "../utils/url";
 import { EditorContext } from "../paths/editor/EditorHeader";
+import { useCardSelections } from "../hooks/cardSelections";
+import { useCardMovement } from "../hooks/cardMovement";
+import {
+  ActionBar,
+  Action as ActionBarActions,
+  Context as ActionBarContext,
+} from "../widgets/ActionBar";
+import {
+  configAddFromContentList,
+  configOrganizeContentList,
+  configReadOnlyContentList,
+} from "../utils/actionBarConfig";
+import { CreateContentMenu } from "../dropdowns/CreateContentMenu";
 
 export function CompoundActivityEditor({
   activity,
@@ -53,7 +58,7 @@ export function CompoundActivityEditor({
   createContentMenuSaveNameFetcher,
   deleteContentFetcher,
 }: {
-  activity: Content;
+  activity: ProblemSet;
   asViewer?: boolean;
   inLibrary?: boolean;
   fetcher: FetcherWithComponents<any>;
@@ -79,19 +84,10 @@ export function CompoundActivityEditor({
 
   const navigate = useNavigate();
 
-  // `selectedCards` is a sparse array where the index is the index in the CardList.
-  // When a card is selected, any entries corresponding to unselected cards above it
-  // will be empty.
-  const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
-
-  // `selectedCardsFiltered` removes any undefined entries from `selectedCards`
-  const selectedCardsFiltered = selectedCards.filter((c) => c);
-
-  const numSelected = selectedCardsFiltered.length;
-
-  const [disableAsSelected, setDisableAsSelected] = useState<string[]>([]);
-
   const [haveContentSpinner, setHaveContentSpinner] = useState(false);
+  useEffect(() => {
+    setHaveContentSpinner(false);
+  }, [activity]);
 
   const [contentToDelete, setContentToDelete] =
     useState<ContentDescription | null>(null);
@@ -100,10 +96,17 @@ export function CompoundActivityEditor({
     activity.contentId,
   );
 
-  useEffect(() => {
-    setHaveContentSpinner(false);
-    setSelectedCards([]);
-  }, [activity]);
+  const cardSelections = useCardSelections({
+    ids: activity.children.map((c) => c.contentId),
+  });
+  const cardMovement = useCardMovement({
+    selectedCards: cardSelections.ids,
+    ids: activity.children.map((c) => c.contentId),
+  });
+
+  const selectedContentDescriptions = activity.children.filter((c) =>
+    cardSelections.ids.has(c.contentId),
+  );
 
   const [moveCopyData, setMoveCopyData] = useState<{
     contentId: string;
@@ -157,7 +160,7 @@ export function CompoundActivityEditor({
       <CopyContentAndReportFinish
         isOpen={copyDialogIsOpen}
         onClose={copyDialogOnClose}
-        contentIds={selectedCardsFiltered.map((sc) => sc.contentId)}
+        contentIds={[...cardSelections.ids]}
         desiredParent={addTo}
         action="Add"
         setAddTo={setAddTo}
@@ -224,7 +227,7 @@ export function CompoundActivityEditor({
 
   const numCards = useMemo(() => countCards(activity), [activity, countCards]);
 
-  let idx = 0;
+  // let idx = 0;
 
   // TODO: figure out functions inside hooks
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -239,84 +242,74 @@ export function CompoundActivityEditor({
       children: Content[];
     },
   ) {
-    const cards: (
-      | CardContent
-      | {
-          cardType: "afterParent";
-          parentId: string;
-          indentLevel: number;
-          empty: boolean;
-        }
-    )[] = [];
+    const cards: CardContent[] = [];
 
     // skip the first activity, which doesn't have parent info
     if (parentInfo) {
-      // Calculate the destination for the "Move Up" and "Move Down" actions
-      let nextPositionUp: { parent: string; position: number } | null;
-      let nextPositionDown: { parent: string; position: number } | null;
+      //
+      // ===== This section deals with indented question banks inside problem sets =====
+      // ===== It is no longer relevant unless we decide to bring bank question banks. =====
+      //
+      // // Calculate the destination for the "Move Up" and "Move Down" actions
+      // let nextPositionUp: { parent: string; position: number } | null;
+      // let nextPositionDown: { parent: string; position: number } | null;
 
-      if (positionInParent > 0) {
-        // Not first in parent.
-        // If previous sibling is a single doc, take its position.
-        // Either become the last child of sibling
-        const previousSibling = parentInfo.children[positionInParent - 1];
-        if (previousSibling.type === "singleDoc") {
-          nextPositionUp = {
-            parent: parentInfo.contentId,
-            position: positionInParent - 1,
-          };
-        } else {
-          nextPositionUp = {
-            parent: previousSibling.contentId,
-            position: previousSibling.children.length,
-          };
-        }
-      } else if (idx === 0) {
-        // no position up
-        nextPositionUp = null;
-      } else {
-        // first in parent, so position up is parent's position
-        nextPositionUp = {
-          parent: parentInfo.parent!,
-          position: parentInfo.positionInParent,
-        };
-      }
+      // if (positionInParent > 0) {
+      //   // Not first in parent.
+      //   // If previous sibling is a single doc, take its position.
+      //   // Either become the last child of sibling
+      //   const previousSibling = parentInfo.children[positionInParent - 1];
+      //   if (previousSibling.type === "singleDoc") {
+      //     nextPositionUp = {
+      //       parent: parentInfo.contentId,
+      //       position: positionInParent - 1,
+      //     };
+      //   } else {
+      //     nextPositionUp = {
+      //       parent: previousSibling.contentId,
+      //       position: previousSibling.children.length,
+      //     };
+      //   }
+      // } else if (idx === 0) {
+      //   // no position up
+      //   nextPositionUp = null;
+      // } else {
+      //   // first in parent, so position up is parent's position
+      //   nextPositionUp = {
+      //     parent: parentInfo.parent!,
+      //     position: parentInfo.positionInParent,
+      //   };
+      // }
 
-      if (positionInParent < parentInfo.children.length - 1) {
-        // Not last in parent.
-        // If next sibling is a single doc, take its position.
-        // Either become the first child of sibling
-        const nextSibling = parentInfo.children[positionInParent + 1];
-        if (nextSibling.type === "singleDoc") {
-          nextPositionDown = {
-            parent: parentInfo.contentId,
-            position: positionInParent + 1,
-          };
-        } else {
-          nextPositionDown = {
-            parent: nextSibling.contentId,
-            position: 0,
-          };
-        }
-      } else if (parentInfo.parent) {
-        // last in parent, so position down is position after parent
-        nextPositionDown = {
-          parent: parentInfo.parent,
-          position: parentInfo.positionInParent + 1,
-        };
-      } else {
-        // last in initial parent
-        nextPositionDown = null;
-      }
+      // if (positionInParent < parentInfo.children.length - 1) {
+      //   // Not last in parent.
+      //   // If next sibling is a single doc, take its position.
+      //   // Either become the first child of sibling
+      //   const nextSibling = parentInfo.children[positionInParent + 1];
+      //   if (nextSibling.type === "singleDoc") {
+      //     nextPositionDown = {
+      //       parent: parentInfo.contentId,
+      //       position: positionInParent + 1,
+      //     };
+      //   } else {
+      //     nextPositionDown = {
+      //       parent: nextSibling.contentId,
+      //       position: 0,
+      //     };
+      //   }
+      // } else if (parentInfo.parent) {
+      //   // last in parent, so position down is position after parent
+      //   nextPositionDown = {
+      //     parent: parentInfo.parent,
+      //     position: parentInfo.positionInParent + 1,
+      //   };
+      // } else {
+      //   // last in initial parent
+      //   nextPositionDown = null;
+      // }
 
       cards.push({
         content: content,
-        menuItems: getCardMenuList({
-          contentId: content.contentId,
-          content: content,
-          nextPositionUp,
-          nextPositionDown,
-        }),
         cardLink:
           content.type === "singleDoc"
             ? asViewer
@@ -337,7 +330,7 @@ export function CompoundActivityEditor({
           );
         },
       });
-      idx++;
+      // idx++;
     }
 
     if (content.type !== "singleDoc") {
@@ -353,19 +346,6 @@ export function CompoundActivityEditor({
       );
     }
 
-    if (
-      parentInfo &&
-      (content.type === "select" || content.type === "sequence")
-    ) {
-      idx++;
-      cards.push({
-        cardType: "afterParent",
-        parentId: content.contentId,
-        indentLevel: indentLevel + 1,
-        empty: content.children.length === 0,
-      });
-    }
-
     return cards;
   }
 
@@ -373,196 +353,6 @@ export function CompoundActivityEditor({
     () => createCardContent(activity),
     [activity, createCardContent],
   );
-
-  type ContentRelationships = { descendants: string[]; parent: string | null };
-
-  // TODO: figure out functions inside hooks
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  function extractContentById(
-    content: Content,
-    skipParent: string,
-  ): Record<string, ContentRelationships> {
-    const byId: Record<string, ContentRelationships> = {};
-
-    let children: string[] = [];
-
-    if (content.type !== "singleDoc") {
-      children = content.children.map((c) => c.contentId);
-
-      for (const child of content.children) {
-        Object.assign(byId, extractContentById(child, skipParent));
-      }
-    }
-
-    if (content.contentId !== skipParent) {
-      byId[content.contentId] = {
-        descendants: [
-          ...children,
-          ...children.flatMap((id) => byId[id].descendants),
-        ],
-        parent:
-          content.parent!.contentId === skipParent
-            ? null
-            : content.parent!.contentId,
-      };
-    }
-    return byId;
-  }
-
-  const contentById = useMemo(
-    () => extractContentById(activity, activity.contentId),
-    [activity, extractContentById],
-  );
-
-  useEffect(() => {
-    // normalize selected cards
-    const toDisable: string[] = [];
-    const toDeselect: number[] = [];
-    for (const [idx, card] of selectedCards.entries()) {
-      if (card) {
-        const descendants = contentById[card.contentId].descendants;
-        toDisable.push(...descendants);
-        if (toDisable.includes(card.contentId)) {
-          toDeselect.push(idx);
-        }
-      }
-    }
-
-    if (
-      toDisable.length !== disableAsSelected.length ||
-      toDisable.some((v, i) => v !== disableAsSelected[i])
-    ) {
-      setDisableAsSelected(toDisable);
-    }
-    if (toDeselect.length > 0) {
-      setSelectedCards((was) => {
-        const arr = [...was];
-        for (const idx of toDeselect) {
-          delete arr[idx];
-        }
-        return arr;
-      });
-    }
-  }, [contentById, disableAsSelected, selectedCards]);
-
-  useEffect(() => {
-    setSelectedCards((was) => {
-      let foundMissing = false;
-      const newList = Object.keys(contentById);
-      for (const c of was.filter((x) => x)) {
-        if (!newList.includes(c.contentId)) {
-          foundMissing = true;
-          break;
-        }
-      }
-      if (foundMissing) {
-        return [];
-      } else {
-        return was;
-      }
-    });
-  }, [contentById]);
-
-  function getCardMenuList({
-    contentId,
-    content,
-    nextPositionUp,
-    nextPositionDown,
-  }: {
-    contentId: string;
-    content: Content;
-    nextPositionUp: { parent: string; position: number } | null;
-    nextPositionDown: { parent: string; position: number } | null;
-  }) {
-    return (
-      <>
-        {nextPositionUp ? (
-          <MenuItem
-            hidden={readOnly}
-            data-test="Move Up Menu Item"
-            onClick={() => {
-              fetcher.submit(
-                {
-                  path: "copyMove/moveContent",
-                  contentId,
-                  desiredPosition: nextPositionUp.position,
-                  parentId: nextPositionUp.parent,
-                },
-                { method: "post", encType: "application/json" },
-              );
-            }}
-          >
-            Move Up
-          </MenuItem>
-        ) : null}
-        {nextPositionDown ? (
-          <MenuItem
-            hidden={readOnly}
-            data-test="Move Down Menu Item"
-            onClick={() => {
-              fetcher.submit(
-                {
-                  path: "copyMove/moveContent",
-                  contentId,
-                  desiredPosition: nextPositionDown.position,
-                  parentId: nextPositionDown.parent,
-                },
-                { method: "post", encType: "application/json" },
-              );
-            }}
-          >
-            Move Down
-          </MenuItem>
-        ) : null}
-        <MenuItem
-          data-test="MoveCopy"
-          onClick={() => {
-            setMoveCopyAction(readOnly ? "Copy" : "Move");
-            setMoveCopyData({
-              contentId,
-              name: content.name,
-              type: content.type,
-              isPublic: content.isPublic,
-              isShared: content.isShared,
-              sharedWith: content.sharedWith,
-              licenseCode: content.licenseCode ?? null,
-            });
-            moveCopyContentOnOpen();
-          }}
-        >
-          {readOnly ? "Copy to" : "Move to"}&hellip;
-        </MenuItem>
-        <MenuItem
-          hidden={readOnly}
-          data-test={"Duplicate Content"}
-          onClick={() => {
-            fetcher.submit(
-              {
-                path: "copyMove/copyContent",
-                contentIds: [contentId],
-                parentId: activity.contentId,
-                prependCopy: true,
-              },
-              { method: "post", encType: "application/json" },
-            );
-          }}
-        >
-          Make a copy
-        </MenuItem>
-        <MenuDivider />
-        <MenuItem
-          hidden={readOnly}
-          data-test="Delete Menu Item"
-          onClick={() => {
-            setContentToDelete(content);
-            deleteContentOnOpen();
-          }}
-        >
-          Move to trash
-        </MenuItem>
-      </>
-    );
-  }
 
   const createNewDocument = useCallback(
     (contentId?: string) => {
@@ -588,12 +378,13 @@ export function CompoundActivityEditor({
       showPublicStatus={true}
       showActivityCategories={true}
       showAddButton={!readOnlyStructure}
-      emptyMessage={`${contentTypeName} is empty. Add documents ${activity.type === "sequence" ? "or question banks " : ""}here to begin.`}
-      content={cardContent}
-      selectedCards={user ? selectedCards : undefined}
-      setSelectedCards={setSelectedCards}
+      emptyMessage={`${contentTypeName} is empty. Add documents here to begin.`}
+      cardContent={cardContent}
+      includeSelectionBox={user ? true : false}
+      selectedCards={cardSelections.ids}
+      onCardSelected={cardSelections.add}
+      onCardDeselected={cardSelections.remove}
       disableSelectFor={addTo ? [addTo.contentId] : undefined}
-      disableAsSelectedFor={disableAsSelected}
       isAuthor={user?.isAuthor}
       addDocumentCallback={(contentId) => {
         if (user?.isAuthor) {
@@ -608,6 +399,132 @@ export function CompoundActivityEditor({
 
   const cardListHeaderHieght = "40px";
 
+  /**
+   * TODO: This is a hack to place arbitrary buttons into the action bar.
+   * Move this logic to `actions` once `<AddContentToMenu>` and `<CreateContentMenu>`
+   * have been properly refactored to NOT include their initial button UI inside of themselves.
+   */
+  const FIX_ME_miscellaneous_buttons = addTo ? null : (
+    <>
+      {/* <AddContentToMenu
+        fetcher={addContentFetcher}
+        sourceContent={selectedContentDescriptions}
+        size="xs"
+        colorScheme="blue"
+        label="Copy selected to"
+        user={user ?? null}
+        onNavigate={(url) => navigate(url)}
+        setAddTo={setAddTo}
+      /> */}
+      <Show above="md">
+        <CreateContentMenu
+          sourceContent={selectedContentDescriptions}
+          size="xs"
+          label="Create from selected"
+          user={user ?? null}
+          navigate={navigate}
+          createFetcher={createContentMenuCreateFetcher}
+          saveNameFetcher={createContentMenuSaveNameFetcher}
+        />
+      </Show>
+    </>
+  );
+
+  let context: ActionBarContext;
+  let actions: ActionBarActions[] = [];
+
+  if (addTo) {
+    const config = configAddFromContentList({
+      cardSelections,
+      addTo,
+      setAddTo,
+      onAdd: copyDialogOnOpen,
+    });
+
+    context = config.context;
+    actions = config.actions;
+  } else if (readOnly) {
+    const config = configReadOnlyContentList({
+      cardSelections,
+      onCopyTo: () => {
+        const selectedContent = activity.children.find(
+          (c) => c.contentId === cardSelections.ids.values().next().value,
+        );
+        if (selectedContent) {
+          setMoveCopyAction("Copy");
+          setMoveCopyData({
+            contentId: selectedContent.contentId,
+            name: selectedContent.name,
+            type: selectedContent.type,
+            isPublic: selectedContent.isPublic,
+            isShared: selectedContent.isShared,
+            sharedWith: selectedContent.sharedWith,
+            licenseCode: selectedContent.licenseCode ?? null,
+          });
+          moveCopyContentOnOpen();
+        }
+      },
+    });
+
+    context = config.context;
+    actions = config.actions;
+  } else {
+    const config = configOrganizeContentList({
+      cardSelections,
+      cardMovement,
+      FIX_ME_miscellaneous_buttons,
+      onMoveTo: () => {
+        const selectedContent = activity.children.find(
+          (c) => c.contentId === cardSelections.ids.values().next().value,
+        );
+        if (selectedContent) {
+          setMoveCopyAction("Move");
+          setMoveCopyData({
+            contentId: selectedContent.contentId,
+            name: selectedContent.name,
+            type: selectedContent.type,
+            isPublic: selectedContent.isPublic,
+            isShared: selectedContent.isShared,
+            sharedWith: selectedContent.sharedWith,
+            licenseCode: selectedContent.licenseCode ?? null,
+          });
+          moveCopyContentOnOpen();
+        }
+      },
+      onCopy: () => {
+        fetcher.submit(
+          {
+            path: "copyMove/copyContent",
+            contentIds: [...cardSelections.ids],
+            parentId: activity.contentId,
+            prependCopy: true,
+          },
+          { method: "post", encType: "application/json" },
+        );
+      },
+      onDelete: () => {
+        const selectedContent = activity.children.find(
+          (c) => c.contentId === cardSelections.ids.values().next().value,
+        );
+        if (selectedContent) {
+          setContentToDelete(selectedContent);
+          deleteContentOnOpen();
+        }
+      },
+    });
+
+    context = config.context;
+    actions = config.actions;
+  }
+
+  const selectedItemsActions = (
+    <ActionBar
+      context={context}
+      actions={actions}
+      isActive={cardSelections.areActive}
+    />
+  );
+
   const heading = (
     <Flex
       backgroundColor="#fff"
@@ -619,72 +536,7 @@ export function CompoundActivityEditor({
       alignItems="center"
     >
       <Spacer />
-
-      <Flex
-        height="30px"
-        width="100%"
-        alignContent="center"
-        hidden={numSelected === 0 && addTo === null}
-        backgroundColor="gray.100"
-        justifyContent="center"
-      >
-        {addTo !== null ? (
-          <HStack hidden={numSelected > 0}>
-            <CloseButton
-              size="sm"
-              onClick={() => {
-                setAddTo(null);
-              }}
-            />{" "}
-            <Text noOfLines={1}>
-              Adding items to: {menuIcons[addTo.type]}
-              <strong>{addTo.name}</strong>
-            </Text>
-          </HStack>
-        ) : null}
-        <HStack hidden={numSelected === 0}>
-          <CloseButton size="sm" onClick={() => setSelectedCards([])} />{" "}
-          <Text>{numSelected} selected</Text>
-          <HStack hidden={addTo !== null}>
-            <AddContentToMenu
-              fetcher={fetcher}
-              sourceContent={selectedCardsFiltered}
-              size="xs"
-              colorScheme="blue"
-              label="Add selected to"
-              user={user ?? null}
-              onNavigate={(url) => navigate(url)}
-              setAddTo={setAddTo}
-            />
-            <CreateContentMenu
-              sourceContent={selectedCardsFiltered}
-              size="xs"
-              colorScheme="blue"
-              label="Create from selected"
-              user={user ?? null}
-              navigate={navigate}
-              createFetcher={createContentMenuCreateFetcher}
-              saveNameFetcher={createContentMenuSaveNameFetcher}
-            />
-          </HStack>
-          {addTo !== null ? (
-            <Button
-              data-test="Add Selected To Button"
-              size="xs"
-              colorScheme="blue"
-              onClick={() => {
-                copyDialogOnOpen();
-              }}
-            >
-              Add selected to: {menuIcons[addTo.type]}
-              <strong>
-                {addTo.name.substring(0, 10)}
-                {addTo.name.length > 10 ? "..." : ""}
-              </strong>
-            </Button>
-          ) : null}
-        </HStack>
-      </Flex>
+      {selectedItemsActions}
 
       <Spacer />
       <Menu>
