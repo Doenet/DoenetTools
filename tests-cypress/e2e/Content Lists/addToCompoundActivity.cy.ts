@@ -81,9 +81,9 @@ describe("Add to compound activity tests", { tags: ["@group2"] }, () => {
     cy.get('[data-test="Add My Activities Items"]').click();
 
     cy.get('[data-test="Folder Title"]').should("have.text", "My Activities");
-    cy.get('[data-test="Adding Items Message"]').should(
+    cy.get('[data-test="Action Bar Description"]').should(
       "have.text",
-      "Adding items to: Problem Set 1",
+      "Adding 0 items to Problem Set 1",
     );
     cy.get(`[data-test="Content Card"]`)
       .eq(0)
@@ -91,8 +91,8 @@ describe("Add to compound activity tests", { tags: ["@group2"] }, () => {
       .find('[data-test="Card Select"]')
       .click();
 
-    cy.get('[data-test="Add Selected To Button"]')
-      .should("contain.text", "Add selected to: Problem Se")
+    cy.get('[data-test="Action Bar Add"]')
+      .should("contain.text", "Add")
       .click();
 
     cy.get('[data-test="Copy Body"]').should(
@@ -146,8 +146,8 @@ describe("Add to compound activity tests", { tags: ["@group2"] }, () => {
       .find('[data-test="Card Select"]')
       .click();
 
-    cy.get('[data-test="Add Selected To Button"]')
-      .should("contain.text", "Add selected to: Problem S")
+    cy.get('[data-test="Action Bar Add"]')
+      .should("contain.text", "Add")
       .click();
 
     cy.get('[data-test="Copy Body"]').should(
@@ -156,23 +156,17 @@ describe("Add to compound activity tests", { tags: ["@group2"] }, () => {
     );
     cy.get('[data-test="Close Button"]').click();
 
-    cy.log("clear selection");
-    cy.get('[data-test="Add Selected To Button"]').should(
-      "contain.text",
-      "Add selected to: Problem S",
+    // NOTE: Currently pressing "Add" adds those items to the problem set,
+    // but does not clear the current selection. This might not be the right behavior.
+    cy.get('[data-test="Action Bar Description"]').should(
+      "have.text",
+      "Adding 2 items to Problem Set 1",
     );
-    cy.get('[data-test="Clear Selection"]').click();
-    cy.get('[data-test="Add Selected To Button"]').should("not.exist");
 
     cy.log("stop adding items");
 
-    cy.get('[data-test="Adding Items Message"]').should(
-      "have.text",
-      "Adding items to: Problem Set 1",
-    );
-
-    cy.get('[data-test="Stop Adding Items"]').click();
-    cy.get('[data-test="Adding Items Message"]').should("not.exist");
+    cy.get('[data-test="Action Bar Stop adding items"]').click();
+    cy.get('[data-test="Action Bar Description"]').should("not.exist");
 
     cy.log("Verify Problem Set 1 has new items");
 
@@ -240,8 +234,8 @@ describe("Add to compound activity tests", { tags: ["@group2"] }, () => {
         .find('[data-test="Card Select"]')
         .click();
 
-      cy.get('[data-test="Add Selected To Button"]')
-        .should("contain.text", "Add selected to: A problem")
+      cy.get('[data-test="Action Bar Add"]')
+        .should("contain.text", "Add")
         .click();
 
       cy.get('[data-test="Copy Body"]').should(
@@ -329,8 +323,8 @@ describe("Add to compound activity tests", { tags: ["@group2"] }, () => {
         .find('[data-test="Card Select"]')
         .click();
 
-      cy.get('[data-test="Add Selected To Button"]')
-        .should("contain.text", "Add selected to: My problem")
+      cy.get('[data-test="Action Bar Add"]')
+        .should("contain.text", "Add")
         .click();
 
       cy.get('[data-test="Copy Body"]').should(

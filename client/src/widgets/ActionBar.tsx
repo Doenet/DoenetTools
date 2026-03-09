@@ -57,7 +57,7 @@ export function ActionBar({
     >
       {isActive && (
         <CloseButton
-          data-test="Stop Adding Items"
+          data-test={`Action Bar ${context.closeLabel}`}
           size="sm"
           onClick={context.onClose}
         />
@@ -97,7 +97,7 @@ export function ActionBar({
           ) : (
             <Button
               key={action.label}
-              data-test={action.label}
+              data-test={`Action Bar ${action.label}`}
               isDisabled={action.isDisabled}
               size="xs"
               leftIcon={iconElement}
