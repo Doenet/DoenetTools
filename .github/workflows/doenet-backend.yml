@@ -9,7 +9,7 @@ env:
   WORKING_DIR: ./server
   ECR_REPOSITORY: dev3/doenet
   ECS_CLUSTER: dev3
-  ECS_SERVICE: doenet
+  ECS_SERVICE: doenet-FARGATE
   GHA_ROLE: arn:aws:iam::568298704244:role/github-actions-dev3
 
 permissions:
