@@ -67,6 +67,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ${{ env.WORKING_DIR }}
+          file: ./server/Dockerfile
           platforms: linux/amd64
           # build-args: ${{ inputs.build-args }}
           push: true
