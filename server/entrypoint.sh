@@ -21,6 +21,7 @@
 # done
 
 
-npx prisma migrate dev
-npx prisma db seed
+#npx prisma migrate dev
+#npx prisma db seed
+npx prisma migrate deploy
 npm run start

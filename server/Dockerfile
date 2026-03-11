@@ -26,4 +26,5 @@ ENTRYPOINT ["./entrypoint.sh"]
 EXPOSE 3000
 
 RUN useradd serveruser
+RUN mkdir /home/serveruser && chown serveruser:serveruser
 USER serveruser
