@@ -6,7 +6,8 @@ on:
 
 env:
   AWS_REGION: "us-east-2"
-  WORKING_DIR: ./server
+#  WORKING_DIR: ./server
+  WORKING_DIR: ./
   ECR_REPOSITORY: dev3/doenet
   ECS_CLUSTER: dev3
   ECS_SERVICE: doenet-FARGATE
