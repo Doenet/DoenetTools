@@ -13,7 +13,8 @@
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "lint": "npm run lint --workspaces",
-    "lint:check": "npm run lint:check --workspaces"
+    "lint:check": "npm run lint:check --workspaces",
+    "start": "node dist/src/index.js"
   },
   "devDependencies": {
     "@cypress/grep": "^6.0.0",
