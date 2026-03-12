@@ -65,4 +65,4 @@ WORKDIR /DoenetTools/server
 EXPOSE 3000
 
 # Run migrations then start server
-CMD ["sh", "-c", "npm run prisma:deploy && npm run start"]
+ENTRYPOINT ["./entrypoint.sh"]
