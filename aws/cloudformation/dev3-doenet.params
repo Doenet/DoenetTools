@@ -65,15 +65,15 @@
   },
   {
     "ParameterKey": "ContainerMemory",
-    "ParameterValue": "1024"
+    "ParameterValue": "2048"
   },
   {
     "ParameterKey": "ContainerCpu",
-    "ParameterValue": "512"
+    "ParameterValue": "1024"
   },
   {
     "ParameterKey": "HealthCheckGracePeriod",
-    "ParameterValue": "300"
+    "ParameterValue": "600"
   },
   {
     "ParameterKey": "MaxCount",
