@@ -39,5 +39,5 @@ Environment:
     Value: "true"
   - Name: ADD_TEST_APIS
     Value: "true"
-  #- Name: NODE_OPTIONS
-  #  Value: "--max-old-space-size=896"
+  - Name: NODE_OPTIONS
+    Value: "--max-old-space-size=768"
