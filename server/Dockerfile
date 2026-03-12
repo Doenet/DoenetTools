@@ -61,8 +61,16 @@ COPY --from=builder /DoenetTools/shared/dist ./shared/dist
 COPY --from=builder /DoenetTools/server/prisma ./server/prisma
 COPY --from=builder /DoenetTools/node_modules/.prisma/client ./node_modules/.prisma/client
 
+# Copy entrypoint script
+COPY server/entrypoint.sh ./server/entrypoint.sh
+RUN chmod +x ./server/entrypoint.sh
+
 WORKDIR /DoenetTools/server
-EXPOSE 3000
 
 # Run migrations then start server
 ENTRYPOINT ["./entrypoint.sh"]
+
+EXPOSE 3000
+
+RUN useradd serveruser
+USER serveruser
