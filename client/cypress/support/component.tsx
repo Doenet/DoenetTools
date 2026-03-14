@@ -57,7 +57,7 @@ import {
   createMemoryRouter,
   RouterProvider,
   MemoryRouterProps,
-} from "react-router-dom";
+} from "react-router";
 import { MathJaxContext } from "better-react-mathjax";
 import { mathjaxConfig } from "@doenet/doenetml-iframe";
 import { theme } from "../../src/theme";

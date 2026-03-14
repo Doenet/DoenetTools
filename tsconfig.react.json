@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "types": ["vite/client", "cypress", "node"],
+    // We're using Vite to build, therefore we don't need TS to create the files,
+    // we only want TS to type check
+    "noEmit": true
+
+    // "useDefineForClassFields": true,
+    /* Module settings */
+    // "resolveJsonModule": true,
+    // "isolatedModules": true,
+  }
+}

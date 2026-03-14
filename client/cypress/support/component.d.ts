@@ -1,5 +1,5 @@
 import { MountOptions, MountReturn } from "cypress/react";
-import { MemoryRouterProps } from "react-router-dom";
+import { MemoryRouterProps } from "react-router";
 import { mount } from "cypress/react";
 
 declare global {

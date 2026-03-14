@@ -10,7 +10,7 @@ import {
   Link as ChakraLink,
   Tooltip,
 } from "@chakra-ui/react";
-import { UserInfoWithEmail } from "client/src/types";
+import { UserInfoWithEmail } from "../../types";
 import { createNameNoTag } from "../../utils/names";
 import { AccessibleAvatar } from "../../widgets/AccessibleAvatar";
 import { useFetcher, useLocation } from "react-router";

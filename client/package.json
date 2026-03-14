@@ -7,7 +7,8 @@
     "./src/types": "./src/types.ts"
   },
   "scripts": {
-    "build": "wireit",
+    "build:assets": "vite build",
+    "build:only-me": "tsc --build && npm run build:assets",
     "dev": "cross-env NODE_ENV=production vite",
     "lint": "eslint --fix",
     "lint:check": "eslint",
@@ -18,27 +19,6 @@
     "test:group4": "cypress run --component -b 'chrome' --config video=false --headless --expose grepTags='@group4',grepFilterSpecs=true,grepOmitFiltered=true",
     "test:mistagged": "cypress run --component -b 'chrome' --config video=false --headless --expose grepTags='-@group1+-@group2+-@group3+-@group4',grepFilterSpecs=true,grepOmitFiltered=true",
     "test:all": "cypress run --component -b 'chrome' --config video=false --headless"
-  },
-  "wireit": {
-    "build": {
-      "command": "tsc && vite build",
-      "files": [
-        "src/**/*.ts",
-        "src/**/*.js",
-        "src/**/*.tsx",
-        "src/**/*.jsx",
-        "src/**/*.css",
-        "vite.config.ts",
-        "tsconfig.json"
-      ],
-      "output": [
-        "dist/**/*.js",
-        "dist/**/*.d.ts"
-      ],
-      "dependencies": [
-        "../shared:build"
-      ]
-    }
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.2.4",
@@ -51,7 +31,6 @@
     "axios": "^1.11.0",
     "better-react-mathjax": "^2.4.0-beta-1",
     "browser-image-resizer": "^2.4.1",
-    "cssesc": "^3.0.0",
     "export-to-csv": "^1.4.0",
     "js-cookie": "^3.0.5",
     "luxon": "^3.7.1",
@@ -66,11 +45,14 @@
     "react-router": "^7.7.1",
     "react-select": "^5.10.2",
     "recharts": "^2.15.4",
+    "short-uuid": "^5.2.0",
     "swiper": "^9.4.1"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.28.0",
     "@babel/plugin-syntax-class-properties": "^7.12.13",
+    "@cypress/grep": "^6.0.0",
+    "@cypress/react": "^9.0.1",
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@esbuild-plugins/node-modules-polyfill": "^0.2.2",
     "@rollup/plugin-alias": "^5.1.1",
@@ -86,13 +68,16 @@
     "@vitejs/plugin-react": "^5.1.1",
     "@web/test-runner": "^0.20.2",
     "cross-env": "^10.0.0",
+    "cypress": "^15.11.0",
+    "cypress-axe": "^1.7.0",
     "esbuild": "^0.27.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
     "globals": "^16.3.0",
     "rollup": "^4.46.2",
-    "rollup-plugin-polyfill-node": "^0.13.0"
+    "rollup-plugin-polyfill-node": "^0.13.0",
+    "wick-a11y": "^2.5.0"
   },
   "optionalDependencies": {
     "@esbuild/linux-arm64": "^0.25.8"
