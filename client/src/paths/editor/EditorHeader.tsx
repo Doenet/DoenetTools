@@ -64,6 +64,11 @@ import { editorUrl } from "../../utils/url";
 import { NameBar } from "../../widgets/NameBar";
 import { loader as settingsLoader } from "./EditorSettingsMode";
 import { isActivityFullyCategorized } from "../../utils/classification";
+import { useIframeMenuDismissOverlay } from "../../utils/useIframeMenuDismissOverlay";
+import { MenuDismissOverlay } from "../../components/MenuDismissOverlay";
+import { IFRAME_MENU_IDS } from "../../utils/iframeMenuIds";
+import { useControlledMenu } from "../../utils/useControlledMenu";
+import { useMenuTooltipSuppression } from "../../utils/useMenuTooltipSuppression";
 
 export async function loader({
   params,
@@ -167,6 +172,23 @@ export function EditorHeader() {
     });
 
   const [accessibilityStrictMode, setAccessibilityStrictMode] = useState(false);
+  const { anyMenuOpen, getMenuControl } = useIframeMenuDismissOverlay();
+  const helpMenuControl = useControlledMenu(
+    getMenuControl,
+    IFRAME_MENU_IDS.editorHeaderHelp,
+  );
+  // Shared menu-trigger suppression prevents help tooltip persistence
+  // when close timing and focus/hover events overlap.
+  const {
+    suppressTooltip: suppressHelpTooltip,
+    handleMenuOpen: handleHelpMenuOpen,
+    handleMenuClose: handleHelpMenuClose,
+    handleTriggerMouseEnter: handleHelpMouseEnter,
+    setTriggerRef: setHelpTriggerRef,
+  } = useMenuTooltipSuppression({
+    onOpen: helpMenuControl.menuProps.onOpen,
+    onClose: helpMenuControl.menuProps.onClose,
+  });
 
   const notBrowsableMessage = notBrowsable && (
     <Alert status="warning" height="40px">
@@ -502,10 +524,20 @@ export function EditorHeader() {
   const otherPages = (
     <ButtonGroup mr={{ base: "0rem", lg: "1.5rem" }} spacing="0" mt="2px">
       {contentType === "singleDoc" && (
-        <Menu>
-          <Tooltip label="Help" openDelay={300} placement="bottom-end">
+        <Menu
+          isOpen={helpMenuControl.menuProps.isOpen}
+          onOpen={handleHelpMenuOpen}
+          onClose={handleHelpMenuClose}
+        >
+          <Tooltip
+            label="Help"
+            openDelay={300}
+            placement="bottom-end"
+            isDisabled={suppressHelpTooltip}
+          >
             <MenuButton
               as={IconButton}
+              ref={setHelpTriggerRef}
               icon={<LuCircleHelp />}
               variant="ghost"
               fontSize="1.3rem"
@@ -513,9 +545,10 @@ export function EditorHeader() {
               width="30px"
               height="35px"
               aria-label="Help"
+              onMouseEnter={handleHelpMouseEnter}
             />
           </Tooltip>
-          <MenuList>
+          <MenuList data-test="Editor Header Help Menu List">
             <MenuItem as={ChakraLink} href="https://docs.doenet.org" isExternal>
               Documentation
             </MenuItem>
@@ -703,6 +736,12 @@ export function EditorHeader() {
         background="doenet.lightBlue"
         overflow="auto"
       >
+        {/*
+          Dismiss layer used for iframe-safe menu close behavior.
+        */}
+        {anyMenuOpen && (
+          <MenuDismissOverlay dataTest="Editor Header Menu Dismiss Overlay" />
+        )}
         {inLibrary && inCurateMode ? (
           <Flex width="100%">
             <Outlet context={editorContext} />

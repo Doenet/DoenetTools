@@ -7,7 +7,19 @@ import importPlugin from "eslint-plugin-import";
 
 export default tseslint.config(
   // Global ignores
-  { ignores: ["dist/", "**/dist/**", "**/.astro", "vite.config.ts"] },
+  {
+    ignores: [
+      "**/dist/**",
+      "**/.wireit/**",
+      "**/.astro/**",
+      "vite.config.ts",
+      "**/cypress/screenshots/**",
+      "**/cypress/videos/**",
+      "**/cypress/downloads/**",
+      "**/cypress/accessibility/**",
+      "**/runner-results/**",
+    ],
+  },
 
   // Base ESLint rules for all files
   eslint.configs.recommended,

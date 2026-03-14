@@ -47,4 +47,64 @@ describe("Document Editor Tests", { tags: ["@group1"] }, function () {
       cy.iframe().find(".doenet-viewer").should("contain.text", `More!`);
     });
   });
+
+  it("closes Help menu when clicking in iframe and does not leave tooltip", () => {
+    cy.loginAsTestUser({ isAuthor: true });
+
+    cy.createContent({
+      name: "Editor Help Menu",
+      doenetML: "<p>Hello document editor help menu</p>",
+    }).then((activityId) => {
+      cy.visit(`/documentEditor/${activityId}/edit`);
+
+      cy.iframe().find(".doenet-viewer").should("exist");
+
+      cy.get('[aria-label="Help"]').click({ force: true });
+      cy.get('[data-test="Editor Header Help Menu List"]:visible')
+        .contains("Documentation")
+        .should("exist");
+      cy.get('[aria-label="Help"]').should(
+        "have.attr",
+        "aria-expanded",
+        "true",
+      );
+      cy.dismissMenuByOverlay({
+        overlayTestId: "Editor Header Menu Dismiss Overlay",
+        menuListTestId: "Editor Header Help Menu List",
+      });
+      cy.get('[aria-label="Help"]').should(
+        "have.attr",
+        "aria-expanded",
+        "false",
+      );
+    });
+  });
+
+  it("does not leave Help tooltip open after outside click closes menu", () => {
+    cy.loginAsTestUser({ isAuthor: true });
+
+    cy.createContent({
+      name: "Editor Help Tooltip",
+      doenetML: "<p>Hello document editor help tooltip</p>",
+    }).then((activityId) => {
+      cy.visit(`/documentEditor/${activityId}/edit`);
+
+      cy.iframe().find(".doenet-viewer").should("exist");
+
+      cy.get('[aria-label="Help"]').click({ force: true });
+      cy.get('[data-test="Editor Header Help Menu List"]:visible')
+        .contains("Documentation")
+        .should("exist");
+
+      cy.get('[aria-label*="accessibility strict mode"]').click({
+        force: true,
+      });
+
+      cy.get('[data-test="Editor Header Help Menu List"]:visible').should(
+        "not.exist",
+      );
+      cy.get('[role="tooltip"]:visible').should("not.exist");
+      cy.checkAccessibility("body");
+    });
+  });
 });

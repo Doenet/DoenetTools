@@ -66,6 +66,7 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix:
         test-group: [group1, group2, group3, group4]
 
@@ -176,6 +177,7 @@ jobs:
       ADD_TEST_APIS: "true"
 
     strategy:
+      fail-fast: false
       matrix:
         test-group: [brittle1, brittle2, brittle3]
 
@@ -259,6 +261,7 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix:
         test-group: [group1, group2, group3, group4]
 
