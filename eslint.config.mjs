@@ -7,7 +7,7 @@ import importPlugin from "eslint-plugin-import";
 
 export default tseslint.config(
   // Global ignores
-  { ignores: ["dist/", "**/.astro", "vite.config.ts"] },
+  { ignores: ["dist/", "**/dist/**", "**/.astro", "vite.config.ts"] },
 
   // Base ESLint rules for all files
   eslint.configs.recommended,

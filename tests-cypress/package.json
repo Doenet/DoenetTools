@@ -20,7 +20,15 @@
     "test:parallel": "cypress-parallel -s test:all -t 4 -d e2e -n ../../node_modules/cypress-multi-reporters"
   },
   "dependencies": {
-    "cssesc": "^3.0.0"
-  },
-  "devDependencies": {}
+    "@cypress/grep": "^6.0.0",
+    "@doenet-tools/client": "^1.0.1",
+    "@doenet-tools/shared": "^1.0.0",
+    "@types/luxon": "^3.7.1",
+    "cssesc": "^3.0.0",
+    "cypress-file-upload": "^5.0.8",
+    "cypress-iframe": "^1.0.1",
+    "cypress-plugin-tab": "^1.0.5",
+    "cypress-wait-until": "^3.0.2",
+    "wick-a11y": "^2.5.0"
+  }
 }
