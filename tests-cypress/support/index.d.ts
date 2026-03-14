@@ -82,6 +82,20 @@ declare global {
         iframeSelector: string,
         waitSelector?: string | null,
       ): Chainable<HTMLBodyElement>;
+
+      /**
+       * Assert dismiss overlay appears for an open menu, click it,
+       * then assert the menu (and optionally tooltip) is closed.
+       */
+      dismissMenuByOverlay({
+        overlayTestId,
+        menuListTestId,
+        assertTooltipClosed,
+      }: {
+        overlayTestId: string;
+        menuListTestId: string;
+        assertTooltipClosed?: boolean;
+      }): Chainable<null>;
     }
   }
 }
