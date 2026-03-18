@@ -9,10 +9,18 @@
  * =====================================================================================
  */
 
-import { DoenetDateTime, isUuid, Uuid } from "./types_module_specific";
+import {
+  type ContentType,
+  type DoenetDateTime,
+  isContentType,
+  isUserInfo,
+  isUuid,
+  type UserInfo,
+  type Uuid,
+} from "@doenet-tools/shared";
 
-export type { DoenetDateTime, Uuid };
-export { isUuid };
+export type { ContentType, DoenetDateTime, UserInfo, Uuid };
+export { isContentType, isUserInfo, isUuid };
 
 export type DoenetmlVersion = {
   id: number;
@@ -66,31 +74,6 @@ export type LibraryComment = {
   comment: string;
   isMe: boolean;
 };
-
-export type UserInfo = {
-  userId: Uuid;
-  firstNames: string | null;
-  lastNames: string;
-  isAnonymous?: boolean;
-  numLibrary?: number;
-  numCommunity?: number;
-  isMaskForLibrary?: boolean;
-};
-
-export function isUserInfo(obj: unknown): obj is UserInfo {
-  const typedObj = obj as UserInfo;
-  return (
-    typedObj !== null &&
-    typeof typedObj === "object" &&
-    isUuid(typedObj.userId) &&
-    (typedObj.firstNames === null || typeof typedObj.firstNames === "string") &&
-    typeof typedObj.lastNames === "string" &&
-    (typedObj.numLibrary === undefined ||
-      typeof typedObj.numLibrary === "number") &&
-    (typedObj.numCommunity === undefined ||
-      typeof typedObj.numCommunity === "number")
-  );
-}
 
 /**
  * This type extends `UserInfo` with sensitive fields.
@@ -171,14 +154,6 @@ export type PartialContentClassification = {
   numCurated?: number;
   numCommunity?: number;
 };
-
-export type ContentType = "singleDoc" | "select" | "sequence" | "folder";
-export function isContentType(type: unknown): type is ContentType {
-  return (
-    typeof type === "string" &&
-    ["singleDoc", "select", "sequence", "folder"].includes(type)
-  );
-}
 
 export type AssignmentMode = "formative" | "summative";
 
