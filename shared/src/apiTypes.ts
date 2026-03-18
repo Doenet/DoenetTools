@@ -33,7 +33,11 @@ export function isUserInfo(obj: unknown): obj is UserInfo {
     (typedObj.numLibrary === undefined ||
       typeof typedObj.numLibrary === "number") &&
     (typedObj.numCommunity === undefined ||
-      typeof typedObj.numCommunity === "number")
+      typeof typedObj.numCommunity === "number") &&
+    (typedObj.isAnonymous === undefined ||
+      typeof typedObj.isAnonymous === "boolean") &&
+    (typedObj.isMaskForLibrary === undefined ||
+      typeof typedObj.isMaskForLibrary === "boolean")
   );
 }
 
