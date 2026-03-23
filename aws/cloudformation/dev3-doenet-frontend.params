@@ -12,10 +12,6 @@
     "ParameterValue": "/dev3/PublicHostedZoneId"
   },
   {
-    "ParameterKey": "ServiceName",
-    "ParameterValue": "frontend"
-  },
-  {
     "ParameterKey": "TemplateS3Bucket",
     "ParameterValue": "doenet-cf-dev"
   },
@@ -26,5 +22,13 @@
   {
     "ParameterKey": "LoadBalancerDnsName",
     "ParameterValue": "/dev3/LoadBalancerDnsName"
+  },
+  {
+    "ParameterKey": "AppServiceName",
+    "ParameterValue": "app"
+  },  
+  {
+    "ParameterKey": "SiteServiceName",
+    "ParameterValue": "site"
   }
 ]

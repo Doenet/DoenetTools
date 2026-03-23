@@ -15,59 +15,123 @@ Parameters:
     Type: String
     Description: The Route 53 hosted zone ID
 
-  ServiceName:
+  AppServiceName:
     Type: String
     Description: Service name to include in bucket name
+
+  SiteServiceName:
+    Type: String
+    Description: Service name for the site bucket (e.g., site)
+    Default: site
 
   LoadBalancerDnsName:
     Type: String
     Description: DNS name of the Application Load Balancer
 
 Resources:
-  WebsiteBucket:
+  AppBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub "${EnvironmentName}-${ServiceName}-${AWS::AccountId}-${AWS::Region}"
+      BucketName: !Sub "${EnvironmentName}-${AppServiceName}-${AWS::AccountId}-${AWS::Region}"
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
         IgnorePublicAcls: true
         RestrictPublicBuckets: true
 
-  OriginAccessControl:
+  SiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${EnvironmentName}-${SiteServiceName}-${AWS::AccountId}-${AWS::Region}"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  AppOriginAccessControl:
     Type: AWS::CloudFront::OriginAccessControl
     Properties:
       OriginAccessControlConfig:
-        Name: !Sub "${EnvironmentName}-${ServiceName}-oac"
+        Name: !Sub "${EnvironmentName}-${AppServiceName}-oac"
         OriginAccessControlOriginType: s3
         SigningBehavior: always
         SigningProtocol: sigv4
 
-  BucketPolicy:
+  SiteOriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub "${EnvironmentName}-${SiteServiceName}-oac"
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  AppBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
-      Bucket: !Ref WebsiteBucket
+      Bucket: !Ref AppBucket
       PolicyDocument:
         Statement:
           - Effect: Allow
             Principal:
               Service: cloudfront.amazonaws.com
             Action: s3:GetObject
-            Resource: !Sub "arn:aws:s3:::${WebsiteBucket}/*"
+            Resource: !Sub "arn:aws:s3:::${AppBucket}/*"
             Condition:
               StringEquals:
                 "AWS:SourceArn": !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}"
+
+  SiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref SiteBucket
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub "arn:aws:s3:::${SiteBucket}/*"
+            Condition:
+              StringEquals:
+                "AWS:SourceArn": !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}"
+
+  DirectoryIndexFunction:
+    Type: AWS::CloudFront::Function
+    Properties:
+      Name: !Sub "${EnvironmentName}-site-directory-index"
+      AutoPublish: true
+      FunctionConfig:
+        Comment: Rewrite directory requests to index.html for Astro static output
+        Runtime: cloudfront-js-2.0
+      FunctionCode: |
+        function handler(event) {
+            var request = event.request;
+            var uri = request.uri;
+            if (uri.endsWith('/')) {
+                request.uri = uri + 'index.html';
+            } else if (!uri.split('/').pop().includes('.')) {
+                request.uri = uri + '/index.html';
+            }
+            return request;
+        }
 
   CloudFrontDistribution:
     Type: AWS::CloudFront::Distribution
     Properties:
       DistributionConfig:
         Origins:
-          - Id: S3Origin
-            DomainName: !GetAtt WebsiteBucket.RegionalDomainName
+          - Id: AppS3Origin
+            DomainName: !GetAtt AppBucket.RegionalDomainName
             S3OriginConfig:
               OriginAccessIdentity: ""
-            OriginAccessControlId: !GetAtt OriginAccessControl.Id
+            OriginAccessControlId: !GetAtt AppOriginAccessControl.Id
+          - Id: SiteS3Origin
+            DomainName: !GetAtt SiteBucket.RegionalDomainName
+            S3OriginConfig:
+              OriginAccessIdentity: ""
+            OriginAccessControlId: !GetAtt SiteOriginAccessControl.Id
           - Id: ALBOrigin
             DomainName: !Ref LoadBalancerDnsName
             CustomOriginConfig:
@@ -95,8 +159,24 @@ Resources:
                 - "*"
               Cookies:
                 Forward: all
+          - PathPattern: /blog/*
+            TargetOriginId: SiteS3Origin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods:
+              - GET
+              - HEAD
+            CachedMethods:
+              - GET
+              - HEAD
+            ForwardedValues:
+              QueryString: false
+              Cookies:
+                Forward: none
+            FunctionAssociations:
+              - EventType: viewer-request
+                FunctionARN: !GetAtt DirectoryIndexFunction.FunctionARN
         DefaultCacheBehavior:
-          TargetOriginId: S3Origin
+          TargetOriginId: AppS3Origin
           ViewerProtocolPolicy: redirect-to-https
           AllowedMethods:
             - GET
@@ -124,7 +204,7 @@ Resources:
           SslSupportMethod: sni-only
       Tags:
         - Key: Name
-          Value: !Sub "${EnvironmentName}-${ServiceName}-cloudfront"
+          Value: !Sub "${EnvironmentName}-${AppServiceName}-cloudfront"
 
   SSLCertificate:
     Type: AWS::CertificateManager::Certificate
@@ -148,19 +228,23 @@ Resources:
   DistributionIdParameter:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: !Sub "/${EnvironmentName}/${ServiceName}/DistributionId"
+      Name: !Sub "/${EnvironmentName}/${AppServiceName}/DistributionId"
       Type: String
       Value: !GetAtt CloudFrontDistribution.Id
       Description: CloudFront distribution ID for the website
 
 Outputs:
-  BucketName:
-    Description: Name of the S3 bucket
-    Value: !Ref WebsiteBucket
+  AppBucketName:
+    Description: Name of the app S3 bucket
+    Value: !Ref AppBucket
+
+  SiteBucketName:
+    Description: Name of the site S3 bucket
+    Value: !Ref SiteBucket
 
   WebsiteURL:
     Description: Website URL
-    Value: !GetAtt WebsiteBucket.WebsiteURL
+    Value: !GetAtt AppBucket.WebsiteURL
 
   CloudFrontURL:
     Description: CloudFront distribution URL

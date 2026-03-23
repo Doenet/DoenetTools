@@ -13,9 +13,14 @@ Parameters:
   PublicHostedZoneName:
     Type: "AWS::SSM::Parameter::Value<String>"
 
-  ServiceName:
+  AppServiceName:
     Type: String
     Description: Service name to include in bucket name
+
+  SiteServiceName:
+    Type: String
+    Description: Service name for the site bucket
+    Default: site
 
   TemplateS3Bucket:
     Type: String
@@ -86,7 +91,7 @@ Resources:
       - StackSetAdministrationRole
       - StackSetExecutionRole
     Properties:
-      StackSetName: !Sub "${EnvironmentName}-${ServiceName}-s3-hosted-stackset"
+      StackSetName: !Sub "${EnvironmentName}-${AppServiceName}-s3-hosted-stackset"
       Description: StackSet for S3 website hosting with CloudFront
       AdministrationRoleARN: !GetAtt StackSetAdministrationRole.Arn
       ExecutionRoleName: AWSCloudFormationStackSetExecutionRole
@@ -106,8 +111,10 @@ Resources:
           ParameterValue: !Ref PublicHostedZoneName
         - ParameterKey: PublicHostedZoneId
           ParameterValue: !Ref PublicHostedZoneId
-        - ParameterKey: ServiceName
-          ParameterValue: !Ref ServiceName
+        - ParameterKey: AppServiceName
+          ParameterValue: !Ref AppServiceName
+        - ParameterKey: SiteServiceName
+          ParameterValue: !Ref SiteServiceName
         - ParameterKey: LoadBalancerDnsName
           ParameterValue: !Ref LoadBalancerDnsName
       TemplateURL: !Sub "https://${TemplateS3Bucket}.s3.amazonaws.com/${TemplateS3Key}"
