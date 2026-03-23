@@ -222,10 +222,10 @@ describe("Create from selected tests", { tags: ["@group3"] }, () => {
       cy.visit(`/explore?author=${user.userId}`);
 
       cy.log("Copy Document FP1 and Problem Set 1 into new Problem Set");
-      cy.get('[data-test="Content List"] [data-test="Card Select"]')
+      cy.get('[data-test="Recent Content List"] [data-test="Card Select"]')
         .eq(2)
         .click();
-      cy.get('[data-test="Content List"] [data-test="Card Select"]')
+      cy.get('[data-test="Recent Content List"] [data-test="Card Select"]')
         .eq(8)
         .click();
 
