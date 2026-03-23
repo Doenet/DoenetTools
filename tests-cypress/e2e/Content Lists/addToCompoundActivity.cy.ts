@@ -202,6 +202,12 @@ describe("Add to compound activity tests", { tags: ["@group2"] }, () => {
       cy.get('[data-test="Editable Title"]')
         .should("have.text", "Untitled Problem Set")
         .type("A problem set{enter}");
+      cy.wait(2000);
+
+      cy.get('[data-test="Editable Title"]').should(
+        "have.text",
+        "A problem set",
+      );
 
       cy.get('[data-test="New Button"]').click();
       cy.get('[data-test="Add Explore Items"]').click();
@@ -209,20 +215,21 @@ describe("Add to compound activity tests", { tags: ["@group2"] }, () => {
       cy.get('[data-test="Search"]').type(
         `${user.firstNames} ${user.lastNames}{enter}`,
       );
+      cy.wait(3000);
       cy.get('[data-test="Authors Tab"]').click();
       cy.get('[data-test="Filter By Matched Author"]')
         .eq(0)
         .should("contain.text", `${user.firstNames} ${user.lastNames}`)
         .click();
 
-      cy.get('[data-test="Content List"] [data-test="Content Card"]')
+      cy.get('[data-test="Recent Content List"] [data-test="Content Card"]')
         .eq(0)
         .should("contain.text", "Folder 2");
 
       cy.log("Add Problem Set 1 and Problem Set From explore");
 
       cy.get('[data-test="Search"]').type(`Problem Set{enter}`);
-      cy.get('[data-test="Content List"] [data-test="Content Card"]')
+      cy.get('[data-test="Searched Content List"] [data-test="Content Card"]')
         .eq(0)
         .should("contain.text", "Problem Set 1")
         .find('[data-test="Card Select"]')
@@ -234,7 +241,7 @@ describe("Add to compound activity tests", { tags: ["@group2"] }, () => {
         .find('[data-test="Card Select"]')
         .click();
 
-      cy.get('[data-test="Action Bar Add"]')
+      cy.get('[data-test="Add Selected To Button"]')
         .should("contain.text", "Add")
         .click();
 
@@ -282,6 +289,7 @@ describe("Add to compound activity tests", { tags: ["@group2"] }, () => {
       cy.get('[data-test="Editable Title"]')
         .should("have.text", "Untitled Problem Set")
         .type("My problem set{enter}");
+      cy.wait(2000);
 
       cy.get('[data-test="New Button"]').click();
       cy.get('[data-test="Add Explore Items"]').click();
@@ -323,7 +331,7 @@ describe("Add to compound activity tests", { tags: ["@group2"] }, () => {
         .find('[data-test="Card Select"]')
         .click();
 
-      cy.get('[data-test="Action Bar Add"]')
+      cy.get('[data-test="Add Selected To Button"]')
         .should("contain.text", "Add")
         .click();
 
@@ -368,6 +376,7 @@ describe("Add to compound activity tests", { tags: ["@group2"] }, () => {
       cy.get('[data-test="Editable Title"]')
         .should("have.text", "Untitled Problem Set")
         .type("My problem set{enter}");
+      cy.wait(2000);
 
       cy.get('[data-test="New Button"]').click();
       cy.get('[data-test="Add Explore Items"]').click();
@@ -383,7 +392,7 @@ describe("Add to compound activity tests", { tags: ["@group2"] }, () => {
         .click();
 
       cy.log("Add Document F2");
-      cy.get('[data-test="Content List"] [data-test="Content Card"]')
+      cy.get('[data-test="Recent Content List"] [data-test="Content Card"]')
         .eq(1)
         .should("contain.text", "Document F2")
         .click();
