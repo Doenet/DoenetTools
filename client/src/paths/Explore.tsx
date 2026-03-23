@@ -117,6 +117,7 @@ export async function loader({
     return {
       q,
       ...searchData,
+      searchedContent: searchData.content,
       categories,
       allCategories,
     };
@@ -151,6 +152,7 @@ export function Explore() {
     recentContent,
     trendingContent,
     curatedContent,
+    searchedContent,
     matchedClassifications,
     matchedSubCategories,
     matchedCategories,
@@ -168,9 +170,10 @@ export function Explore() {
     topAuthors: UserInfo[] | null;
     matchedAuthors: UserInfo[] | undefined;
     authorInfo: UserInfo | null;
-    recentContent: Content[];
-    trendingContent: Content[];
-    curatedContent: Content[];
+    recentContent?: Content[];
+    trendingContent?: Content[];
+    curatedContent?: Content[];
+    searchedContent?: Content[];
     matchedClassifications: PartialContentClassification[] | null | undefined;
     matchedSubCategories: PartialContentClassification[] | null | undefined;
     matchedCategories: PartialContentClassification[] | null | undefined;
@@ -204,20 +207,19 @@ export function Explore() {
   const createContentMenuCreateFetcher = useFetcher();
   const createContentMenuSaveNameFetcher = useFetcher();
 
+  const allContent: Content[] = [
+    ...(recentContent ?? []),
+    ...(trendingContent ?? []),
+    ...(curatedContent ?? []),
+    ...(searchedContent ?? []),
+  ];
+
   const cardSelections = useCardSelections({
-    ids: [
-      ...recentContent.map((c) => c.contentId),
-      ...trendingContent.map((c) => c.contentId),
-      ...curatedContent.map((c) => c.contentId),
-    ],
+    ids: allContent.map((c) => c.contentId),
   });
 
   const selectedContentDescriptions = [];
-  for (const content of [
-    ...recentContent,
-    ...trendingContent,
-    ...curatedContent,
-  ]) {
+  for (const content of allContent) {
     if (
       cardSelections.ids.has(content.contentId) &&
       !selectedContentDescriptions
@@ -296,10 +298,12 @@ export function Explore() {
 
   const curatedContentDisplay = useMemo(
     () =>
-      displayMatchingContent(curatedContent, {
-        base: `calc(100vh - ${q ? "250" : "210"}px)`,
-        lg: `calc(100vh - ${q ? "210" : "170"}px)`,
-      }),
+      curatedContent
+        ? displayMatchingContent(curatedContent, {
+            base: `calc(100vh - ${q ? "250" : "210"}px)`,
+            lg: `calc(100vh - ${q ? "210" : "170"}px)`,
+          })
+        : null,
     [displayMatchingContent, curatedContent, q],
   );
 
@@ -308,13 +312,26 @@ export function Explore() {
     [trendingContent, displayMatchingContent],
   );
 
-  const contentDisplay = useMemo(
+  const recentContentDisplay = useMemo(
     () =>
-      displayMatchingContent(recentContent, {
-        base: `calc(100vh - ${q ? "250" : "210"}px)`,
-        lg: `calc(100vh - ${q ? "210" : "170"}px)`,
-      }),
+      recentContent
+        ? displayMatchingContent(recentContent, {
+            base: `calc(100vh - ${q ? "250" : "210"}px)`,
+            lg: `calc(100vh - ${q ? "210" : "170"}px)`,
+          })
+        : null,
     [displayMatchingContent, recentContent, q],
+  );
+
+  const searchedContentDisplay = useMemo(
+    () =>
+      searchedContent
+        ? displayMatchingContent(searchedContent, {
+            base: `calc(100vh - ${q ? "250" : "210"}px)`,
+            lg: `calc(100vh - ${q ? "210" : "170"}px)`,
+          })
+        : null,
+    [displayMatchingContent, searchedContent, q],
   );
 
   // TODO: figure out functions inside hooks
@@ -872,7 +889,7 @@ export function Explore() {
           {curatedContentDisplay}
         </TabPanel>
         <TabPanel padding={0} data-test="Community Results">
-          {trendingContent ? (
+          {trendingContent && (
             <Box data-test="Trending List">
               <Heading
                 size="md"
@@ -885,9 +902,9 @@ export function Explore() {
               </Heading>
               {trendingContentDisplay}
             </Box>
-          ) : null}
-          <Box data-test="Content List">
-            {trendingContent ? (
+          )}
+          {recentContent && (
+            <Box data-test="Recent Content List">
               <Heading
                 size="md"
                 paddingLeft="10px"
@@ -897,9 +914,15 @@ export function Explore() {
               >
                 Recent
               </Heading>
-            ) : null}
-            {contentDisplay}
-          </Box>
+              {recentContentDisplay}
+            </Box>
+          )}
+
+          {searchedContent && (
+            <Box data-test="Searched Content List">
+              {searchedContentDisplay}
+            </Box>
+          )}
         </TabPanel>
         <TabPanel>{authorMatches}</TabPanel>
         <TabPanel>{classificationMatches}</TabPanel>
