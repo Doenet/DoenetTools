@@ -56,6 +56,7 @@ export function AnswerResponseDrawer({
   >([]);
 
   useEffect(() => {
+    setResponses([]);
     async function getAnswerResponses() {
       const itemQuery =
         (itemNumber === null ? "" : `&requestedItemNumber=${itemNumber}`) +
@@ -66,6 +67,8 @@ export function AnswerResponseDrawer({
       const { data } = await axios.get(
         `/api/assign/getStudentSubmittedResponses/${assignment.contentId}/${student.userId}?answerId=${answerId}&contentAttemptNumber=${contentAttemptNumber}${itemQuery}&shuffledOrder=${shuffledOrder.toString()}`,
       );
+
+      console.log("got response data", data);
 
       const responseData = data.responses.map((obj: any) => ({
         response: parseAndFormatResponse(obj.response),

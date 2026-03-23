@@ -8,6 +8,7 @@ import {
 import { createRoot } from "react-dom/client";
 
 import "@doenet/doenetml-iframe/style.css";
+import "./utils/util.css";
 
 import { MathJaxContext } from "better-react-mathjax";
 import { theme } from "./theme";
@@ -135,7 +136,7 @@ const router = createBrowserRouter([
     element: (
       <>
         <ChakraProvider theme={theme}>
-          <MathJaxContext version={4} config={mathjaxConfig}>
+          <MathJaxContext version={4} config={mathjaxConfig} src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-svg.js">
             <SiteHeader />
           </MathJaxContext>
         </ChakraProvider>

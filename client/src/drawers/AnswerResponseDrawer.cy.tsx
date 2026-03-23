@@ -1,5 +1,4 @@
 import { AnswerResponseDrawer } from "./AnswerResponseDrawer";
-import { toMathJaxString } from "@doenet-tools/shared";
 import { DateTime } from "luxon";
 
 describe("AnswerResponseDrawer component tests", { tags: ["@group1"] }, () => {
@@ -45,7 +44,8 @@ describe("AnswerResponseDrawer component tests", { tags: ["@group1"] }, () => {
 
     cy.get("tbody > tr:nth-of-type(1) > td")
       .eq(0)
-      .should("have.text", toMathJaxString("x"));
+      .find("mjx-container[jax='SVG']")
+      .should("exist");
     cy.get("tbody > tr:nth-of-type(1) > td").eq(1).should("have.text", "0%");
     cy.get("tbody > tr:nth-of-type(1) > td")
       .eq(2)
@@ -58,7 +58,8 @@ describe("AnswerResponseDrawer component tests", { tags: ["@group1"] }, () => {
 
     cy.get("tbody > tr:nth-of-type(2) > td")
       .eq(0)
-      .should("have.text", toMathJaxString("y2"));
+      .find("mjx-container[jax='SVG']")
+      .should("exist");
     cy.get("tbody > tr:nth-of-type(2) > td").eq(1).should("have.text", "100%");
     cy.get("tbody > tr:nth-of-type(2) > td")
       .eq(2)
@@ -184,9 +185,11 @@ describe("AnswerResponseDrawer component tests", { tags: ["@group1"] }, () => {
       />,
     );
 
+    cy.get("tbody > tr:nth-of-type(1) > td").eq(0).should("contain.text", "hello");
     cy.get("tbody > tr:nth-of-type(1) > td")
       .eq(0)
-      .should("have.text", "hello" + toMathJaxString("x2"));
+      .find("mjx-container[jax='SVG']")
+      .should("exist");
     cy.get("tbody > tr:nth-of-type(1) > td").eq(1).should("have.text", "50%");
     cy.get("tbody > tr:nth-of-type(1) > td")
       .eq(2)
