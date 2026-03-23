@@ -56,6 +56,7 @@ export function AnswerResponseDrawer({
   >([]);
 
   useEffect(() => {
+    setResponses([]);
     async function getAnswerResponses() {
       const itemQuery =
         (itemNumber === null ? "" : `&requestedItemNumber=${itemNumber}`) +
