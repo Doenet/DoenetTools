@@ -37,10 +37,9 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Build the site
-        working-directory: blog
         run: |
           npm ci
-          npm run build
+          cd blog && npm run build
 
       - name: Sync to S3
         run: |
