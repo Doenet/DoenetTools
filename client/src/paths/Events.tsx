@@ -46,7 +46,7 @@ export function Events() {
                   <strong>Dates:</strong> 2nd–5th Tuesday of each month
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Time:</strong> 2–4pm EST, 11am–1pm PST
+                  <strong>Time:</strong> 2–4pm Eastern, 11am–1pm Pacific
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
                   <strong>Location:</strong> Online, via Zoom. Link:{" "}
@@ -83,27 +83,27 @@ export function Events() {
               >
                 <Heading size="md">
                   <ChakraLink
-                    href="https://scholarlattice.org/collections/b428f8ce-9981-4f9b-bb32-526994c57caf"
+                    href="https://scholarlattice.org/collections/f483e795-cdbc-4459-ba64-1d0660f527ef"
                     isExternal
                     textDecoration="underline"
                   >
-                    Getting started with Doenet{" "}
+                    Graphs and Randomizing Numbers in Doenet
                   </ChakraLink>
                 </Heading>
                 <Text fontSize="1.3rem" lineHeight="1.3">
-                  Learn the basics of how to write Doenet activities in this
-                  introductory workshop.
+                  Learn how to graph functions and randomize numbers in problems
+                  designed for the active learning classroom using Doenet
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Date:</strong> Tuesday, March 3, 2026
+                  <strong>Date:</strong> Saturday, March 28, 2026
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Time:</strong> 2–4pm EST, 11am–1pm PST
+                  <strong>Time:</strong> 11am–12pm Eastern, 8am–9am Pacific
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
                   <Button
                     as="a"
-                    href="https://scholarlattice.org/collections/b428f8ce-9981-4f9b-bb32-526994c57caf"
+                    href="https://scholarlattice.org/collections/f483e795-cdbc-4459-ba64-1d0660f527ef"
                     colorScheme="blue"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -141,7 +141,7 @@ export function Events() {
                   <strong>Date:</strong> Tuesday, April 7, 2026
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Time:</strong> 2–4pm EST, 11am–1pm PST
+                  <strong>Time:</strong> 2–4pm Eastern, 11am–1pm Pacific
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
                   <Button
@@ -181,7 +181,7 @@ export function Events() {
                   <strong>Date:</strong> Tuesday, May 5, 2026
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Time:</strong> 2–4pm EST, 11am–1pm PST
+                  <strong>Time:</strong> 2–4pm Eastern, 11am–1pm Pacific
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
                   <Button
