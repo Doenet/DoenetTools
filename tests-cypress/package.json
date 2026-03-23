@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@doenet-tools/client": "*",
-    "@doenet-tools/server": "*"
+    "@doenet-tools/shared": "*"
   },
   "devDependencies": {}
 }
