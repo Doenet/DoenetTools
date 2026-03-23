@@ -136,7 +136,11 @@ const router = createBrowserRouter([
     element: (
       <>
         <ChakraProvider theme={theme}>
-          <MathJaxContext version={4} config={mathjaxConfig} src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-svg.js">
+          <MathJaxContext
+            version={4}
+            config={mathjaxConfig}
+            src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-svg.js"
+          >
             <SiteHeader />
           </MathJaxContext>
         </ChakraProvider>

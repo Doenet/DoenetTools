@@ -2,7 +2,8 @@ import { AnswerResponseDrawer } from "./AnswerResponseDrawer";
 import { DateTime } from "luxon";
 
 describe("AnswerResponseDrawer component tests", { tags: ["@group1"] }, () => {
-  it("renders math correctly", () => {
+  it("renders something for math", () => {
+    // Note: these test merely check that there is an SVG rendered by MathJax
     const responses = [
       {
         answerCreditAchieved: 0,
@@ -185,7 +186,9 @@ describe("AnswerResponseDrawer component tests", { tags: ["@group1"] }, () => {
       />,
     );
 
-    cy.get("tbody > tr:nth-of-type(1) > td").eq(0).should("contain.text", "hello");
+    cy.get("tbody > tr:nth-of-type(1) > td")
+      .eq(0)
+      .should("contain.text", "hello");
     cy.get("tbody > tr:nth-of-type(1) > td")
       .eq(0)
       .find("mjx-container[jax='SVG']")
