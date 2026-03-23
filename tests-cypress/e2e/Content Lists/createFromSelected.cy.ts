@@ -209,9 +209,7 @@ describe("Create from selected tests", { tags: ["@group3"] }, () => {
       .eq(0)
       .should("contain.text", "Document P2");
 
-    cy.get('[data-test="Create From Selected Button"]').should(
-      "not.be.visible",
-    );
+    cy.get('[data-test="Create From Selected Button"]').should("not.exist");
   });
 
   it("Create from Explore", () => {
