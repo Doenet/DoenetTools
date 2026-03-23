@@ -79,8 +79,10 @@ Resources:
             Resource:
               - !Sub "arn:aws:s3:::${S3Bucket}"
               - !Sub "arn:aws:s3:::${S3Bucket}/*"
-              - !Sub "arn:aws:s3:::${EnvironmentName}-frontend-${AWS::AccountId}-us-east-1"
-              - !Sub "arn:aws:s3:::${EnvironmentName}-frontend-${AWS::AccountId}-us-east-1/*"
+              - !Sub "arn:aws:s3:::${EnvironmentName}-app-${AWS::AccountId}-us-east-1"
+              - !Sub "arn:aws:s3:::${EnvironmentName}-app-${AWS::AccountId}-us-east-1/*"
+              - !Sub "arn:aws:s3:::${EnvironmentName}-site-${AWS::AccountId}-us-east-1"
+              - !Sub "arn:aws:s3:::${EnvironmentName}-site-${AWS::AccountId}-us-east-1/*"
           - Effect: Allow
             Action:
               - "ssm:GetParameter"
