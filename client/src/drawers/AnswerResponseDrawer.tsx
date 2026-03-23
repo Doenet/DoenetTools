@@ -68,8 +68,6 @@ export function AnswerResponseDrawer({
         `/api/assign/getStudentSubmittedResponses/${assignment.contentId}/${student.userId}?answerId=${answerId}&contentAttemptNumber=${contentAttemptNumber}${itemQuery}&shuffledOrder=${shuffledOrder.toString()}`,
       );
 
-      console.log("got response data", data);
-
       const responseData = data.responses.map((obj: any) => ({
         response: parseAndFormatResponse(obj.response),
         creditAchieved: Number(obj.answerCreditAchieved),

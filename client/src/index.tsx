@@ -8,7 +8,7 @@ import {
 import { createRoot } from "react-dom/client";
 
 import "@doenet/doenetml-iframe/style.css";
-import "./utils/util.css";
+import "./styles/mathjax-menu.css";
 
 import { MathJaxContext } from "better-react-mathjax";
 import { theme } from "./theme";

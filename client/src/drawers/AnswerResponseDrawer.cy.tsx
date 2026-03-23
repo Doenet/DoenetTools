@@ -3,7 +3,7 @@ import { DateTime } from "luxon";
 
 describe("AnswerResponseDrawer component tests", { tags: ["@group1"] }, () => {
   it("renders something for math", () => {
-    // Note: these test merely check that there is an SVG rendered by MathJax
+    // Note: this test merely checks that there is an SVG rendered by MathJax
     const responses = [
       {
         answerCreditAchieved: 0,
