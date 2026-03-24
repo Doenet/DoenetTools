@@ -95,7 +95,7 @@ Resources:
       Description: StackSet for S3 website hosting with CloudFront
       Tags:
         - Key: TemplateVersion
-          Value: "2"
+          Value: "3"
       AdministrationRoleARN: !GetAtt StackSetAdministrationRole.Arn
       ExecutionRoleName: AWSCloudFormationStackSetExecutionRole
       Capabilities:
