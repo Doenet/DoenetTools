@@ -50,4 +50,4 @@ jobs:
       - name: Invalidate CloudFront cache
         run: |
           id=$(aws ssm get-parameter --name "/${{ env.ENV_NAME }}/app/DistributionId" --query "Parameter.Value" --output text)
-          aws cloudfront create-invalidation --distribution-id $id --paths "/blog/*"
+          aws cloudfront create-invalidation --distribution-id $id --paths "/blog/*" "/_astro/*"

@@ -93,6 +93,9 @@ Resources:
     Properties:
       StackSetName: !Sub "${EnvironmentName}-${AppServiceName}-s3-hosted-stackset"
       Description: StackSet for S3 website hosting with CloudFront
+      Tags:
+        - Key: TemplateVersion
+          Value: "2"
       AdministrationRoleARN: !GetAtt StackSetAdministrationRole.Arn
       ExecutionRoleName: AWSCloudFormationStackSetExecutionRole
       Capabilities:

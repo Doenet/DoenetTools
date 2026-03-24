@@ -159,6 +159,19 @@ Resources:
                 - "*"
               Cookies:
                 Forward: all
+          - PathPattern: /_astro/*
+            TargetOriginId: SiteS3Origin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods:
+              - GET
+              - HEAD
+            CachedMethods:
+              - GET
+              - HEAD
+            ForwardedValues:
+              QueryString: false
+              Cookies:
+                Forward: none
           - PathPattern: /blog/*
             TargetOriginId: SiteS3Origin
             ViewerProtocolPolicy: redirect-to-https
