@@ -1,4 +1,4 @@
-import { UserInfo } from "@doenet-tools/client/src/types";
+import { UserInfo } from "@doenet-tools/shared";
 import { toMathJaxString } from "@doenet-tools/shared";
 import { DateTime } from "luxon";
 
