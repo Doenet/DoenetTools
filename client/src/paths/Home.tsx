@@ -294,23 +294,19 @@ export function Home() {
         <Card>
           <CardHeader>
             <Heading size="sm">
-              Getting started with Doenet virtual workshop, March 3, 1-3pm CST
+              Graphs and Randomizing Numbers Virtual Workshop, March 28,
+              10am-11am Central
             </Heading>
           </CardHeader>
           <CardBody>
             <Text fontSize={"18px"} fontWeight="500">
-              Learn the basics of how to write Doenet activities in this free
-              introductory workshop held on Zoom.
-            </Text>
-
-            <Text fontSize={"18px"} fontWeight="500" mt="1em">
-              We will hold these workshops on the first Tuesday of each month.
-              No prior experience with Doenet is necessary, and all are welcome.
+              Learn how to graph functions and randomize numbers in problems
+              designed for the active learning classroom using Doenet
             </Text>
 
             <Button
               as="a"
-              href="https://scholarlattice.org/collections/b428f8ce-9981-4f9b-bb32-526994c57caf"
+              href="https://scholarlattice.org/collections/f483e795-cdbc-4459-ba64-1d0660f527ef"
               colorScheme="blue"
               target="_blank"
               rel="noopener noreferrer"
@@ -324,7 +320,7 @@ export function Home() {
           <CardHeader>
             <Heading size="sm">
               Virtual office hours, 2nd, 3rd, 4th, 5th Tuesdays of the month,
-              1-3pm CST
+              1-3pm Central
             </Heading>
           </CardHeader>
           <CardBody>
