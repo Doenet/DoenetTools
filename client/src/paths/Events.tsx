@@ -72,7 +72,6 @@ export function Events() {
                 of the month.
               </Text>
 
-              {/* Workshop 1 */}
               <VStack
                 align="start"
                 spacing={3}
@@ -113,7 +112,6 @@ export function Events() {
                 </Text>
               </VStack>
 
-              {/* Workshop 2 */}
               <VStack
                 align="start"
                 spacing={3}
@@ -197,7 +195,6 @@ export function Events() {
                 </Text>
               </VStack>
 
-              {/* Workshop 3 */}
               <VStack
                 align="start"
                 spacing={3}
