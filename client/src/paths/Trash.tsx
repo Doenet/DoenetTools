@@ -84,13 +84,15 @@ export function Trash() {
     {
       label: "Restore",
       onClick: () => {
-        fetcher.submit(
-          {
-            path: "updateContent/restoreDeletedContent",
-            contentId: [...cardSelections.ids][0],
-          },
-          { method: "post", encType: "application/json" },
-        );
+        if (cardSelections.count === 1) {
+          fetcher.submit(
+            {
+              path: "updateContent/restoreDeletedContent",
+              contentId: [...cardSelections.ids][0],
+            },
+            { method: "post", encType: "application/json" },
+          );
+        }
       },
       isDisabled: cardSelections.count !== 1,
     },

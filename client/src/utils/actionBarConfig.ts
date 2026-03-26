@@ -206,7 +206,7 @@ export function configReadOnlyContentList({
     {
       label: "Copy to",
       onClick: onCopyTo,
-      isDisabled: cardSelections.count === 0,
+      isDisabled: cardSelections.count !== 1,
     },
   ];
   return { context, actions };

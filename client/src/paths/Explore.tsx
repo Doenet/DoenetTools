@@ -218,15 +218,15 @@ export function Explore() {
     ids: allContent.map((c) => c.contentId),
   });
 
-  const selectedContentDescriptions = [];
+  const selectedContentDescriptions: Content[] = [];
+  const seenContentIds = new Set<string>();
   for (const content of allContent) {
     if (
       cardSelections.ids.has(content.contentId) &&
-      !selectedContentDescriptions
-        .map((c) => c.contentId)
-        .includes(content.contentId)
+      !seenContentIds.has(content.contentId)
     ) {
       selectedContentDescriptions.push(content);
+      seenContentIds.add(content.contentId);
     }
   }
 

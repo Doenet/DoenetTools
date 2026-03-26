@@ -7,6 +7,7 @@ import {
   Tooltip,
   Icon,
 } from "@chakra-ui/react";
+import { ReactNode } from "react";
 import type { IconType } from "react-icons";
 
 export type Action = {
@@ -27,7 +28,7 @@ export type Context = {
    * Remove this once `<AddContentToMenu>` and `<CreateContentMenu>` have been properly
    * refactored to NOT include their initial button UI inside of themselves.
    */
-  FIX_ME_miscellaneous_buttons?: any;
+  FIX_ME_miscellaneous_buttons?: ReactNode;
 };
 
 /**

@@ -202,7 +202,6 @@ describe("Add to compound activity tests", { tags: ["@group2"] }, () => {
       cy.get('[data-test="Editable Title"]')
         .should("have.text", "Untitled Problem Set")
         .type("A problem set{enter}");
-      cy.wait(2000);
 
       cy.get('[data-test="Editable Title"]').should(
         "have.text",
@@ -215,7 +214,6 @@ describe("Add to compound activity tests", { tags: ["@group2"] }, () => {
       cy.get('[data-test="Search"]').type(
         `${user.firstNames} ${user.lastNames}{enter}`,
       );
-      cy.wait(3000);
       cy.get('[data-test="Authors Tab"]').click();
       cy.get('[data-test="Filter By Matched Author"]')
         .eq(0)
@@ -289,7 +287,6 @@ describe("Add to compound activity tests", { tags: ["@group2"] }, () => {
       cy.get('[data-test="Editable Title"]')
         .should("have.text", "Untitled Problem Set")
         .type("My problem set{enter}");
-      cy.wait(2000);
 
       cy.get('[data-test="New Button"]').click();
       cy.get('[data-test="Add Explore Items"]').click();
@@ -376,7 +373,6 @@ describe("Add to compound activity tests", { tags: ["@group2"] }, () => {
       cy.get('[data-test="Editable Title"]')
         .should("have.text", "Untitled Problem Set")
         .type("My problem set{enter}");
-      cy.wait(2000);
 
       cy.get('[data-test="New Button"]').click();
       cy.get('[data-test="Add Explore Items"]').click();

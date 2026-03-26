@@ -71,8 +71,9 @@ function updateSelectionGivenNewIds({
   newIds: string[];
 }) {
   let foundMissing = false;
+  const idsSet = new Set(newIds);
   for (const selectedCard of selectedCards) {
-    if (!newIds.includes(selectedCard)) {
+    if (!idsSet.has(selectedCard)) {
       foundMissing = true;
       break;
     }
