@@ -231,4 +231,49 @@ describe("ScratchPad tests", { tags: ["@group2"] }, () => {
       cy.checkAccessibility("body");
     });
   });
+
+  describe("ScratchPad menu behavior", () => {
+    it("does not leave help tooltip open after closing menu by outside click", () => {
+      mountScratchPad();
+
+      cy.get('[aria-label="Help"]').click();
+      cy.get('[data-test="ScratchPad Help Menu List"]:visible')
+        .contains("Documentation")
+        .should("exist");
+
+      cy.get('[aria-label="Toggle accessibility strict mode"]').click();
+
+      cy.get('[aria-label="Help"]').should(
+        "have.attr",
+        "aria-expanded",
+        "false",
+      );
+      cy.get('[data-test="ScratchPad Help Menu List"]:visible').should(
+        "not.exist",
+      );
+      cy.get('[role="tooltip"]:visible').should("not.exist");
+    });
+
+    it("keeps focus on outside control when it closes Help menu", () => {
+      mountScratchPad();
+
+      cy.get('[aria-label="Help"]').click();
+      cy.get('[data-test="ScratchPad Help Menu List"]:visible')
+        .contains("Documentation")
+        .should("exist");
+
+      cy.get(selectors.accessibilityToggle).click();
+
+      cy.get('[aria-label="Help"]').should(
+        "have.attr",
+        "aria-expanded",
+        "false",
+      );
+      cy.get('[data-test="ScratchPad Help Menu List"]:visible').should(
+        "not.exist",
+      );
+      cy.get('[role="tooltip"]:visible').should("not.exist");
+      cy.get(selectors.accessibilityToggle).should("be.focused");
+    });
+  });
 });

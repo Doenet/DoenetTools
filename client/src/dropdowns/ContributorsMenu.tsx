@@ -20,9 +20,13 @@ import { AccessibleAvatar } from "../widgets/AccessibleAvatar";
 export default function ContributorsMenu({
   contributorHistory,
   activity,
+  isOpen,
+  onMenuOpenChange,
 }: {
   contributorHistory: ActivityRemixItem[];
   activity: Content;
+  isOpen?: boolean;
+  onMenuOpenChange?: (isOpen: boolean) => void;
 }) {
   if (!activity.owner) {
     return null;
@@ -94,9 +98,17 @@ export default function ContributorsMenu({
     )),
   );
 
+  function handleMenuOpen() {
+    onMenuOpenChange?.(true);
+  }
+
+  function handleMenuClose() {
+    onMenuOpenChange?.(false);
+  }
+
   return (
     <Flex>
-      <Menu>
+      <Menu isOpen={isOpen} onOpen={handleMenuOpen} onClose={handleMenuClose}>
         <MenuButton as="button" data-test="contributors menu">
           <Flex>
             <AvatarGroup size="sm" max={2}>
