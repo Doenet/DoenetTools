@@ -14,6 +14,7 @@ import {
   Tooltip,
   VStack,
   Wrap,
+  WrapItem,
   Accordion,
   AccordionButton,
   AccordionItem,
@@ -71,24 +72,25 @@ export function FilterPanel({
       for (const category of categoryGroup.categories) {
         if (categories.has(category.code)) {
           clearFilterButtons.push(
-            <Tooltip
-              label={`Clear filter: ${category.term}`}
-              openDelay={500}
-              key={`category${category.code}`}
-            >
-              <Button
-                colorScheme="blue"
-                rightIcon={<CloseIcon boxSize={2} />}
-                size="xs"
-                aria-label={`Clear filter: ${category.term}`}
-                onClick={() => {
-                  const newSearch = clearQueryParameter(category.code, search);
-                  navigate(`.${newSearch}`);
-                }}
-              >
-                {category.term}
-              </Button>
-            </Tooltip>,
+            <WrapItem key={`category${category.code}`}>
+              <Tooltip label={`Clear filter: ${category.term}`} openDelay={500}>
+                <Button
+                  colorScheme="blue"
+                  rightIcon={<CloseIcon boxSize={2} />}
+                  size="xs"
+                  aria-label={`Clear filter: ${category.term}`}
+                  onClick={() => {
+                    const newSearch = clearQueryParameter(
+                      category.code,
+                      search,
+                    );
+                    navigate(`.${newSearch}`);
+                  }}
+                >
+                  {category.term}
+                </Button>
+              </Tooltip>
+            </WrapItem>,
           );
         }
       }
@@ -97,45 +99,44 @@ export function FilterPanel({
     if (classificationInfo) {
       if (classificationInfo.system) {
         clearFilterButtons.push(
-          <Tooltip
-            label={`Clear filter: ${classificationInfo.system.name}`}
-            openDelay={500}
-            key={`system${classificationInfo.system.id}`}
-          >
-            <Button
-              colorScheme="blue"
-              rightIcon={<CloseIcon boxSize={2} />}
-              size="xs"
-              aria-label={`Clear filter: ${classificationInfo.system.name}`}
-              onClick={() =>
-                clearClassificationSystemFilter(
-                  search,
-                  classificationInfo,
-                  navigate,
-                )
-              }
+          <WrapItem key={`system${classificationInfo.system.id}`}>
+            <Tooltip
+              label={`Clear filter: ${classificationInfo.system.name}`}
+              openDelay={500}
             >
-              {classificationInfo.system.shortName}
-            </Button>
-          </Tooltip>,
+              <Button
+                colorScheme="blue"
+                rightIcon={<CloseIcon boxSize={2} />}
+                size="xs"
+                aria-label={`Clear filter: ${classificationInfo.system.name}`}
+                onClick={() =>
+                  clearClassificationSystemFilter(
+                    search,
+                    classificationInfo,
+                    navigate,
+                  )
+                }
+              >
+                {classificationInfo.system.shortName}
+              </Button>
+            </Tooltip>
+          </WrapItem>,
         );
       } else {
         clearFilterButtons.push(
-          <Tooltip
-            label={`Clear filter: Unclassified`}
-            openDelay={500}
-            key={`unclassified`}
-          >
-            <Button
-              colorScheme="blue"
-              rightIcon={<CloseIcon boxSize={2} />}
-              size="xs"
-              aria-label={`Clear filter: Unclassified`}
-              onClick={() => clearUnclassifiedFilter(search, navigate)}
-            >
-              Unclassified
-            </Button>
-          </Tooltip>,
+          <WrapItem key="unclassified">
+            <Tooltip label={`Clear filter: Unclassified`} openDelay={500}>
+              <Button
+                colorScheme="blue"
+                rightIcon={<CloseIcon boxSize={2} />}
+                size="xs"
+                aria-label={`Clear filter: Unclassified`}
+                onClick={() => clearUnclassifiedFilter(search, navigate)}
+              >
+                Unclassified
+              </Button>
+            </Tooltip>
+          </WrapItem>,
         );
       }
 
@@ -146,27 +147,28 @@ export function FilterPanel({
         }
 
         clearFilterButtons.push(
-          <Tooltip
-            label={`Clear filter: ${classificationInfo.category.category}`}
-            openDelay={500}
-            key={`cat${classificationInfo.category.id}`}
-          >
-            <Button
-              colorScheme="blue"
-              rightIcon={<CloseIcon boxSize={2} />}
-              size="xs"
-              aria-label={`Clear filter: ${classificationInfo.category.category}`}
-              onClick={() =>
-                clearClassificationCategoryFilter(
-                  search,
-                  classificationInfo,
-                  navigate,
-                )
-              }
+          <WrapItem key={`cat${classificationInfo.category.id}`}>
+            <Tooltip
+              label={`Clear filter: ${classificationInfo.category.category}`}
+              openDelay={500}
             >
-              {category}
-            </Button>
-          </Tooltip>,
+              <Button
+                colorScheme="blue"
+                rightIcon={<CloseIcon boxSize={2} />}
+                size="xs"
+                aria-label={`Clear filter: ${classificationInfo.category.category}`}
+                onClick={() =>
+                  clearClassificationCategoryFilter(
+                    search,
+                    classificationInfo,
+                    navigate,
+                  )
+                }
+              >
+                {category}
+              </Button>
+            </Tooltip>
+          </WrapItem>,
         );
       }
 
@@ -177,46 +179,48 @@ export function FilterPanel({
         }
 
         clearFilterButtons.push(
-          <Tooltip
-            label={`Clear filter: ${classificationInfo.subCategory.subCategory}`}
-            openDelay={500}
-            key={`subCat${classificationInfo.subCategory.id}`}
-          >
-            <Button
-              colorScheme="blue"
-              rightIcon={<CloseIcon boxSize={2} />}
-              size="xs"
-              aria-label={`Clear filter: ${classificationInfo.subCategory.subCategory}`}
-              onClick={() =>
-                clearClassificationSubcategoryFilter(
-                  search,
-                  classificationInfo,
-                  navigate,
-                )
-              }
+          <WrapItem key={`subCat${classificationInfo.subCategory.id}`}>
+            <Tooltip
+              label={`Clear filter: ${classificationInfo.subCategory.subCategory}`}
+              openDelay={500}
             >
-              {subCategory}
-            </Button>
-          </Tooltip>,
+              <Button
+                colorScheme="blue"
+                rightIcon={<CloseIcon boxSize={2} />}
+                size="xs"
+                aria-label={`Clear filter: ${classificationInfo.subCategory.subCategory}`}
+                onClick={() =>
+                  clearClassificationSubcategoryFilter(
+                    search,
+                    classificationInfo,
+                    navigate,
+                  )
+                }
+              >
+                {subCategory}
+              </Button>
+            </Tooltip>
+          </WrapItem>,
         );
       }
       if (classificationInfo.classification) {
         clearFilterButtons.push(
-          <Tooltip
-            label={`Clear filter: ${classificationInfo.classification.code}: ${classificationInfo.classification.description}`}
-            openDelay={500}
-            key={classificationInfo.classification.code}
-          >
-            <Button
-              colorScheme="blue"
-              rightIcon={<CloseIcon boxSize={2} />}
-              size="xs"
-              aria-label={`Clear filter: ${classificationInfo.classification.code}: ${classificationInfo.classification.description}`}
-              onClick={() => clearClassificationFilter(search, navigate)}
+          <WrapItem key={classificationInfo.classification.code}>
+            <Tooltip
+              label={`Clear filter: ${classificationInfo.classification.code}: ${classificationInfo.classification.description}`}
+              openDelay={500}
             >
-              {classificationInfo.classification.code}
-            </Button>
-          </Tooltip>,
+              <Button
+                colorScheme="blue"
+                rightIcon={<CloseIcon boxSize={2} />}
+                size="xs"
+                aria-label={`Clear filter: ${classificationInfo.classification.code}: ${classificationInfo.classification.description}`}
+                onClick={() => clearClassificationFilter(search, navigate)}
+              >
+                {classificationInfo.classification.code}
+              </Button>
+            </Tooltip>
+          </WrapItem>,
         );
       }
     }
@@ -224,24 +228,22 @@ export function FilterPanel({
     if (authorInfo) {
       const authorName = createNameNoTag(authorInfo);
       clearFilterButtons.push(
-        <Tooltip
-          label={`Clear filter: ${authorName}`}
-          openDelay={500}
-          key={authorInfo.userId}
-        >
-          <Button
-            colorScheme="blue"
-            rightIcon={<CloseIcon boxSize={2} />}
-            size="xs"
-            aria-label={`Clear filter: ${authorName}`}
-            onClick={() => {
-              const newSearch = clearQueryParameter("author", search);
-              navigate(`.${newSearch}`);
-            }}
-          >
-            {authorName}
-          </Button>
-        </Tooltip>,
+        <WrapItem key={authorInfo.userId}>
+          <Tooltip label={`Clear filter: ${authorName}`} openDelay={500}>
+            <Button
+              colorScheme="blue"
+              rightIcon={<CloseIcon boxSize={2} />}
+              size="xs"
+              aria-label={`Clear filter: ${authorName}`}
+              onClick={() => {
+                const newSearch = clearQueryParameter("author", search);
+                navigate(`.${newSearch}`);
+              }}
+            >
+              {authorName}
+            </Button>
+          </Tooltip>
+        </WrapItem>,
       );
     }
 

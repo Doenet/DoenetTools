@@ -12,7 +12,7 @@ import {
   Button,
   Box,
 } from "@chakra-ui/react";
-import { useFetcher } from "react-router";
+import { FetcherWithComponents } from "react-router";
 import { AddClassificationModal } from "../../popups/AddClassificationModal";
 import { ContentClassification } from "../../types";
 import { returnClassificationsAccordionPanel } from "../../utils/classification";
@@ -25,13 +25,16 @@ import { optimistic } from "../../utils/optimistic_ui";
 export function EditClassifications({
   contentId,
   classifications,
+  deleteClassificationFetcher,
+  addClassificationFetcher,
 }: {
   contentId: string;
   classifications: ContentClassification[];
+  deleteClassificationFetcher: FetcherWithComponents<any>;
+  addClassificationFetcher: FetcherWithComponents<any>;
 }) {
-  const deleteExistingFetcher = useFetcher();
   const currentlyDeleting = optimistic<number>(
-    deleteExistingFetcher,
+    deleteClassificationFetcher,
     "classificationId",
     0,
   );
@@ -80,7 +83,7 @@ export function EditClassifications({
                     data-test={`Remove Existing ${code}`}
                     hidden={currentlyDeleting === classification.id}
                     onClick={() => {
-                      deleteExistingFetcher.submit(
+                      deleteClassificationFetcher.submit(
                         {
                           path: "classifications/removeClassification",
                           contentId,
@@ -113,6 +116,7 @@ export function EditClassifications({
         existingClassifications={classifications}
         isOpen={addIsOpen}
         onClose={addOnClose}
+        fetcher={addClassificationFetcher}
       />
     </Box>
   );

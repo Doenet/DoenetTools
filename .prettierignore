@@ -1,0 +1,4 @@
+dist/
+multi-reporter-config.json
+runner-results/
+.astro

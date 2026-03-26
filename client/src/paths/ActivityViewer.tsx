@@ -78,8 +78,11 @@ import { BsBookmarkCheck } from "react-icons/bs";
 import { ImCheckmark } from "react-icons/im";
 import { DoenetEditor, DoenetViewer } from "@doenet/doenetml-iframe";
 import { BlueBanner } from "../widgets/BlueBanner";
-// @ts-expect-error assignment-viewer doesn't publish types, see https://github.com/Doenet/assignment-viewer/issues/20
 import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";
+import { useIframeMenuDismissOverlay } from "../utils/useIframeMenuDismissOverlay";
+import { IFRAME_MENU_IDS } from "../utils/iframeMenuIds";
+import { useControlledMenu } from "../utils/useControlledMenu";
+import { MenuDismissOverlay } from "../components/MenuDismissOverlay";
 
 export async function loader({ params }: { params: any }) {
   const {
@@ -162,12 +165,28 @@ export function ActivityViewer() {
   const [mode, setMode] = useState<"Edit" | "View">(
     authorMode ? "Edit" : "View",
   );
+  const { anyMenuOpen, getMenuControl } = useIframeMenuDismissOverlay();
+  const addToMenuControl = useControlledMenu(
+    getMenuControl,
+    IFRAME_MENU_IDS.activityViewerAddTo,
+  );
+  const addContentMenuControl = useControlledMenu(
+    getMenuControl,
+    IFRAME_MENU_IDS.activityViewerAddContent,
+  );
+  const contributorsMenuControl = useControlledMenu(
+    getMenuControl,
+    IFRAME_MENU_IDS.activityViewerContributors,
+  );
 
   useEffect(() => {
     setMode(authorMode ? "Edit" : "View");
   }, [authorMode]);
 
   const fetcher = useFetcher();
+  const createContentMenuCreateFetcher = useFetcher();
+  const createContentMenuSaveNameFetcher = useFetcher();
+  const deleteContentFetcher = useFetcher();
 
   useEffect(() => {
     document.title = `${activityData.name} - Doenet`;
@@ -218,8 +237,8 @@ export function ActivityViewer() {
       isOpen={infoIsOpen}
       onClose={infoOnClose}
       contentData={contentData}
-      libraryRelations={libraryRelations}
       displayTab={displayInfoTab}
+      allLicenses={allLicenses}
     />
   ) : null;
 
@@ -237,6 +256,10 @@ export function ActivityViewer() {
         contentIds={[activityData.contentId]}
         desiredParent={addTo}
         action="Add"
+        setAddTo={setAddTo}
+        user={user ?? null}
+        fetcher={fetcher}
+        onNavigate={navigate}
       />
     ) : null;
 
@@ -335,6 +358,9 @@ export function ActivityViewer() {
           activity={activityData}
           asViewer={true}
           fetcher={fetcher}
+          createContentMenuCreateFetcher={createContentMenuCreateFetcher}
+          createContentMenuSaveNameFetcher={createContentMenuSaveNameFetcher}
+          deleteContentFetcher={deleteContentFetcher}
         />
       );
     } else {
@@ -344,7 +370,6 @@ export function ActivityViewer() {
             source={data.activityJson}
             requestedVariantIndex={1}
             userId={"hi"}
-            linkSettings={{ viewUrl: "", editURL: "" }}
             paginate={
               activityData.type === "sequence" ? activityData.paginate : false
             }
@@ -403,7 +428,7 @@ export function ActivityViewer() {
 
   if (addTo) {
     addToMenu = (
-      <Menu>
+      <Menu {...addToMenuControl.menuProps}>
         <MenuButton
           as={Button}
           size="sm"
@@ -452,6 +477,11 @@ export function ActivityViewer() {
         suggestToBeCuratedOption={
           activityData.type === "singleDoc" && !libraryRelations.activity
         }
+        user={user ?? null}
+        onNavigate={(url) => navigate(url)}
+        setAddTo={setAddTo}
+        isOpen={addContentMenuControl.menuProps.isOpen}
+        onMenuOpenChange={addContentMenuControl.onMenuOpenChange}
       />
     );
   }
@@ -685,11 +715,19 @@ export function ActivityViewer() {
             <ContributorsMenu
               activity={activityData}
               contributorHistory={contributorHistory}
+              isOpen={contributorsMenuControl.menuProps.isOpen}
+              onMenuOpenChange={contributorsMenuControl.onMenuOpenChange}
             />
           </Flex>
         </GridItem>
 
-        <GridItem area="centerContent">
+        <GridItem area="centerContent" position="relative">
+          {/*
+            Dismiss layer used for iframe-safe menu close behavior.
+          */}
+          {anyMenuOpen && (
+            <MenuDismissOverlay dataTest="ActivityViewer Menu Dismiss Overlay" />
+          )}
           <VStack gap={0}>
             <Box
               background="var(--canvas)"

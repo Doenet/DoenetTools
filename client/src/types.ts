@@ -2,14 +2,27 @@
  * ====================================================================================
  * MAINTAIN EQUIVALENT TYPES in client and server
  * ---------------------------------------------------------------------------------
- * This file should be exactly the same in both the client module and the server module!
- * Use the file `types_module_specific.ts` for any types that are defined differently.
+ * This file should mirror the types in the server module.If you make edits to this
+ * file, please make the corresponding changes to the other module.
  *
- * If you make edits to this file, please copy and paste the full file to the other module.
+ * This will no longer be necessary once we have cleaner unified types.
+ * See https://github.com/Doenet/DoenetTools/issues/2844
  * =====================================================================================
  */
 
-import { DoenetDateTime, isUuid, Uuid } from "./types_module_specific";
+import {
+  type ContentType,
+  type DoenetDateTime,
+  isContentType,
+  isUserInfo,
+  isUuid,
+  type UserInfo,
+  type Uuid,
+} from "@doenet-tools/shared";
+
+// Here we re-export types from the shared module
+export type { ContentType, DoenetDateTime, UserInfo, Uuid };
+export { isContentType, isUserInfo, isUuid };
 
 export type DoenetmlVersion = {
   id: number;
@@ -63,31 +76,6 @@ export type LibraryComment = {
   comment: string;
   isMe: boolean;
 };
-
-export type UserInfo = {
-  userId: Uuid;
-  firstNames: string | null;
-  lastNames: string;
-  isAnonymous?: boolean;
-  numLibrary?: number;
-  numCommunity?: number;
-  isMaskForLibrary?: boolean;
-};
-
-export function isUserInfo(obj: unknown): obj is UserInfo {
-  const typedObj = obj as UserInfo;
-  return (
-    typedObj !== null &&
-    typeof typedObj === "object" &&
-    isUuid(typedObj.userId) &&
-    (typedObj.firstNames === null || typeof typedObj.firstNames === "string") &&
-    typeof typedObj.lastNames === "string" &&
-    (typedObj.numLibrary === undefined ||
-      typeof typedObj.numLibrary === "number") &&
-    (typedObj.numCommunity === undefined ||
-      typeof typedObj.numCommunity === "number")
-  );
-}
 
 /**
  * This type extends `UserInfo` with sensitive fields.
@@ -168,14 +156,6 @@ export type PartialContentClassification = {
   numCurated?: number;
   numCommunity?: number;
 };
-
-export type ContentType = "singleDoc" | "select" | "sequence" | "folder";
-export function isContentType(type: unknown): type is ContentType {
-  return (
-    typeof type === "string" &&
-    ["singleDoc", "select", "sequence", "folder"].includes(type)
-  );
-}
 
 export type AssignmentMode = "formative" | "summative";
 

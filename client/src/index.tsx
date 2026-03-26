@@ -8,6 +8,7 @@ import {
 import { createRoot } from "react-dom/client";
 
 import "@doenet/doenetml-iframe/style.css";
+import "./styles/mathjax-menu.css";
 
 import { MathJaxContext } from "better-react-mathjax";
 import { theme } from "./theme";
@@ -123,6 +124,10 @@ import {
 import { editorUrl } from "./utils/url";
 import { ScratchPad, loader as scratchPadLoader } from "./paths/ScratchPad";
 import { About } from "./paths/About";
+import { RawViewer, loader as rawViewerLoader } from "./paths/RawViewer";
+import { GetInvolved } from "./paths/GetInvolved";
+import { Events } from "./paths/Events";
+import { QuickLinks } from "./paths/QuickLinks";
 
 const router = createBrowserRouter([
   {
@@ -131,7 +136,11 @@ const router = createBrowserRouter([
     element: (
       <>
         <ChakraProvider theme={theme}>
-          <MathJaxContext version={4} config={mathjaxConfig}>
+          <MathJaxContext
+            version={4}
+            config={mathjaxConfig}
+            src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-svg.js"
+          >
             <SiteHeader />
           </MathJaxContext>
         </ChakraProvider>
@@ -160,6 +169,21 @@ const router = createBrowserRouter([
       {
         path: "about",
         element: <About />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "get-involved",
+        element: <GetInvolved />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "events",
+        element: <Events />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "links",
+        element: <QuickLinks />,
         errorElement: <ErrorPage />,
       },
       {
@@ -399,6 +423,16 @@ const router = createBrowserRouter([
         element: <ScratchPad />,
       },
     ],
+  },
+  {
+    path: "/embed/:viewId",
+    element: <RawViewer />,
+    loader: rawViewerLoader,
+    errorElement: (
+      <ChakraProvider theme={theme}>
+        <ErrorPage />
+      </ChakraProvider>
+    ),
   },
 ]);
 

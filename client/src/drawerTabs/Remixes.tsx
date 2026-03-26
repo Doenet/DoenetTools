@@ -22,14 +22,6 @@ import { createNameCheckCurateTag } from "../utils/names";
 import { DateTime } from "luxon";
 import { ActivityRemixItem } from "../types";
 
-export async function remixesActions({
-  formObj: _formObj,
-}: {
-  [k: string]: any;
-}) {
-  return null;
-}
-
 export function Remixes({
   remixes,
   haveChangedRemix = false,

@@ -116,8 +116,8 @@
       </shortDescription>
       <xLabel>x</xLabel>
       <lineSegment fixed endpoints="(-2,0) (5,0)" />
-      <endpoint open>(-2,0)</endpoint>
-      <endpoint open="false">(5,0)</endpoint>
+      <endpoint fixed open>(-2,0)</endpoint>
+      <endpoint fixed open="false">(5,0)</endpoint>
     </graph>
 
     <p>What is the interval shown above?

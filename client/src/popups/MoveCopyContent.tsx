@@ -19,7 +19,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { ArrowBackIcon } from "@chakra-ui/icons";
-import { useFetcher, useNavigate } from "react-router";
+import { FetcherWithComponents } from "react-router";
 import MoveToSharedAlert from "./MoveToSharedAlert";
 import { ContentType, UserInfo } from "../types";
 import { contentTypeToName, getIconInfo } from "../utils/activity";
@@ -60,6 +60,8 @@ export function MoveCopyContent({
   inCurationLibrary = false,
   createAssignment = false,
   createAssignmentCallback = () => {},
+  fetcher,
+  onNavigate,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -79,6 +81,8 @@ export function MoveCopyContent({
   inCurationLibrary?: boolean;
   createAssignment?: boolean;
   createAssignmentCallback?: (parentId: string | null) => void;
+  fetcher: FetcherWithComponents<any>;
+  onNavigate: (url: string) => void;
 }) {
   // Set when the modal opens
   const [parentId, setParentId] = useState<string | null>(null);
@@ -137,9 +141,6 @@ export function MoveCopyContent({
   }
 
   const initialRef = useRef<HTMLButtonElement>(null);
-
-  const navigate = useNavigate();
-  const fetcher = useFetcher();
 
   useEffect(() => {
     if (fetcher.data && fetcher.data.status === 200) {
@@ -363,6 +364,7 @@ export function MoveCopyContent({
         size="xl"
         initialFocusRef={initialRef}
         finalFocusRef={finalFocusRef}
+        scrollBehavior="inside"
       >
         <ModalOverlay />
         <ModalContent>
@@ -425,7 +427,7 @@ export function MoveCopyContent({
                   marginRight="4px"
                   onClick={() => {
                     onClose();
-                    navigate(destinationUrl);
+                    onNavigate(destinationUrl);
                   }}
                 >
                   {destinationAction}

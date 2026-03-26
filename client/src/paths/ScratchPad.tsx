@@ -1,12 +1,25 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { redirect, useLoaderData, useOutletContext } from "react-router";
-import { DoenetmlVersion } from "../types";
+import { ComponentType, useCallback, useEffect, useRef, useState } from "react";
+import {
+  redirect,
+  useLoaderData,
+  useOutletContext,
+  useNavigate,
+  useFetcher,
+} from "react-router";
+import {
+  ContentDescription,
+  DoenetmlVersion,
+  UserInfoWithEmail,
+} from "../types";
 import { DoenetEditor } from "@doenet/doenetml-iframe";
 import axios from "axios";
 import defaultSource from "../assets/scratchPadDefault.doenet?raw";
 import multipleChoice from "../assets/multipleChoiceExamples.doenet?raw";
 import mathAnswers from "../assets/mathAnswerExamples.doenet?raw";
 import graphicalAnswers from "../assets/graphicalAnswerExamples.doenet?raw";
+import accessibilityPointers from "../assets/accessibilityPointers.doenet?raw";
+import mathTags from "../assets/mathTags.doenet?raw";
+import pretzelDemo from "../assets/pretzelDemo.doenet?raw";
 
 import {
   Alert,
@@ -14,17 +27,42 @@ import {
   AlertTitle,
   AlertDescription,
   Box,
-  Flex,
   Button,
+  Flex,
+  Link as ChakraLink,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
   Text,
   useDisclosure,
+  Tooltip,
+  HStack,
+  ButtonGroup,
+  IconButton,
 } from "@chakra-ui/react";
 import { SiteContext } from "./SiteHeader";
-import { SaveDoenetmlAndReportFinish } from "../popups/SaveDoenetmlAndReportFinish";
+import {
+  SaveDoenetmlAndReportFinish,
+  type CreateContentResponse,
+} from "../popups/SaveDoenetmlAndReportFinish";
+import { LuCircleHelp } from "react-icons/lu";
+import { getDiscourseUrl } from "../utils/discourse";
+import { IoAccessibility } from "react-icons/io5";
+import { MenuDismissOverlay } from "../components/MenuDismissOverlay";
+import { useIframeMenuDismissOverlay } from "../utils/useIframeMenuDismissOverlay";
+import { IFRAME_MENU_IDS } from "../utils/iframeMenuIds";
+import { useControlledMenu } from "../utils/useControlledMenu";
+import { useMenuTooltipSuppression } from "../utils/useMenuTooltipSuppression";
+
+export type DocumentEditorProps = {
+  source: string;
+  doenetmlVersion: DoenetmlVersion;
+  accessibilityStrictMode: boolean;
+  sourceChangedCallback?: (newSource: string) => void;
+};
+
+type ScratchPadEditorComponent = ComponentType<DocumentEditorProps>;
 
 export async function loader({ request }: { request: Request }) {
   const url = new URL(request.url);
@@ -89,10 +127,55 @@ export function ScratchPad() {
     document.title = `Scratch pad - Doenet`;
   }, []);
 
-  const [initialSource, setInitialSource] = useState(source);
-  const [resetNum, setResetNum] = useState(0);
+  const { user, setAddTo } = useOutletContext<SiteContext>();
+  const discussHref = getDiscourseUrl(user);
 
-  const { user } = useOutletContext<SiteContext>();
+  const navigate = useNavigate();
+
+  return (
+    <ScratchPadComponent
+      doenetmlVersion={doenetmlVersion}
+      initialSource={source}
+      user={user}
+      setAddTo={setAddTo}
+      navigate={navigate}
+      discussHref={discussHref}
+    />
+  );
+}
+
+export function ScratchPadComponent({
+  doenetmlVersion,
+  initialSource,
+  user,
+  setAddTo,
+  navigate,
+  discussHref,
+  editorComponent = DocumentEditor,
+}: {
+  doenetmlVersion: DoenetmlVersion;
+  initialSource: string;
+  user?: UserInfoWithEmail;
+  setAddTo: (value: ContentDescription | null) => void;
+  navigate: (path: string) => void;
+  discussHref: string;
+  editorComponent?: ScratchPadEditorComponent;
+}) {
+  const fetcher = useFetcher<CreateContentResponse>();
+  const EditorComponent = editorComponent;
+
+  const [source, setSource] = useState(initialSource);
+  const [resetNum, setResetNum] = useState(0);
+  const currentSourceRef = useRef(initialSource);
+
+  const updateSource = useCallback((nextSource: string) => {
+    currentSourceRef.current = nextSource;
+    setSource(nextSource);
+  }, []);
+
+  const updateCurrentSource = useCallback((nextSource: string) => {
+    currentSourceRef.current = nextSource;
+  }, []);
 
   const {
     isOpen: saveDialogIsOpen,
@@ -100,17 +183,64 @@ export function ScratchPad() {
     onClose: saveDialogOnClose,
   } = useDisclosure();
 
-  const saveDocumentDialog = (
+  const { anyMenuOpen, getMenuControl } = useIframeMenuDismissOverlay();
+  const helpMenuControl = useControlledMenu(
+    getMenuControl,
+    IFRAME_MENU_IDS.scratchPadHelp,
+  );
+  const loadMenuControl = useControlledMenu(
+    getMenuControl,
+    IFRAME_MENU_IDS.scratchPadLoad,
+  );
+  // Menu + Tooltip share a trigger; use shared suppression so tooltip
+  // does not persist/re-open during menu close focus/hover transitions.
+  const {
+    suppressTooltip: suppressHelpTooltip,
+    handleMenuOpen: handleHelpMenuOpen,
+    handleMenuClose: handleHelpMenuClose,
+    handleTriggerMouseEnter: handleHelpMouseEnter,
+    setTriggerRef: setHelpTriggerRef,
+  } = useMenuTooltipSuppression({
+    onOpen: helpMenuControl.menuProps.onOpen,
+    onClose: helpMenuControl.menuProps.onClose,
+  });
+
+  const [accessibilityStrictMode, setAccessibilityStrictMode] = useState(false);
+
+  const loadScratchPadSource = useCallback(
+    (nextSource: string, removeFromLocalStorage = false) => {
+      try {
+        if (removeFromLocalStorage) {
+          localStorage.removeItem("scratchPad");
+        } else {
+          localStorage.setItem("scratchPad", nextSource);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+
+      updateSource(nextSource);
+      // We update reset num to make sure editor updates.
+      setResetNum((was) => was + 1);
+    },
+    [updateSource],
+  );
+
+  const saveDocumentDialog = user && (
     <SaveDoenetmlAndReportFinish
       isOpen={saveDialogIsOpen}
       onClose={saveDialogOnClose}
-      DoenetML={initialSource}
+      DoenetML={currentSourceRef.current}
       documentName={"Scratch Pad Document"}
+      navigate={navigate}
+      user={user}
+      setAddTo={setAddTo}
+      fetcher={fetcher}
     />
   );
 
   const loadButton = (
-    <Menu>
+    <Menu {...loadMenuControl.menuProps}>
       <MenuButton
         as={Button}
         size="sm"
@@ -119,16 +249,11 @@ export function ScratchPad() {
       >
         <Text>Load</Text>
       </MenuButton>
-      <MenuList>
+      <MenuList data-test="ScratchPad Load Menu List">
         <MenuItem
           data-test="Add Default Button"
           onClick={() => {
-            localStorage.removeItem("scratchPad");
-            setInitialSource(defaultSource);
-            // We update reset num to make sure editor updates.
-            // If started with defaultSource and then we try to reset it back to defaultSource
-            // no change is detected in initialSource even though we want to reset
-            setResetNum((was) => was + 1);
+            loadScratchPadSource(defaultSource, true);
           }}
         >
           Scratch Pad Welcome
@@ -136,14 +261,7 @@ export function ScratchPad() {
         <MenuItem
           data-test="Add Multiple Choice Examples Button"
           onClick={() => {
-            try {
-              localStorage.setItem("scratchPad", multipleChoice);
-            } catch (e) {
-              console.error(e);
-            }
-            setInitialSource(multipleChoice);
-            // We update reset num to make sure editor updates.
-            setResetNum((was) => was + 1);
+            loadScratchPadSource(multipleChoice);
           }}
         >
           Multiple Choice Examples
@@ -151,14 +269,7 @@ export function ScratchPad() {
         <MenuItem
           data-test="Add Math Answer Examples Button"
           onClick={() => {
-            try {
-              localStorage.setItem("scratchPad", mathAnswers);
-            } catch (e) {
-              console.error(e);
-            }
-            setInitialSource(mathAnswers);
-            // We update reset num to make sure editor updates.
-            setResetNum((was) => was + 1);
+            loadScratchPadSource(mathAnswers);
           }}
         >
           Math Answer Examples
@@ -166,23 +277,101 @@ export function ScratchPad() {
         <MenuItem
           data-test="Add Graphical Answer Examples Button"
           onClick={() => {
-            try {
-              localStorage.setItem("scratchPad", graphicalAnswers);
-            } catch (e) {
-              console.error(e);
-            }
-            setInitialSource(graphicalAnswers);
-            // We update reset num to make sure editor updates.
-            setResetNum((was) => was + 1);
+            loadScratchPadSource(graphicalAnswers);
           }}
         >
           Graphical Answer Examples
+        </MenuItem>
+        <MenuItem
+          data-test="Add Accessibility Pointers Button"
+          onClick={() => {
+            loadScratchPadSource(accessibilityPointers);
+          }}
+        >
+          Accessibility Pointers
+        </MenuItem>
+        <MenuItem
+          data-test="Add Math Tags Button"
+          onClick={() => {
+            loadScratchPadSource(mathTags);
+          }}
+        >
+          Mathematical Tags In Doenet
+        </MenuItem>
+        <MenuItem
+          data-test="Add Pretzel Demo Button"
+          onClick={() => {
+            loadScratchPadSource(pretzelDemo);
+          }}
+        >
+          Pretzel Demo
         </MenuItem>
       </MenuList>
     </Menu>
   );
 
-  const saveScratchPad = user && (
+  const helpButton = (
+    <Menu
+      isOpen={helpMenuControl.menuProps.isOpen}
+      onOpen={handleHelpMenuOpen}
+      onClose={handleHelpMenuClose}
+    >
+      <Tooltip
+        label="Help"
+        openDelay={300}
+        placement="bottom-end"
+        isDisabled={suppressHelpTooltip}
+      >
+        <MenuButton
+          as={IconButton}
+          ref={setHelpTriggerRef}
+          icon={<LuCircleHelp />}
+          variant="ghost"
+          fontSize="1.3rem"
+          size="xs"
+          width="30px"
+          height="35px"
+          aria-label="Help"
+          onMouseEnter={handleHelpMouseEnter}
+        />
+      </Tooltip>
+      <MenuList data-test="ScratchPad Help Menu List">
+        <MenuItem as={ChakraLink} href="https://docs.doenet.org" isExternal>
+          Documentation
+        </MenuItem>
+        <MenuItem as={ChakraLink} href={discussHref} isExternal>
+          Ask a question
+        </MenuItem>
+      </MenuList>
+    </Menu>
+  );
+
+  const accessibilityButton = (
+    <Tooltip
+      label={
+        accessibilityStrictMode
+          ? "Accessibility strict mode is on"
+          : "Turn on accessibility strict mode"
+      }
+      openDelay={300}
+      placement="bottom-end"
+    >
+      <IconButton
+        icon={<IoAccessibility />}
+        variant="ghost"
+        fontSize="1.2rem"
+        size="xs"
+        width="30px"
+        height="35px"
+        aria-label="Toggle accessibility strict mode"
+        aria-pressed={accessibilityStrictMode}
+        border={accessibilityStrictMode ? "1px solid" : "none"}
+        onClick={() => setAccessibilityStrictMode((prev) => !prev)}
+      />
+    </Tooltip>
+  );
+
+  const saveButton = user && (
     <Button
       data-test="Save to Document"
       colorScheme="blue"
@@ -211,27 +400,25 @@ export function ScratchPad() {
   return (
     <>
       {saveDocumentDialog}
-      <Box
+      <HStack
         position="fixed"
         top="40px"
         height="40px"
-        background="doenet.canvas"
+        background="orange.100"
         width="100%"
+        pr="10px"
         zIndex="300"
-        borderBottom="1px solid"
-        borderColor="doenet.mediumGray"
       >
-        <Flex
-          backgroundColor="var(--chakra-colors-orange-100);"
-          alignItems="center"
-          paddingRight="15px"
-        >
-          {scratchPadMessage}
-
+        {scratchPadMessage}
+        <ButtonGroup spacing="5px">
+          {helpButton}
+          {accessibilityButton}
+        </ButtonGroup>
+        <ButtonGroup spacing="5px" pl="10px">
           {loadButton}
-          {saveScratchPad}
-        </Flex>
-      </Box>
+          {saveButton}
+        </ButtonGroup>
+      </HStack>
       <Box
         position="absolute"
         top={"80px"}
@@ -241,10 +428,18 @@ export function ScratchPad() {
         background="doenet.lightBlue"
         overflow="auto"
       >
-        <DocumentEditor
-          source={initialSource}
+        {/*
+          Dismiss layer used for iframe-safe menu close behavior.
+        */}
+        {anyMenuOpen && (
+          <MenuDismissOverlay dataTest="ScratchPad Menu Dismiss Overlay" />
+        )}
+        <EditorComponent
+          source={source}
           doenetmlVersion={doenetmlVersion}
           key={resetNum}
+          accessibilityStrictMode={accessibilityStrictMode}
+          sourceChangedCallback={updateCurrentSource}
         />
       </Box>
     </>
@@ -254,10 +449,9 @@ export function ScratchPad() {
 function DocumentEditor({
   source,
   doenetmlVersion,
-}: {
-  source: string;
-  doenetmlVersion: DoenetmlVersion;
-}) {
+  accessibilityStrictMode,
+  sourceChangedCallback,
+}: DocumentEditorProps) {
   const textEditorDoenetML = useRef(source);
   const savedDoenetML = useRef(source);
 
@@ -298,10 +492,12 @@ function DocumentEditor({
       }}
       immediateDoenetmlChangeCallback={(newDoenetML: string) => {
         textEditorDoenetML.current = newDoenetML;
+        sourceChangedCallback?.(newDoenetML);
       }}
       doenetmlVersion={doenetmlVersion.fullVersion}
       border="none"
       doenetViewerUrl={doenetViewerUrl}
+      upgradeAccessibilityWarningsToErrors={accessibilityStrictMode}
     />
   );
 }

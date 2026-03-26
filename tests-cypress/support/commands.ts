@@ -28,7 +28,7 @@ import "cypress-wait-until";
 import "cypress-file-upload";
 import "cypress-iframe";
 
-import type { ContentType } from "@doenet-tools/client/src/types";
+import type { ContentType } from "@doenet-tools/shared";
 
 Cypress.Commands.add(
   "loginAsTestUser",
@@ -259,3 +259,27 @@ Cypress.Commands.add("getIframeBody", (iframeSelector, waitSelector = null) => {
       .then(cy.wrap) as Cypress.Chainable<HTMLBodyElement>
   );
 });
+
+Cypress.Commands.add(
+  "dismissMenuByOverlay",
+  /**
+   * Shared assertion + action for iframe-dismiss flows:
+   * verifies overlay visibility, clicks it, and verifies menu closes.
+   */
+  ({
+    overlayTestId,
+    menuListTestId,
+    assertTooltipClosed = true,
+  }: {
+    overlayTestId: string;
+    menuListTestId: string;
+    assertTooltipClosed?: boolean;
+  }) => {
+    cy.get(`[data-test="${overlayTestId}"]:visible`).should("exist");
+    cy.get(`[data-test="${overlayTestId}"]:visible`).click({ force: true });
+    cy.get(`[data-test="${menuListTestId}"]:visible`).should("not.exist");
+    if (assertTooltipClosed) {
+      cy.get('[role="tooltip"]:visible').should("not.exist");
+    }
+  },
+);

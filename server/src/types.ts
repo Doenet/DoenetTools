@@ -2,14 +2,18 @@
  * ====================================================================================
  * MAINTAIN EQUIVALENT TYPES in client and server
  * ---------------------------------------------------------------------------------
- * This file should be exactly the same in both the client module and the server module!
- * Use the file `types_module_specific.ts` for any types that are defined differently.
+ * This file should mirror the types in the client module. If you make edits to this
+ * file, please make the corresponding changes to the other module.
  *
- * If you make edits to this file, please copy and paste the full file to the other module.
+ * This will no longer be necessary once we have cleaner unified types.
+ * See https://github.com/Doenet/DoenetTools/issues/2844
  * =====================================================================================
  */
 
 import { DoenetDateTime, isUuid, Uuid } from "./types_module_specific";
+
+export type { DoenetDateTime, Uuid };
+export { isUuid };
 
 export type DoenetmlVersion = {
   id: number;

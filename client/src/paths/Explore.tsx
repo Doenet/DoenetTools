@@ -197,11 +197,16 @@ export function Explore() {
     setExploreTab: setCurrentTab,
     addTo,
     setAddTo,
+    allLicenses,
   } = useOutletContext<SiteContext>();
 
   const [searchString, setSearchString] = useState(q || "");
 
   const fetcher = useFetcher();
+
+  // Used by CreateContentMenu component
+  const createContentMenuCreateFetcher = useFetcher();
+  const createContentMenuSaveNameFetcher = useFetcher();
 
   const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
   const selectedCardsFiltered = selectedCards.filter((c) => c);
@@ -240,6 +245,7 @@ export function Explore() {
       isOpen={infoIsOpen}
       onClose={infoOnClose}
       contentData={infoContentData}
+      allLicenses={allLicenses}
     />
   ) : null;
 
@@ -282,6 +288,10 @@ export function Explore() {
         contentIds={selectedCardsFiltered.map((sc) => sc.contentId)}
         desiredParent={addTo}
         action="Add"
+        setAddTo={setAddTo}
+        user={user ?? null}
+        fetcher={fetcher}
+        onNavigate={navigate}
       />
     ) : null;
 
@@ -809,12 +819,19 @@ export function Explore() {
                   size="xs"
                   colorScheme="blue"
                   label="Add selected to"
+                  user={user ?? null}
+                  onNavigate={(url) => navigate(url)}
+                  setAddTo={setAddTo}
                 />
                 <CreateContentMenu
                   sourceContent={selectedCardsFiltered}
                   size="xs"
                   colorScheme="blue"
                   label="Create from selected"
+                  user={user ?? null}
+                  navigate={navigate}
+                  createFetcher={createContentMenuCreateFetcher}
+                  saveNameFetcher={createContentMenuSaveNameFetcher}
                 />
               </HStack>
               {addTo !== null ? (

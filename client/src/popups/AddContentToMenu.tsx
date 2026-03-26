@@ -30,13 +30,10 @@ import {
 import axios from "axios";
 import { MoveCopyContent } from "../popups/MoveCopyContent";
 import { CopyContentAndReportFinish } from "../popups/CopyContentAndReportFinish";
-import {
-  FetcherWithComponents,
-  useNavigate,
-  useOutletContext,
-} from "react-router";
-import { SiteContext } from "../paths/SiteHeader";
+import { FetcherWithComponents } from "react-router";
+import { UserInfo } from "../types";
 import { getAllowedParentTypes, menuIcons } from "../utils/activity";
+import { useMenuTooltipSuppression } from "../utils/useMenuTooltipSuppression";
 
 export function AddContentToMenu({
   sourceContent,
@@ -49,6 +46,11 @@ export function AddContentToMenu({
   restrictToAllowedParents = false,
   suggestToBeCuratedOption = false,
   fetcher,
+  user,
+  onNavigate,
+  setAddTo,
+  isOpen,
+  onMenuOpenChange,
 }: {
   sourceContent: ContentDescription[];
   size?: ResponsiveValue<(string & {}) | "xs" | "sm" | "md" | "lg">;
@@ -73,9 +75,12 @@ export function AddContentToMenu({
   restrictToAllowedParents?: boolean;
   suggestToBeCuratedOption?: boolean;
   fetcher: FetcherWithComponents<any>;
+  user: UserInfo | null;
+  onNavigate: (url: string) => void;
+  setAddTo: (value: ContentDescription | null) => void;
+  isOpen?: boolean;
+  onMenuOpenChange?: (isOpen: boolean) => void;
 }) {
-  const { user } = useOutletContext<SiteContext>();
-
   const [recentContent, setRecentContent] = useState<ContentDescription[]>([]);
   const [addToType, setAddToType] = useState<ContentType>("folder");
   const [allowedParents, setAllowedParents] = useState<ContentType[]>([]);
@@ -83,8 +88,6 @@ export function AddContentToMenu({
     useState<ContentDescription | null>(null);
 
   const [baseContains, setBaseContains] = useState<ContentType[]>([]);
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     const allowedParents = getAllowedParentTypes(
@@ -139,6 +142,10 @@ export function AddContentToMenu({
       contentIds={sourceContent.map((sc) => sc.contentId)}
       desiredParent={copyDestination}
       action="Add"
+      fetcher={fetcher}
+      user={user}
+      setAddTo={setAddTo}
+      onNavigate={onNavigate}
     />
   );
 
@@ -152,6 +159,8 @@ export function AddContentToMenu({
     <MoveCopyContent
       isOpen={moveCopyContentIsOpen}
       onClose={moveCopyContentOnClose}
+      fetcher={fetcher}
+      onNavigate={onNavigate}
       sourceContent={sourceContent}
       userId={user.userId}
       currentParentId={null}
@@ -160,14 +169,73 @@ export function AddContentToMenu({
     />
   ) : null;
 
+  async function handleMenuOpen() {
+    onMenuOpenChange?.(true);
+
+    const { data: recentContentData } = await axios.get(
+      `/api/info/getRecentContent`,
+      {
+        params: {
+          mode: "edit",
+          restrictToTypes: restrictToAllowedParents
+            ? allowedParents
+            : ["select", "sequence", "folder"],
+        },
+      },
+    );
+    const rc: ContentDescription[] = [];
+    if (Array.isArray(recentContentData)) {
+      for (const item of recentContentData) {
+        if (isContentDescription(item)) {
+          rc.push(item);
+        }
+      }
+      setRecentContent(rc);
+    }
+
+    const foundTypes: ContentType[] = [];
+
+    for (const ct of ["folder", "sequence", "select"]) {
+      const { data: containsFolderData } = await axios.get(
+        `/api/copyMove/checkIfContentContains`,
+        { params: { contentType: ct } },
+      );
+
+      if (containsFolderData.containsType) {
+        foundTypes.push(ct as ContentType);
+      }
+    }
+
+    setBaseContains(foundTypes);
+  }
+
+  function handleMenuClose() {
+    onMenuOpenChange?.(false);
+  }
+
+  // The hook `useMenuTooltipSuppression` suppresses tooltip re-open on menu transitions
+  // and restores normal tooltip behavior automatically after a short delay.
+  const {
+    suppressTooltip: suppressTriggerTooltip,
+    handleMenuOpen: handleMenuOpenWithTooltipSuppression,
+    handleMenuClose: handleMenuCloseWithTooltipSuppression,
+    handleTriggerMouseEnter,
+    setTriggerRef: setAddToTriggerRef,
+  } = useMenuTooltipSuppression({
+    onOpen: handleMenuOpen,
+    onClose: handleMenuClose,
+  });
+
   let menuButton = (
     <MenuButton
       as={Button}
+      ref={setAddToTriggerRef}
       size={size}
       colorScheme={colorScheme}
       leftIcon={leftIcon}
       paddingRight={addRightPadding ? { base: "0px", md: "10px" } : undefined}
       data-test="Add To"
+      onMouseEnter={handleTriggerMouseEnter}
     >
       {label}
     </MenuButton>
@@ -175,7 +243,12 @@ export function AddContentToMenu({
 
   if (toolTip) {
     menuButton = (
-      <Tooltip label={toolTip} hasArrow placement="bottom-end">
+      <Tooltip
+        label={toolTip}
+        hasArrow
+        placement="bottom-end"
+        isDisabled={suppressTriggerTooltip}
+      >
         {menuButton}
       </Tooltip>
     );
@@ -196,7 +269,7 @@ export function AddContentToMenu({
         data-test="Load into Scratch Pad"
         isDisabled={scratchPadDisabled}
         onClick={() => {
-          navigate(`/scratchPad?contentId=${sourceContent[0].contentId}`);
+          onNavigate(`/scratchPad?contentId=${sourceContent[0].contentId}`);
         }}
       >
         Load into Scratch Pad
@@ -210,46 +283,12 @@ export function AddContentToMenu({
       {copyContentModal}
       {moveCopyContentModal}
       <Menu
-        onOpen={async () => {
-          const { data: recentContentData } = await axios.get(
-            `/api/info/getRecentContent`,
-            {
-              params: {
-                mode: "edit",
-                restrictToTypes: restrictToAllowedParents
-                  ? allowedParents
-                  : ["select", "sequence", "folder"],
-              },
-            },
-          );
-          const rc: ContentDescription[] = [];
-          if (Array.isArray(recentContentData)) {
-            for (const item of recentContentData) {
-              if (isContentDescription(item)) {
-                rc.push(item);
-              }
-            }
-            setRecentContent(rc);
-          }
-
-          const foundTypes: ContentType[] = [];
-
-          for (const ct of ["folder", "sequence", "select"]) {
-            const { data: containsFolderData } = await axios.get(
-              `/api/copyMove/checkIfContentContains`,
-              { params: { contentType: ct } },
-            );
-
-            if (containsFolderData.containsType) {
-              foundTypes.push(ct as ContentType);
-            }
-          }
-
-          setBaseContains(foundTypes);
-        }}
+        isOpen={isOpen}
+        onOpen={handleMenuOpenWithTooltipSuppression}
+        onClose={handleMenuCloseWithTooltipSuppression}
       >
         {menuButton}
-        <MenuList>
+        <MenuList data-test="Add Content To Menu List">
           {suggestToBeCuratedOption ? (
             <MenuItem
               data-test="Suggest this to be curated"

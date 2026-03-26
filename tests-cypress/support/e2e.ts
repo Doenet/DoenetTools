@@ -17,6 +17,8 @@
 import "./commands";
 import "cypress-plugin-tab";
 import "wick-a11y";
+import { register as registerCypressGrep } from "@cypress/grep";
+registerCypressGrep();
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')

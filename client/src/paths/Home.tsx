@@ -24,6 +24,7 @@ import { Link as ReactRouterLink, useOutletContext } from "react-router";
 import { SiteContext } from "./SiteHeader";
 import { getDiscourseUrl } from "../utils/discourse";
 import { WithSideBanners } from "../layout/WithSideBanners";
+import { FaExternalLinkAlt } from "react-icons/fa";
 
 export async function loader() {
   return {};
@@ -35,6 +36,8 @@ export function Home() {
   }, []);
 
   const { user } = useOutletContext<SiteContext>();
+
+  const discussHref = getDiscourseUrl(user);
 
   // The first string is the video source path,
   // the second string is the link to try the activity.
@@ -73,7 +76,7 @@ export function Home() {
 
   const heroSection = (
     <Box width="100%">
-      <WithSideBanners bgColor="#282a3aff" padding="40px">
+      <WithSideBanners bgColor="background" padding="40px">
         <Grid
           templateColumns={{ base: "1fr", lg: "1fr auto" }}
           w="100%"
@@ -89,33 +92,65 @@ export function Home() {
             order={{ base: 2, md: 1 }}
           >
             <Heading
-              color="white"
+              color="text"
               fontSize={{ base: "28px", sm: "34px", md: "44px", lg: "56px" }}
-              fontWeight="700"
-              mb={{ base: "24px", md: "40px", lg: "60px" }}
+              fontWeight="500"
+              mb="24px"
             >
               Richly interactive classroom activities
             </Heading>
 
-            <Heading
-              color="white"
+            <Text
+              color="text"
               fontSize={{
                 base: "16px",
                 sm: "18px",
                 md: "20px",
                 lg: "24px",
-                xl: "28px",
               }}
               fontWeight="400"
               mb={{ base: "12px", md: "16px", lg: "20px" }}
-              lineHeight={{ base: "1.3", md: "1.4" }}
               maxW={{ base: "100%", md: "680px", lg: "800px" }}
             >
-              Find, create, and share meaningfully interactive content using a
-              free community-driven tool
+              We're a community of STEM instructors and authors. Find, create,
+              and share meaningfully interactive content using a free
+              community-driven tool.
               {/* TODO: Find spot to mention AI, such as:
                 "Human-crafted activities in the age of AI" */}
-            </Heading>
+            </Text>
+
+            <HStack
+              spacing={{ base: "12px", md: "16px" }}
+              mt={{ base: "24px", md: "32px" }}
+              flexWrap="wrap"
+            >
+              <Button
+                as={ReactRouterLink}
+                to="/scratchPad"
+                colorScheme="blue"
+                size={{ base: "md", md: "lg" }}
+                fontSize={{ base: "16px", md: "18px" }}
+                px={{ base: "24px", md: "32px" }}
+                py={{ base: "12px", md: "16px" }}
+                height="auto"
+              >
+                Start writing
+              </Button>
+              <Button
+                as={ReactRouterLink}
+                to="/explore"
+                variant="outline"
+                colorScheme="blue"
+                size={{ base: "md", md: "lg" }}
+                fontSize={{ base: "16px", md: "18px" }}
+                px={{ base: "24px", md: "32px" }}
+                py={{ base: "12px", md: "16px" }}
+                height="auto"
+                borderWidth="2px"
+              >
+                Explore community activities
+              </Button>
+            </HStack>
 
             {/* Mobile video directly under text */}
             <Box
@@ -179,17 +214,17 @@ export function Home() {
         <HStack spacing="20px">
           {/* TODO: Instant feedback image */}
 
-          <p>
+          <Text fontSize="22px" fontWeight="400">
             <strong>Instant feedback for students.</strong> Guide students with
             immediate validation or hints based on their mistake
-          </p>
+          </Text>
         </HStack>
 
         <HStack spacing="20px">
-          <p>
+          <Text fontSize="22px" fontWeight="400">
             <strong>Interactive graphics.</strong> Construct gradable graphical
             applets from points, lines, derivatives, etc.
-          </p>
+          </Text>
 
           {/* TODO: interactive graphics image */}
         </HStack>
@@ -198,27 +233,44 @@ export function Home() {
           {/* TODO: variant control image */}
 
           <Flex flex="1 0 75%">
-            <p>
+            <Text fontSize="22px" fontWeight="400">
               <strong>Variant control.</strong> Generate multiple variants of
               your activity
-            </p>
+            </Text>
           </Flex>
         </Flex>
       </VStack>
     </WithSideBanners>
   );
 
-  const discussHref = getDiscourseUrl(user);
+  const newsletterSection = (
+    <WithSideBanners bgColor="doenet.mainBlue" padding="45px">
+      <Heading size="lg" color="white">
+        Interested? Stay in the loop
+      </Heading>
+      <Text fontSize="22px" fontWeight="400" mb="15px" color="white">
+        Receive monthly emails about Doenet, upcoming training workshops, and
+        what's going on in the community.
+      </Text>
+      <Button
+        as="a"
+        href="https://docs.google.com/forms/d/e/1FAIpQLSc9VSrYnybkB5WC5YpPKicclF_z14UIq5O7l19f1Vxz8EFXCw/viewform?usp=header"
+        target="_blank"
+        rel="noopener noreferrer"
+        fontSize={{ base: "16px", md: "18px" }}
+      >
+        Keep me updated
+      </Button>
+    </WithSideBanners>
+  );
 
   const communitySection = (
     <WithSideBanners bgColor="white" padding="70px">
-      <Heading size="lg">Join the community - get support, contribute</Heading>
-      <Text marginTop="10px" fontSize="1.4rem">
+      <Heading size="lg">A community project</Heading>
+
+      <Text marginTop="10px" fontSize="22px" fontWeight="400">
         Doenet—as a free and open-source platform—derives its value from its
-        community of authors and contributors.
-      </Text>
-      <Text marginTop="10px" fontSize="1.4rem">
-        To get support, check out our{" "}
+        community of authors and contributors. To get support, check out our{" "}
         <ChakraLink href={discussHref} textDecoration="underline">
           community discussions
         </ChakraLink>{" "}
@@ -229,43 +281,54 @@ export function Home() {
         >
           Discord server
         </ChakraLink>
-        .
-      </Text>
-      <Text marginTop="10px" fontSize="1.4rem">
-        To learn how to get involved, check out{" "}
-        <ChakraLink href="https://pages.doenet.org" textDecoration="underline">
+        . To learn how to get involved, check out{" "}
+        <ChakraLink href="/get-involved" textDecoration="underline">
           How to get involved with Doenet
         </ChakraLink>
         .
       </Text>
-      <Text marginTop="10px" fontSize="1.4rem">
-        To experiment with writing Doenet activities, visit the{" "}
-        <ChakraLink href="/scratchPad" textDecoration="underline">
-          Scratch Pad
-        </ChakraLink>
-        .
-      </Text>
-      <Heading size="lg" marginTop="40px">
+      <Heading size="lg" marginTop="70px">
         Events
       </Heading>
       <Stack direction={{ base: "column", md: "row" }}>
         <Card>
           <CardHeader>
             <Heading size="sm">
-              <ChakraLink
-                href="https://prose.runestone.academy/"
-                textDecoration="underline"
-              >
-                PROSE Consortium
-              </ChakraLink>{" "}
-              weekly drop-in hours, Tuesdays 1-3pm CST
+              Graphs and Randomizing Numbers Virtual Workshop, March 28,
+              10am-11am Central
+            </Heading>
+          </CardHeader>
+          <CardBody>
+            <Text fontSize={"18px"} fontWeight="500">
+              Learn how to graph functions and randomize numbers in problems
+              designed for the active learning classroom using Doenet
+            </Text>
+
+            <Button
+              as="a"
+              href="https://scholarlattice.org/collections/f483e795-cdbc-4459-ba64-1d0660f527ef"
+              colorScheme="blue"
+              target="_blank"
+              rel="noopener noreferrer"
+              mt="1em"
+            >
+              Details and registration at ScholarLattice
+            </Button>
+          </CardBody>
+        </Card>
+        <Card>
+          <CardHeader>
+            <Heading size="sm">
+              Virtual office hours, 2nd, 3rd, 4th, 5th Tuesdays of the month,
+              1-3pm Central
             </Heading>
           </CardHeader>
           <CardBody>
             <Text fontSize={"18px"} fontWeight="500">
               Drop in anytime during the two hours to ask questions. Join us at{" "}
               <ChakraLink
-                href="https://prose.runestone.academy/dropin/"
+                href="https://mathtech.org/dropin"
+                isExternal
                 textDecoration="underline"
               >
                 this Zoom link
@@ -275,6 +338,14 @@ export function Home() {
           </CardBody>
         </Card>
       </Stack>
+
+      <Text fontSize={"24px"} mt="1em">
+        See the{" "}
+        <ChakraLink href="/events" textDecoration="underline">
+          events page
+        </ChakraLink>{" "}
+        for more upcoming events.
+      </Text>
     </WithSideBanners>
   );
 
@@ -358,6 +429,7 @@ export function Home() {
       {heroSection}
       {/* {exploreSection} */}
       {featuresSection}
+      {newsletterSection}
       {communitySection}
       {footerSection}
     </>
@@ -480,7 +552,7 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
           icon={<ThickChevronLeft size={iconSize} stroke={iconStroke} />}
           onClick={handlePrev}
           bg="transparent"
-          color="white"
+          color="text"
           _focus={{ boxShadow: "none" }}
           transition="none"
           _hover={{
@@ -496,7 +568,7 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
 
         <Box
           position="relative"
-          border="3px solid lightgray"
+          border="1px solid lightgray"
           width={`${VIDEO_WIDTH_PX}px`}
           aspectRatio={VIDEO_WIDTH_PX / VIDEO_HEIGHT_PX}
           overflow="hidden"
@@ -537,35 +609,34 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
           />
 
           {/* Try me button positioned top-right on the video */}
-          <Button
+          <IconButton
             as={ReactRouterLink}
             to={currentTryLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            icon={<FaExternalLinkAlt />}
             position="absolute"
-            top="10px"
-            right="10px"
-            zIndex={3}
-            colorScheme="orange"
-            bg="#a84c00"
-            color="white"
+            top="2px"
+            right="2px"
+            zIndex={5}
+            color="text"
             _hover={{
-              bg: "#923d00",
-              boxShadow: "0 10px 24px rgba(0,0,0,0.28)",
               textDecoration: "none",
             }}
-            size="sm"
+            size="md"
             borderRadius="8px"
             aria-label="Try this activity"
             pointerEvents={overlayShown ? "none" : "auto"}
             aria-disabled={overlayShown}
             disabled={overlayShown}
-            _disabled={{ opacity: 1, cursor: "not-allowed" }}
-            border="2px solid rgba(0,0,0,0.12)"
-            boxShadow="0 6px 18px rgba(0,0,0,0.22)"
-            transition="box-shadow 150ms ease, transform 150ms ease"
-            style={{ transform: "scale(1.2)", transformOrigin: "top right" }}
-          >
-            Try me
-          </Button>
+            _disabled={{ opacity: 0.5, cursor: "not-allowed" }}
+            bg="transparent"
+            style={{
+              transform: "scale(1.2)",
+              transformOrigin: "top right",
+              backfaceVisibility: "hidden",
+            }}
+          />
         </Box>
 
         {/* Right arrow */}
@@ -574,7 +645,7 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
           icon={<ThickChevronRight size={iconSize} stroke={iconStroke} />}
           onClick={handleNext}
           bg="transparent"
-          color="white"
+          color="text"
           transition="none"
           _hover={{
             transform: "none",
@@ -633,35 +704,34 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
           />
 
           {/* Try me button positioned top-right on the video */}
-          <Button
+          <IconButton
             as={ReactRouterLink}
             to={currentTryLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            icon={<FaExternalLinkAlt />}
             position="absolute"
-            top="10px"
-            right="10px"
-            zIndex={3}
-            colorScheme="orange"
-            bg="#a84c00"
-            color="white"
+            top="2px"
+            right="2px"
+            zIndex={5}
+            color="text"
             _hover={{
-              bg: "#923d00",
-              boxShadow: "0 10px 24px rgba(0,0,0,0.28)",
               textDecoration: "none",
             }}
-            size="sm"
+            size="md"
             borderRadius="8px"
             aria-label="Try this activity"
             pointerEvents={overlayShown ? "none" : "auto"}
             aria-disabled={overlayShown}
             disabled={overlayShown}
-            _disabled={{ opacity: 1, cursor: "not-allowed" }}
-            border="2px solid rgba(0,0,0,0.12)"
-            boxShadow="0 6px 18px rgba(0,0,0,0.22)"
-            transition="box-shadow 150ms ease, transform 150ms ease"
-            style={{ transform: "scale(1.2)", transformOrigin: "top right" }}
-          >
-            Try me
-          </Button>
+            _disabled={{ opacity: 0.5, cursor: "not-allowed" }}
+            bg="transparent"
+            style={{
+              transform: "scale(1.2)",
+              transformOrigin: "top right",
+              backfaceVisibility: "hidden",
+            }}
+          />
         </Box>
 
         {/* Mobile navigation arrows underneath video */}
@@ -670,39 +740,41 @@ function VideoCarousel({ videos }: { videos: [string, string, number][] }) {
             aria-label="Previous video"
             icon={<ThickChevronLeft size={iconSize} stroke={iconStroke} />}
             onClick={handlePrev}
-            bg="rgba(255, 255, 255, 0.2)"
-            color="white"
+            bg="interact"
+            color="text"
             _focus={{ boxShadow: "none" }}
             transition="none"
             _hover={{
               transform: "none",
-              bg: "rgba(255, 255, 255, 0.3)",
+              bg: "border",
               "svg path": { strokeWidth: 5 },
             }}
             _active={{ transform: "none" }}
             h={`${ARROW_BUTTON_PX + 8}px`}
             w={`${ARROW_BUTTON_PX + 8}px`}
             borderRadius="full"
-            border="1px solid rgba(255, 255, 255, 0.3)"
+            border="1px solid"
+            borderColor="border"
           />
 
           <IconButton
             aria-label="Next video"
             icon={<ThickChevronRight size={iconSize} stroke={iconStroke} />}
             onClick={handleNext}
-            bg="rgba(255, 255, 255, 0.2)"
-            color="white"
+            bg="interact"
+            color="text"
             transition="none"
             _hover={{
               transform: "none",
-              bg: "rgba(255, 255, 255, 0.3)",
+              bg: "border",
               "svg path": { strokeWidth: 5 },
             }}
             _active={{ transform: "none" }}
             h={`${ARROW_BUTTON_PX + 8}px`}
             w={`${ARROW_BUTTON_PX + 8}px`}
             borderRadius="full"
-            border="1px solid rgba(255, 255, 255, 0.3)"
+            border="1px solid"
+            borderColor="border"
           />
         </HStack>
       </VStack>

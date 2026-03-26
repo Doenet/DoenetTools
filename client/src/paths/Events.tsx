@@ -1,0 +1,298 @@
+import { useEffect } from "react";
+import {
+  Box,
+  Heading,
+  Text,
+  VStack,
+  Button,
+  Link as ChakraLink,
+} from "@chakra-ui/react";
+import { WithSideBanners } from "../layout/WithSideBanners";
+
+export function Events() {
+  useEffect(() => {
+    document.title = `Events - Doenet`;
+  }, []);
+
+  return (
+    <>
+      <WithSideBanners bgColor="background">
+        <Box
+          p="40px"
+          w="100%"
+          // Hack: ensure background color extends full height
+          // Remove once we implement background color globally
+          minH="calc(100vh - 40px)"
+        >
+          <Heading size="xl" mb={6}>
+            Events
+          </Heading>
+
+          <VStack align="start" spacing={8}>
+            {/* Virtual Office Hours Section */}
+            <Box w="100%">
+              <Heading size="lg" mb={3}>
+                Virtual office hours
+              </Heading>
+              <VStack align="start" spacing={3}>
+                <Text fontSize="1.3rem" lineHeight="1.3">
+                  Join us for office hours to ask questions, get support, and
+                  connect with the Doenet community. All are welcome!
+                </Text>
+                <Text fontSize="1.3rem" lineHeight="1.3">
+                  Drop in anytime during the two hours.
+                </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <strong>Dates:</strong> 2nd–5th Tuesday of each month
+                </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <strong>Time:</strong> 2–4pm Eastern, 11am–1pm Pacific
+                </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <strong>Location:</strong> Online, via Zoom. Link:{" "}
+                  <ChakraLink
+                    href="https://mathtech.org/dropin"
+                    isExternal
+                    textDecoration="underline"
+                  >
+                    https://mathtech.org/dropin
+                  </ChakraLink>
+                </Text>
+              </VStack>
+            </Box>
+
+            {/* Training Workshops Section */}
+            <Box w="100%" id="workshops">
+              <Heading size="lg" mb={3} mt={5}>
+                Virtual training workshops
+              </Heading>
+
+              <Text fontSize="1.3rem" lineHeight="1.3" mb={6}>
+                Virtual training workshops are scheduled for the first Tuesday
+                of the month.
+              </Text>
+
+              <VStack
+                align="start"
+                spacing={3}
+                mb={6}
+                pl={4}
+                borderLeft="3px solid"
+                borderColor="border"
+              >
+                <Heading size="md">
+                  <ChakraLink
+                    href="https://scholarlattice.org/collections/f483e795-cdbc-4459-ba64-1d0660f527ef"
+                    isExternal
+                    textDecoration="underline"
+                  >
+                    Graphs and Randomizing Numbers in Doenet
+                  </ChakraLink>
+                </Heading>
+                <Text fontSize="1.3rem" lineHeight="1.3">
+                  Learn how to graph functions and randomize numbers in problems
+                  designed for the active learning classroom using Doenet
+                </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <strong>Date:</strong> Saturday, March 28, 2026
+                </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <strong>Time:</strong> 11am–12pm Eastern, 8am–9am Pacific
+                </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <Button
+                    as="a"
+                    href="https://scholarlattice.org/collections/f483e795-cdbc-4459-ba64-1d0660f527ef"
+                    colorScheme="blue"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Details and registration at ScholarLattice
+                  </Button>
+                </Text>
+              </VStack>
+
+              <VStack
+                align="start"
+                spacing={3}
+                mb={6}
+                pl={4}
+                borderLeft="3px solid"
+                borderColor="border"
+              >
+                <Heading size="md">
+                  <ChakraLink
+                    href="https://scholarlattice.org/collections/473ca6a6-9a46-48f7-a191-7275d60d910b"
+                    isExternal
+                    textDecoration="underline"
+                  >
+                    Dynamic and Interactive Graphs in Doenet
+                  </ChakraLink>
+                </Heading>
+                <Text fontSize="1.3rem" lineHeight="1.3">
+                  Learn how to make interactive graphs and validate graphical
+                  answers in problems designed for the active learning classroom
+                  using Doenet
+                </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <strong>Date:</strong> Saturday, April 4, 2026
+                </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <strong>Time:</strong> 11am–12pm Eastern, 8am–9am Pacific
+                </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <Button
+                    as="a"
+                    href="https://scholarlattice.org/collections/473ca6a6-9a46-48f7-a191-7275d60d910b"
+                    colorScheme="blue"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Details and registration at ScholarLattice
+                  </Button>
+                </Text>
+              </VStack>
+
+              <VStack
+                align="start"
+                spacing={3}
+                mb={6}
+                pl={4}
+                borderLeft="3px solid"
+                borderColor="border"
+              >
+                <Heading size="md">
+                  <ChakraLink
+                    href="https://scholarlattice.org/collections/eab4d5ce-064d-409a-a576-bcab507f7836"
+                    isExternal
+                    textDecoration="underline"
+                  >
+                    Creating accessible activities in Doenet
+                  </ChakraLink>
+                </Heading>
+                <Text fontSize="1.3rem" lineHeight="1.3">
+                  In this workshop, we will discuss best practices for creating
+                  accessible activities in Doenet, and how to use the
+                  accessibility features of Doenet to make your activities more
+                  inclusive.
+                </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <strong>Date:</strong> Tuesday, April 7, 2026
+                </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <strong>Time:</strong> 2–4pm Eastern, 11am–1pm Pacific
+                </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <Button
+                    as="a"
+                    href="https://scholarlattice.org/collections/eab4d5ce-064d-409a-a576-bcab507f7836"
+                    colorScheme="blue"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Details and registration at ScholarLattice
+                  </Button>
+                </Text>
+              </VStack>
+
+              <VStack
+                align="start"
+                spacing={3}
+                pl={4}
+                borderLeft="3px solid"
+                borderColor="border"
+              >
+                <Heading size="md">
+                  <ChakraLink
+                    href="https://scholarlattice.org/collections/b8ec4af3-8f71-4e4a-b86e-838242e47058"
+                    isExternal
+                    textDecoration="underline"
+                  >
+                    Getting started with Doenet
+                  </ChakraLink>
+                </Heading>
+                <Text fontSize="1.3rem" lineHeight="1.3">
+                  Learn the basics of how to write Doenet activities in this
+                  introductory workshop.
+                </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <strong>Date:</strong> Tuesday, May 5, 2026
+                </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <strong>Time:</strong> 2–4pm Eastern, 11am–1pm Pacific
+                </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <Button
+                    as="a"
+                    href="https://scholarlattice.org/collections/b8ec4af3-8f71-4e4a-b86e-838242e47058"
+                    colorScheme="blue"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Details and registration at ScholarLattice
+                  </Button>
+                </Text>
+              </VStack>
+            </Box>
+
+            {/* In-person Workshops and Conferences Section */}
+            <Box w="100%">
+              <Heading size="lg" mb={3} mt={5}>
+                In-person workshops and conferences
+              </Heading>
+
+              <Text fontSize="1.3rem" lineHeight="1.3" mb={6}>
+                Doenet will be at the following workshops and conferences. We
+                hope to see you there!
+              </Text>
+
+              <VStack
+                align="start"
+                spacing={3}
+                mb={6}
+                pl={4}
+                borderLeft="3px solid"
+                borderColor="border"
+              >
+                <Heading size="md">Doenet Community Workshop</Heading>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <strong>Dates:</strong> June 1–5 2026
+                </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <strong>Location:</strong> University of Minnesota
+                </Text>
+                <Text fontSize="1.3rem" lineHeight="1.3">
+                  More information coming soon!
+                </Text>
+              </VStack>
+
+              <VStack
+                align="start"
+                spacing={3}
+                pl={4}
+                borderLeft="3px solid"
+                borderColor="border"
+              >
+                <Heading size="md">MathFest 2026</Heading>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <strong>Dates:</strong> August 5–8, 2026
+                </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <strong>Location:</strong> Boston, MA
+                </Text>
+                <Text fontSize="1.3rem" lineHeight="1.3">
+                  During MathFest, Doenet will be leading a minicourse:
+                  Upgrading Online Assignments: Building Scaffolded Activities
+                  for Conceptual Understanding
+                </Text>
+                <Text fontSize="1.3rem" lineHeight="1.3">
+                  More information, including registration details, coming soon!
+                </Text>
+              </VStack>
+            </Box>
+          </VStack>
+        </Box>
+      </WithSideBanners>
+    </>
+  );
+}
