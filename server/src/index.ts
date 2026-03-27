@@ -122,11 +122,7 @@ passport.use(
       let email_html: string = "";
 
       try {
-        const filePath = path.join(
-          process.cwd(),
-          "assets",
-          "signin_email.html",
-        );
+        const filePath = path.join(__dirname, "assets", "signin_email.html");
 
         email_html = await fs.readFile(filePath, { encoding: "utf8" });
       } catch (err) {

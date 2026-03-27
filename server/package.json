@@ -20,16 +20,18 @@
   },
   "wireit": {
     "build": {
-      "command": "tsc",
+      "command": "tsc && copyfiles -u 1 \"src/assets/**/*\" dist/src",
       "files": [
         "src/**/*.ts",
         "src/**/*.js",
+        "src/assets/**",
         "vite.config.ts",
         "tsconfig.json"
       ],
       "output": [
         "dist/**/*.js",
-        "dist/**/*.d.ts"
+        "dist/**/*.d.ts",
+        "dist/src/assets/**"
       ],
       "dependencies": [
         "../shared:build"
@@ -74,6 +76,7 @@
     "@types/passport-local": "^1.0.38",
     "@types/passport-strategy": "^0.2.38",
     "cookie-session": "^2.1.1",
+    "copyfiles": "^2.4.1",
     "prisma": "6.4.1",
     "vitest": "^3.2.4"
   },

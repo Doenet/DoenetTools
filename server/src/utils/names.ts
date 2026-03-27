@@ -4,7 +4,7 @@ import { readFileSync } from "fs";
 import { join } from "path";
 
 function loadWordList(filename: string): string[] {
-  const filePath = join(process.cwd(), "assets", filename);
+  const filePath = join(__dirname, "assets", filename);
   return readFileSync(filePath, "utf-8")
     .split("\n")
     .map((line) => line.replace(/,\s*$/, "").trim())
