@@ -10,8 +10,6 @@ Metadata:
         Parameters:
           - EnvironmentName
           - ServiceName
-          - SaltServer
-          - MinionId
           - InstanceType
           - AmiId
           - VolumeSize
@@ -20,11 +18,12 @@ Metadata:
         Parameters:
           - VPC
           - SubnetId
-          - IpAddress
           - AvailabilityZone
           - AdminSecurityGroup
+          - EcsInstanceSecurityGroup
           - DnsZone
           - HostedZoneId
+          - PublicLoadBalancerHttpsListener
 Parameters:
   EnvironmentName:
     Type: String
@@ -33,13 +32,6 @@ Parameters:
   ServiceName:
     Type: String
     Description: The primary function of this EC2 instance (PowerDns, Wiki, DuoProxy, etc)
-  SaltServer:
-    Description: Address of Salt Server
-    Type: String
-    Default: salt.holycross.edu
-  MinionId:
-    Type: String
-    Description: ex. PowerDns.opcenter.aws
   InstanceType:
     Description: The EC2 instance type
     Type: String
@@ -49,34 +41,27 @@ Parameters:
     Default: 30
   SubnetId:
     Type : String
-    Default: subnet-0cd3714b84710e537 # opcenter VPC private subnet
     Description: The subnet into which the instance should be deployed. Almost always, you'll want to use a private subnet.
-  IpAddress:
-    Type : String
-    Description: An IP Address to use for the instance that is within the SubnetId
   AvailabilityZone:
     Type : String
     Default: us-east-1a
     Description: The AZ of the SubnetId
   VPC:
     Type : 'AWS::SSM::Parameter::Value<String>'
-    Default: /opcenter/VPC
+    Default: /dev3/VPC
   AmiId:
     Type: AWS::EC2::Image::Id
-    Default: ami-02069978db500a511
-    Description: "ami-02069978db500a511 -- us-east-1,focal,20.04,amd64,20210511.  Use the Cananical image locator to find official images: https://cloud-images.ubuntu.com/locator/"
-#    Description: "ami-0ddbdea833a8d2f0d -- us-east-1,focal,20.04,amd64,20210415.  Use the Cananical image locator to find official images: https://cloud-images.ubuntu.com/locator/"
+    Default: ami-0689a3ce09bf1872e
+    Description: "ami-0689a3ce09bf1872e -- us-east-2,noble,24.04,arm64,20260320.  Use the Cananical image locator to find official images: https://cloud-images.ubuntu.com/locator/"
   AdminSecurityGroup:
     Type : 'AWS::SSM::Parameter::Value<String>'
-    Default: /opcenter/AdminSecurityGroup
-  DnsZone:
-    Description: Route53 hosted zone to use for the database's DNS record (<prefix>.<zone>)
+    Default: /dev3/AdminSecurityGroup
+  EcsInstanceSecurityGroup:
     Type : 'AWS::SSM::Parameter::Value<String>'
-    Default: /webdev/VPCHostedZoneName
-  HostedZoneId:
-    Description: Route53 hosted zone id to use for the database's DNS record
+    Default: /dev3/AdminSecurityGroup
+  PublicLoadBalancerHttpsListener:
     Type : 'AWS::SSM::Parameter::Value<String>'
-    Default: /webdev/VPCHostedZoneId
+    Default: '/dev3/PublicLoadBalancerHttpsListener'
 
 Resources:
 
@@ -107,17 +92,12 @@ Resources:
           FromPort: 22
           ToPort: 22
           CidrIp: '10.0.0.0/8'
-          Description: permit ssh traffic from internal
+          Description: permit web traffic from internal
         - IpProtocol: tcp
-          FromPort: 53
-          ToPort: 53
-          CidrIp: '10.0.0.0/8'
-          Description: permit DNS traffic from internal
-        - IpProtocol: udp
-          FromPort: 53
-          ToPort: 53
-          CidrIp: '10.0.0.0/8'
-          Description: permit DNS traffic from internal
+          FromPort: 8080
+          ToPort: 8080
+          SourceSecurityGroupId: !Ref EcsInstanceSecurityGroup
+          Description: permit Web traffic from load balancer
       SecurityGroupEgress:
         - CidrIp: '0.0.0.0/0'
           IpProtocol: '-1'
@@ -161,8 +141,6 @@ Resources:
         - Key: Name
           Value: !Sub '${ServiceName}-${EnvironmentName}'
           PropagateAtLaunch: true
-        - Key: backup
-          Value: 30 day single region
     UpdatePolicy:
       AutoScalingRollingUpdate:
         MaxBatchSize: 1
@@ -174,64 +152,17 @@ Resources:
   LaunchTemplate:
     Type: AWS::EC2::LaunchTemplate
     Metadata:
-      AWS::CloudFormation::Authentication:
-        S3AccessCreds:
-          type: S3
-          buckets:
-            - !Sub holycross-${EnvironmentName}-salt
-          roleName: !Ref EC2Role
       AWS::CloudFormation::Init:
         configSets:
           default:
             - config
         config:
           files:
-            /etc/salt/pki/minion/minion.pem:
-              source: !Sub https://holycross-${EnvironmentName}-salt.s3.${AWS::Region}.amazonaws.com/${MinionId}.pem
-              authentication: S3AccessCreds
-              mode: '000600'
-              owner: root
-              group: root
-
-            /etc/salt/pki/minion/minion.pub:
-              source: !Sub https://holycross-${EnvironmentName}-salt.s3.${AWS::Region}.amazonaws.com/${MinionId}.pub
-              authentication: S3AccessCreds
-              mode: '000600'
-              owner: root
-              group: root
-
-            /etc/salt/grains:
-              source: !Sub https://holycross-${EnvironmentName}-salt.s3.${AWS::Region}.amazonaws.com/${MinionId}.grains
-              authentication: S3AccessCreds
-              mode: '000644'
-              owner: root
-              group: root
-
-            /etc/salt/minion:
-              content:
-                !Sub |
-                  master: ${SaltServer}
-              mode: '000644'
-              owner: root
-              group: root
-
-            /etc/salt/minion_id:
-              content:
-                !Sub |
-                  ${MinionId}
-              mode: '000644'
-              owner: root
-              group: root
-
             /root/launch-config-ubuntu.sh:
               content:
                 !Sub |
                   #!/bin/bash -ex
-                  echo "Applying states from ${SaltServer}"
-                  salt-call state.apply PowerDNS
-
-                  set +e
-                  salt-call state.apply AD_Realm,SCOM,AllowUsers
+                  echo "hello world!" > hello.txt
                   exit 0
               mode: '000700'
               owner: root
@@ -285,9 +216,6 @@ Resources:
               command: systemctl enable cfn-hup.service
             03_start_cfn_hup:
               command: systemctl start cfn-hup.service
-          packages:
-            apt:
-              salt-minion: []
 
     Properties:
       LaunchTemplateData:
@@ -300,17 +228,10 @@ Resources:
               DeleteOnTermination: true
               VolumeSize: !Ref VolumeSize
               VolumeType: gp2
-        NetworkInterfaces:
-          - NetworkInterfaceId: !Ref EniForFixedIp
-            DeviceIndex: 0
         UserData: 
           Fn::Base64:
             !Sub |
               #!/bin/bash -xe
-              curl -fsSL https://packages.broadcom.com/artifactory/api/security/keypair/SaltProjectKey/public | sudo tee /etc/apt/keyrings/salt-archive-keyring.pgp
-              # Create apt repo target configuration
-              curl -fsSL https://github.com/saltstack/salt-install-guide/releases/latest/download/salt.sources | sudo tee /etc/apt/sources.list.d/salt.sources
-
               apt-get update
               installPkgs() {
                   apt-get install -y python3 python3-setuptools python3-virtualenv python3-pip python-is-python3 unzip
@@ -323,19 +244,28 @@ Resources:
               installPkgs || sleep 60 && installPkgs 
               systemctl start unattended-upgrades.service
 
-              curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+              curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"
               unzip awscliv2.zip
               ./aws/install
 
               virtualenv /opt/aws/virtualvenv
               source /opt/aws/virtualvenv/bin/activate
               pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz
+              pip install "setuptools<82"
 
               export PATH=/opt/aws/bin:$PATH
               cfn-init -v --configsets=default \
                   --region ${AWS::Region} --stack ${AWS::StackName} \
                   --resource LaunchTemplate
-              cfn-signal -e $? --stack ${AWS::StackName} --resource AutoScalingGroup 
+
+              TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+              INSTANCE_ID=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id)
+              aws cloudformation signal-resource \
+                  --stack-name ${AWS::StackName} \
+                  --logical-resource-id AutoScalingGroup \
+                  --unique-id $INSTANCE_ID \
+                  --status SUCCESS \
+                  --region ${AWS::Region}
 
   EC2Role:
     Type: AWS::IAM::Role
@@ -351,15 +281,6 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
       Policies:
-        - PolicyName: get-minion-credentials
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action:
-                  - s3:GetObject
-                Resource:
-                  - !Sub "arn:aws:s3:::holycross-${EnvironmentName}-salt/${MinionId}*"
         - PolicyName: signal-waitcondition
           PolicyDocument:
             Version: 2012-10-17
@@ -375,24 +296,40 @@ Resources:
       Roles:
         - !Ref EC2Role
 
-  EniForFixedIp:
-    Type: AWS::EC2::NetworkInterface
-    Properties:
-      Tags:
-        - Key: Name
-          Value: !Sub '${EnvironmentName}-${ServiceName}-eni-zone-a'
-      SubnetId: !Ref SubnetId
-      PrivateIpAddress: !Ref IpAddress
-      GroupSet: 
-        - !Ref SecurityGroup
+# Settings to verify: HealthCheckPath, ports, and the path pattern
+# Note that the discourse server needs to respond on a non-root context (I guessed '/discourse' below)
 
-  DnsRecord:
-    Type: AWS::Route53::RecordSet
-    Properties:
-      HostedZoneId: !Ref HostedZoneId
-      Comment: DB
-      Name: !Sub '${ServiceName}.${DnsZone}'
-      Type: A
-      TTL: 60
-      ResourceRecords:
-        - !Ref IpAddress
+#  TargetGroup:
+#    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+#    Properties:
+#      HealthCheckEnabled: true
+#      HealthCheckIntervalSeconds: 10
+#      HealthCheckPath: '/discourse'
+#      HealthCheckProtocol: HTTP
+#      HealthCheckPort: '8080'
+#      HealthCheckTimeoutSeconds: 5
+#      HealthyThresholdCount: 2
+#      UnhealthyThresholdCount: 3
+#      TargetType: instance
+#      Name: !Sub '${ServiceName}'
+#      Port: 8080
+#      Protocol: HTTP
+#      VpcId: !Ref VPC
+#      TargetGroupAttributes:
+#        - Key: "stickiness.enabled"
+#          Value: 'true'
+#        - Key: "deregistration_delay.timeout_seconds"
+#          Value: '15'
+#
+#  ServiceHttpsListenerRule:
+#    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+#    Properties:
+#      Actions:
+#        - Type: forward
+#          TargetGroupArn: !Ref TargetGroup
+#      Conditions:
+#        - Field: path-pattern
+#          Values:
+#            - '/discourse*'
+#      ListenerArn: !Ref PublicLoadBalancerHttpsListener
+#      Priority: 2

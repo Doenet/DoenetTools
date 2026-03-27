@@ -127,6 +127,11 @@ checkDependencies() {
 }
 
 login() {
+  if [ ! -z ${AWS_SESSION_TOKEN-""} ]; then
+    echo "session variables already set"
+    unset AWS_PROFILE
+    return
+  fi
   printGreen "Login to AWS SSO"
   source ./scripts/login.sh || die "You may need to edit $PWD/.aws/config and add the missing profile"
 }

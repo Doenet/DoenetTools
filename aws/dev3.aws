@@ -12,6 +12,7 @@ STACKS['dev3-doenet-common']='service-common'
 STACKS['dev3-doenet-mysql']='service'
 STACKS['dev3-doenet']='service'
 STACKS['dev3-doenet-frontend']='s3-hosted-stackset'
+STACKS['dev3-discourse-forums']='discourse-forums-ec2'
 
 
 declare -g -a STACK_ORDER
@@ -22,6 +23,7 @@ STACK_ORDER=(
   dev3-doenet-mysql
   dev3-doenet
   dev3-doenet-frontend
+  dev3-discourse-forums
 )
 
 declare -g -a SAM_STACKS
