@@ -20,7 +20,7 @@
   },
   "wireit": {
     "build": {
-      "command": "tsc && cp src/signin_email.html dist/src/",
+      "command": "tsc",
       "files": [
         "src/**/*.ts",
         "src/**/*.js",
