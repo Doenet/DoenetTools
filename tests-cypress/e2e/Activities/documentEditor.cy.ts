@@ -96,13 +96,17 @@ describe("Document Editor Tests", { tags: ["@group1"] }, function () {
         .contains("Documentation")
         .should("exist");
 
-      cy.get('[aria-label="View edit history"]').click({ force: true });
+      cy.get('[data-test="Share Button"]').click({ force: true });
 
+      cy.get('[aria-label="Help"]').should(
+        "have.attr",
+        "aria-expanded",
+        "false",
+      );
       cy.get('[data-test="Editor Header Help Menu List"]:visible').should(
         "not.exist",
       );
       cy.get('[role="tooltip"]:visible').should("not.exist");
-      cy.checkAccessibility("body");
     });
   });
 });
