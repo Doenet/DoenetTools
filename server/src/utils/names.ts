@@ -1,6 +1,18 @@
 // Note: copied from client. Presumably there's a better way where don't have to duplicate code.
 
-import { generateUsername } from "friendly-username-generator";
+import { readFileSync } from "fs";
+import { join } from "path";
+
+function loadWordList(filename: string): string[] {
+  const filePath = join(process.cwd(), "assets", filename);
+  return readFileSync(filePath, "utf-8")
+    .split("\n")
+    .map((line) => line.replace(/,\s*$/, "").trim())
+    .filter((word) => word.length > 0);
+}
+
+const adjectives = loadWordList("adjectives.csv");
+const trees = loadWordList("trees.csv");
 
 /**
  * Concatenate optional firstNames and required lastNames
@@ -29,17 +41,9 @@ export function lastNameFirst({
   return lastNames + (firstNames ? ", " + firstNames : "");
 }
 
-export function generateHandle(useRandomNumber: boolean = false) {
-  const randomName = generateUsername({
-    useHyphen: true,
-    useRandomNumber,
-  }).split("-");
-
-  function capitalizeFirstLetter(string: string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-  }
-
-  return (
-    capitalizeFirstLetter(randomName[0]) + capitalizeFirstLetter(randomName[1])
-  );
+export function generateHandle() {
+  const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+  const tree = trees[Math.floor(Math.random() * trees.length)];
+  const digits = String(Math.floor(Math.random() * 1000)).padStart(3, "0");
+  return adjective + tree + digits;
 }

@@ -51,7 +51,6 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-session": "^1.18.1",
-    "friendly-username-generator": "^2.0.4",
     "http-status-codes": "^2.3.0",
     "luxon": "^3.7.1",
     "multiformats": "^9.9.0",

@@ -209,7 +209,7 @@ export async function createStudentHandleAccounts({
     [];
 
   for (let i = 0; i < numAccounts; i++) {
-    const password = generateHandle(true);
+    const password = generateHandle();
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
