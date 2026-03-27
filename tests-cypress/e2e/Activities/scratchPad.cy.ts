@@ -46,9 +46,7 @@ describe("ScratchPad Tests", { tags: ["@group1"] }, function () {
       .contains("Documentation")
       .should("exist");
 
-    cy.get('[aria-label="Toggle accessibility strict mode"]').click({
-      force: true,
-    });
+    cy.get('[data-test="Load Button"]').click({ force: true });
 
     cy.get('[data-test="ScratchPad Help Menu List"]:visible').should(
       "not.exist",

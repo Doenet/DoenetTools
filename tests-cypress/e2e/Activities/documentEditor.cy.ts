@@ -96,9 +96,7 @@ describe("Document Editor Tests", { tags: ["@group1"] }, function () {
         .contains("Documentation")
         .should("exist");
 
-      cy.get('[aria-label*="accessibility strict mode"]').click({
-        force: true,
-      });
+      cy.get('[aria-label="View edit history"]').click({ force: true });
 
       cy.get('[data-test="Editor Header Help Menu List"]:visible').should(
         "not.exist",
