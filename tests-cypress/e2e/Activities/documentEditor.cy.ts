@@ -96,7 +96,7 @@ describe("Document Editor Tests", { tags: ["@group1"] }, function () {
         .contains("Documentation")
         .should("exist");
 
-      cy.get('[data-test="Share Button"]').click({ force: true });
+      cy.get('[data-test="Share Button"]').should("be.visible").click();
 
       cy.get('[aria-label="Help"]').should(
         "have.attr",
@@ -107,6 +107,7 @@ describe("Document Editor Tests", { tags: ["@group1"] }, function () {
         "not.exist",
       );
       cy.get('[role="tooltip"]:visible').should("not.exist");
+      cy.checkAccessibility("body");
     });
   });
 });
