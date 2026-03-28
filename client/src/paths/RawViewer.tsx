@@ -1,6 +1,6 @@
 import { DoenetViewer } from "@doenet/doenetml-iframe";
 import axios from "axios";
-import { useLoaderData } from "react-router-dom";
+import { useLoaderData } from "react-router";
 import { ActivitySource, isActivitySource } from "@doenet-tools/shared";
 import { Content, DoenetmlVersion } from "../types";
 import { compileActivityFromContent } from "../utils/activity";

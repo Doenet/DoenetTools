@@ -57,7 +57,7 @@ import {
   createMemoryRouter,
   RouterProvider,
   MemoryRouterProps,
-} from "react-router-dom";
+} from "react-router";
 import { MathJaxContext } from "better-react-mathjax";
 import { mathjaxConfig } from "@doenet/doenetml-iframe";
 import { theme } from "../../src/theme";
@@ -115,7 +115,11 @@ Cypress.Commands.add("mount", (component, options = {}) => {
       path: "/",
       element: (
         <ChakraProvider theme={theme}>
-          <MathJaxContext version={4} config={mathjaxConfig}>
+          <MathJaxContext
+            version={4}
+            config={mathjaxConfig}
+            src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-svg.js"
+          >
             {component as any}
           </MathJaxContext>
         </ChakraProvider>

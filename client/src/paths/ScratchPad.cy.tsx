@@ -11,7 +11,6 @@ const selectors = {
   saveToDocumentButton: '[data-test="Save to Document"]',
   mockEditorChangeButton: '[data-test="Mock Editor Change"]',
   copyHeader: '[data-test="Copy Header"]',
-  accessibilityToggle: '[aria-label="Toggle accessibility strict mode"]',
 };
 
 const mockVersion: DoenetmlVersion = {
@@ -212,17 +211,6 @@ describe("ScratchPad tests", { tags: ["@group2"] }, () => {
       cy.checkAccessibility("body");
     });
 
-    it("toggles accessibility strict mode state", () => {
-      mountScratchPad();
-
-      cy.get(selectors.accessibilityToggle)
-        .should("have.attr", "aria-pressed", "false")
-        .click()
-        .should("have.attr", "aria-pressed", "true")
-        .click()
-        .should("have.attr", "aria-pressed", "false");
-    });
-
     it("is accessible while save modal is open", () => {
       mountScratchPad(undefined, false, () => new Promise(() => undefined));
 
@@ -241,7 +229,7 @@ describe("ScratchPad tests", { tags: ["@group2"] }, () => {
         .contains("Documentation")
         .should("exist");
 
-      cy.get('[aria-label="Toggle accessibility strict mode"]').click();
+      cy.get(selectors.loadButton).click();
 
       cy.get('[aria-label="Help"]').should(
         "have.attr",
@@ -254,7 +242,7 @@ describe("ScratchPad tests", { tags: ["@group2"] }, () => {
       cy.get('[role="tooltip"]:visible').should("not.exist");
     });
 
-    it("keeps focus on outside control when it closes Help menu", () => {
+    it("closes Help menu when interacting with outside control", () => {
       mountScratchPad();
 
       cy.get('[aria-label="Help"]').click();
@@ -262,7 +250,7 @@ describe("ScratchPad tests", { tags: ["@group2"] }, () => {
         .contains("Documentation")
         .should("exist");
 
-      cy.get(selectors.accessibilityToggle).click();
+      cy.get(selectors.loadButton).click();
 
       cy.get('[aria-label="Help"]').should(
         "have.attr",
@@ -273,7 +261,9 @@ describe("ScratchPad tests", { tags: ["@group2"] }, () => {
         "not.exist",
       );
       cy.get('[role="tooltip"]:visible').should("not.exist");
-      cy.get(selectors.accessibilityToggle).should("be.focused");
+      cy.get('[data-test="ScratchPad Load Menu List"]:visible')
+        .contains("Multiple Choice Examples")
+        .should("exist");
     });
   });
 });
