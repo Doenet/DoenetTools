@@ -109,7 +109,7 @@ jobs:
       - run: npm run prisma:seed --workspace server
 
       - name: Build shared package
-        run: npm run build:only-me --workspace shared
+        run: npm run build --workspace shared
 
       # Start server in background (port 3000)
       - name: Start server
@@ -204,7 +204,7 @@ jobs:
       - run: npm run prisma:seed --workspace server
 
       - name: Build shared package
-        run: npm run build:only-me --workspace shared
+        run: npm run build --workspace shared
 
       # Start server in background
       - name: Start server
@@ -279,7 +279,7 @@ jobs:
       - run: npm ci
 
       - name: Build shared package
-        run: npm run build:only-me --workspace shared
+        run: npm run build --workspace shared
 
       # Run component tests (grouped)
       - name: Run component tests
