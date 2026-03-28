@@ -48,7 +48,6 @@ import {
 } from "../popups/SaveDoenetmlAndReportFinish";
 import { LuCircleHelp } from "react-icons/lu";
 import { getDiscourseUrl } from "../utils/discourse";
-import { IoAccessibility } from "react-icons/io5";
 import { MenuDismissOverlay } from "../components/MenuDismissOverlay";
 import { useIframeMenuDismissOverlay } from "../utils/useIframeMenuDismissOverlay";
 import { IFRAME_MENU_IDS } from "../utils/iframeMenuIds";
@@ -58,7 +57,6 @@ import { useMenuTooltipSuppression } from "../utils/useMenuTooltipSuppression";
 export type DocumentEditorProps = {
   source: string;
   doenetmlVersion: DoenetmlVersion;
-  accessibilityStrictMode: boolean;
   sourceChangedCallback?: (newSource: string) => void;
 };
 
@@ -205,8 +203,6 @@ export function ScratchPadComponent({
     onClose: helpMenuControl.menuProps.onClose,
   });
 
-  const [accessibilityStrictMode, setAccessibilityStrictMode] = useState(false);
-
   const loadScratchPadSource = useCallback(
     (nextSource: string, removeFromLocalStorage = false) => {
       try {
@@ -346,31 +342,6 @@ export function ScratchPadComponent({
     </Menu>
   );
 
-  const accessibilityButton = (
-    <Tooltip
-      label={
-        accessibilityStrictMode
-          ? "Accessibility strict mode is on"
-          : "Turn on accessibility strict mode"
-      }
-      openDelay={300}
-      placement="bottom-end"
-    >
-      <IconButton
-        icon={<IoAccessibility />}
-        variant="ghost"
-        fontSize="1.2rem"
-        size="xs"
-        width="30px"
-        height="35px"
-        aria-label="Toggle accessibility strict mode"
-        aria-pressed={accessibilityStrictMode}
-        border={accessibilityStrictMode ? "1px solid" : "none"}
-        onClick={() => setAccessibilityStrictMode((prev) => !prev)}
-      />
-    </Tooltip>
-  );
-
   const saveButton = user && (
     <Button
       data-test="Save to Document"
@@ -410,10 +381,7 @@ export function ScratchPadComponent({
         zIndex="300"
       >
         {scratchPadMessage}
-        <ButtonGroup spacing="5px">
-          {helpButton}
-          {accessibilityButton}
-        </ButtonGroup>
+        <ButtonGroup spacing="5px">{helpButton}</ButtonGroup>
         <ButtonGroup spacing="5px" pl="10px">
           {loadButton}
           {saveButton}
@@ -438,7 +406,6 @@ export function ScratchPadComponent({
           source={source}
           doenetmlVersion={doenetmlVersion}
           key={resetNum}
-          accessibilityStrictMode={accessibilityStrictMode}
           sourceChangedCallback={updateCurrentSource}
         />
       </Box>
@@ -449,7 +416,6 @@ export function ScratchPadComponent({
 function DocumentEditor({
   source,
   doenetmlVersion,
-  accessibilityStrictMode,
   sourceChangedCallback,
 }: DocumentEditorProps) {
   const textEditorDoenetML = useRef(source);
@@ -497,7 +463,6 @@ function DocumentEditor({
       doenetmlVersion={doenetmlVersion.fullVersion}
       border="none"
       doenetViewerUrl={doenetViewerUrl}
-      upgradeAccessibilityWarningsToErrors={accessibilityStrictMode}
     />
   );
 }

@@ -72,7 +72,6 @@ export function Events() {
                 of the month.
               </Text>
 
-              {/* Workshop 1 */}
               <VStack
                 align="start"
                 spacing={3}
@@ -113,7 +112,47 @@ export function Events() {
                 </Text>
               </VStack>
 
-              {/* Workshop 2 */}
+              <VStack
+                align="start"
+                spacing={3}
+                mb={6}
+                pl={4}
+                borderLeft="3px solid"
+                borderColor="border"
+              >
+                <Heading size="md">
+                  <ChakraLink
+                    href="https://scholarlattice.org/collections/473ca6a6-9a46-48f7-a191-7275d60d910b"
+                    isExternal
+                    textDecoration="underline"
+                  >
+                    Dynamic and Interactive Graphs in Doenet
+                  </ChakraLink>
+                </Heading>
+                <Text fontSize="1.3rem" lineHeight="1.3">
+                  Learn how to make interactive graphs and validate graphical
+                  answers in problems designed for the active learning classroom
+                  using Doenet
+                </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <strong>Date:</strong> Saturday, April 4, 2026
+                </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <strong>Time:</strong> 11am–12pm Eastern, 8am–9am Pacific
+                </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <Button
+                    as="a"
+                    href="https://scholarlattice.org/collections/473ca6a6-9a46-48f7-a191-7275d60d910b"
+                    colorScheme="blue"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Details and registration at ScholarLattice
+                  </Button>
+                </Text>
+              </VStack>
+
               <VStack
                 align="start"
                 spacing={3}
@@ -156,7 +195,6 @@ export function Events() {
                 </Text>
               </VStack>
 
-              {/* Workshop 3 */}
               <VStack
                 align="start"
                 spacing={3}
