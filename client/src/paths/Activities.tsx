@@ -408,6 +408,7 @@ export function Activities() {
    * TODO: This is a hack to place arbitrary buttons into the action bar.
    * Move this logic to `actions` once `<AddContentToMenu>` and `<CreateContentMenu>`
    * have been properly refactored to NOT include their initial button UI inside of themselves.
+   * See issue #2852
    */
   const FIX_ME_miscellaneous_buttons = addTo ? null : (
     <>

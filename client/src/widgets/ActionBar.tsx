@@ -27,6 +27,7 @@ export type Context = {
    * This field will append anything to the end of this action bar.
    * Remove this once `<AddContentToMenu>` and `<CreateContentMenu>` have been properly
    * refactored to NOT include their initial button UI inside of themselves.
+   * See issue #2852
    */
   FIX_ME_miscellaneous_buttons?: ReactNode;
 };
