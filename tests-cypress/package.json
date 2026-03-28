@@ -29,5 +29,8 @@
     "cypress-plugin-tab": "^1.0.5",
     "cypress-wait-until": "^3.0.2",
     "wick-a11y": "^2.5.0"
+  },
+  "devDependencies": {
+    "@types/cssesc": "^3.0.2"
   }
 }
