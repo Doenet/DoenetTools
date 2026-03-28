@@ -10,7 +10,6 @@ export default tseslint.config(
   {
     ignores: [
       "**/dist/**",
-      "**/.wireit/**",
       "**/.astro/**",
       "vite.config.ts",
       "**/cypress/screenshots/**",
