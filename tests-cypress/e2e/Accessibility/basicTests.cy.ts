@@ -20,6 +20,53 @@ describe("Basic accessibility tests", { tags: ["@group1"] }, function () {
     cy.checkAccessibility(undefined);
   });
 
+  it("Check accessibility of author tab in explore page", () => {
+    // Make sure there is at least one author with name Test
+    cy.loginAsTestUser({
+      firstNames: "Test",
+      lastNames: "User",
+    });
+    cy.createContent({
+      name: "Test Content",
+      makePublic: true,
+    });
+
+    cy.visit("/explore");
+    cy.get('[data-test="Search"]').type("Test{enter}");
+
+    cy.get('[data-test="Authors Tab"]').click();
+
+    cy.get("h2").contains("Matching authors").should("be.visible");
+
+    cy.checkAccessibility(undefined);
+  });
+
+  it("Check accessibility of classifications tab in explore page", () => {
+    // Make sure there is at least one public document with a Calculus classification
+    cy.loginAsTestUser();
+    cy.createContent({
+      name: "Test Content",
+      makePublic: true,
+      classifications: [
+        {
+          systemShortName: "HS/C Math",
+          category: "Calculus - single variable",
+          subCategory: "Applications of differentiation",
+          code: "CalcSV.AD.17",
+        },
+      ],
+    });
+
+    cy.visit("/explore");
+    cy.get('[data-test="Search"]').type("Calculus{enter}");
+
+    cy.get('[data-test="Classifications Tab"]').click();
+
+    cy.get("h2").contains("Matching classifications").should("be.visible");
+
+    cy.checkAccessibility(undefined);
+  });
+
   it("Check accessibility of my activities", () => {
     // Create a document, assignment, and problem set to test all icons
     cy.loginAsTestUser();

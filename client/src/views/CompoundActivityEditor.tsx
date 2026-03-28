@@ -227,8 +227,6 @@ export function CompoundActivityEditor({
 
   const numCards = useMemo(() => countCards(activity), [activity, countCards]);
 
-  // let idx = 0;
-
   // TODO: figure out functions inside hooks
   // eslint-disable-next-line react-hooks/exhaustive-deps
   function createCardContent(
@@ -246,68 +244,6 @@ export function CompoundActivityEditor({
 
     // skip the first activity, which doesn't have parent info
     if (parentInfo) {
-      //
-      // ===== This section deals with indented question banks inside problem sets =====
-      // ===== It is no longer relevant unless we decide to bring bank question banks. =====
-      //
-      // // Calculate the destination for the "Move Up" and "Move Down" actions
-      // let nextPositionUp: { parent: string; position: number } | null;
-      // let nextPositionDown: { parent: string; position: number } | null;
-
-      // if (positionInParent > 0) {
-      //   // Not first in parent.
-      //   // If previous sibling is a single doc, take its position.
-      //   // Either become the last child of sibling
-      //   const previousSibling = parentInfo.children[positionInParent - 1];
-      //   if (previousSibling.type === "singleDoc") {
-      //     nextPositionUp = {
-      //       parent: parentInfo.contentId,
-      //       position: positionInParent - 1,
-      //     };
-      //   } else {
-      //     nextPositionUp = {
-      //       parent: previousSibling.contentId,
-      //       position: previousSibling.children.length,
-      //     };
-      //   }
-      // } else if (idx === 0) {
-      //   // no position up
-      //   nextPositionUp = null;
-      // } else {
-      //   // first in parent, so position up is parent's position
-      //   nextPositionUp = {
-      //     parent: parentInfo.parent!,
-      //     position: parentInfo.positionInParent,
-      //   };
-      // }
-
-      // if (positionInParent < parentInfo.children.length - 1) {
-      //   // Not last in parent.
-      //   // If next sibling is a single doc, take its position.
-      //   // Either become the first child of sibling
-      //   const nextSibling = parentInfo.children[positionInParent + 1];
-      //   if (nextSibling.type === "singleDoc") {
-      //     nextPositionDown = {
-      //       parent: parentInfo.contentId,
-      //       position: positionInParent + 1,
-      //     };
-      //   } else {
-      //     nextPositionDown = {
-      //       parent: nextSibling.contentId,
-      //       position: 0,
-      //     };
-      //   }
-      // } else if (parentInfo.parent) {
-      //   // last in parent, so position down is position after parent
-      //   nextPositionDown = {
-      //     parent: parentInfo.parent,
-      //     position: parentInfo.positionInParent + 1,
-      //   };
-      // } else {
-      //   // last in initial parent
-      //   nextPositionDown = null;
-      // }
-
       cards.push({
         content: content,
         cardLink:
@@ -330,7 +266,6 @@ export function CompoundActivityEditor({
           );
         },
       });
-      // idx++;
     }
 
     if (content.type !== "singleDoc") {
