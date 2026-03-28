@@ -809,7 +809,7 @@ test("cannot move out of assigned problem set", async () => {
     moveContent({
       contentId: docAssignmentId,
       loggedInUserId: ownerId,
-      parentId: null,
+      changeParentIdTo: null,
       desiredPosition: 0,
     }),
   ).rejects.toThrow("Cannot move content");
@@ -870,7 +870,7 @@ test("cannot move into assigned problem set", async () => {
     moveContent({
       contentId: doc1Id,
       loggedInUserId: ownerId,
-      parentId: assignmentId,
+      changeParentIdTo: assignmentId,
       desiredPosition: 0,
     }),
   ).rejects.toThrow("Cannot move content into an assigned activity");
@@ -1070,6 +1070,218 @@ test("MoveCopyContent has correct canOpen flags", async () => {
   expectContentsMatch(results.contents, [], []);
 });
 
+describe("moveContent() basic", () => {
+  test("move content to a different folder", async () => {
+    const { userId: ownerId } = await createTestUser();
+    const [folder1, doc1, folder2] = await setupTestContent(ownerId, {
+      folder1: fold({
+        doc1: doc(""),
+      }),
+      folder2: fold({}),
+    });
+
+    // Verify initial state
+    let folder1Contents = await getMyContent({
+      ownerId,
+      parentId: folder1,
+      loggedInUserId: ownerId,
+    });
+    if (folder1Contents.notMe) throw Error("shouldn't happen");
+    expect(folder1Contents.content.length).eq(1);
+
+    let folder2Contents = await getMyContent({
+      ownerId,
+      parentId: folder2,
+      loggedInUserId: ownerId,
+    });
+    if (folder2Contents.notMe) throw Error("shouldn't happen");
+    expect(folder2Contents.content.length).eq(0);
+
+    // Move doc1 from folder1 to folder2
+    await moveContent({
+      contentId: doc1,
+      loggedInUserId: ownerId,
+      changeParentIdTo: folder2,
+      desiredPosition: 0,
+    });
+
+    // Verify doc1 is now in folder2
+    folder1Contents = await getMyContent({
+      ownerId,
+      parentId: folder1,
+      loggedInUserId: ownerId,
+    });
+    if (folder1Contents.notMe) throw Error("shouldn't happen");
+    expect(folder1Contents.content.length).eq(0);
+
+    folder2Contents = await getMyContent({
+      ownerId,
+      parentId: folder2,
+      loggedInUserId: ownerId,
+    });
+    if (folder2Contents.notMe) throw Error("shouldn't happen");
+    expect(folder2Contents.content.length).eq(1);
+    expect(folder2Contents.content[0].contentId).eqls(doc1);
+  });
+
+  test("move content to root folder", async () => {
+    const { userId: ownerId } = await createTestUser();
+    const [folder1, doc1] = await setupTestContent(ownerId, {
+      folder1: fold({
+        doc1: doc(""),
+      }),
+    });
+
+    // Verify doc1 is in folder1
+    let folder1Contents = await getMyContent({
+      ownerId,
+      parentId: folder1,
+      loggedInUserId: ownerId,
+    });
+    if (folder1Contents.notMe) throw Error("shouldn't happen");
+    expect(folder1Contents.content.length).eq(1);
+
+    // Move doc1 to root folder
+    await moveContent({
+      contentId: doc1,
+      loggedInUserId: ownerId,
+      changeParentIdTo: null,
+      desiredPosition: 0,
+    });
+
+    // Verify doc1 is now in root
+    folder1Contents = await getMyContent({
+      ownerId,
+      parentId: folder1,
+      loggedInUserId: ownerId,
+    });
+    if (folder1Contents.notMe) throw Error("shouldn't happen");
+    expect(folder1Contents.content.length).eq(0);
+
+    const rootContents = await getMyContent({
+      ownerId,
+      parentId: null,
+      loggedInUserId: ownerId,
+    });
+    if (rootContents.notMe) throw Error("shouldn't happen");
+    expect(rootContents.content.length).eq(2);
+    expect(rootContents.content[0].contentId).eqls(doc1);
+  });
+
+  test("move content position without changing parent", async () => {
+    const { userId: ownerId } = await createTestUser();
+    const [_folder1, doc1, doc2, doc3] = await setupTestContent(ownerId, {
+      folder1: fold({
+        doc1: doc(""),
+        doc2: doc(""),
+        doc3: doc(""),
+      }),
+    });
+
+    // Verify initial order
+    let folderContents = await getMyContent({
+      ownerId,
+      parentId: _folder1,
+      loggedInUserId: ownerId,
+    });
+    if (folderContents.notMe) throw Error("shouldn't happen");
+    expect(folderContents.content.length).eq(3);
+    expect(folderContents.content[0].contentId).eqls(doc1);
+    expect(folderContents.content[1].contentId).eqls(doc2);
+    expect(folderContents.content[2].contentId).eqls(doc3);
+
+    // Move doc1 to position 2 (last position) without changing parent
+    await moveContent({
+      contentId: doc1,
+      loggedInUserId: ownerId,
+      // changeParentIdTo is NOT specified (undefined)
+      desiredPosition: 2,
+    });
+
+    // Verify new order: doc2, doc3, doc1
+    folderContents = await getMyContent({
+      ownerId,
+      parentId: _folder1,
+      loggedInUserId: ownerId,
+    });
+    if (folderContents.notMe) throw Error("shouldn't happen");
+    expect(folderContents.content.length).eq(3);
+    expect(folderContents.content[0].contentId).eqls(doc2);
+    expect(folderContents.content[1].contentId).eqls(doc3);
+    expect(folderContents.content[2].contentId).eqls(doc1);
+  });
+
+  test("move content to specific position in different folder", async () => {
+    const { userId: ownerId } = await createTestUser();
+    const [_folder1, doc1, folder2, doc2, doc3] = await setupTestContent(
+      ownerId,
+      {
+        folder1: fold({
+          doc1: doc(""),
+        }),
+        folder2: fold({
+          doc2: doc(""),
+          doc3: doc(""),
+        }),
+      },
+    );
+
+    // Move doc1 to position 1 (between doc2 and doc3) in folder2
+    await moveContent({
+      contentId: doc1,
+      loggedInUserId: ownerId,
+      changeParentIdTo: folder2,
+      desiredPosition: 1,
+    });
+
+    // Verify order in folder2: doc2, doc1, doc3
+    const folder2Contents = await getMyContent({
+      ownerId,
+      parentId: folder2,
+      loggedInUserId: ownerId,
+    });
+    if (folder2Contents.notMe) throw Error("shouldn't happen");
+    expect(folder2Contents.content.length).eq(3);
+    expect(folder2Contents.content[0].contentId).eqls(doc2);
+    expect(folder2Contents.content[1].contentId).eqls(doc1);
+    expect(folder2Contents.content[2].contentId).eqls(doc3);
+  });
+
+  test("cannot move content into itself", async () => {
+    const { userId: ownerId } = await createTestUser();
+    const [folder1] = await setupTestContent(ownerId, {
+      folder1: fold({}),
+    });
+
+    await expect(
+      moveContent({
+        contentId: folder1,
+        loggedInUserId: ownerId,
+        changeParentIdTo: folder1,
+        desiredPosition: 0,
+      }),
+    ).rejects.toThrow("Cannot move content into itself");
+  });
+
+  test("cannot move content into a descendant", async () => {
+    const { userId: ownerId } = await createTestUser();
+    const [folder1, subfolder1] = await setupTestContent(ownerId, {
+      folder1: fold({
+        subfolder1: fold({}),
+      }),
+    });
+
+    await expect(
+      moveContent({
+        contentId: folder1,
+        loggedInUserId: ownerId,
+        changeParentIdTo: subfolder1,
+        desiredPosition: 0,
+      }),
+    ).rejects.toThrow("Cannot move content into a descendant of itself");
+  });
+});
+
 describe("moveContent() with courses", () => {
   async function setupCourses({ addStudentData }: { addStudentData: boolean }) {
     const { userId: ownerId } = await createTestUser();
@@ -1166,7 +1378,7 @@ describe("moveContent() with courses", () => {
     await moveContent({
       contentId: courseAssignmentId,
       loggedInUserId: ownerId,
-      parentId: innerFolder2,
+      changeParentIdTo: innerFolder2,
       desiredPosition: 0,
     });
 
@@ -1185,7 +1397,7 @@ describe("moveContent() with courses", () => {
     await moveContent({
       contentId: courseAssignmentId,
       loggedInUserId: ownerId,
-      parentId: courseFolder2,
+      changeParentIdTo: courseFolder2,
       desiredPosition: 0,
     });
 
@@ -1205,7 +1417,7 @@ describe("moveContent() with courses", () => {
       moveContent({
         contentId: courseAssignmentId,
         loggedInUserId: ownerId,
-        parentId: courseFolder2,
+        changeParentIdTo: courseFolder2,
         desiredPosition: 0,
       }),
     ).rejects.toThrow("Cannot move content with student data");
@@ -1221,7 +1433,7 @@ describe("moveContent() with courses", () => {
     await moveContent({
       contentId: courseAssignmentId,
       loggedInUserId: ownerId,
-      parentId: nonCourseFolder,
+      changeParentIdTo: nonCourseFolder,
       desiredPosition: 0,
     });
 
@@ -1243,7 +1455,7 @@ describe("moveContent() with courses", () => {
       moveContent({
         contentId: courseAssignmentId,
         loggedInUserId: ownerId,
-        parentId: nonCourseFolder,
+        changeParentIdTo: nonCourseFolder,
         desiredPosition: 0,
       }),
     ).rejects.toThrow("Cannot move content with student data");
@@ -1257,7 +1469,7 @@ describe("moveContent() with courses", () => {
     await moveContent({
       contentId: courseFolder1,
       loggedInUserId: ownerId,
-      parentId: nonCourseFolder,
+      changeParentIdTo: nonCourseFolder,
       desiredPosition: 0,
     });
 
@@ -1277,7 +1489,7 @@ describe("moveContent() with courses", () => {
       moveContent({
         contentId: courseFolder1,
         loggedInUserId: ownerId,
-        parentId: courseFolder2,
+        changeParentIdTo: courseFolder2,
         desiredPosition: 0,
       }),
     ).rejects.toThrow("Cannot move a course into a course");
@@ -1291,7 +1503,7 @@ describe("moveContent() with courses", () => {
     await moveContent({
       contentId: outerFolder,
       loggedInUserId: ownerId,
-      parentId: nonCourseFolder,
+      changeParentIdTo: nonCourseFolder,
       desiredPosition: 0,
     });
 
@@ -1311,7 +1523,7 @@ describe("moveContent() with courses", () => {
       moveContent({
         contentId: outerFolder,
         loggedInUserId: ownerId,
-        parentId: courseFolder2,
+        changeParentIdTo: courseFolder2,
         desiredPosition: 0,
       }),
     ).rejects.toThrow("Cannot move a course into a course");
@@ -1325,7 +1537,7 @@ describe("moveContent() with courses", () => {
     await moveContent({
       contentId: nonCourseFolder,
       loggedInUserId: ownerId,
-      parentId: courseFolder2,
+      changeParentIdTo: courseFolder2,
       desiredPosition: 0,
     });
 

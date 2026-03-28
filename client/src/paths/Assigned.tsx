@@ -83,7 +83,7 @@ export function Assigned() {
       showBlurb={true}
       showPublicStatus={false}
       emptyMessage={"Nothing Assigned"}
-      content={cardContent}
+      cardContent={cardContent}
     />
   );
 

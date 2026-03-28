@@ -1175,7 +1175,7 @@ test("move content to different locations", async () => {
 
   await moveContent({
     contentId: activity1Id,
-    parentId: null,
+    changeParentIdTo: null,
     desiredPosition: 1,
     loggedInUserId: ownerId,
   });
@@ -1196,7 +1196,7 @@ test("move content to different locations", async () => {
 
   await moveContent({
     contentId: folder1Id,
-    parentId: null,
+    changeParentIdTo: null,
     desiredPosition: 0,
     loggedInUserId: ownerId,
   });
@@ -1217,7 +1217,7 @@ test("move content to different locations", async () => {
 
   await moveContent({
     contentId: activity2Id,
-    parentId: null,
+    changeParentIdTo: null,
     desiredPosition: 10,
     loggedInUserId: ownerId,
   });
@@ -1238,7 +1238,7 @@ test("move content to different locations", async () => {
 
   await moveContent({
     contentId: folder3Id,
-    parentId: null,
+    changeParentIdTo: null,
     desiredPosition: -10,
     loggedInUserId: ownerId,
   });
@@ -1259,7 +1259,7 @@ test("move content to different locations", async () => {
 
   await moveContent({
     contentId: folder3Id,
-    parentId: folder1Id,
+    changeParentIdTo: folder1Id,
     desiredPosition: 0,
     loggedInUserId: ownerId,
   });
@@ -1292,7 +1292,7 @@ test("move content to different locations", async () => {
 
   await moveContent({
     contentId: activity3Id,
-    parentId: null,
+    changeParentIdTo: null,
     desiredPosition: 2,
     loggedInUserId: ownerId,
   });
@@ -1325,7 +1325,7 @@ test("move content to different locations", async () => {
 
   await moveContent({
     contentId: folder2Id,
-    parentId: folder3Id,
+    changeParentIdTo: folder3Id,
     desiredPosition: 2,
     loggedInUserId: ownerId,
   });
@@ -1354,13 +1354,13 @@ test("move content to different locations", async () => {
 
   await moveContent({
     contentId: activity3Id,
-    parentId: folder3Id,
+    changeParentIdTo: folder3Id,
     desiredPosition: 0,
     loggedInUserId: ownerId,
   });
   await moveContent({
     contentId: activity1Id,
-    parentId: folder2Id,
+    changeParentIdTo: folder2Id,
     desiredPosition: 1,
     loggedInUserId: ownerId,
   });
@@ -1428,7 +1428,7 @@ test("cannot move content into itself or a descendant of itself", async () => {
   await expect(
     moveContent({
       contentId: folder1Id,
-      parentId: folder1Id,
+      changeParentIdTo: folder1Id,
       desiredPosition: 0,
       loggedInUserId: ownerId,
     }),
@@ -1437,7 +1437,7 @@ test("cannot move content into itself or a descendant of itself", async () => {
   await expect(
     moveContent({
       contentId: folder1Id,
-      parentId: folder2Id,
+      changeParentIdTo: folder2Id,
       desiredPosition: 0,
       loggedInUserId: ownerId,
     }),
@@ -1446,7 +1446,7 @@ test("cannot move content into itself or a descendant of itself", async () => {
   await expect(
     moveContent({
       contentId: folder1Id,
-      parentId: folder3Id,
+      changeParentIdTo: folder3Id,
       desiredPosition: 0,
       loggedInUserId: ownerId,
     }),
@@ -1455,7 +1455,7 @@ test("cannot move content into itself or a descendant of itself", async () => {
   await expect(
     moveContent({
       contentId: folder1Id,
-      parentId: folder4Id,
+      changeParentIdTo: folder4Id,
       desiredPosition: 0,
       loggedInUserId: ownerId,
     }),
@@ -1509,31 +1509,31 @@ test("insert many items into sort order", { timeout: 30000 }, async () => {
   for (let i = 0; i < 5; i++) {
     await moveContent({
       contentId: activity1Id,
-      parentId: null,
+      changeParentIdTo: null,
       desiredPosition: 3,
       loggedInUserId: ownerId,
     });
     await moveContent({
       contentId: activity2Id,
-      parentId: null,
+      changeParentIdTo: null,
       desiredPosition: 3,
       loggedInUserId: ownerId,
     });
     await moveContent({
       contentId: activity3Id,
-      parentId: null,
+      changeParentIdTo: null,
       desiredPosition: 3,
       loggedInUserId: ownerId,
     });
     await moveContent({
       contentId: activity4Id,
-      parentId: null,
+      changeParentIdTo: null,
       desiredPosition: 3,
       loggedInUserId: ownerId,
     });
     await moveContent({
       contentId: activity6Id,
-      parentId: null,
+      changeParentIdTo: null,
       desiredPosition: 3,
       loggedInUserId: ownerId,
     });
@@ -1543,13 +1543,13 @@ test("insert many items into sort order", { timeout: 30000 }, async () => {
     }
     await moveContent({
       contentId: activity5Id,
-      parentId: null,
+      changeParentIdTo: null,
       desiredPosition: 3,
       loggedInUserId: ownerId,
     });
     await moveContent({
       contentId: activity4Id,
-      parentId: null,
+      changeParentIdTo: null,
       desiredPosition: 3,
       loggedInUserId: ownerId,
     });
@@ -1578,13 +1578,13 @@ test("insert many items into sort order", { timeout: 30000 }, async () => {
   // this time to the left since fewer items are to the left.
   await moveContent({
     contentId: activity5Id,
-    parentId: null,
+    changeParentIdTo: null,
     desiredPosition: 2,
     loggedInUserId: ownerId,
   });
   await moveContent({
     contentId: activity4Id,
-    parentId: null,
+    changeParentIdTo: null,
     desiredPosition: 2,
     loggedInUserId: ownerId,
   });

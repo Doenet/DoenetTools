@@ -17,8 +17,8 @@ describe("Duplicate content Tests", { tags: ["@group3"] }, function () {
       .eq(0)
       .should("contain.text", "Document 1");
 
-    cy.get('[data-test="Card Menu Button"]').eq(0).click();
-    cy.get('[data-test="Duplicate Content"]').eq(0).click();
+    cy.get('[data-test="Card Select"]').eq(0).click();
+    cy.get('[data-test="Action Bar Make a copy"]').eq(0).click();
     cy.get(`[data-test="Content Card"]`).should("have.length", 2);
     cy.get(`[data-test="Content Card"]`)
       .eq(0)
@@ -66,8 +66,8 @@ describe("Duplicate content Tests", { tags: ["@group3"] }, function () {
       .eq(0)
       .should("contain.text", "Document 1");
 
-    cy.get('[data-test="Card Menu Button"]').eq(0).click();
-    cy.get('[data-test="Duplicate Content"]').eq(0).click();
+    cy.get('[data-test="Card Select"]').eq(0).click();
+    cy.get('[data-test="Action Bar Make a copy"]').eq(0).click();
     cy.get(`[data-test="Content Card"]`).should("have.length", 2);
     cy.get(`[data-test="Content Card"]`)
       .eq(0)
@@ -106,8 +106,8 @@ describe("Duplicate content Tests", { tags: ["@group3"] }, function () {
 
     cy.get(`[data-test="Content Card"]`).should("have.length", 3);
 
-    cy.get('[data-test="Card Menu Button"]').eq(1).click();
-    cy.get('[data-test="Duplicate Content"]').eq(1).click();
+    cy.get('[data-test="Card Select"]').eq(1).click();
+    cy.get('[data-test="Action Bar Make a copy"]').click();
     cy.get(`[data-test="Content Card"]`).should("have.length", 3);
 
     cy.get(`[data-test="Content Card"]`)
@@ -158,8 +158,8 @@ describe("Duplicate content Tests", { tags: ["@group3"] }, function () {
     cy.get('[data-test="My Activities"]').click();
     cy.get(`[data-test="Content Card"]`).should("have.length", 1);
 
-    cy.get('[data-test="Card Menu Button"]').eq(0).click();
-    cy.get('[data-test="Duplicate Content"]').eq(0).click();
+    cy.get('[data-test="Card Select"]').eq(0).click();
+    cy.get('[data-test="Action Bar Make a copy"]').click();
     cy.get(`[data-test="Content Card"]`).should("have.length", 2);
     cy.get(`[data-test="Content Card"]`)
       .eq(0)
