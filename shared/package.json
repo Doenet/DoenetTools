@@ -18,7 +18,7 @@
   "scripts": {
     "lint": "eslint --fix",
     "lint:check": "eslint",
-    "build:only-me": "tsc --build"
+    "build": "tsc --build"
   },
   "dependencies": {
     "ipfs-only-hash": "^4.0.0"

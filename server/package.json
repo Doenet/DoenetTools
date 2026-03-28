@@ -9,7 +9,7 @@
   "main": "dist/src/index.js",
   "scripts": {
     "build:assets": "npx tsx scripts/build-email-asset.ts",
-    "build:only-me": "tsc --build && npm run build:assets",
+    "build": "tsc --build && npm run build:assets",
     "dev": "tsx watch src/index.ts",
     "lint": "eslint --fix",
     "lint:check": "eslint",

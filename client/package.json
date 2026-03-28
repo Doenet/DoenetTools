@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build:assets": "vite build",
-    "build:only-me": "tsc --build && npm run build:assets",
+    "build": "tsc --build && npm run build:assets",
     "dev": "cross-env NODE_ENV=production vite",
     "lint": "eslint --fix",
     "lint:check": "eslint",

@@ -6,7 +6,7 @@
     "prepare": "astro sync",
     "dev": "astro dev",
     "build:assets": "astro build",
-    "build:only-me": "npm run build:assets",
+    "build": "npm run build:assets",
     "preview": "astro preview",
     "astro": "astro",
     "lint": "eslint --fix",
