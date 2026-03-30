@@ -19,9 +19,9 @@ describe("Move tests", { tags: ["@group3"] }, () => {
       .should("contain.text", "Problem Set");
     cy.get(`[data-test="Content Card"]`).eq(2).should("contain.text", "Folder");
 
-    cy.get('[data-test="Card Menu Button"]').eq(0).click();
-    cy.get('[data-test="Move Up Menu Item"]').should("not.be.visible");
-    cy.get('[data-test="Move Down Menu Item"]').eq(0).click();
+    cy.get('[data-test="Card Select"]').eq(0).click();
+    cy.get('[aria-label="Move up"]').should("be.disabled");
+    cy.get('[aria-label="Move down"]').click();
 
     cy.get(`[data-test="Content Card"]`).should("have.length", 3);
     cy.get(`[data-test="Content Card"]`)
@@ -32,11 +32,10 @@ describe("Move tests", { tags: ["@group3"] }, () => {
       .should("contain.text", "Document");
     cy.get(`[data-test="Content Card"]`).eq(2).should("contain.text", "Folder");
 
-    cy.get('[data-test="Card Menu Button"]').eq(1).click();
-    cy.get('[data-test="Move Up Menu Item"]').should("be.visible");
-    cy.get('[data-test="Move Down Menu Item"]').eq(1).click();
-
+    cy.get('[aria-label="Move up"]').should("not.be.disabled");
+    cy.get('[aria-label="Move down"]').click();
     cy.get(`[data-test="Content Card"]`).should("have.length", 3);
+
     cy.get(`[data-test="Content Card"]`)
       .eq(0)
       .should("contain.text", "Problem Set");
@@ -45,9 +44,8 @@ describe("Move tests", { tags: ["@group3"] }, () => {
       .eq(2)
       .should("contain.text", "Document");
 
-    cy.get('[data-test="Card Menu Button"]').eq(2).click();
-    cy.get('[data-test="Move Down Menu Item"]').should("not.be.visible");
-    cy.get('[data-test="Move Up Menu Item"]').eq(1).click(); // since no Move Up button on first card
+    cy.get('[aria-label="Move down"]').should("be.disabled");
+    cy.get('[aria-label="Move up"]').click();
 
     cy.get(`[data-test="Content Card"]`).should("have.length", 3);
     cy.get(`[data-test="Content Card"]`)
@@ -78,8 +76,8 @@ describe("Move tests", { tags: ["@group3"] }, () => {
 
     cy.get(`[data-test="Content Card"]`).should("have.length", 2);
 
-    cy.get('[data-test="Card Menu Button"]').eq(0).click();
-    cy.get('[data-test="Move to"]').eq(0).click();
+    cy.get('[data-test="Card Select"]').eq(0).click();
+    cy.get('[aria-label="Move to"]').click();
 
     cy.get('[data-test="MoveCopy Heading 2"]').should("have.text", "Document");
 
@@ -147,8 +145,8 @@ describe("Move tests", { tags: ["@group3"] }, () => {
 
     cy.get(`[data-test="Content Card"]`).should("have.length", 2);
 
-    cy.get('[data-test="Card Menu Button"]').eq(0).click();
-    cy.get('[data-test="Move to"]').eq(0).click();
+    cy.get('[data-test="Card Select"]').eq(0).click();
+    cy.get('[aria-label="Move to"]').click();
 
     cy.get('[data-test="MoveCopy Heading 2"]').should(
       "have.text",
@@ -247,8 +245,8 @@ describe("Move tests", { tags: ["@group3"] }, () => {
       .eq(0)
       .should("contain.text", "Problem Set");
 
-    cy.get('[data-test="Card Menu Button"]').eq(0).click();
-    cy.get('[data-test="Move to"]').eq(0).click();
+    cy.get('[data-test="Card Select"]').eq(0).click();
+    cy.get('[aria-label="Move to"]').click();
 
     cy.get('[data-test="MoveCopy Heading 2"]').should(
       "have.text",
@@ -312,8 +310,8 @@ describe("Move tests", { tags: ["@group3"] }, () => {
       .should("contain.text", "Problem Set");
 
     cy.log("Move Document into public Problem Set");
-    cy.get('[data-test="Card Menu Button"]').eq(0).click();
-    cy.get('[data-test="Move to"]').eq(0).click();
+    cy.get('[data-test="Card Select"]').eq(0).click();
+    cy.get('[aria-label="Move to"]').click();
 
     cy.get('[data-test="Select Item Option"]').should("have.length", 2);
     cy.get('[data-test="Select Item Option"]')

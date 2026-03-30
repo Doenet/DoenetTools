@@ -3,6 +3,7 @@ build
 dist_local
 dist
 node_modules
+.tsbuildinfo
 __pycache__
 
 
@@ -12,7 +13,6 @@ __pycache__
 **/.env
 
 .vite
-.wireit
 
 # misc
 .DS_Store

@@ -1,4 +1,5 @@
-describe("Add selected to tests", { tags: ["@group2"] }, () => {
+// We removed the ability to copy and move in one step, so these tests are no longer applicable
+describe.skip("Add selected to tests", { tags: ["@group2"] }, () => {
   function createInitialSetup() {
     cy.loginAsTestUser({ isAuthor: true });
 

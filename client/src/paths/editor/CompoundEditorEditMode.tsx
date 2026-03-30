@@ -1,6 +1,6 @@
 import { useFetcher, useLoaderData } from "react-router";
 import axios from "axios";
-import { Content } from "../../types";
+import { ProblemSet } from "../../types";
 import { CompoundActivityEditor } from "../../views/CompoundActivityEditor";
 
 export async function loader({ params }: { params: any }) {
@@ -15,7 +15,7 @@ export async function loader({ params }: { params: any }) {
  * Context: `compoundEditor`
  */
 export function CompoundEditorEditMode() {
-  const { content: activity } = useLoaderData() as { content: Content };
+  const { content: activity } = useLoaderData() as { content: ProblemSet };
   const fetcher = useFetcher();
   const createContentMenuCreateFetcher = useFetcher();
   const createContentMenuSaveNameFetcher = useFetcher();

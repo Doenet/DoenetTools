@@ -177,7 +177,6 @@ export function LibraryActivities() {
                   path: "copyMove/moveContent",
                   contentId,
                   desiredPosition: position - 1,
-                  parentId: folderId,
                 },
                 { method: "post", encType: "application/json" },
               );
@@ -195,7 +194,6 @@ export function LibraryActivities() {
                   path: "copyMove/moveContent",
                   contentId,
                   desiredPosition: position + 1,
-                  parentId: folderId,
                 },
                 { method: "post", encType: "application/json" },
               );
@@ -500,7 +498,7 @@ export function LibraryActivities() {
       showPublicStatus={true}
       showActivityCategories={true}
       emptyMessage={emptyMessage}
-      content={cardContent}
+      cardContent={cardContent}
     />
   );
 
