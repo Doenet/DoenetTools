@@ -1,5 +1,5 @@
 import { Image, Link as ChakraLink } from "@chakra-ui/react";
-import { Link as ReactRouterLink } from "react-router-dom";
+import { Link as ReactRouterLink } from "react-router";
 
 export default function RouterLogo({
   paddingRight = "0px",

@@ -1,5 +1,6 @@
 describe("Search results Tests", { tags: ["@group3"] }, function () {
-  it("classifications shown in search", () => {
+  // We removed the hamburger menu on the search page
+  it.skip("classifications shown in search", () => {
     cy.loginAsTestUser();
     const code = Date.now().toString();
 

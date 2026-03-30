@@ -106,7 +106,7 @@ export function Curate() {
           showActivityCategories={true}
           showOwnerName={true}
           showLibraryEditor={showLibraryEditor}
-          content={cardContent}
+          cardContent={cardContent}
           emptyMessage={"No Activities Found!"}
         />
       </Box>

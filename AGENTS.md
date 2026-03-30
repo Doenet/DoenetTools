@@ -12,7 +12,6 @@ Doenet Tools is an educational technology platform built as an **npm workspace m
 
 ```bash
 npm ci
-npm run prisma:generate --workspace server   # must run after install
 ```
 
 ### Dev servers
@@ -25,13 +24,17 @@ npm run dev --workspace client   # Vite dev server on port 8000 (proxies /api to
 ### Build
 
 ```bash
+npm run bulid
+```
+
+or
+
+```bash
 npm run build --workspace shared   # build first (client and server depend on it)
 npm run build --workspace client   # tsc + vite build
 npm run build --workspace server   # tsc
 npm run build --workspace blog
 ```
-
-Builds use **wireit** for incremental caching. Re-running `npm run build` in a workspace skips unchanged files.
 
 ### Format & Lint
 
@@ -44,7 +47,7 @@ npm run lint:check         # ESLint check (all workspaces)
 
 Each workspace also has its own `lint` / `lint:check` scripts.
 
-After making code changes, always run `npm run format` from the repo root before finishing.
+After making code changes, always format the changed files via Prettier before finishing.
 
 ### Database (server workspace)
 

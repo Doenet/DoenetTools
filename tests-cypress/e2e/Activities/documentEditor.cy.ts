@@ -96,10 +96,13 @@ describe("Document Editor Tests", { tags: ["@group1"] }, function () {
         .contains("Documentation")
         .should("exist");
 
-      cy.get('[aria-label*="accessibility strict mode"]').click({
-        force: true,
-      });
+      cy.get('[data-test="Share Button"]').should("be.visible").click();
 
+      cy.get('[aria-label="Help"]').should(
+        "have.attr",
+        "aria-expanded",
+        "false",
+      );
       cy.get('[data-test="Editor Header Help Menu List"]:visible').should(
         "not.exist",
       );

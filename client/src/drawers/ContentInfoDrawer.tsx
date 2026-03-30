@@ -101,7 +101,7 @@ export function ContentInfoDrawer({
 
         const remixes = processRemixes(data2.remixes);
         setRemixes(remixes);
-      } catch (e) {
+      } catch (_e) {
         if (abortController.signal.aborted || isCancelled) {
           return;
         }

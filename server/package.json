@@ -8,7 +8,8 @@
   "author": "",
   "main": "dist/src/index.js",
   "scripts": {
-    "build": "wireit",
+    "build:assets": "npx tsx scripts/build-email-asset.ts",
+    "build": "tsc --build && npm run build:assets",
     "dev": "tsx watch src/index.ts",
     "lint": "eslint --fix",
     "lint:check": "eslint",
@@ -17,26 +18,6 @@
     "prisma:seed": "prisma db seed",
     "start": "node dist/src/index.js",
     "test": "vitest"
-  },
-  "wireit": {
-    "build": {
-      "command": "tsc && copyfiles -u 1 \"src/assets/**/*\" dist/src",
-      "files": [
-        "src/**/*.ts",
-        "src/**/*.js",
-        "src/assets/**",
-        "vite.config.ts",
-        "tsconfig.json"
-      ],
-      "output": [
-        "dist/**/*.js",
-        "dist/**/*.d.ts",
-        "dist/src/assets/**"
-      ],
-      "dependencies": [
-        "../shared:build"
-      ]
-    }
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -49,6 +30,7 @@
     "axios": "^1.13.2",
     "base64url": "^3.0.1",
     "bcryptjs": "^3.0.3",
+    "body-parser": "^1.20.4",
     "cookie-parser": "^1.4.7",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
@@ -66,17 +48,14 @@
     "zod": "^4.0.14"
   },
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.6",
+    "@types/body-parser": "^1.19.6",
     "@types/cookie-parser": "^1.4.9",
-    "@types/cookie-session": "^2.0.49",
     "@types/express": "^5.0.3",
     "@types/express-session": "^1.18.2",
     "@types/passport": "^1.0.17",
     "@types/passport-google-oauth20": "^2.0.16",
     "@types/passport-local": "^1.0.38",
     "@types/passport-strategy": "^0.2.38",
-    "cookie-session": "^2.1.1",
-    "copyfiles": "^2.4.1",
     "prisma": "6.4.1",
     "vitest": "^3.2.4"
   },

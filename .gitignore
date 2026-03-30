@@ -3,6 +3,7 @@ build
 dist_local
 dist
 node_modules
+.tsbuildinfo
 
 
 # production
@@ -11,7 +12,6 @@ node_modules
 **/.env
 
 .vite
-.wireit
 
 # misc
 .DS_Store

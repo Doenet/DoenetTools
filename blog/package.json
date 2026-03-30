@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build:ts": "astro sync",
+    "build:assets": "astro build",
+    "build": "npm run build:ts && npm run build:assets",
     "preview": "astro preview",
     "astro": "astro",
     "lint": "eslint --fix",
@@ -13,7 +15,6 @@
   "dependencies": {
     "@astrojs/mdx": "^4.3.13",
     "@astrojs/react": "^4.4.2",
-    "@astrojs/rss": "^4.0.15",
     "@astrojs/sitemap": "^3.7.0",
     "@doenet/doenetml-iframe": "^0.7.6",
     "@types/react": "^19.2.14",
