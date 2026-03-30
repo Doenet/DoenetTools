@@ -15,7 +15,7 @@
     "format:check": "prettier . --check",
     "lint": "npm run lint --workspaces",
     "lint:check": "npm run lint:check --workspaces",
-    "build:ts": "tsc --build",
+    "build:ts": "npm run build:ts --workspaces --if-present && tsc --build",
     "build:assets": "npm run build:assets --workspaces --if-present",
     "build": "npm run build:ts && npm run build:assets"
   },

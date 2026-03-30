@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
+    "build:ts": "astro sync",
     "build:assets": "astro build",
-    "build": "npm run build:assets",
+    "build": "npm run build:ts && npm run build:assets",
     "preview": "astro preview",
     "astro": "astro",
     "lint": "eslint --fix",
