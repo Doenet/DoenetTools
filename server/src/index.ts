@@ -293,7 +293,7 @@ passport.serializeUser(async (req: any, user: any, done: any) => {
     let email = nanoid() + "@anonymous.doenet.org";
 
     let firstNames = "";
-    let lastNames = generateHandle();
+    let lastNames = generateHandle({});
     let isAnonymous = true;
     let isEditor = false;
     let isAuthor = false;
