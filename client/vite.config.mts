@@ -12,6 +12,18 @@ export default defineConfig({
   define: {
     global: "globalThis",
   },
+  optimizeDeps: {
+    // Pre-bundle known heavy/late-loaded deps used by component tests to
+    // avoid Vite re-optimization and hot-reload churn during Cypress runs.
+    include: [
+      "@doenet/v06-to-v07",
+      "@doenet/doenetml-iframe",
+      "better-react-mathjax",
+      "ipfs-only-hash",
+      "math-expressions",
+      "cssesc",
+    ],
+  },
   plugins: [
     react(),
     // Enable esbuild polyfill plugins

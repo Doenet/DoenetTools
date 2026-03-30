@@ -13,8 +13,8 @@ describe("Trash tests", { tags: ["@group3"] }, () => {
       .eq(0)
       .should("contain.text", "Document 1");
 
-    cy.get('[data-test="Card Menu Button"]').eq(0).click();
-    cy.get('[data-test="Delete Menu Item"]').eq(0).click();
+    cy.get('[data-test="Card Select"]').eq(0).click();
+    cy.get('[aria-label="Move to trash"]').click();
     cy.get('[data-test="Confirm Delete Message"]').should(
       "contain.text",
       "The document Document 1 will be deleted forever after 30 days",
@@ -37,8 +37,8 @@ describe("Trash tests", { tags: ["@group3"] }, () => {
       .eq(0)
       .should("contain.text", "Document 1");
 
-    cy.get('[data-test="Card Menu Button"]').eq(0).click();
-    cy.get('[data-test="Delete Menu Item"]').eq(0).click();
+    cy.get('[data-test="Card Select"]').eq(0).click();
+    cy.get('[aria-label="Move to trash"]').click();
     cy.get('[data-test="Cancel Button"]').click();
     cy.get('[data-test="Confirm Delete Message"]').should("not.exist");
     cy.get(`[data-test="Content Card"]`).should("have.length", 1);
@@ -61,8 +61,8 @@ describe("Trash tests", { tags: ["@group3"] }, () => {
       .eq(0)
       .should("contain.text", "Document 1");
 
-    cy.get('[data-test="Card Menu Button"]').eq(0).click();
-    cy.get('[data-test="Delete Menu Item"]').eq(0).click();
+    cy.get('[data-test="Card Select"]').eq(0).click();
+    cy.get('[aria-label="Move to trash"]').click();
     cy.get('[data-test="Delete Button"]').click();
     cy.get(`[data-test="Content Card"]`).should("have.length", 0);
 
@@ -73,8 +73,8 @@ describe("Trash tests", { tags: ["@group3"] }, () => {
       .eq(0)
       .should("contain.text", "Document 1");
 
-    cy.get('[data-test="Card Menu Button"]').eq(0).click();
-    cy.get('[data-test="Restore Menu Item"]').eq(0).click();
+    cy.get('[data-test="Card Select"]').eq(0).click();
+    cy.get('[data-test="Action Bar Restore"]').click();
 
     cy.get(`[data-test="Content Card"]`).should("have.length", 0);
 
@@ -116,8 +116,8 @@ describe("Trash tests", { tags: ["@group3"] }, () => {
       .should("contain.text", "Document 1");
 
     // Delete Document 1
-    cy.get('[data-test="Card Menu Button"]').eq(0).click();
-    cy.get('[data-test="Delete Menu Item"]').eq(0).click();
+    cy.get('[data-test="Card Select"]').eq(0).click();
+    cy.get('[aria-label="Move to trash"]').click();
     cy.get('[data-test="Delete Button"]').click();
 
     cy.get(`[data-test="Content Card"]`).should("have.length", 0);
@@ -130,8 +130,8 @@ describe("Trash tests", { tags: ["@group3"] }, () => {
       .eq(0)
       .should("contain.text", "Folder 1");
 
-    cy.get('[data-test="Card Menu Button"]').eq(0).click();
-    cy.get('[data-test="Delete Menu Item"]').eq(0).click();
+    cy.get('[data-test="Card Select"]').eq(0).click();
+    cy.get('[aria-label="Move to trash"]').click();
     cy.get('[data-test="Delete Button"]').click();
 
     cy.get(`[data-test="Content Card"]`).should("have.length", 0);
@@ -144,8 +144,8 @@ describe("Trash tests", { tags: ["@group3"] }, () => {
       .eq(1)
       .should("contain.text", "Document 1");
 
-    cy.get('[data-test="Card Menu Button"]').eq(1).click();
-    cy.get('[data-test="Restore Menu Item"]').eq(1).click();
+    cy.get('[data-test="Card Select"]').eq(1).click();
+    cy.get('[data-test="Action Bar Restore"]').click();
 
     // Go to Activities and check that Document 1 is there
     // (Not in folder since folder was deleted)
@@ -164,8 +164,8 @@ describe("Trash tests", { tags: ["@group3"] }, () => {
       .eq(0)
       .should("contain.text", "Folder 1");
 
-    cy.get('[data-test="Card Menu Button"]').eq(0).click();
-    cy.get('[data-test="Restore Menu Item"]').eq(0).click();
+    cy.get('[data-test="Card Select"]').eq(0).click();
+    cy.get('[data-test="Action Bar Restore"]').click();
 
     // Go to Activities and check that Folder 1 is there
     cy.get('[data-test="My Activities Link"]').click();
@@ -208,8 +208,8 @@ describe("Trash tests", { tags: ["@group3"] }, () => {
       .should("contain.text", "Folder 1");
 
     // Delete Folder 1
-    cy.get('[data-test="Card Menu Button"]').eq(0).click();
-    cy.get('[data-test="Delete Menu Item"]').eq(0).click();
+    cy.get('[data-test="Card Select"]').eq(0).click();
+    cy.get('[aria-label="Move to trash"]').click();
     cy.get('[data-test="Delete Button"]').click();
 
     cy.get(`[data-test="Content Card"]`).should("have.length", 0);
@@ -223,8 +223,8 @@ describe("Trash tests", { tags: ["@group3"] }, () => {
       .eq(0)
       .should("contain.text", "Folder 1");
 
-    cy.get('[data-test="Card Menu Button"]').eq(0).click();
-    cy.get('[data-test="Restore Menu Item"]').eq(0).click();
+    cy.get('[data-test="Card Select"]').eq(0).click();
+    cy.get('[data-test="Action Bar Restore"]').click();
 
     // Go to Activities and check that Folder 1 and Document 1 are there
     cy.get('[data-test="My Activities Link"]').click();

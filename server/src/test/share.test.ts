@@ -877,13 +877,13 @@ describe("Share tests", () => {
     // move content into public folder
     await moveContent({
       contentId: activity1Id,
-      parentId: publicFolderId,
+      changeParentIdTo: publicFolderId,
       loggedInUserId: ownerId,
       desiredPosition: 0,
     });
     await moveContent({
       contentId: folder1Id,
-      parentId: publicFolderId,
+      changeParentIdTo: publicFolderId,
       loggedInUserId: ownerId,
       desiredPosition: 1,
     });
@@ -942,13 +942,13 @@ describe("Share tests", () => {
 
     await moveContent({
       contentId: activity1Id,
-      parentId: privateFolderId,
+      changeParentIdTo: privateFolderId,
       loggedInUserId: ownerId,
       desiredPosition: 0,
     });
     await moveContent({
       contentId: folder1Id,
-      parentId: privateFolderId,
+      changeParentIdTo: privateFolderId,
       loggedInUserId: ownerId,
       desiredPosition: 1,
     });
@@ -1093,13 +1093,13 @@ describe("Share tests", () => {
     // move content into shared folder
     await moveContent({
       contentId: activity1Id,
-      parentId: sharedFolderId,
+      changeParentIdTo: sharedFolderId,
       loggedInUserId: ownerId,
       desiredPosition: 0,
     });
     await moveContent({
       contentId: folder1Id,
-      parentId: sharedFolderId,
+      changeParentIdTo: sharedFolderId,
       loggedInUserId: ownerId,
       desiredPosition: 1,
     });
@@ -1162,13 +1162,13 @@ describe("Share tests", () => {
 
     await moveContent({
       contentId: activity1Id,
-      parentId: privateFolderId,
+      changeParentIdTo: privateFolderId,
       loggedInUserId: ownerId,
       desiredPosition: 0,
     });
     await moveContent({
       contentId: folder1Id,
-      parentId: privateFolderId,
+      changeParentIdTo: privateFolderId,
       loggedInUserId: ownerId,
       desiredPosition: 1,
     });
