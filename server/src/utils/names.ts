@@ -4,7 +4,7 @@ import { readFileSync } from "fs";
 import { join } from "path";
 
 function loadWordList(filename: string): string[] {
-  const filePath = join(__dirname, "assets", filename);
+  const filePath = join(__dirname, "../assets", filename);
   return readFileSync(filePath, "utf-8")
     .split("\n")
     .map((line) => line.replace(/,\s*$/, "").trim())
@@ -41,9 +41,35 @@ export function lastNameFirst({
   return lastNames + (firstNames ? ", " + firstNames : "");
 }
 
-export function generateHandle() {
+export function generateHandle({
+  appendRandomDigits = 0,
+}: {
+  appendRandomDigits?: number;
+}) {
   const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
   const tree = trees[Math.floor(Math.random() * trees.length)];
-  const digits = String(Math.floor(Math.random() * 1000)).padStart(3, "0");
-  return adjective + tree + digits;
+
+  if (appendRandomDigits > 0) {
+    const digits = String(
+      Math.floor(Math.random() * Math.pow(10, appendRandomDigits)),
+    ).padStart(appendRandomDigits, "0");
+    return adjective + tree + digits;
+  } else {
+    return adjective + tree;
+  }
+}
+
+export function generateUnusedHandle(existingHandles: Set<string>) {
+  let handle = generateHandle({});
+  // We're looping in case `generateHandle` creates a duplicate handle
+  // Usernames are unique, so we try again if that happens
+  let tries = 0;
+  while (existingHandles.has(handle)) {
+    handle = generateHandle({});
+    tries++;
+    if (tries > 10) {
+      throw new Error("Failed to generate a unique handle.");
+    }
+  }
+  return handle;
 }
