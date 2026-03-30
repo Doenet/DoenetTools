@@ -10,10 +10,14 @@
     "blog"
   ],
   "scripts": {
+    "postinstall": "npm run prisma:generate --workspace server",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "lint": "npm run lint --workspaces",
-    "lint:check": "npm run lint:check --workspaces"
+    "lint:check": "npm run lint:check --workspaces",
+    "build:ts": "npm run build:ts --workspaces --if-present && tsc --build",
+    "build:assets": "npm run build:assets --workspaces --if-present",
+    "build": "npm run build:ts && npm run build:assets"
   },
   "devDependencies": {
     "@cypress/grep": "^6.0.0",
@@ -28,6 +32,8 @@
     "cypress-plugin-tab": "^1.0.5",
     "cypress-wait-until": "^3.0.2",
     "eslint": "^9.39.2",
+    "eslint-import-resolver-typescript": "^3.6.1",
+    "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-mocha": "^11.2.0",
     "eslint-plugin-unused-imports": "^4.3.0",
     "prettier": "^3.8.1",
@@ -36,7 +42,6 @@
     "typescript-eslint": "^8.53.1",
     "vite": "^7.3.1",
     "vite-plugin-dts": "^4.5.4",
-    "wick-a11y": "^2.5.0",
-    "wireit": "^0.14.12"
+    "wick-a11y": "^2.5.0"
   }
 }

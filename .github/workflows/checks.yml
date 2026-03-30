@@ -27,9 +27,6 @@ jobs:
       # Install dependencies once
       - run: npm ci
 
-      # Generate TS types for Prisma
-      - run: npm run prisma:generate --workspace server
-
       # -----------------------------
       # Format check
       # -----------------------------
@@ -45,14 +42,8 @@ jobs:
       # -----------------------------
       # Build
       # -----------------------------
-      - name: Build client
-        run: npm run build --workspace client
-
-      - name: Build server
-        run: npm run build --workspace server
-
-      - name: Build blog
-        run: npm run build --workspace blog
+      - name: Build
+        run: npm run build
 
       # -----------------------------
       # Start MySQL + Test server
@@ -108,9 +99,6 @@ jobs:
       # Install dependencies
       - run: npm ci
 
-      # Generate TS types for Prisma
-      - run: npm run prisma:generate --workspace server
-
       # Start MySQL
       - name: Start MySQL
         run: |
@@ -120,8 +108,7 @@ jobs:
       - run: npm run prisma:migrate-dev --workspace server
       - run: npm run prisma:seed --workspace server
 
-      # Build shared workspace (required dependency for client and server)
-      - name: Build shared
+      - name: Build shared package
         run: npm run build --workspace shared
 
       # Start server in background (port 3000)
@@ -207,9 +194,6 @@ jobs:
       # Install dependencies
       - run: npm ci
 
-      # Generate TS types for Prisma
-      - run: npm run prisma:generate --workspace server
-
       # Start MySQL
       - name: Start MySQL
         run: |
@@ -219,8 +203,7 @@ jobs:
       - run: npm run prisma:migrate-dev --workspace server
       - run: npm run prisma:seed --workspace server
 
-      # Build shared workspace
-      - name: Build shared
+      - name: Build shared package
         run: npm run build --workspace shared
 
       # Start server in background
@@ -295,8 +278,7 @@ jobs:
       # Install dependencies
       - run: npm ci
 
-      # Build shared workspace (required by client)
-      - name: Build shared workspace
+      - name: Build shared package
         run: npm run build --workspace shared
 
       # Run component tests (grouped)

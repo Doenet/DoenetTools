@@ -1,17 +1,14 @@
 {
-  "extends": "../tsconfig.json",
+  "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "./dist/",
-    "rootDir": "./src"
+    "composite": true,
+    "declaration": true,
+    "target": "esnext",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "outDir": "dist",
+    "rootDir": "src",
+    "tsBuildInfoFile": "../.tsbuildinfo/shared.tsbuildinfo"
   },
-  "include": ["./**/*.ts", "./**/*.js"],
-  "exclude": [
-    "./**/*.test.ts",
-    "./**/*.stub.ts",
-    "node_modules",
-    "**/test/",
-    "**/dist/**/*",
-    "./vite.config.ts"
-  ],
-  "references": []
+  "include": ["src"]
 }
