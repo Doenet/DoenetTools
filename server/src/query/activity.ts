@@ -135,6 +135,7 @@ export async function createContent({
       parentId,
       name,
       isPublic,
+      visibility: isPublic ? "public" : "private",
       licenseCode,
       sortIndex,
       courseRootId,

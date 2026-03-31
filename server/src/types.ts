@@ -189,6 +189,7 @@ export type ContentBase = {
   owner?: UserInfo;
   name: string;
   isPublic: boolean;
+  visibility: "private" | "unlisted" | "public";
   isShared: boolean;
   sharedWith: UserInfoWithEmail[];
   // Content should ~almost always~ have a license.
@@ -207,6 +208,7 @@ export type ContentBase = {
     name: string;
     type: ContentType;
     isPublic: boolean;
+    visibility: "private" | "unlisted" | "public";
     isShared: boolean;
     sharedWith: UserInfoWithEmail[];
   } | null;
