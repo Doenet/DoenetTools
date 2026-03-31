@@ -2,10 +2,10 @@
 {
   "files": [],
   "references": [
-    { "path": "blog" },
-    { "path": "client" },
-    { "path": "server" },
-    { "path": "shared" },
-    { "path": "tests-cypress" }
+    { "path": "apps/web" },
+    { "path": "apps/app" },
+    { "path": "apps/api" },
+    { "path": "packages/shared" },
+    { "path": "packages/e2e-tests" }
   ]
 }

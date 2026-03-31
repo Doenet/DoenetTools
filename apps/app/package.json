@@ -1,5 +1,5 @@
 {
-  "name": "@doenet-tools/client",
+  "name": "@doenet-tools/app",
   "version": "1.0.1",
   "type": "module",
   "private": true,

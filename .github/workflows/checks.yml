@@ -53,11 +53,11 @@ jobs:
           sudo /etc/init.d/mysql start
           mysql -e "CREATE DATABASE IF NOT EXISTS db;" -uroot -proot
 
-      - run: npm run prisma:migrate-dev --workspace server
-      - run: npm run prisma:seed --workspace server
+      - run: npm run prisma:migrate-dev --workspace @doenet-tools/api
+      - run: npm run prisma:seed --workspace @doenet-tools/api
 
       - name: Test server
-        run: npm test --workspace server
+        run: npm test --workspace @doenet-tools/api
 
   # -----------------------------
   # E2E Tests (Grouped)
@@ -105,16 +105,16 @@ jobs:
           sudo /etc/init.d/mysql start
           mysql -e "CREATE DATABASE IF NOT EXISTS db;" -uroot -proot
 
-      - run: npm run prisma:migrate-dev --workspace server
-      - run: npm run prisma:seed --workspace server
+      - run: npm run prisma:migrate-dev --workspace @doenet-tools/api
+      - run: npm run prisma:seed --workspace @doenet-tools/api
 
       - name: Build shared package
-        run: npm run build --workspace shared
+        run: npm run build --workspace @doenet-tools/shared
 
       # Start server in background (port 3000)
       - name: Start server
         run: |
-          npm run dev --workspace server > /tmp/server.log 2>&1 &
+          npm run dev --workspace @doenet-tools/api > /tmp/server.log 2>&1 &
           echo $! > /tmp/server.pid
         env:
           NODE_ENV: development
@@ -122,7 +122,7 @@ jobs:
       # Start client dev server in background (port 8000)
       - name: Start client
         run: |
-          npm run dev --workspace client > /tmp/client.log 2>&1 &
+          npm run dev --workspace @doenet-tools/app > /tmp/client.log 2>&1 &
           echo $! > /tmp/client.pid
         env:
           NODE_ENV: production
@@ -200,16 +200,16 @@ jobs:
           sudo /etc/init.d/mysql start
           mysql -e "CREATE DATABASE IF NOT EXISTS db;" -uroot -proot
 
-      - run: npm run prisma:migrate-dev --workspace server
-      - run: npm run prisma:seed --workspace server
+      - run: npm run prisma:migrate-dev --workspace @doenet-tools/api
+      - run: npm run prisma:seed --workspace @doenet-tools/api
 
       - name: Build shared package
-        run: npm run build --workspace shared
+        run: npm run build --workspace @doenet-tools/shared
 
       # Start server in background
       - name: Start server
         run: |
-          npm run dev --workspace server > /tmp/server.log 2>&1 &
+          npm run dev --workspace @doenet-tools/api > /tmp/server.log 2>&1 &
           echo $! > /tmp/server.pid
         env:
           NODE_ENV: development
@@ -217,7 +217,7 @@ jobs:
       # Start client dev server in background
       - name: Start client
         run: |
-          npm run dev --workspace client > /tmp/client.log 2>&1 &
+          npm run dev --workspace @doenet-tools/app > /tmp/client.log 2>&1 &
           echo $! > /tmp/client.pid
         env:
           NODE_ENV: production
@@ -279,11 +279,11 @@ jobs:
       - run: npm ci
 
       - name: Build shared package
-        run: npm run build --workspace shared
+        run: npm run build --workspace @doenet-tools/shared
 
       # Run component tests (grouped)
       - name: Run component tests
-        run: npm run test:${{ matrix.test-group }} --workspace client
+        run: npm run test:${{ matrix.test-group }} --workspace @doenet-tools/app
 
       # Upload artifacts on failure
       - name: Upload test artifacts
@@ -292,6 +292,6 @@ jobs:
         with:
           name: component-test-artifacts
           path: |
-            client/cypress/screenshots/
-            client/cypress/videos/
+            app/cypress/screenshots/
+            app/cypress/videos/
           retention-days: 7

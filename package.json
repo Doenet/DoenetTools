@@ -3,14 +3,11 @@
   "type": "module",
   "private": true,
   "workspaces": [
-    "client",
-    "server",
-    "shared",
-    "tests-cypress",
-    "blog"
+    "apps/*",
+    "packages/*"
   ],
   "scripts": {
-    "postinstall": "npm run prisma:generate --workspace server",
+    "postinstall": "npm run prisma:generate --workspace @doenet-tools/api",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "lint": "npm run lint --workspaces",
