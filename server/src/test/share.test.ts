@@ -989,7 +989,7 @@ describe("Share tests", () => {
     expect(content[0].licenseCode).eq("CCDUAL");
     expect(content[1].contentId).eqls(folder1Id);
     expect(content[1].isPublic).eq(true);
-    expect(content[0].visibility).eq("public");
+    expect(content[1].visibility).eq("public");
     expect(content[1].licenseCode).eq("CCDUAL");
 
     results = await getMyContent({
