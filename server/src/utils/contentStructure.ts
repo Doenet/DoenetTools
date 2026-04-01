@@ -10,6 +10,7 @@ import {
   AssignmentInfo,
   DoenetmlVersion,
   UserInfoWithEmail,
+  Visibility,
 } from "../types";
 import { sortClassifications } from "./classificationsCategories";
 import { fromUUID, isEqualUUID } from "./uuid";
@@ -73,7 +74,7 @@ export function processSharedWith(
 /**
  * Process a parent folder of content to standard form for the parent folder of `type`
  *
- * Return fields `id`, `name`, `type`, and `isPublic` unchanged from parent.
+ * Return fields `id`, `name`, `type`, `isPublic`, and `visibility` unchanged from parent.
  *
  * Adds the fields `isShared` and `sharedWith` using the algorithm from {@link processSharedWith}
  * applied to the parent's `sharedWith` field.
@@ -84,6 +85,7 @@ function processParent(
     name: string;
     type: ContentType;
     isPublic: boolean;
+    visibility: Visibility;
     sharedWith?: FullShareInfo | IdShareInfo;
   },
   forUser?: Uint8Array,
@@ -98,6 +100,7 @@ function processParent(
     name: parent.name,
     type: parent.type,
     isPublic: parent.isPublic,
+    visibility: parent.visibility,
     isShared,
     sharedWith,
   };
@@ -204,6 +207,7 @@ export function returnContentSelect({
     ownerId: true,
     owner,
     isPublic: true,
+    visibility: true,
     categories: true,
     mode: true,
     individualizeByStudent: true,
@@ -217,6 +221,7 @@ export function returnContentSelect({
         name: true,
         type: true,
         isPublic: true,
+        visibility: true,
         sharedWith,
         ...parentAssignmentSelect,
       },
@@ -300,6 +305,7 @@ type PreliminaryContent = {
   ownerId: Uint8Array;
   owner?: UserInfo;
   isPublic: boolean;
+  visibility: Visibility;
   mode: AssignmentMode;
   individualizeByStudent: boolean;
   maxAttempts: number;
@@ -317,6 +323,7 @@ type PreliminaryContent = {
     name: string;
     type: ContentType;
     isPublic: boolean;
+    visibility: Visibility;
     sharedWith: { userId: Uint8Array }[] | { user: UserInfoWithEmail }[];
     classCode: number | null;
 

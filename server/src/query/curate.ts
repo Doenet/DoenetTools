@@ -504,6 +504,7 @@ export async function publishActivityToLibrary({
     data: {
       // Publish
       isPublic: true,
+      visibility: "public",
       libraryActivityInfo: {
         update: {
           // Update status
@@ -551,6 +552,7 @@ export async function unpublishActivityFromLibrary({
     },
     data: {
       isPublic: false,
+      visibility: "private",
       libraryActivityInfo: {
         update: {
           status: LibraryStatus.UNDER_REVIEW,

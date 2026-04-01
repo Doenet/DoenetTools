@@ -69,6 +69,7 @@ export async function getEditor({
       assignmentClosedOn,
       parent,
       isPublic,
+      visibility,
     } = await prisma.content.findUniqueOrThrow({
       where: {
         id: contentId,
@@ -79,6 +80,7 @@ export async function getEditor({
         name: true,
         type: true,
         isPublic: true,
+        visibility: true,
         owner: {
           select: {
             isLibrary: true,
@@ -127,6 +129,7 @@ export async function getEditor({
       contentName: name,
       contentType: type,
       isPublic,
+      visibility,
       ...assignment,
       remixSourceHasChanged,
       inLibrary: owner.isLibrary,
@@ -351,6 +354,7 @@ export async function getEditorShareStatus({
     },
     select: {
       isPublic: true,
+      visibility: true,
       sharedWith: {
         select: {
           user: {
@@ -366,6 +370,7 @@ export async function getEditorShareStatus({
       parent: {
         select: {
           isPublic: true,
+          visibility: true,
           sharedWith: {
             select: {
               user: {
@@ -391,7 +396,9 @@ export async function getEditorShareStatus({
 
   return {
     isPublic: results.isPublic,
+    visibility: results.visibility,
     parentIsPublic: results.parent?.isPublic ?? false,
+    parentVisibility: results.parent?.visibility ?? "private",
     sharedWith,
     parentSharedWith,
   };

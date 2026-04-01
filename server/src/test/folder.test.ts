@@ -134,21 +134,25 @@ test("getMyContent returns both public and private content, getSharedContent ret
       expect.objectContaining({
         contentId: publicActivity1Id,
         isPublic: true,
+        visibility: "public",
         parent: null,
       }),
       expect.objectContaining({
         contentId: privateActivity1Id,
         isPublic: false,
+        visibility: "private",
         parent: null,
       }),
       expect.objectContaining({
         contentId: publicFolder1Id,
         isPublic: true,
+        visibility: "public",
         parent: null,
       }),
       expect.objectContaining({
         contentId: privateFolder1Id,
         isPublic: false,
+        visibility: "private",
         parent: null,
       }),
     ]),
@@ -198,9 +202,11 @@ test("getMyContent returns both public and private content, getSharedContent ret
       expect.objectContaining({
         contentId: publicActivity2Id,
         isPublic: true,
+        visibility: "public",
         parent: {
           contentId: publicFolder1Id,
           isPublic: true,
+          visibility: "public",
           isShared: false,
           sharedWith: [],
           name: ownerContent.parent?.name,
@@ -210,9 +216,11 @@ test("getMyContent returns both public and private content, getSharedContent ret
       expect.objectContaining({
         contentId: publicFolder2Id,
         isPublic: true,
+        visibility: "public",
         parent: {
           contentId: publicFolder1Id,
           isPublic: true,
+          visibility: "public",
           isShared: false,
           sharedWith: [],
           name: ownerContent.parent?.name,
@@ -266,9 +274,11 @@ test("getMyContent returns both public and private content, getSharedContent ret
       expect.objectContaining({
         contentId: publicActivity3Id,
         isPublic: true,
+        visibility: "public",
         parent: {
           contentId: privateFolder1Id,
           isPublic: false,
+          visibility: "private",
           isShared: false,
           sharedWith: [],
           name: ownerContent.parent?.name,
@@ -278,9 +288,11 @@ test("getMyContent returns both public and private content, getSharedContent ret
       expect.objectContaining({
         contentId: privateActivity3Id,
         isPublic: false,
+        visibility: "private",
         parent: {
           contentId: privateFolder1Id,
           isPublic: false,
+          visibility: "private",
           isShared: false,
           sharedWith: [],
           name: ownerContent.parent?.name,
@@ -290,9 +302,11 @@ test("getMyContent returns both public and private content, getSharedContent ret
       expect.objectContaining({
         contentId: publicFolder3Id,
         isPublic: true,
+        visibility: "public",
         parent: {
           contentId: privateFolder1Id,
           isPublic: false,
+          visibility: "private",
           isShared: false,
           sharedWith: [],
           name: ownerContent.parent?.name,
@@ -302,9 +316,11 @@ test("getMyContent returns both public and private content, getSharedContent ret
       expect.objectContaining({
         contentId: privateFolder3Id,
         isPublic: false,
+        visibility: "private",
         parent: {
           contentId: privateFolder1Id,
           isPublic: false,
+          visibility: "private",
           isShared: false,
           sharedWith: [],
           name: ownerContent.parent?.name,
@@ -613,6 +629,7 @@ test(
           parent: {
             contentId: sharedFolder1Id,
             isPublic: false,
+            visibility: "private",
             isShared: true,
             sharedWith: [userFields2, userFields1],
             name: ownerContent.parent?.name,
@@ -626,6 +643,7 @@ test(
           parent: {
             contentId: sharedFolder1Id,
             isPublic: false,
+            visibility: "private",
             isShared: true,
             sharedWith: [userFields2, userFields1],
             name: ownerContent.parent?.name,
@@ -711,6 +729,7 @@ test(
           parent: {
             contentId: privateFolder1Id,
             isPublic: false,
+            visibility: "private",
             isShared: false,
             sharedWith: [],
             name: ownerContent.parent?.name,
@@ -724,6 +743,7 @@ test(
           parent: {
             contentId: privateFolder1Id,
             isPublic: false,
+            visibility: "private",
             isShared: false,
             sharedWith: [],
             name: ownerContent.parent?.name,
@@ -737,6 +757,7 @@ test(
           parent: {
             contentId: privateFolder1Id,
             isPublic: false,
+            visibility: "private",
             isShared: false,
             sharedWith: [],
             name: ownerContent.parent?.name,
@@ -750,6 +771,7 @@ test(
           parent: {
             contentId: privateFolder1Id,
             isPublic: false,
+            visibility: "private",
             isShared: false,
             sharedWith: [],
             name: ownerContent.parent?.name,
@@ -1643,6 +1665,7 @@ test("copyContent copies a public document to a new owner", async () => {
   });
   expect(newActivity.ownerId).eqls(newOwnerId);
   expect(newActivity.isPublic).toBe(false);
+  expect(newActivity.visibility).toBe("private");
 
   const activityData = await getActivityViewerData({
     contentId: newContentId,
@@ -1693,6 +1716,7 @@ test("copyContent copies a shared document to a new owner", async () => {
   });
   expect(newActivity.ownerId).eqls(newOwnerId);
   expect(newActivity.isPublic).toBe(false);
+  expect(newActivity.visibility).toBe("private");
 
   const activityData = await getActivityViewerData({
     contentId: newContentId,

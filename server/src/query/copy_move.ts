@@ -551,6 +551,7 @@ async function copySingleContent({
       ownerId: true,
       parentId: true,
       isPublic: true,
+      visibility: true,
       isDeletedOn: true,
       createdAt: true,
       sortIndex: true,
@@ -639,6 +640,7 @@ async function copySingleContent({
         parentId: parentId,
         sortIndex,
         isPublic: desiredParentIsPublic,
+        visibility: desiredParentIsPublic ? "public" : "private",
         licenseCode,
         courseRootId: desiredCourseId,
         classCode,
@@ -881,6 +883,7 @@ export async function getMoveCopyContentData({
         name: true,
         type: true,
         isPublic: true,
+        visibility: true,
         sharedWith: true,
         parent: {
           select: {

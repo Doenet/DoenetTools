@@ -14,7 +14,7 @@ import { UserInfoWithEmail } from "../types";
  * Recurses to grandchildren/subfolders.
  * Skips assignments since they cannot be made public.
  *
- * If parent is public, however, it does not all the content to be set to private.
+ * If parent is public, however, it does not allow the content to be set to private.
  */
 export async function setContentIsPublic({
   contentId,
@@ -25,6 +25,8 @@ export async function setContentIsPublic({
   loggedInUserId: Uint8Array;
   isPublic: boolean;
 }) {
+  const visibility = isPublic ? "public" : "private";
+
   // select content to make sure it is exists and is editable by loggedInUserId
   const content = await prisma.content.findUniqueOrThrow({
     where: { id: contentId, ...filterEditableContent(loggedInUserId) },
@@ -57,13 +59,13 @@ export async function setContentIsPublic({
       id: { in: [contentId, ...descendantIds] },
       ...filterExcludeAssignments,
     },
-    data: { isPublic },
+    data: { isPublic, visibility },
   });
 
   // Note: updateTimestamp first because it checks `isPublic` status
   await prisma.$transaction([updateTimestamp, updateContent]);
 
-  return { isPublic };
+  return { isPublic, visibility };
 }
 
 export async function unshareContent({

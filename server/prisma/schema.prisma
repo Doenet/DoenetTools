@@ -35,6 +35,7 @@ model content {
   children               content[]                @relation("childParent")
   // 
   // ========== Sharing ==========
+  visibility             Visibility               @default(private)
   isPublic               Boolean                  @default(false)
   sharedWith             contentShares[]
   // `publiclySharedAt`: when the content was made public, including through parent folder sharing
@@ -118,6 +119,12 @@ enum ContentType {
   select
   sequence
   folder
+}
+
+enum Visibility {
+  private
+  unlisted
+  public
 }
 
 model recentContent {

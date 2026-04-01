@@ -1021,6 +1021,7 @@ test("MoveCopyContent has correct canOpen flags", async () => {
     name: "f1",
     type: "folder",
     isPublic: true,
+    visibility: "public",
     sharedWith: [],
     parent: null,
   });
@@ -1041,6 +1042,7 @@ test("MoveCopyContent has correct canOpen flags", async () => {
     name: "f1_ps1",
     type: "sequence",
     isPublic: true,
+    visibility: "public",
     sharedWith: [],
     parent: {
       id: f1,
@@ -1064,6 +1066,7 @@ test("MoveCopyContent has correct canOpen flags", async () => {
     name: "f2",
     type: "folder",
     isPublic: false,
+    visibility: "private",
     sharedWith: [],
     parent: null,
   });
