@@ -4,7 +4,7 @@
     "composite": true,
     "declaration": true,
     "tsBuildInfoFile": "../../.tsbuildinfo/apps/web.tsbuildinfo",
-    "types": ["vite/client", "node"]
+    "types": ["vite/client"]
   },
   "include": [".astro/types.d.ts", "**/*"],
   "exclude": ["dist"]
