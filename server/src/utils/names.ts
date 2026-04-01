@@ -63,13 +63,13 @@ export function generateUnusedHandle(existingHandles: Set<string>) {
   let handle = generateHandle({});
   // We're looping in case `generateHandle` creates a duplicate handle
   // Usernames are unique, so we try again if that happens
-  let tries = 0;
+  let tries = 1;
   while (existingHandles.has(handle)) {
-    handle = generateHandle({});
-    tries++;
     if (tries > 10) {
       throw new Error("Failed to generate a unique handle.");
     }
+    handle = generateHandle({});
+    tries++;
   }
   return handle;
 }

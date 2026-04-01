@@ -40,7 +40,7 @@ describe("generateHandle", () => {
 });
 
 describe("generateUnusedHandle", () => {
-  test("returns a handle not in the existing set", () => {
+  test("returns a handle when no existing set", () => {
     const handle = generateUnusedHandle(new Set());
     expect(typeof handle).toBe("string");
     expect(handle.length).toBeGreaterThan(0);
