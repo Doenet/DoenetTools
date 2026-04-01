@@ -3,14 +3,6 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "nodenext",
-    "moduleResolution": "nodenext",
-    "types": ["node"]
-    // "resolveJsonModule": true,
-    // "esModuleInterop": true
-
-    // "useDefineForClassFields": true,
-    /* Module settings */
-    // "resolveJsonModule": true,
-    // "isolatedModules": true,
+    "moduleResolution": "nodenext"
   }
 }

@@ -1,5 +1,5 @@
 {
-  "extends": "../tsconfig.react.json",
+  "extends": "../../tsconfig.react.json",
   "compilerOptions": {
     "composite": true,
     // Cypress tests are not compiled by tsc, so we set noEmit to true.
@@ -7,12 +7,12 @@
     "noEmit": true,
     "sourceMap": true,
     "types": ["node", "cypress", "cypress-axe"],
-    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo/tests-cypress.tsbuildinfo"
+    "tsBuildInfoFile": "../../.tsbuildinfo/packages/e2e-tests.tsbuildinfo"
   },
   "include": ["**/*.ts"],
   "references": [
     {
-      "path": "../shared"
+      "path": "../../packages/shared"
     }
   ]
 }
