@@ -10,6 +10,7 @@ import {
   AssignmentInfo,
   DoenetmlVersion,
   UserInfoWithEmail,
+  Visibility,
 } from "../types";
 import { sortClassifications } from "./classificationsCategories";
 import { fromUUID, isEqualUUID } from "./uuid";
@@ -84,7 +85,7 @@ function processParent(
     name: string;
     type: ContentType;
     isPublic: boolean;
-    visibility: "private" | "unlisted" | "public";
+    visibility: Visibility;
     sharedWith?: FullShareInfo | IdShareInfo;
   },
   forUser?: Uint8Array,
@@ -304,7 +305,7 @@ type PreliminaryContent = {
   ownerId: Uint8Array;
   owner?: UserInfo;
   isPublic: boolean;
-  visibility: "private" | "unlisted" | "public";
+  visibility: Visibility;
   mode: AssignmentMode;
   individualizeByStudent: boolean;
   maxAttempts: number;
@@ -322,7 +323,7 @@ type PreliminaryContent = {
     name: string;
     type: ContentType;
     isPublic: boolean;
-    visibility: "private" | "unlisted" | "public";
+    visibility: Visibility;
     sharedWith: { userId: Uint8Array }[] | { user: UserInfoWithEmail }[];
     classCode: number | null;
 

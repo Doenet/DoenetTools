@@ -183,13 +183,15 @@ export function isContentType(type: unknown): type is ContentType {
 
 export type AssignmentMode = "formative" | "summative";
 
+export type Visibility = "private" | "unlisted" | "public";
+
 export type ContentBase = {
   contentId: Uuid;
   ownerId: Uuid;
   owner?: UserInfo;
   name: string;
   isPublic: boolean;
-  visibility: "private" | "unlisted" | "public";
+  visibility: Visibility;
   isShared: boolean;
   sharedWith: UserInfoWithEmail[];
   // Content should ~almost always~ have a license.
@@ -208,7 +210,7 @@ export type ContentBase = {
     name: string;
     type: ContentType;
     isPublic: boolean;
-    visibility: "private" | "unlisted" | "public";
+    visibility: Visibility;
     isShared: boolean;
     sharedWith: UserInfoWithEmail[];
   } | null;
