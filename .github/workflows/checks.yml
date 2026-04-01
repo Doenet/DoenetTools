@@ -141,7 +141,7 @@ jobs:
 
       # Run Cypress e2e tests (grouped)
       - name: Run Cypress e2e tests
-        run: npm run test:${{ matrix.test-group }} --workspace tests-cypress
+        run: npm run test:${{ matrix.test-group }} --workspace @doenet-tools/e2e-tests
 
       # Upload screenshots and videos on failure
       - uses: actions/upload-artifact@v4
@@ -240,21 +240,21 @@ jobs:
         with:
           timeout_minutes: 30
           max_attempts: 3
-          command: npm run test:${{ matrix.test-group }} --workspace tests-cypress
+          command: npm run test:${{ matrix.test-group }} --workspace @doenet-tools/e2e-tests
 
       # Upload screenshots and videos on failure
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: brittle-cypress-screenshots
-          path: tests-cypress/cypress/screenshots
+          path: e2e-tests/cypress/screenshots
           if-no-files-found: ignore
 
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: brittle-cypress-videos
-          path: tests-cypress/cypress/videos
+          path: e2e-tests/cypress/videos
           if-no-files-found: ignore
 
   component-tests:
