@@ -39,6 +39,7 @@ describe("ClassificationInfo", { tags: ["@group1"] }, () => {
     ownerId: "owner-1" as any,
     name: "Test Activity",
     isPublic: true,
+    visibility: "public",
     isShared: false,
     sharedWith: [],
     licenseCode: "CCDUAL",

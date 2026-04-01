@@ -15,6 +15,7 @@ describe("ContributorsMenu", { tags: ["@group1"] }, () => {
     name: "Sample Activity",
     owner: mockOwner,
     isPublic: true,
+    visibility: "public",
     isShared: false,
     sharedWith: [],
     licenseCode: "CCBY" as any,

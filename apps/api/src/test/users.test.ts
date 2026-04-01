@@ -153,7 +153,11 @@ describe("student handles", () => {
       for (const [i, account] of accounts.entries()) {
         expect(typeof account.handle).toBe("string");
         expect(typeof account.password).toBe("string");
-        // Expect there not to be an number symbols
+
+        // Expect there to be digits in the password, but not the handle
+        expect(account.password.split("").some((c) => !isNaN(Number(c)))).toBe(
+          true,
+        );
         expect(account.handle.split("").every((c) => isNaN(Number(c)))).toBe(
           true,
         );

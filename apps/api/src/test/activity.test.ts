@@ -96,6 +96,7 @@ test("New activity starts out private, then delete it", async () => {
     contentType: "singleDoc",
     contentName: "Untitled Document",
     isPublic: false,
+    visibility: "private",
     inLibrary: false,
     remixSourceHasChanged: false,
     assignmentStatus: "Unassigned",
@@ -118,8 +119,10 @@ test("New activity starts out private, then delete it", async () => {
   });
   expect(sharing).eqls({
     isPublic: false,
+    visibility: "private",
     sharedWith: [],
     parentIsPublic: false,
+    parentVisibility: "private",
     parentSharedWith: [],
   });
 
@@ -135,6 +138,7 @@ test("New activity starts out private, then delete it", async () => {
   expect(data.content).toBeDefined();
   expect(data.content.length).toBe(1);
   expect(data.content[0].isPublic).eqls(false);
+  expect(data.content[0].visibility).eqls("private");
   expect(data.content[0].assignmentInfo).eqls(undefined);
 
   await deleteContent({ contentId: contentId, loggedInUserId: userId });
@@ -895,6 +899,7 @@ test.skip("activity editor data and my folder contents before and after assigned
     name: "Untitled Document",
     ownerId,
     isPublic: false,
+    visibility: "private",
     categories: [],
     isShared: false,
     sharedWith: [],
@@ -951,6 +956,7 @@ test.skip("activity editor data and my folder contents before and after assigned
     name: "Untitled Document",
     ownerId,
     isPublic: false,
+    visibility: "private",
     isShared: false,
     sharedWith: [],
     numVariants: 1,
@@ -998,6 +1004,7 @@ test.skip("activity editor data and my folder contents before and after assigned
     name: "Untitled Document",
     ownerId,
     isPublic: false,
+    visibility: "private",
     isShared: false,
     sharedWith: [],
     numVariants: 1,
@@ -1048,6 +1055,7 @@ test.skip("activity editor data and my folder contents before and after assigned
     name: "Untitled Document",
     ownerId,
     isPublic: false,
+    visibility: "private",
     isShared: false,
     sharedWith: [],
     numVariants: 1,
@@ -1108,6 +1116,7 @@ test.skip("activity editor data and my folder contents before and after assigned
     name: "Untitled Document",
     ownerId,
     isPublic: false,
+    visibility: "private",
     isShared: false,
     sharedWith: [],
     numVariants: 1,
@@ -1155,6 +1164,8 @@ test.skip("activity editor data and my folder contents before and after assigned
     name: "Untitled Document",
     ownerId,
     isPublic: false,
+    visibility: "private",
+
     isShared: false,
     sharedWith: [],
     numVariants: 1,
@@ -1196,7 +1207,9 @@ test("activity editor data shows its parent folder is public", async () => {
     loggedInUserId: ownerId,
   });
   expect(status.isPublic).eqls(false);
+  expect(status.visibility).eqls("private");
   expect(status.parentIsPublic).eqls(false);
+  expect(status.parentVisibility).eqls("private");
   expect(licenseCode).eqls("CCDUAL");
 
   await setContentLicense({
@@ -1218,7 +1231,9 @@ test("activity editor data shows its parent folder is public", async () => {
     loggedInUserId: ownerId,
   }));
   expect(status.isPublic).eqls(true);
+  expect(status.visibility).eqls("public");
   expect(status.parentIsPublic).eqls(false);
+  expect(status.parentVisibility).eqls("private");
   expect(licenseCode).eqls("CCBYSA");
 
   const { contentId: folderId } = await createContent({
@@ -1242,7 +1257,9 @@ test("activity editor data shows its parent folder is public", async () => {
     loggedInUserId: ownerId,
   }));
   expect(status.isPublic).eqls(true);
+  expect(status.visibility).eqls("public");
   expect(status.parentIsPublic).eqls(false);
+  expect(status.parentVisibility).eqls("private");
   expect(licenseCode).eqls("CCBYSA");
 
   await setContentLicense({
@@ -1265,9 +1282,12 @@ test("activity editor data shows its parent folder is public", async () => {
   }));
   // setting folder public also sets children to be public
   expect(status.isPublic).eqls(true);
+  expect(status.visibility).eqls("public");
   // changing license of folder does not change license of content
+  // TODO: This section doesn't make any sense!! Was there supposed to be an action here??
   expect(licenseCode).eqls("CCBYSA");
   expect(status.isPublic).eqls(true);
+  expect(status.visibility).eqls("public");
 
   await setContentIsPublic({
     contentId: folderId,
@@ -1280,7 +1300,9 @@ test("activity editor data shows its parent folder is public", async () => {
   });
   // setting folder private also sets children to be private
   expect(status.isPublic).eqls(false);
+  expect(status.visibility).eqls("private");
   expect(status.parentIsPublic).eqls(false);
+  expect(status.parentVisibility).eqls("private");
 
   await setContentLicense({
     contentId: folderId,
@@ -1301,7 +1323,10 @@ test("activity editor data shows its parent folder is public", async () => {
     loggedInUserId: ownerId,
   }));
   expect(status.isPublic).eqls(true);
+  expect(status.visibility).eqls("public");
   expect(status.parentIsPublic).eqls(true);
+  expect(status.parentVisibility).eqls("public");
+
   // changing license of folder does not change license of content
   expect(licenseCode).eqls("CCBYSA");
 });
