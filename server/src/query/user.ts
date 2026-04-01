@@ -1,6 +1,7 @@
 import { prisma } from "../model";
+import { Prisma } from "@prisma/client";
 import { UserInfo, UserInfoWithEmail } from "../types";
-import { generateHandle } from "../utils/names";
+import { generateHandle, generateUnusedHandle } from "../utils/names";
 import { filterEditableContent } from "../utils/permissions";
 import { fromUUID } from "../utils/uuid";
 import bcrypt from "bcryptjs";
@@ -204,40 +205,66 @@ export async function createStudentHandleAccounts({
     select: { id: true },
   });
 
-  // Create the student handle accounts
-  const accounts: { userId: Uint8Array; handle: string; password: string }[] =
-    [];
+  const existingHandles: Set<string> = await prisma.users
+    .findMany({
+      where: {
+        scopedToClassId: folderId,
+      },
+      select: {
+        lastNames: true,
+      },
+    })
+    .then((users) => new Set(users.map((u) => u.lastNames)));
+
+  // `accountsDb` - what we will insert into the database
+  // `accountMeta` - a mapping to let us join the db-generated and non-db info together
+  const accountsDb: Prisma.usersCreateManyInput[] = [];
+  const accountMeta = new Map<string, { handle: string; password: string }>();
 
   for (let i = 0; i < numAccounts; i++) {
-    const password = generateHandle(true);
+    const handle = generateUnusedHandle(existingHandles);
+    existingHandles.add(handle);
+
+    const username = `${fromUUID(folderId)}:${handle}`;
+    const password = generateHandle({ appendRandomDigits: 3 });
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    // We're looping in case `generateHandle` creates a duplicate handle
-    // Usernames are unique, so we try again if that happens
-    let success = false;
-    while (success === false) {
-      const handle = generateHandle();
-      const username = `${fromUUID(folderId)}:${handle}`;
-
-      try {
-        const { userId } = await prisma.users.create({
-          data: {
-            username,
-            firstNames: "",
-            lastNames: handle,
-            scopedToClassId: folderId,
-            passwordHash,
-          },
-        });
-
-        accounts.push({ handle, password, userId });
-        success = true;
-      } catch (_e) {
-        continue;
-      }
-    }
+    accountsDb.push({
+      username,
+      firstNames: "",
+      lastNames: handle,
+      scopedToClassId: folderId,
+      passwordHash,
+    });
+    accountMeta.set(username, { handle, password });
   }
+
+  // Actually add users to database
+  await prisma.users.createMany({
+    data: accountsDb,
+  });
+
+  // Fetch new userIds
+  const newUsers = await prisma.users.findMany({
+    where: {
+      scopedToClassId: folderId,
+      username: { in: accountsDb.map((account) => account.username) },
+    },
+    select: { userId: true, username: true },
+  });
+
+  // Merge all the info together
+  const accounts: { userId: Uint8Array; handle: string; password: string }[] =
+    newUsers.map((user) => {
+      const meta = accountMeta.get(user.username)!;
+
+      return {
+        userId: user.userId,
+        handle: meta.handle,
+        password: meta.password,
+      };
+    });
 
   accounts.sort((a, b) => (a.handle < b.handle ? -1 : 1));
 

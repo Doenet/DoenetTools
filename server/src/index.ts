@@ -122,7 +122,7 @@ passport.use(
       let email_html: string = "";
 
       try {
-        const filePath = path.resolve(__dirname, "signin_email.html");
+        const filePath = path.join(__dirname, "assets", "signin_email.html");
 
         email_html = await fs.readFile(filePath, { encoding: "utf8" });
       } catch (err) {
@@ -293,7 +293,7 @@ passport.serializeUser(async (req: any, user: any, done: any) => {
     let email = nanoid() + "@anonymous.doenet.org";
 
     let firstNames = "";
-    let lastNames = generateHandle();
+    let lastNames = generateHandle({});
     let isAnonymous = true;
     let isEditor = false;
     let isAuthor = false;
