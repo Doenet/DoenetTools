@@ -19,43 +19,52 @@ We would love to hear from you! Join our [Discord](https://discord.gg/PUduwtKJ5h
 
 ### Steps
 
-**1. Install dependencies**
+**1. Clone the repository**
+
+```bash
+git clone https://github.com/Doenet/DoenetTools.git
+cd DoenetTools
+```
+
+**2. Install dependencies**
 
 ```bash
 npm install
 ```
 
-**2. Create the `.env` files**
+**3. Create the `.env` files**
 
 ```bash
 npm run setup
 ```
 
-This copies `apps/api/.env.sample` → `apps/api/.env` and `.env.sample` → `.env`. Edit them if you need to override any defaults (the defaults work for local development).
+This copies the sample env files into place. The defaults work for local development, but edit them if needed.
 
-**3. Start the database**
+**4. Start the database**
 
 ```bash
 docker compose up -d
 ```
 
-Wait until the container is healthy before continuing:
+Wait until the MySQL container shows `(healthy)` in `docker container ls` before continuing.
 
-```bash
-docker container ls
-```
-
-The `STATUS` column should show `(healthy)` for the MySQL container (named `<directory>-mysql-1` based on the folder).
-
-**4. Run database migrations**
+**5. Run database migrations**
 
 ```bash
 npm run db:setup
 ```
 
-**5. Start the dev servers**
+**6. Build the shared package**
 
-Each server runs in its own terminal:
+The `shared` package must be built before starting the dev servers:
+
+```bash
+npm run build --workspace @doenet-tools/shared
+```
+
+**7. Start the dev servers**
+
+Run each in its own terminal:
 
 ```bash
 npm run dev --workspace @doenet-tools/api   # Express API → http://localhost:3000
@@ -63,7 +72,7 @@ npm run dev --workspace @doenet-tools/app   # React SPA  → http://localhost:80
 npm run dev --workspace @doenet-tools/web   # Astro site  → http://localhost:4321
 ```
 
-The `app` dev server proxies `/api/*` requests to the API, so both servers must be running for the full app to work.
+The `app` dev server proxies `/api/*` to the API, so both must be running for the full app to work.
 
 ---
 
