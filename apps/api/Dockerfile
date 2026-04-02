@@ -40,6 +40,7 @@ FROM node:lts-trixie AS runtime
 WORKDIR /DoenetTools
 ENV NODE_ENV=production
 
+RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
 # Preserve the monorepo layout so npm workspace resolution still works
 COPY package.json package-lock.json ./
 COPY apps/api/package.json apps/api/package.json
@@ -67,6 +68,9 @@ WORKDIR /DoenetTools/apps/api
 ENTRYPOINT ["./entrypoint.sh"]
 
 EXPOSE 3000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
+  CMD curl -f http://localhost:3000/api/health || exit 1
 
 RUN useradd serveruser
 USER serveruser
