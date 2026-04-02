@@ -25,13 +25,13 @@ We would love to hear from you! Join our [Discord](https://discord.gg/PUduwtKJ5h
 npm install
 ```
 
-**2. Create the `.env` file**
+**2. Create the `.env` files**
 
 ```bash
 npm run setup
 ```
 
-This copies `apps/api/.env.sample` to `apps/api/.env`. Edit it if you need to override any defaults (the defaults work for local development).
+This copies `apps/api/.env.sample` → `apps/api/.env` and `.env.sample` → `.env`. Edit them if you need to override any defaults (the defaults work for local development).
 
 **3. Start the database**
 
@@ -45,7 +45,7 @@ Wait until the container is healthy before continuing:
 docker container ls
 ```
 
-The `STATUS` column should show `(healthy)` for `doenet-mysql`.
+The `STATUS` column should show `(healthy)` for the MySQL container (named `<directory>-mysql-1` based on the folder).
 
 **4. Run database migrations**
 
