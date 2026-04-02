@@ -13,8 +13,11 @@ WORKDIR /DoenetTools
 
 # Copy workspace manifests first so dependency install can cache well
 COPY package.json package-lock.json ./
-COPY apps/*/package.json ./
-COPY packages/*/package.json ./
+COPY apps/api/package.json apps/api/package.json
+COPY packages/shared/package.json packages/shared/package.json
+
+# Copy prisma schema
+COPY apps/api/prisma/schema.prisma ./apps/api/prisma/schema.prisma
 
 # Install all dependencies
 # This is more than we need, but it doesn't hurt.
@@ -23,14 +26,12 @@ RUN npm ci
 
 # Copy source after install for better layer caching
 COPY tsconfig.json ./
+COPY configs/typescript configs/typescript
 COPY apps/api ./apps/api
 COPY packages/shared ./packages/shared
 
-# Generate Prisma client and build api/shared
-WORKDIR /DoenetTools/apps/api
-RUN npm run prisma:generate
-RUN npm run build
-
+# Build
+RUN npm run build --workspace=@doenet-tools/api
 
 ########################################
 # Stage 2 — Production runtime
@@ -41,11 +42,12 @@ ENV NODE_ENV=production
 
 # Preserve the monorepo layout so npm workspace resolution still works
 COPY package.json package-lock.json ./
-COPY apps/*/package.json ./
-COPY packages/*/package.json ./
+COPY apps/api/package.json apps/api/package.json
+COPY packages/shared/package.json packages/shared/package.json
 
 # Install only production deps for the api workspace
-RUN npm ci --omit=dev --workspace=@doenet-tools/api
+# --ignore-scripts skips postinstall (prisma:generate) since the Prisma client is copied from the builder
+RUN npm ci --omit=dev --ignore-scripts --workspace=@doenet-tools/api
 
 # Copy built application artifacts
 COPY --from=builder /DoenetTools/apps/api/dist ./apps/api/dist
