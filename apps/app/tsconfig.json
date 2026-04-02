@@ -1,10 +1,11 @@
 {
-  "extends": "../tsconfig.react.json",
+  "extends": "../../configs/typescript/tsconfig.react.json",
   "compilerOptions": {
     "composite": true,
     "declaration": true,
     "outDir": "dist",
-    "tsBuildInfoFile": "../.tsbuildinfo/client.tsbuildinfo"
+    "tsBuildInfoFile": "../../.tsbuildinfo/apps/app.tsbuildinfo",
+    "types": ["vite/client", "cypress", "node"]
   },
   "include": [
     "src/**/*.ts",
@@ -15,7 +16,7 @@
   ],
   "references": [
     {
-      "path": "../shared"
+      "path": "../../packages/shared"
     }
   ]
 }

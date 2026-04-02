@@ -1,5 +1,5 @@
 {
-  "name": "@doenet-tools/server",
+  "name": "@doenet-tools/api",
   "version": "1.0.0",
   "private": true,
   "description": "",
@@ -48,6 +48,7 @@
     "zod": "^4.0.14"
   },
   "devDependencies": {
+    "@doenet-tools/eslint-config": "*",
     "@types/body-parser": "^1.19.6",
     "@types/cookie-parser": "^1.4.9",
     "@types/express": "^5.0.3",

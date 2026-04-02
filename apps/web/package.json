@@ -1,5 +1,5 @@
 {
-  "name": "@doenet-tools/blog",
+  "name": "@doenet-tools/web",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -20,10 +20,13 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "astro": "^5.17.1",
-    "rehype-katex": "^7.0.1",
-    "remark-math": "^6.0.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
+    "rehype-katex": "^7.0.1",
+    "remark-math": "^6.0.0",
     "sharp": "^0.34.3"
+  },
+  "devDependencies": {
+    "@doenet-tools/eslint-config": "*"
   }
 }

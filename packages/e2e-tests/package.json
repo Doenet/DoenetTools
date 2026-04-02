@@ -1,5 +1,5 @@
 {
-  "name": "@doenet-tools/tests-cypress",
+  "name": "@doenet-tools/e2e-tests",
   "version": "1.0.0",
   "type": "module",
   "private": true,
@@ -22,15 +22,17 @@
   "dependencies": {
     "@cypress/grep": "^6.0.0",
     "@doenet-tools/shared": "^1.0.0",
-    "@types/luxon": "^3.7.1",
     "cssesc": "^3.0.0",
     "cypress-file-upload": "^5.0.8",
     "cypress-iframe": "^1.0.1",
     "cypress-plugin-tab": "^1.0.5",
     "cypress-wait-until": "^3.0.2",
+    "luxon": "^3.7.1",
     "wick-a11y": "^2.5.0"
   },
   "devDependencies": {
-    "@types/cssesc": "^3.0.2"
+    "@doenet-tools/eslint-config": "*",
+    "@types/cssesc": "^3.0.2",
+    "@types/luxon": "^3.7.1"
   }
 }

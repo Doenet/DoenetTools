@@ -2,7 +2,18 @@
 
 ## Project Overview
 
-Doenet Tools is an educational technology platform built as an **npm workspace monorepo** with five packages: `client`, `server`, `shared`, `tests-cypress`, and `blog`. The client and server communicate via a REST API. Node.js 24 is required.
+Doenet Tools is an educational technology platform built as an **npm workspace monorepo**. The workspaces are split across two directories:
+
+- `apps/` — runnable applications
+  - `api/` (`@doenet-tools/api`) — Express REST API
+  - `app/` (`@doenet-tools/app`) — React SPA (the main client)
+  - `web/` (`@doenet-tools/web`) — Astro static site
+- `packages/` — shared libraries
+  - `shared/` (`@doenet-tools/shared`) — utility functions and types used by both client and server
+  - `e2e-tests/` (`@doenet-tools/e2e-tests`) — Cypress end-to-end tests
+  - `eslint-config/` (`@doenet-tools/eslint-config`) — shared ESLint config (internal tooling only)
+
+Node.js 24 is required.
 
 ---
 
@@ -17,23 +28,23 @@ npm ci
 ### Dev servers
 
 ```bash
-npm run dev --workspace server   # Express API on port 3000
-npm run dev --workspace client   # Vite dev server on port 8000 (proxies /api to port 3000)
+npm run dev --workspace @doenet-tools/api   # Express API on port 3000
+npm run dev --workspace @doenet-tools/app   # Vite dev server on port 8000 (proxies /api to port 3000)
 ```
 
 ### Build
 
 ```bash
-npm run bulid
+npm run build
 ```
 
-or
+or step by step (shared must be built first):
 
 ```bash
-npm run build --workspace shared   # build first (client and server depend on it)
-npm run build --workspace client   # tsc + vite build
-npm run build --workspace server   # tsc
-npm run build --workspace blog
+npm run build --workspace @doenet-tools/shared   # build first (app and api depend on it)
+npm run build --workspace @doenet-tools/app       # tsc + vite build
+npm run build --workspace @doenet-tools/api       # tsc
+npm run build --workspace @doenet-tools/web       # astro build
 ```
 
 ### Format & Lint
@@ -41,45 +52,45 @@ npm run build --workspace blog
 ```bash
 npm run format             # Prettier write (all workspaces)
 npm run format:check       # Prettier check
-npm run lint               # ESLint fix (all workspaces)
-npm run lint:check         # ESLint check (all workspaces)
+npm run lint               # ESLint fix (all workspaces with a lint script)
+npm run lint:check         # ESLint check (all workspaces with a lint script)
 ```
 
 Each workspace also has its own `lint` / `lint:check` scripts.
 
 After making code changes, always format the changed files via Prettier before finishing.
 
-### Database (server workspace)
+### Database (`api` workspace)
 
 ```bash
-npm run prisma:migrate-dev --workspace server
-npm run prisma:seed --workspace server
-npm run prisma:generate --workspace server
+npm run prisma:migrate-dev --workspace @doenet-tools/api
+npm run prisma:seed --workspace @doenet-tools/api
+npm run prisma:generate --workspace @doenet-tools/api
 ```
 
 ### Tests
 
-**Server unit tests (Vitest):**
+**API unit tests (Vitest):**
 
 ```bash
-npm test --workspace server                               # run all
-npx vitest run server/src/test/activity.test.ts          # run a single file
+npm test --workspace @doenet-tools/api                              # run all
+npm test --workspace @doenet-tools/api activity.test.ts             # run a single file
 ```
 
-**Client component tests (Cypress):**
+**App component tests (Cypress):**
 
 ```bash
-npm run test --workspace client              # open Cypress UI
-npm run test:all --workspace client          # headless, all tests
-npm run test:group1 --workspace client       # headless, @group1 tag only
+npm run test --workspace @doenet-tools/app              # open Cypress UI
+npm run test:all --workspace @doenet-tools/app          # headless, all tests
+npm run test:group1 --workspace @doenet-tools/app       # headless, @group1 tag only
 ```
 
 **E2E tests (Cypress, requires both dev servers running):**
 
 ```bash
-npm run test --workspace tests-cypress         # open Cypress UI
-npm run test:all --workspace tests-cypress     # headless, all tests
-npm run test:group1 --workspace tests-cypress  # headless, @group1 tag only
+npm run test --workspace @doenet-tools/e2e-tests         # open Cypress UI
+npm run test:all --workspace @doenet-tools/e2e-tests     # headless, all tests
+npm run test:group1 --workspace @doenet-tools/e2e-tests  # headless, @group1 tag only
 ```
 
 To run a single Cypress spec interactively, open the Cypress UI (`npm run test`) and select the file.
@@ -96,38 +107,38 @@ Browser → Vite dev server (port 8000) → /api/* proxy → Express server (por
 
 In production, the client is built as static files served by the Express server.
 
-### Client (`client/`)
+### App (`apps/app/`)
 
 - **React 19** SPA with **React Router v7** (data router pattern)
 - **Chakra UI v2** for components, **Jost** font, **MathJax** via `better-react-mathjax`
-- All routes are defined in `client/src/index.tsx` using `createBrowserRouter`
-- Each route file (`client/src/paths/*.tsx`) exports a `loader` and optionally an `action` alongside the page component
+- All routes are defined in `apps/app/src/index.tsx` using `createBrowserRouter`
+- Each route file (`apps/app/src/paths/*.tsx`) exports a `loader` and optionally an `action` alongside the page component
 - Most form/mutation actions go through a **`genericAction`** in `index.tsx`: it reads `{ path, ...body }` from the request JSON and calls `axios.post('/api/${path}', body)`, optionally redirecting on success
 - API calls use **axios**; all calls are to relative `/api/` paths
 
-### Server (`server/`)
+### API (`apps/api/`)
 
 - **Express** with **Passport.js** for auth (Google OAuth2, magic link via email, local username/password, anonymous)
 - Sessions stored in MySQL via `PrismaSessionStore`; session duration is 1 year
-- All database access goes through **Prisma** (`server/src/model.ts` exports the single `prisma` instance)
-- Route handlers live in `server/src/routes/`, query logic lives in `server/src/query/`
+- All database access goes through **Prisma** (`apps/api/src/model.ts` exports the single `prisma` instance)
+- Route handlers live in `apps/api/src/routes/`, query logic lives in `apps/api/src/query/`
 
-### Shared (`shared/`)
+### Shared (`packages/shared/`)
 
-- Utility functions and types used by both client and server
-- Must be **built before** client or server: `npm run build --workspace shared`
+- Utility functions and types used by both `app` and `api`
+- Must be **built before** `app` or `api`: `npm run build --workspace @doenet-tools/shared`
 
-### Blog (`blog/`)
+### Web (`apps/web/`)
 
-- Static site built with **Astro**
+- Static site built with **Astro** and **React** (`@astrojs/react`)
 
 ---
 
 ## Key Conventions
 
-### Route Handler Pattern (server)
+### Route Handler Pattern (api)
 
-All route handlers are created using middleware wrappers in `server/src/middleware/queryMiddleware.ts`:
+All route handlers are created using middleware wrappers in `apps/api/src/middleware/queryMiddleware.ts`:
 
 ```ts
 // For endpoints requiring login:
@@ -139,9 +150,9 @@ router.get("/endpoint", queryOptionalLoggedIn(queryFunction, zodSchema));
 
 These wrappers automatically: check auth, parse and validate the request with Zod (merging `req.body`, `req.query`, and `req.params`), call the query function, run `convertUUID` on the result (converts binary UUIDs to strings), and handle errors via `handleErrors`.
 
-### Error Handling (server)
+### Error Handling (api)
 
-Throw typed errors in query functions; `handleErrors` in `server/src/errors/routeErrorHandler.ts` maps them to HTTP responses:
+Throw typed errors in query functions; `handleErrors` in `apps/api/src/errors/routeErrorHandler.ts` maps them to HTTP responses:
 
 - `InvalidRequestError` → 400/other specified code
 - `ZodError` → 400 with `{ error: "Invalid data", details: ... }`
@@ -160,27 +171,46 @@ The client-side `Uuid` type is a branded `string`.
 
 ### Duplicated `types.ts`
 
-`client/src/types.ts` and `server/src/types.ts` are **intentionally identical**. When modifying shared types, update both files. Platform-specific type differences go in `types_module_specific.ts` in each workspace.
+`apps/app/src/types.ts` and `apps/api/src/types.ts` are **intentionally identical**. When modifying shared types, update both files. Platform-specific type differences go in `types_module_specific.ts` in each workspace.
 
-### Zod Schemas (server)
+### Zod Schemas (api)
 
-Request validation schemas live in `server/src/schemas/`. Each schema file corresponds to a domain (e.g., `assignSchema.ts`, `userSchemas.ts`). Schemas are passed to the query middleware wrapper, not applied inside route handlers.
+Request validation schemas live in `apps/api/src/schemas/`. Each schema file corresponds to a domain (e.g., `assignSchema.ts`, `userSchemas.ts`). Schemas are passed to the query middleware wrapper, not applied inside route handlers.
+
+### ESLint Config
+
+Shared ESLint configuration lives in `packages/eslint-config/`. It exports:
+
+- `createBaseConfig(dirname)` — base TypeScript + import rules; pass `import.meta.dirname` from the workspace's `eslint.config.mjs`
+- `reactConfig` — React, ReactHooks, and Mocha rules; spread after `createBaseConfig` in React workspaces
+
+Each workspace has its own `eslint.config.mjs` that composes these. The base config uses `tseslint.configs.recommended` (not `recommendedTypeChecked`), so no TypeScript program is created during linting.
+
+### TypeScript Config
+
+Root-level base configs:
+
+- `tsconfig.base.json` — strictness rules only
+- `tsconfig.node.json` — extends base; adds `nodenext` module settings
+- `tsconfig.react.json` — extends base; adds `bundler` module resolution, `react-jsx`, and `noEmit: true`
+
+Each workspace `tsconfig.json` extends one of these and declares its own `types`. `packages/shared` extends `tsconfig.base.json` directly (with its own module settings) since it targets both Node.js and the browser.
 
 ### Cypress Test Tagging
 
-Cypress tests (both component and e2e) are tagged with `@group1`–`@group4` for CI parallelization. Flaky tests use `@brittle1`–`@brittle3`. Tests not tagged with any group will be caught by `test:mistagged` (client) or excluded by `test:group4` (tests-cypress). Use `@cypress/grep` syntax in `it()` / `describe()` tags.
+Cypress tests (both component and e2e) are tagged with `@group1`–`@group4` for CI parallelization. Flaky tests use `@brittle1`–`@brittle3`. Tests not tagged with any group will be caught by `test:mistagged` (app) or excluded by `test:group4` (e2e-tests). Use `@cypress/grep` syntax in `it()` / `describe()` tags.
 
 ### Test Environment Variables
 
-The server exposes test-only features when these env vars are set:
+The API exposes test-only features when these env vars are set:
 
 - `ALLOW_TEST_LOGIN=true` — enables login bypassing real auth (used in Cypress tests)
-- `ADD_TEST_APIS=true` — mounts `/api/test` routes from `server/src/test/testRoutes.ts`
+- `ADD_TEST_APIS=true` — mounts `/api/test` routes from `apps/api/src/test/testRoutes.ts`
 - `CONSOLE_LOG_EMAIL=true` — logs magic-link emails to console instead of sending via SES
 
-### Server Test Utilities
+### API Test Utilities
 
-Use `createTestUser()` from `server/src/test/utils.ts` to create isolated test users. Each call generates a unique email, so tests can run in parallel without conflicts.
+Use `createTestUser()` from `apps/api/src/test/utils.ts` to create isolated test users. Each call generates a unique email, so tests can run in parallel without conflicts.
 
 ### Content Types
 
