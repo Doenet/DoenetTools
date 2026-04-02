@@ -14,7 +14,7 @@ on:
     branches: ["*"]
     paths:
       - .github/workflows/doenet-frontend.yml
-      - client/**
+      - apps/app/**
       - package.json
       - package-lock.json
 
@@ -47,13 +47,13 @@ jobs:
         working-directory: ${{ env.WORKING_DIR }}
         run: |
           npm ci
-          cd client
+          cd apps/app
           npm run build
 
       - name: Sync to S3
         shell: bash
         working-directory: ${{ env.WORKING_DIR }}
         run: |
-          aws s3 sync --delete client/dist s3://${{env.ENV_NAME}}-app-${{ env.AWS_ACCOUNT_ID }}-${{ env.AWS_REGION }}
+          aws s3 sync --delete apps/app/dist s3://${{env.ENV_NAME}}-app-${{ env.AWS_ACCOUNT_ID }}-${{ env.AWS_REGION }}
           id=$(aws ssm get-parameter --name "/${{ env.ENV_NAME }}/app/DistributionId" --query "Parameter.Value" --output text)
           aws cloudfront create-invalidation --distribution-id $id --paths "/"

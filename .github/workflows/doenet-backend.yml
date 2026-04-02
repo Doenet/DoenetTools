@@ -6,7 +6,6 @@ on:
 
 env:
   AWS_REGION: "us-east-2"
-  #  WORKING_DIR: ./server
   WORKING_DIR: ./
   ECR_REPOSITORY: dev3/doenet
   ECS_CLUSTER: dev3
@@ -22,19 +21,6 @@ jobs:
     steps:
       - name: Git clone the repository
         uses: actions/checkout@v3
-
-      # - name: Setup Node v24
-      #   uses: actions/setup-node@v4
-      #   with:
-      #     node-version: 24
-      # - name: Npm clean install
-      #   run: npm ci
-
-      # # Generate TS types for Prisma
-      # - run: npm run prisma:generate --workspace server
-
-      # - name: Build server
-      #   run: npm run build --workspace server
 
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v5
@@ -67,7 +53,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ${{ env.WORKING_DIR }}
-          file: ./server/Dockerfile
+          file: ./apps/api/Dockerfile
           platforms: linux/amd64
           # build-args: ${{ inputs.build-args }}
           push: true

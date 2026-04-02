@@ -2,7 +2,7 @@
 
 # Note: the build context should be the project root, not this package
 # Run with:
-# docker build -f server/Dockerfile .
+# docker build -f apps/api/Dockerfile .
 
 ########################################
 # Stage 1 — Build
@@ -13,24 +13,21 @@ WORKDIR /DoenetTools
 
 # Copy workspace manifests first so dependency install can cache well
 COPY package.json package-lock.json ./
-COPY server/package.json server/package.json
-COPY shared/package.json shared/package.json
-COPY client/package.json client/package.json
-COPY blog/package.json blog/package.json
-COPY tests-cypress/package.json tests-cypress/package.json
+COPY apps/*/package.json ./
+COPY packages/*/package.json ./
 
 # Install all dependencies
 # This is more than we need, but it doesn't hurt.
-# We really just need `server`, `shared`, and the root
+# We really just need `api`, `shared`, and the root
 RUN npm ci
 
 # Copy source after install for better layer caching
 COPY tsconfig.json ./
-COPY server ./server
-COPY shared ./shared
+COPY apps/api ./apps/api
+COPY packages/shared ./packages/shared
 
-# Generate Prisma client and build server/shared
-WORKDIR /DoenetTools/server
+# Generate Prisma client and build api/shared
+WORKDIR /DoenetTools/apps/api
 RUN npm run prisma:generate
 RUN npm run build
 
@@ -44,28 +41,25 @@ ENV NODE_ENV=production
 
 # Preserve the monorepo layout so npm workspace resolution still works
 COPY package.json package-lock.json ./
-COPY server/package.json server/package.json
-COPY shared/package.json shared/package.json
-COPY client/package.json client/package.json
-COPY blog/package.json blog/package.json
-COPY tests-cypress/package.json tests-cypress/package.json
+COPY apps/*/package.json ./
+COPY packages/*/package.json ./
 
-# Install only production deps for the server workspace
-RUN npm ci --omit=dev --workspace=server
+# Install only production deps for the api workspace
+RUN npm ci --omit=dev --workspace=@doenet-tools/api
 
 # Copy built application artifacts
-COPY --from=builder /DoenetTools/server/dist ./server/dist
-COPY --from=builder /DoenetTools/shared/dist ./shared/dist
+COPY --from=builder /DoenetTools/apps/api/dist ./apps/api/dist
+COPY --from=builder /DoenetTools/packages/shared/dist ./packages/shared/dist
 
 # Copy Prisma runtime artifacts
-COPY --from=builder /DoenetTools/server/prisma ./server/prisma
+COPY --from=builder /DoenetTools/apps/api/prisma ./apps/api/prisma
 COPY --from=builder /DoenetTools/node_modules/.prisma/client ./node_modules/.prisma/client
 
 # Copy entrypoint script
-COPY server/entrypoint.sh ./server/entrypoint.sh
-RUN chmod +x ./server/entrypoint.sh
+COPY apps/api/entrypoint.sh ./apps/api/entrypoint.sh
+RUN chmod +x ./apps/api/entrypoint.sh
 
-WORKDIR /DoenetTools/server
+WORKDIR /DoenetTools/apps/api
 
 # Run migrations then start server
 ENTRYPOINT ["./entrypoint.sh"]

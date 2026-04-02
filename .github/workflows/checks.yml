@@ -148,14 +148,14 @@ jobs:
         if: failure()
         with:
           name: cypress-screenshots
-          path: tests-cypress/cypress/screenshots
+          path: packages/e2e-tests/cypress/screenshots
           if-no-files-found: ignore
 
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: cypress-videos
-          path: tests-cypress/cypress/videos
+          path: packages/e2e-tests/cypress/videos
           if-no-files-found: ignore
 
   # Separate job for brittle tests
@@ -292,6 +292,6 @@ jobs:
         with:
           name: component-test-artifacts
           path: |
-            app/cypress/screenshots/
-            app/cypress/videos/
+            apps/app/cypress/screenshots/
+            apps/app/cypress/videos/
           retention-days: 7

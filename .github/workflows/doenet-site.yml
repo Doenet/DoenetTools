@@ -12,7 +12,7 @@ on:
     branches: ["*"]
     paths:
       - .github/workflows/doenet-site.yml
-      - blog/**
+      - apps/web/**
       - package.json
       - package-lock.json
 
@@ -41,11 +41,11 @@ jobs:
       - name: Build the site
         run: |
           npm ci
-          cd blog && npm run build
+          cd apps/web && npm run build
 
       - name: Sync to S3
         run: |
-          aws s3 sync --delete blog/dist s3://${{ env.ENV_NAME }}-site-${{ env.AWS_ACCOUNT_ID }}-${{ env.AWS_REGION }}
+          aws s3 sync --delete apps/web/dist s3://${{ env.ENV_NAME }}-site-${{ env.AWS_ACCOUNT_ID }}-${{ env.AWS_REGION }}
 
       - name: Invalidate CloudFront cache
         run: |
