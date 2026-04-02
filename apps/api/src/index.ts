@@ -49,15 +49,15 @@ import { generateHandle } from "./utils/names";
 import { codeRouter } from "./routes/code";
 import { metricsRouter } from "./routes/metricsRoutes";
 
-setInterval(() => {
-  const m = process.memoryUsage();
-  console.log({
-    rss: Math.round(m.rss / 1024 / 1024),
-    heapUsed: Math.round(m.heapUsed / 1024 / 1024),
-    heapTotal: Math.round(m.heapTotal / 1024 / 1024),
-    external: Math.round(m.external / 1024 / 1024),
-  });
-}, 15000);
+// setInterval(() => {
+//   const m = process.memoryUsage();
+//   console.log({
+//     rss: Math.round(m.rss / 1024 / 1024),
+//     heapUsed: Math.round(m.heapUsed / 1024 / 1024),
+//     heapTotal: Math.roun(m.heapTotal / 1024 / 1024),
+//     external: Math.round(m.external / 1024 / 1024),
+//   });
+// }, 15000);
 
 // Type assertion to work around passport type declaration issues
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
