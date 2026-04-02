@@ -3,24 +3,22 @@
   "type": "module",
   "private": true,
   "workspaces": [
-    "client",
-    "server",
-    "shared",
-    "tests-cypress",
-    "blog"
+    "apps/*",
+    "packages/*"
   ],
   "scripts": {
-    "postinstall": "npm run prisma:generate --workspace server",
+    "postinstall": "npm run prisma:generate --workspace @doenet-tools/api",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
-    "lint": "npm run lint --workspaces",
-    "lint:check": "npm run lint:check --workspaces",
+    "lint": "npm run lint --workspaces --if-present",
+    "lint:check": "npm run lint:check --workspaces --if-present",
     "build:ts": "npm run build:ts --workspaces --if-present && tsc --build",
     "build:assets": "npm run build:assets --workspaces --if-present",
     "build": "npm run build:ts && npm run build:assets"
   },
   "devDependencies": {
     "@cypress/grep": "^6.0.0",
+    "@doenet-tools/eslint-config": "*",
     "@eslint/js": "^9.39.2",
     "@types/luxon": "^3.7.1",
     "@types/node": "^25.0.10",
