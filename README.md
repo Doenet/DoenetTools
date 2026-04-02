@@ -10,6 +10,63 @@ We would love to hear from you! Join our [Discord](https://discord.gg/PUduwtKJ5h
 
 ---
 
+## Dev Environment Setup
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) 24+
+- [Docker](https://www.docker.com/) (for the MySQL database)
+
+### Steps
+
+**1. Install dependencies**
+
+```bash
+npm install
+```
+
+**2. Create the `.env` files**
+
+```bash
+npm run setup
+```
+
+This copies `apps/api/.env.sample` → `apps/api/.env` and `.env.sample` → `.env`. Edit them if you need to override any defaults (the defaults work for local development).
+
+**3. Start the database**
+
+```bash
+docker compose up -d
+```
+
+Wait until the container is healthy before continuing:
+
+```bash
+docker container ls
+```
+
+The `STATUS` column should show `(healthy)` for the MySQL container (named `<directory>-mysql-1` based on the folder).
+
+**4. Run database migrations**
+
+```bash
+npm run db:setup
+```
+
+**5. Start the dev servers**
+
+Each server runs in its own terminal:
+
+```bash
+npm run dev --workspace @doenet-tools/api   # Express API → http://localhost:3000
+npm run dev --workspace @doenet-tools/app   # React SPA  → http://localhost:8000
+npm run dev --workspace @doenet-tools/web   # Astro site  → http://localhost:4321
+```
+
+The `app` dev server proxies `/api/*` requests to the API, so both servers must be running for the full app to work.
+
+---
+
 ## Repository Structure
 
 This repository is an npm workspace monorepo. Packages are organized into two directories:
