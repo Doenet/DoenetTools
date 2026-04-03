@@ -1,6 +1,6 @@
 ---
 import { type CollectionEntry, getCollection, render } from "astro:content";
-import BlogPost from "../layouts/BlogPost.astro";
+import BlogPost from "../../layouts/BlogPost.astro";
 
 export async function getStaticPaths() {
   const posts = (await getCollection("blog")).sort(
@@ -17,10 +17,10 @@ export async function getStaticPaths() {
       props: {
         ...post,
         previousPost: previousPost
-          ? { title: previousPost.data.title, url: `/${previousPost.id}/` }
+          ? { title: previousPost.data.title, url: `/blog/${previousPost.id}/` }
           : null,
         nextPost: nextPost
-          ? { title: nextPost.data.title, url: `/${nextPost.id}/` }
+          ? { title: nextPost.data.title, url: `/blog/${nextPost.id}/` }
           : null,
       },
     };
