@@ -43,7 +43,7 @@ export function Events() {
                   Drop in anytime during the two hours.
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Dates:</strong> 2nd–5th Tuesday of each month
+                  <strong>Dates:</strong> Tuesdays
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
                   <strong>Time:</strong> 2–4pm Eastern, 11am–1pm Pacific
@@ -66,92 +66,6 @@ export function Events() {
               <Heading size="lg" mb={3} mt={5}>
                 Virtual training workshops
               </Heading>
-
-              <Text fontSize="1.3rem" lineHeight="1.3" mb={6}>
-                Virtual training workshops are scheduled for the first Tuesday
-                of the month.
-              </Text>
-
-              <VStack
-                align="start"
-                spacing={3}
-                mb={6}
-                pl={4}
-                borderLeft="3px solid"
-                borderColor="border"
-              >
-                <Heading size="md">
-                  <ChakraLink
-                    href="https://scholarlattice.org/collections/f483e795-cdbc-4459-ba64-1d0660f527ef"
-                    isExternal
-                    textDecoration="underline"
-                  >
-                    Graphs and Randomizing Numbers in Doenet
-                  </ChakraLink>
-                </Heading>
-                <Text fontSize="1.3rem" lineHeight="1.3">
-                  Learn how to graph functions and randomize numbers in problems
-                  designed for the active learning classroom using Doenet
-                </Text>
-                <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Date:</strong> Saturday, March 28, 2026
-                </Text>
-                <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Time:</strong> 11am–12pm Eastern, 8am–9am Pacific
-                </Text>
-                <Text fontSize="1rem" lineHeight="1.4">
-                  <Button
-                    as="a"
-                    href="https://scholarlattice.org/collections/f483e795-cdbc-4459-ba64-1d0660f527ef"
-                    colorScheme="blue"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Details and registration at ScholarLattice
-                  </Button>
-                </Text>
-              </VStack>
-
-              <VStack
-                align="start"
-                spacing={3}
-                mb={6}
-                pl={4}
-                borderLeft="3px solid"
-                borderColor="border"
-              >
-                <Heading size="md">
-                  <ChakraLink
-                    href="https://scholarlattice.org/collections/473ca6a6-9a46-48f7-a191-7275d60d910b"
-                    isExternal
-                    textDecoration="underline"
-                  >
-                    Dynamic and Interactive Graphs in Doenet
-                  </ChakraLink>
-                </Heading>
-                <Text fontSize="1.3rem" lineHeight="1.3">
-                  Learn how to make interactive graphs and validate graphical
-                  answers in problems designed for the active learning classroom
-                  using Doenet
-                </Text>
-                <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Date:</strong> Saturday, April 4, 2026
-                </Text>
-                <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Time:</strong> 11am–12pm Eastern, 8am–9am Pacific
-                </Text>
-                <Text fontSize="1rem" lineHeight="1.4">
-                  <Button
-                    as="a"
-                    href="https://scholarlattice.org/collections/473ca6a6-9a46-48f7-a191-7275d60d910b"
-                    colorScheme="blue"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Details and registration at ScholarLattice
-                  </Button>
-                </Text>
-              </VStack>
 
               <VStack
                 align="start"
@@ -177,10 +91,11 @@ export function Events() {
                   inclusive.
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Date:</strong> Tuesday, April 7, 2026
+                  <strong>Date:</strong> Tuesday, April 28, 2026
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Time:</strong> 2–4pm Eastern, 11am–1pm Pacific
+                  <strong>Time:</strong> 3:30–4:30pm Eastern, 12:30–1:30pm
+                  Pacific
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
                   <Button
@@ -198,6 +113,7 @@ export function Events() {
               <VStack
                 align="start"
                 spacing={3}
+                mb={6}
                 pl={4}
                 borderLeft="3px solid"
                 borderColor="border"
@@ -208,23 +124,154 @@ export function Events() {
                     isExternal
                     textDecoration="underline"
                   >
-                    Getting started with Doenet
+                    Intro to Doenet
                   </ChakraLink>
                 </Heading>
                 <Text fontSize="1.3rem" lineHeight="1.3">
-                  Learn the basics of how to write Doenet activities in this
-                  introductory workshop.
+                  In this workshop, participants will be introduced to the free
+                  and open-source platform Doenet. They will learn about the key
+                  constructs of Doenet and learn how to create Doenet activities
+                  with basic answer validation.
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
                   <strong>Date:</strong> Tuesday, May 5, 2026
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Time:</strong> 2–4pm Eastern, 11am–1pm Pacific
+                  <strong>Time:</strong> 5–6pm Eastern, 2pm–3pm Pacific
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
                   <Button
                     as="a"
                     href="https://scholarlattice.org/collections/b8ec4af3-8f71-4e4a-b86e-838242e47058"
+                    colorScheme="blue"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Details and registration at ScholarLattice
+                  </Button>
+                </Text>
+              </VStack>
+
+              <VStack
+                align="start"
+                spacing={3}
+                mb={6}
+                pl={4}
+                borderLeft="3px solid"
+                borderColor="border"
+              >
+                <Heading size="md">
+                  <ChakraLink
+                    href="https://scholarlattice.org/collections/2b79369a-6c1b-47c1-b711-b21ec556c27a"
+                    isExternal
+                    textDecoration="underline"
+                  >
+                    Randomized Problem Versions and Doenet Assignments
+                  </ChakraLink>
+                </Heading>
+                <Text fontSize="1.3rem" lineHeight="1.3">
+                  In this workshop, participants will be introduced to Doenet
+                  features for generating randomized versions of problems and
+                  assigning activities to students. In addition, the workshop
+                  will include practical pedagogical considerations for creating
+                  effective problem versions.
+                </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <strong>Date:</strong> Tuesday, May 12, 2026
+                </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <strong>Time:</strong> 5–6pm Eastern, 2pm–3pm Pacific
+                </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <Button
+                    as="a"
+                    href="https://scholarlattice.org/collections/2b79369a-6c1b-47c1-b711-b21ec556c27a"
+                    colorScheme="blue"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Details and registration at ScholarLattice
+                  </Button>
+                </Text>
+              </VStack>
+
+              <VStack
+                align="start"
+                spacing={3}
+                mb={6}
+                pl={4}
+                borderLeft="3px solid"
+                borderColor="border"
+              >
+                <Heading size="md">
+                  <ChakraLink
+                    href="https://scholarlattice.org/collections/f4655dd4-90fd-41ac-b9dd-b496271b6c3b"
+                    isExternal
+                    textDecoration="underline"
+                  >
+                    Graphs in Doenet
+                  </ChakraLink>
+                </Heading>
+                <Text fontSize="1.3rem" lineHeight="1.3">
+                  In this workshop, participants will learn how to create graphs
+                  in Doenet. They will learn how to use Doenet features to
+                  create figures such as lines, circles, polygons, and graphs of
+                  functions. They will learn how to link objects together (e.g.,
+                  a point on a line, or referencing a point outside of a graph),
+                  as a preview of more sophisticated interactivity.
+                </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <strong>Date:</strong> Tuesday, May 19, 2026
+                </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <strong>Time:</strong> 5–6pm Eastern, 2pm–3pm Pacific
+                </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <Button
+                    as="a"
+                    href="https://scholarlattice.org/collections/f4655dd4-90fd-41ac-b9dd-b496271b6c3b"
+                    colorScheme="blue"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Details and registration at ScholarLattice
+                  </Button>
+                </Text>
+              </VStack>
+
+              <VStack
+                align="start"
+                spacing={3}
+                mb={6}
+                pl={4}
+                borderLeft="3px solid"
+                borderColor="border"
+              >
+                <Heading size="md">
+                  <ChakraLink
+                    href="https://scholarlattice.org/collections/43804412-1207-4455-945a-ceb2e88ce8db"
+                    isExternal
+                    textDecoration="underline"
+                  >
+                    Accessibility in Doenet
+                  </ChakraLink>
+                </Heading>
+                <Text fontSize="1.3rem" lineHeight="1.3">
+                  In this workshop, participants will learn best practices for
+                  creating accessible activities in Doenet. They will learn how
+                  to use the accessibility features in Doenet in order to make
+                  their activities more inclusive.
+                </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <strong>Date:</strong> Tuesday, May 26, 2026
+                </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <strong>Time:</strong> 5–6pm Eastern, 2pm–3pm Pacific
+                </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <Button
+                    as="a"
+                    href="https://scholarlattice.org/collections/43804412-1207-4455-945a-ceb2e88ce8db"
                     colorScheme="blue"
                     target="_blank"
                     rel="noopener noreferrer"

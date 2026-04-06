@@ -294,19 +294,20 @@ export function Home() {
         <Card>
           <CardHeader>
             <Heading size="sm">
-              Graphs and Randomizing Numbers Virtual Workshop, March 28,
-              10am-11am Central
+              Creating accessible activities in Doenet Virtual Workshop
+              <br /> April 28, 3:30–4:30pm Eastern, 12:30–1:30pm Pacific
             </Heading>
           </CardHeader>
           <CardBody>
             <Text fontSize={"18px"} fontWeight="500">
-              Learn how to graph functions and randomize numbers in problems
-              designed for the active learning classroom using Doenet
+              In this workshop, we will discuss best practices for creating
+              accessible activities in Doenet, and how to use the accessibility
+              features of Doenet to make your activities more inclusive.
             </Text>
 
             <Button
               as="a"
-              href="https://scholarlattice.org/collections/f483e795-cdbc-4459-ba64-1d0660f527ef"
+              href="https://scholarlattice.org/collections/eab4d5ce-064d-409a-a576-bcab507f7836"
               colorScheme="blue"
               target="_blank"
               rel="noopener noreferrer"
@@ -319,8 +320,7 @@ export function Home() {
         <Card>
           <CardHeader>
             <Heading size="sm">
-              Virtual office hours, 2nd, 3rd, 4th, 5th Tuesdays of the month,
-              1-3pm Central
+              Virtual office hours, Tuesdays, 2–4pm Eastern, 11am–1pm Pacific
             </Heading>
           </CardHeader>
           <CardBody>
