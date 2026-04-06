@@ -15,7 +15,6 @@ function copyEnv(envPath, samplePath) {
 }
 
 const root = path.join(import.meta.dirname, "..");
-copyEnv(path.join(root, ".env"), path.join(root, ".env.sample"));
 copyEnv(
   path.join(root, "apps/api/.env"),
   path.join(root, "apps/api/.env.sample"),

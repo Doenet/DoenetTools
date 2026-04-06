@@ -32,18 +32,18 @@ cd DoenetTools
 npm install
 ```
 
-**3. Create the `.env` files**
+**3. Create the `.env` file**
 
 ```bash
 npm run setup
 ```
 
-This copies the sample env files into place. The defaults work for local development, but edit them if needed.
+This copies `apps/api/.env.sample` to `apps/api/.env`. The defaults work for local development, but edit as needed (e.g. change `DATABASE_PORT` if port `3306` conflicts with another service).
 
 **4. Start the database**
 
 ```bash
-docker compose up -d
+docker compose --env-file apps/api/.env up -d
 ```
 
 Wait until the MySQL container shows `(healthy)` in `docker container ls` before continuing.
