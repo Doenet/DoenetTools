@@ -1,3 +1,5 @@
--- Grant myuser full privileges so Prisma can create/use/drop the shadow database
-GRANT ALL PRIVILEGES ON *.* TO 'myuser'@'%';
+-- Grant myuser the database-scoped privileges Prisma needs for migrations and shadow databases
+GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, ALTER, INDEX, REFERENCES, CREATE TEMPORARY TABLES, LOCK TABLES  
+ON `doenet%`.*  
+TO 'myuser'@'%';  
 FLUSH PRIVILEGES;

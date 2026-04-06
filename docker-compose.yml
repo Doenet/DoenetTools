@@ -14,7 +14,11 @@ services:
       - ./configs/mysql:/docker-entrypoint-initdb.d
 
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test:
+        [
+          "CMD-SHELL",
+          'mysqladmin ping -h localhost -uroot -p"$$MYSQL_ROOT_PASSWORD"',
+        ]
       interval: 5s
       timeout: 5s
       retries: 10
