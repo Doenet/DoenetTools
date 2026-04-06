@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "DomainNames",
-    "ParameterValue": "dev3.doenet.org"
+    "ParameterValue": "doenet.dev3.doenet.org"
   },
   {
     "ParameterKey": "EnvironmentName",

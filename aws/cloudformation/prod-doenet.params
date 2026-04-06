@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "DomainNames",
-    "ParameterValue": "prod.doenet.org"
+    "ParameterValue": "doenet.prod.doenet.org"
   },
   {
     "ParameterKey": "EnvironmentName",
@@ -49,11 +49,11 @@
   },
   {
     "ParameterKey": "ImageUrl",
-    "ParameterValue": "350646758180.dkr.ecr.us-east-2.amazonaws.com/prod/doenet:latest"
+    "ParameterValue": "350646758180.dkr.ecr.us-east-2.amazonaws.com/prod/doenet:2026-04-03-20-00-05-e7ad9f6"
   },
   {
     "ParameterKey": "TaskDefIncludesFile",
-    "ParameterValue": "s3://doenet-cf-prod/prod-doenet/doenet-taskdef-includes.yml"
+    "ParameterValue": "s3://doenet-cf-prod/prod-doenet/prod-doenet-taskdef-includes.yml"
   },
   {
     "ParameterKey": "TaskRoleIncludesFile",

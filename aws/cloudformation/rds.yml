@@ -29,13 +29,13 @@ Parameters:
       - PostgreSQL
       - MySQL
   DBUsername:
-    Default: postgres
+    Default: mysql
     Description: The database master account username
     Type: String
-  DBPasswordPath:
+  DBPassword:
     NoEcho: true
     Description: The SSM parameter path holding the DB password
-    Type: String
+    Type: "AWS::SSM::Parameter::Value<String>"
   DBClass:
     Default: db.t4g.medium
     Description: Database instance class
@@ -273,7 +273,7 @@ Resources:
         - UseDBSnapshotA
         - !Ref AWS::NoValue
         - !Ref DBUsername
-      MasterUserPassword: !Sub "{{resolve:ssm-secure:${DBPasswordPath}:1}}"
+      MasterUserPassword: !Ref "DBPassword"
       MultiAZ: !Ref MultiAZDatabase
       DBSubnetGroupName: !Ref DBSubnetGroup
       VPCSecurityGroups:
@@ -338,7 +338,7 @@ Resources:
         - UseDBSnapshotB
         - !Ref AWS::NoValue
         - !Ref DBUsername
-      MasterUserPassword: !Sub "{{resolve:ssm-secure:${DBPasswordPath}:1}}"
+      MasterUserPassword: !Ref "DBPassword"
       MultiAZ: !Ref MultiAZDatabase
       DBSubnetGroupName: !Ref DBSubnetGroup
       VPCSecurityGroups:
@@ -415,6 +415,20 @@ Resources:
           - DBUsername
       Type: String
       Value: !Ref DBUsername
+  DatabaseUrl:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join
+        - ""
+        - - /
+          - !Ref EnvironmentName
+          - /
+          - !Ref DBName
+          - /
+          - DBUrl
+      Type: String
+      Value: !Sub "mysql://${DBUsername}:${DBPassword}@${DnsRecord}:3306/doenet"
+
 Outputs:
   DatabaseHost:
     Value: !Ref DnsRecord

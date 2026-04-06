@@ -24,7 +24,7 @@
     "ParameterValue": "doenet"
   },
   {
-    "ParameterKey": "DBPasswordPath",
+    "ParameterKey": "DBPassword",
     "ParameterValue": "/prod/mysql/DBPassword"
   },
   {
@@ -53,7 +53,7 @@
   },
   {
     "ParameterKey": "SeedSnapshotIdB",
-    "ParameterValue": "none"
+    "ParameterValue": "delete"
   },
   {
     "ParameterKey": "RdsInstanceSelector",

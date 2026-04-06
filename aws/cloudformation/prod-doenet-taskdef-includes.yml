@@ -1,0 +1,43 @@
+Environment:
+  - Name: PORT
+    Value: 3000
+  - Name: CONFIRM_SIGNIN_URL
+    Value: "http://prod.doenet.org/confirmSignIn"
+  - Name: LOGIN_CALLBACK_ROOT
+    Value: "http://prod.doenet.org/"
+  - Name: DATABASE_PORT
+    Value: 3306
+  - Name: SESSION_DATABASE_NAME
+    Value: "doenet_session"
+  - Name: SENDING_EMAIL_ADDRESS
+    Value: "Doenet Accounts <info@mail.doenet.org>"
+  - Name: AWS_SES_ARN
+    Value: "arn:aws:ses:us-east-2:350646758180:identity/mail.doenet.org"
+  - Name: ALLOW_TEST_LOGIN
+    Value: "false"
+  - Name: ADD_TEST_APIS
+    Value: "false"
+  - Name: NODE_OPTIONS
+    Value: "--max-old-space-size=1950"
+  # These will become secrets
+  - Name: SESSION_SECRET
+    Value: "hi"
+  - Name: GOOGLE_CLIENT_ID
+    Value: "hi"
+  - Name: GOOGLE_CLIENT_SECRET
+    Value: "hi"
+  - Name: MAGIC_LINK_SECRET
+    Value: "hi"
+Secrets:
+  - Name: DATABASE_HOST
+    ValueFrom:
+      Fn::Sub: "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${EnvironmentName}/mysql/DBHost"
+  - Name: DATABASE_USER
+    ValueFrom:
+      Fn::Sub: "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${EnvironmentName}/mysql/DBUsername"
+  - Name: DATABASE_PASSWORD
+    ValueFrom:
+      Fn::Sub: "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${EnvironmentName}/mysql/DBPassword"
+  - Name: DATABASE_URL
+    ValueFrom:
+      Fn::Sub: "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${EnvironmentName}/mysql/DBUrl"
