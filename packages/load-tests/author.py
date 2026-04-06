@@ -16,10 +16,11 @@ class AuthorUser(HttpUser):
     host = "https://dev3.doenet.org"
     wait_time = between(1, 3)
 
-    user_id = None
-    content_ids = []
 
     def on_start(self):
+        self.user_id = None
+        self.content_ids = []
+
         self.client.post(
             "/api/login/createOrLoginAsTest",
             json={"email": "author@abc.org"},

@@ -19,9 +19,9 @@ class AnonymousStudentUser(HttpUser):
     host = "https://dev3.doenet.org"
     wait_time = between(1, 3)
 
-    assignment_content_id = None
-
     def on_start(self):
+        self.assignment_content_id = None
+
         # Create an anonymous session
         self.client.post(
             "/api/login/anonymous",

@@ -22,13 +22,13 @@ class InstructorUser(HttpUser):
     host = "https://dev3.doenet.org"
     wait_time = between(1, 3)
 
-    user_id = None
-    content_ids = []
-    folder_ids = []
-    assignment_ids = []
-    student_ids = []
-
     def on_start(self):
+        self.user_id = None
+        self.content_ids = []
+        self.folder_ids = []
+        self.assignment_ids = []
+        self.student_ids = []
+
         self.client.post(
             "/api/login/createOrLoginAsTest",
             json={"email": "instructor@abc.org"},

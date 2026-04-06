@@ -22,12 +22,12 @@ class StudentUser(HttpUser):
     host = "https://dev3.doenet.org"
     wait_time = between(1, 3)
 
-    user_id = None
-    assignment_ids = []
-    content_ids = []
-    parent_ids = []
-
     def on_start(self):
+        self.user_id = None
+        self.assignment_ids = []
+        self.content_ids = []
+        self.parent_ids = []
+
         # Authenticate
         self.client.post(
             "/api/login/createOrLoginAsTest",
