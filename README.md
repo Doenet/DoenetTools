@@ -48,11 +48,13 @@ docker compose --env-file apps/api/.env up -d
 
 Wait until the MySQL container shows `(healthy)` in `docker container ls` before continuing.
 
-**5. Run database migrations**
+**5. Setup the database tables**
 
 ```bash
 npm run db:setup
 ```
+
+This creates the required database tables and seeds them with minimal data.
 
 **6. Build the shared package**
 
