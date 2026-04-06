@@ -6,7 +6,7 @@ function copyEnv(envPath, samplePath) {
   if (fs.existsSync(envPath)) {
     console.log(`✅ ${envPath} already exists, skipping`);
   } else if (!fs.existsSync(samplePath)) {
-    console.error(`❌ Sample file not found: ${samplePath}`);
+    console.error(`❌ Example file not found: ${samplePath}`);
     process.exit(1);
   } else {
     fs.copyFileSync(samplePath, envPath);
@@ -17,5 +17,5 @@ function copyEnv(envPath, samplePath) {
 const root = path.join(import.meta.dirname, "..");
 copyEnv(
   path.join(root, "apps/api/.env"),
-  path.join(root, "apps/api/.env.sample"),
+  path.join(root, "apps/api/.env.example"),
 );
