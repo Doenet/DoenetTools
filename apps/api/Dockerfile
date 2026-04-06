@@ -73,4 +73,5 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
   CMD curl -f http://localhost:3000/api/health || exit 1
 
 RUN useradd serveruser
+RUN chown -R serveruser:serveruser /DoenetTools/node_modules/@prisma /DoenetTools/node_modules/.prisma
 USER serveruser
