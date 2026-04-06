@@ -2,6 +2,7 @@
 // Import the global.css file here so that it is included on
 // all pages through the use of the <BaseHead /> component.
 import "../styles/global.css";
+import { BLOG_BASE_URL } from "../consts";
 
 interface Props {
   title: string;
@@ -24,14 +25,14 @@ const { title, description, image } = Astro.props;
 <!-- Font preloads -->
 <link
   rel="preload"
-  href="/blog/fonts/open-sans-v18-latin-regular.woff"
+  href={`${BLOG_BASE_URL}/fonts/open-sans-v18-latin-regular.woff`}
   as="font"
   type="font/woff"
   crossorigin
 />
 <link
   rel="preload"
-  href="/blog/fonts/open-sans-v18-latin-700.woff"
+  href={`${BLOG_BASE_URL}/fonts/open-sans-v18-latin-700.woff`}
   as="font"
   type="font/woff"
   crossorigin
