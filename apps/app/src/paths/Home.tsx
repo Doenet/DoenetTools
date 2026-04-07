@@ -295,7 +295,7 @@ export function Home() {
           <CardHeader>
             <Heading size="sm">
               Creating accessible activities in Doenet Virtual Workshop
-              <br /> April 28, 3:30–4:30pm Eastern, 12:30–1:30pm Pacific
+              <br /> April 28, 3:30–5:30pm Eastern, 12:30–2:30pm Pacific
             </Heading>
           </CardHeader>
           <CardBody>

@@ -94,7 +94,7 @@ export function Events() {
                   <strong>Date:</strong> Tuesday, April 28, 2026
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Time:</strong> 3:30–4:30pm Eastern, 12:30–1:30pm
+                  <strong>Time:</strong> 3:30–5:30pm Eastern, 12:30–2:30pm
                   Pacific
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
@@ -137,7 +137,7 @@ export function Events() {
                   <strong>Date:</strong> Tuesday, May 5, 2026
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Time:</strong> 5–6pm Eastern, 2pm–3pm Pacific
+                  <strong>Time:</strong> 5–7pm Eastern, 2pm–4pm Pacific
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
                   <Button
@@ -180,7 +180,7 @@ export function Events() {
                   <strong>Date:</strong> Tuesday, May 12, 2026
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Time:</strong> 5–6pm Eastern, 2pm–3pm Pacific
+                  <strong>Time:</strong> 5–7pm Eastern, 2pm–4pm Pacific
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
                   <Button
@@ -224,7 +224,7 @@ export function Events() {
                   <strong>Date:</strong> Tuesday, May 19, 2026
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Time:</strong> 5–6pm Eastern, 2pm–3pm Pacific
+                  <strong>Time:</strong> 5–7pm Eastern, 2pm–4pm Pacific
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
                   <Button
@@ -266,7 +266,7 @@ export function Events() {
                   <strong>Date:</strong> Tuesday, May 26, 2026
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Time:</strong> 5–6pm Eastern, 2pm–3pm Pacific
+                  <strong>Time:</strong> 5–7pm Eastern, 2pm–4pm Pacific
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
                   <Button
