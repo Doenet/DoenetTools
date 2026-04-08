@@ -6,7 +6,7 @@ from seed import seed_anonymous_assignment, seeded_data
 
 @events.test_start.add_listener
 def on_test_start(environment, **kwargs):
-    seed_anonymous_assignment(environment.host)
+    seed_anonymous_assignment(environment.host or AnonymousStudentUser.host)
 
 
 class AnonymousStudentUser(HttpUser):

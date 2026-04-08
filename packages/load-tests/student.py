@@ -6,7 +6,7 @@ from seed import seed_student_assignments
 
 @events.test_start.add_listener
 def on_test_start(environment, **kwargs):
-    seed_student_assignments(environment.host)
+    seed_student_assignments(environment.host or StudentUser.host)
 
 
 class StudentUser(HttpUser):
@@ -24,7 +24,6 @@ class StudentUser(HttpUser):
 
     def on_start(self):
         self.user_id = None
-        self.assignment_ids = []
         self.content_ids = []
         self.parent_ids = []
 
@@ -49,7 +48,6 @@ class StudentUser(HttpUser):
         if response.status_code == 200:
             data = response.json()
             assignments = data.get("assignments", [])
-            self.assignment_ids = [a["assignmentId"] for a in assignments if "assignmentId" in a]
             self.content_ids = [a["contentId"] for a in assignments if "contentId" in a]
             self.parent_ids = list({a["parentId"] for a in assignments if "parentId" in a})
 
@@ -63,12 +61,11 @@ class StudentUser(HttpUser):
 
     @task(2)
     def open_assignment(self):
-        if not self.assignment_ids or not self.content_ids:
+        if not self.content_ids:
             return
-        assignment_id = random.choice(self.assignment_ids)
         content_id = random.choice(self.content_ids)
         self.client.get(
-            f"/api/assign/getAssignmentData/{assignment_id}",
+            f"/api/assign/getAssignmentData/{content_id}",
             name="/api/assign/getAssignmentData/[assignmentId]",
         )
         self.client.get(

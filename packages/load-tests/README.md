@@ -51,7 +51,7 @@ Each file registers a `@events.test_start` hook that runs **once before any virt
 
 | Seed function               | What it creates                                         | Used by                            |
 | --------------------------- | ------------------------------------------------------- | ---------------------------------- |
-| `seed_public_content`       | Public activities browsable via explore                 | `guest.py`, `student_anonymous.py` |
+| `seed_public_content`       | Public activities browsable via explore                 | `guest.py`                         |
 | `seed_anonymous_assignment` | One assignment; stores its `classCode` in `seeded_data` | `student_anonymous.py`             |
 | `seed_student_assignments`  | Assignments enrolled for `student@abc.org`              | `student.py`                       |
 | `seed_instructor_content`   | Activities in `instructor@abc.org`'s library            | `instructor.py`                    |

@@ -6,7 +6,7 @@ from seed import seed_public_content
 
 @events.test_start.add_listener
 def on_test_start(environment, **kwargs):
-    seed_public_content(environment.host)
+    seed_public_content(environment.host or GuestUser.host)
 
 
 class GuestUser(HttpUser):

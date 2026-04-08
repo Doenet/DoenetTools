@@ -7,7 +7,7 @@ from seed import seed_instructor_content
 
 @events.test_start.add_listener
 def on_test_start(environment, **kwargs):
-    seed_instructor_content(environment.host)
+    seed_instructor_content(environment.host or InstructorUser.host)
 
 
 class InstructorUser(HttpUser):
@@ -70,7 +70,7 @@ class InstructorUser(HttpUser):
         if response.status_code == 200:
             data = response.json()
             self.assignment_ids = [
-                a["assignmentId"] for a in data.get("assignments", []) if "assignmentId" in a
+                a["contentId"] for a in data.get("orderedAssignments", []) if "contentId" in a
             ]
             self.student_ids = [
                 s["userId"] for s in data.get("orderedStudents", []) if "userId" in s
