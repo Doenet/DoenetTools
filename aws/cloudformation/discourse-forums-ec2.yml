@@ -1,5 +1,5 @@
-AWSTemplateFormatVersion: '2010-09-09'
-Description: 'EC2 Instance in an Autoscaling group'
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "EC2 Instance in an Autoscaling group"
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -40,31 +40,30 @@ Parameters:
     Type: String
     Default: 30
   SubnetId:
-    Type : String
+    Type: String
     Description: The subnet into which the instance should be deployed. Almost always, you'll want to use a private subnet.
   AvailabilityZone:
-    Type : String
+    Type: String
     Default: us-east-1a
     Description: The AZ of the SubnetId
   VPC:
-    Type : 'AWS::SSM::Parameter::Value<String>'
+    Type: "AWS::SSM::Parameter::Value<String>"
     Default: /dev3/VPC
   AmiId:
     Type: AWS::EC2::Image::Id
     Default: ami-0689a3ce09bf1872e
     Description: "ami-0689a3ce09bf1872e -- us-east-2,noble,24.04,arm64,20260320.  Use the Cananical image locator to find official images: https://cloud-images.ubuntu.com/locator/"
   AdminSecurityGroup:
-    Type : 'AWS::SSM::Parameter::Value<String>'
+    Type: "AWS::SSM::Parameter::Value<String>"
     Default: /dev3/AdminSecurityGroup
   EcsInstanceSecurityGroup:
-    Type : 'AWS::SSM::Parameter::Value<String>'
+    Type: "AWS::SSM::Parameter::Value<String>"
     Default: /dev3/AdminSecurityGroup
   PublicLoadBalancerHttpsListener:
-    Type : 'AWS::SSM::Parameter::Value<String>'
-    Default: '/dev3/PublicLoadBalancerHttpsListener'
+    Type: "AWS::SSM::Parameter::Value<String>"
+    Default: "/dev3/PublicLoadBalancerHttpsListener"
 
 Resources:
-
   SecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Metadata:
@@ -91,7 +90,7 @@ Resources:
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
-          CidrIp: '10.0.0.0/8'
+          CidrIp: "10.0.0.0/8"
           Description: permit web traffic from internal
         - IpProtocol: tcp
           FromPort: 8080
@@ -99,18 +98,18 @@ Resources:
           SourceSecurityGroupId: !Ref EcsInstanceSecurityGroup
           Description: permit Web traffic from load balancer
       SecurityGroupEgress:
-        - CidrIp: '0.0.0.0/0'
-          IpProtocol: '-1'
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: "-1"
           Description: permit all outbound traffic
       Tags:
         - Key: Name
-          Value: !Sub '${EnvironmentName}-${ServiceName}-instance-sg'
+          Value: !Sub "${EnvironmentName}-${ServiceName}-instance-sg"
 
   SecurityGroupIngressSelfReference:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
       GroupId: !Ref SecurityGroup
-      IpProtocol: '-1'
+      IpProtocol: "-1"
       SourceSecurityGroupId: !Ref SecurityGroup
       Description: permit all traffic within the security group
 
@@ -126,7 +125,7 @@ Resources:
         - OldestLaunchTemplate
         - OldestInstance
       HealthCheckType: EC2
-      AvailabilityZones: 
+      AvailabilityZones:
         - !Ref AvailabilityZone
       MixedInstancesPolicy:
         LaunchTemplate:
@@ -134,12 +133,12 @@ Resources:
             LaunchTemplateId: !Ref LaunchTemplate
             Version: !GetAtt LaunchTemplate.LatestVersionNumber
           Overrides:
-          - InstanceType: !Ref InstanceType
-      MinSize: '1'
-      MaxSize: '1'
+            - InstanceType: !Ref InstanceType
+      MinSize: "1"
+      MaxSize: "1"
       Tags:
         - Key: Name
-          Value: !Sub '${ServiceName}-${EnvironmentName}'
+          Value: !Sub "${ServiceName}-${EnvironmentName}"
           PropagateAtLaunch: true
     UpdatePolicy:
       AutoScalingRollingUpdate:
@@ -159,52 +158,49 @@ Resources:
         config:
           files:
             /root/launch-config-ubuntu.sh:
-              content:
-                !Sub |
-                  #!/bin/bash -ex
-                  echo "hello world!" > hello.txt
-                  exit 0
-              mode: '000700'
+              content: !Sub |
+                #!/bin/bash -ex
+                echo "hello world!" > hello.txt
+                exit 0
+              mode: "000700"
               owner: root
               group: root
 
             /etc/cfn/cfn-hup.conf:
-              content:
-                !Sub |
-                  [main]
-                  stack=${AWS::StackId}
-                  region=${AWS::Region}
-                  umask=0
-                  verbose=true
-                  interval=5
-              mode: '000400'
+              content: !Sub |
+                [main]
+                stack=${AWS::StackId}
+                region=${AWS::Region}
+                umask=0
+                verbose=true
+                interval=5
+              mode: "000400"
               owner: root
               group: root
 
             /etc/cfn/hooks.d/cfn-auto-reloader.conf:
-              content:
-                !Sub |
-                  [cfn-auto-reloader-hook]
-                  triggers=post.update
-                  path=Resources.LaunchTemplate.Metadata.AWS::CloudFormation::Init
-                  action=/opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource LaunchTemplate --configsets default --region ${AWS::Region}
-                  runas=root
-              mode: '000400'
+              content: !Sub |
+                [cfn-auto-reloader-hook]
+                triggers=post.update
+                path=Resources.LaunchTemplate.Metadata.AWS::CloudFormation::Init
+                action=/opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource LaunchTemplate --configsets default --region ${AWS::Region}
+                runas=root
+              mode: "000400"
               owner: root
               group: root
             /lib/systemd/system/cfn-hup.service:
               content: |
-                 [Unit]
-                 Description=cfn-hup daemon
+                [Unit]
+                Description=cfn-hup daemon
 
-                 [Service]
-                 Type=simple
-                 ExecStart=/opt/aws/bin/cfn-hup
-                 Restart=always
+                [Service]
+                Type=simple
+                ExecStart=/opt/aws/bin/cfn-hup
+                Restart=always
 
-                 [Install]
-                 WantedBy=multi-user.target
-              mode: '000400'
+                [Install]
+                WantedBy=multi-user.target
+              mode: "000400"
               owner: root
               group: root
 
@@ -219,8 +215,8 @@ Resources:
 
     Properties:
       LaunchTemplateData:
-        ImageId: !Ref AmiId 
-        IamInstanceProfile: 
+        ImageId: !Ref AmiId
+        IamInstanceProfile:
           Name: !Ref EC2InstanceProfile
         BlockDeviceMappings:
           - DeviceName: /dev/sda1
@@ -228,44 +224,43 @@ Resources:
               DeleteOnTermination: true
               VolumeSize: !Ref VolumeSize
               VolumeType: gp2
-        UserData: 
-          Fn::Base64:
-            !Sub |
-              #!/bin/bash -xe
-              apt-get update
-              installPkgs() {
-                  apt-get install -y python3 python3-setuptools python3-virtualenv python3-pip python-is-python3 unzip
-              }
-              # unattended upgrades may be running at time of cloud init
-              # which will cause init to fail, so we try to avoid it by 
-              # disabling unattended upgrades and also sleeping for 60 seconds
-              # if a dpkg happened to still be running
-              systemctl stop unattended-upgrades.service
-              installPkgs || sleep 60 && installPkgs 
-              systemctl start unattended-upgrades.service
+        UserData:
+          Fn::Base64: !Sub |
+            #!/bin/bash -xe
+            apt-get update
+            installPkgs() {
+                apt-get install -y python3 python3-setuptools python3-virtualenv python3-pip python-is-python3 unzip
+            }
+            # unattended upgrades may be running at time of cloud init
+            # which will cause init to fail, so we try to avoid it by 
+            # disabling unattended upgrades and also sleeping for 60 seconds
+            # if a dpkg happened to still be running
+            systemctl stop unattended-upgrades.service
+            installPkgs || sleep 60 && installPkgs 
+            systemctl start unattended-upgrades.service
 
-              curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"
-              unzip awscliv2.zip
-              ./aws/install
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            ./aws/install
 
-              virtualenv /opt/aws/virtualvenv
-              source /opt/aws/virtualvenv/bin/activate
-              pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz
-              pip install "setuptools<82"
+            virtualenv /opt/aws/virtualvenv
+            source /opt/aws/virtualvenv/bin/activate
+            pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz
+            pip install "setuptools<82"
 
-              export PATH=/opt/aws/bin:$PATH
-              cfn-init -v --configsets=default \
-                  --region ${AWS::Region} --stack ${AWS::StackName} \
-                  --resource LaunchTemplate
+            export PATH=/opt/aws/bin:$PATH
+            cfn-init -v --configsets=default \
+                --region ${AWS::Region} --stack ${AWS::StackName} \
+                --resource LaunchTemplate
 
-              TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
-              INSTANCE_ID=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id)
-              aws cloudformation signal-resource \
-                  --stack-name ${AWS::StackName} \
-                  --logical-resource-id AutoScalingGroup \
-                  --unique-id $INSTANCE_ID \
-                  --status SUCCESS \
-                  --region ${AWS::Region}
+            TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+            INSTANCE_ID=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id)
+            aws cloudformation signal-resource \
+                --stack-name ${AWS::StackName} \
+                --logical-resource-id AutoScalingGroup \
+                --unique-id $INSTANCE_ID \
+                --status SUCCESS \
+                --region ${AWS::Region}
 
   EC2Role:
     Type: AWS::IAM::Role
