@@ -32,3 +32,4 @@ This repository is an npm workspace monorepo. Packages are organized into two di
 | `packages/shared`        | Utility functions and TypeScript types shared between `api` and `app`. Must be built before either app. |
 | `packages/e2e-tests`     | Cypress end-to-end tests. Requires both dev servers running.                                            |
 | `packages/eslint-config` | Internal shared ESLint configuration used to lint each package                                          |
+| `packages/load-tests`    | Locust load tests for analyzing maximum traffic capacity and bottlenecks.                               |

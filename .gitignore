@@ -1,20 +1,13 @@
-.snowpack
-build
-dist_local
+# Compiled output and cache
 dist
 node_modules
 .tsbuildinfo
+__pycache__
 
-
-# production
-# /dist
-
+# Environment variables
 **/.env
 
-.vite
-
 # misc
-.DS_Store
 .env.local
 .env.development.local
 .env.test.local
@@ -28,11 +21,6 @@ yarn-debug.log*
 yarn-error.log*
 
 .vscode
-# src/Tools/test/testCode.doenet
-#ignore the distribution
-# dist/index.html
-# dist/main.js
-**/dist_local/*
 
 **/cypress/accessibility
 **/cypress/videos
@@ -42,14 +30,3 @@ yarn-error.log*
 parallel-weights.json
 
 **/src/tempcodes
-
-# Docker testing environment
-docker\ deb/
-docker\ alp/
-
-#Docker mysql db
-**/docker/mysql/data/*
-
-.eslintrc.js
-
-**/src/API/vendor
