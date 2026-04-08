@@ -49,12 +49,12 @@ locust -f guest.py --headless -u 50 -r 5 --run-time 2m
 
 Each file registers a `@events.test_start` hook that runs **once before any virtual users spawn**. The hooks call functions in `seed.py` to ensure the required data exists:
 
-| Seed function               | What it creates                                         | Used by                            |
-| --------------------------- | ------------------------------------------------------- | ---------------------------------- |
-| `seed_public_content`       | Public activities browsable via explore                 | `guest.py`                         |
-| `seed_anonymous_assignment` | One assignment; stores its `classCode` in `seeded_data` | `student_anonymous.py`             |
-| `seed_student_assignments`  | Assignments enrolled for `student@abc.org`              | `student.py`                       |
-| `seed_instructor_content`   | Activities in `instructor@abc.org`'s library            | `instructor.py`                    |
+| Seed function               | What it creates                                         | Used by                |
+| --------------------------- | ------------------------------------------------------- | ---------------------- |
+| `seed_public_content`       | Public activities browsable via explore                 | `guest.py`             |
+| `seed_anonymous_assignment` | One assignment; stores its `classCode` in `seeded_data` | `student_anonymous.py` |
+| `seed_student_assignments`  | Assignments enrolled for `student@abc.org`              | `student.py`           |
+| `seed_instructor_content`   | Activities in `instructor@abc.org`'s library            | `instructor.py`        |
 
 Seed functions are **idempotent** — they check for existing data first and skip creation if enough already exists. Running multiple files together is safe; each seed runs at most once per process.
 
