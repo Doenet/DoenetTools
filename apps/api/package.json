@@ -15,6 +15,7 @@
     "lint:check": "eslint",
     "prisma:generate": "prisma generate",
     "prisma:migrate-dev": "prisma migrate dev",
+    "prisma:deploy": "prisma migrate deploy",
     "prisma:seed": "prisma db seed",
     "start": "node dist/src/index.js",
     "test": "vitest"
@@ -44,6 +45,7 @@
     "passport-local": "^1.0.0",
     "passport-magic-link": "^2.1.1",
     "passport-strategy": "^1.0.0",
+    "prisma": "6.4.1",
     "short-uuid": "^5.2.0",
     "zod": "^4.0.14"
   },
@@ -57,7 +59,6 @@
     "@types/passport-google-oauth20": "^2.0.16",
     "@types/passport-local": "^1.0.38",
     "@types/passport-strategy": "^0.2.38",
-    "prisma": "6.4.1",
     "vitest": "^3.2.4"
   },
   "optionalDependencies": {
