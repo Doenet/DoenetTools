@@ -28,33 +28,33 @@ The test login endpoint (`POST /api/login/createOrLoginAsTest`) must be enabled 
 **Single persona:**
 
 ```bash
-locust -f load-testing/guest.py
+locust -f guest.py
 ```
 
 **All personas together** (recommended for realistic mixed traffic):
 
 ```bash
-locust --config locust.conf
+locust
 ```
 
-A `locust.conf` at the repo root sets all five files and the default host, so no arguments are needed. You can still override on the command line — e.g. `locust --config locust.conf --host https://staging.doenet.org`.
+A `locust.conf` in this package sets all five files and the default host, so no arguments are needed. You can still override on the command line — e.g. `locust --config locust.conf --host https://staging.doenet.org`.
 
 To run headless (no UI):
 
 ```bash
-locust -f load-testing/guest.py --headless -u 50 -r 5 --run-time 2m
+locust -f guest.py --headless -u 50 -r 5 --run-time 2m
 ```
 
 ## Test Data Seeding
 
 Each file registers a `@events.test_start` hook that runs **once before any virtual users spawn**. The hooks call functions in `seed.py` to ensure the required data exists:
 
-| Seed function               | What it creates                                         | Used by                            |
-| --------------------------- | ------------------------------------------------------- | ---------------------------------- |
-| `seed_public_content`       | Public activities browsable via explore                 | `guest.py`, `student_anonymous.py` |
-| `seed_anonymous_assignment` | One assignment; stores its `classCode` in `seeded_data` | `student_anonymous.py`             |
-| `seed_student_assignments`  | Assignments enrolled for `student@abc.org`              | `student.py`                       |
-| `seed_instructor_content`   | Activities in `instructor@abc.org`'s library            | `instructors.py`                   |
+| Seed function               | What it creates                                         | Used by                |
+| --------------------------- | ------------------------------------------------------- | ---------------------- |
+| `seed_public_content`       | Public activities browsable via explore                 | `guest.py`             |
+| `seed_anonymous_assignment` | One assignment; stores its `classCode` in `seeded_data` | `student_anonymous.py` |
+| `seed_student_assignments`  | Assignments enrolled for `student@abc.org`              | `student.py`           |
+| `seed_instructor_content`   | Activities in `instructor@abc.org`'s library            | `instructor.py`        |
 
 Seed functions are **idempotent** — they check for existing data first and skip creation if enough already exists. Running multiple files together is safe; each seed runs at most once per process.
 

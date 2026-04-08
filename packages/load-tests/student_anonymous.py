@@ -6,7 +6,7 @@ from seed import seed_anonymous_assignment, seeded_data
 
 @events.test_start.add_listener
 def on_test_start(environment, **kwargs):
-    seed_anonymous_assignment(environment.host)
+    seed_anonymous_assignment(environment.host or AnonymousStudentUser.host)
 
 
 class AnonymousStudentUser(HttpUser):
@@ -19,9 +19,9 @@ class AnonymousStudentUser(HttpUser):
     host = "https://dev3.doenet.org"
     wait_time = between(1, 3)
 
-    assignment_content_id = None
-
     def on_start(self):
+        self.assignment_content_id = None
+
         # Create an anonymous session
         self.client.post(
             "/api/login/anonymous",

@@ -4,17 +4,21 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: doenet
-      MYSQL_USER: myuser
-      MYSQL_PASSWORD: mypassword
+      MYSQL_DATABASE: ${DATABASE_NAME:-doenet}
+      MYSQL_USER: ${DATABASE_USER:-myuser}
+      MYSQL_PASSWORD: ${DATABASE_PASSWORD:-mypassword}
     ports:
-      - "${MYSQL_PORT:-3306}:3306"
+      - "${DATABASE_PORT:-3306}:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./configs/mysql:/docker-entrypoint-initdb.d
 
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test:
+        [
+          "CMD-SHELL",
+          'mysqladmin ping -h localhost -uroot -p"$$MYSQL_ROOT_PASSWORD"',
+        ]
       interval: 5s
       timeout: 5s
       retries: 10

@@ -19,43 +19,54 @@ We would love to hear from you! Join our [Discord](https://discord.gg/PUduwtKJ5h
 
 ### Steps
 
-**1. Install dependencies**
+**1. Clone the repository**
+
+```bash
+git clone https://github.com/Doenet/DoenetTools.git
+cd DoenetTools
+```
+
+**2. Install dependencies**
 
 ```bash
 npm install
 ```
 
-**2. Create the `.env` files**
+**3. Create the `.env` file**
 
 ```bash
 npm run setup
 ```
 
-This copies `apps/api/.env.sample` → `apps/api/.env` and `.env.sample` → `.env`. Edit them if you need to override any defaults (the defaults work for local development).
+This copies `apps/api/.env.example` to `apps/api/.env`. The defaults work for local development, but edit as needed (e.g. change `DATABASE_PORT` if port `3306` conflicts with another service).
 
-**3. Start the database**
-
-```bash
-docker compose up -d
-```
-
-Wait until the container is healthy before continuing:
+**4. Start the database**
 
 ```bash
-docker container ls
+docker compose --env-file apps/api/.env up -d
 ```
 
-The `STATUS` column should show `(healthy)` for the MySQL container (named `<directory>-mysql-1` based on the folder).
+Wait until the MySQL container shows `(healthy)` in `docker container ls` before continuing.
 
-**4. Run database migrations**
+**5. Setup the database tables**
 
 ```bash
 npm run db:setup
 ```
 
-**5. Start the dev servers**
+This creates the required database tables and seeds them with minimal data.
 
-Each server runs in its own terminal:
+**6. Build the shared package**
+
+The `shared` package must be built before starting the dev servers:
+
+```bash
+npm run build --workspace @doenet-tools/shared
+```
+
+**7. Start the dev servers**
+
+Run each in its own terminal:
 
 ```bash
 npm run dev --workspace @doenet-tools/api   # Express API → http://localhost:3000
@@ -63,7 +74,7 @@ npm run dev --workspace @doenet-tools/app   # React SPA  → http://localhost:80
 npm run dev --workspace @doenet-tools/web   # Astro site  → http://localhost:4321
 ```
 
-The `app` dev server proxies `/api/*` requests to the API, so both servers must be running for the full app to work.
+The `app` dev server proxies `/api/*` to the API, so both must be running for the full app to work.
 
 ---
 
@@ -89,3 +100,4 @@ This repository is an npm workspace monorepo. Packages are organized into two di
 | `packages/shared`        | Utility functions and TypeScript types shared between `api` and `app`. Must be built before either app. |
 | `packages/e2e-tests`     | Cypress end-to-end tests. Requires both dev servers running.                                            |
 | `packages/eslint-config` | Internal shared ESLint configuration used to lint each package                                          |
+| `packages/load-tests`    | Locust load tests for analyzing maximum traffic capacity and bottlenecks.                               |

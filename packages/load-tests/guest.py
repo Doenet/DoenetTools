@@ -6,7 +6,7 @@ from seed import seed_public_content
 
 @events.test_start.add_listener
 def on_test_start(environment, **kwargs):
-    seed_public_content(environment.host)
+    seed_public_content(environment.host or GuestUser.host)
 
 
 class GuestUser(HttpUser):
@@ -18,7 +18,8 @@ class GuestUser(HttpUser):
     host = "https://dev3.doenet.org"
     wait_time = between(1, 3)
 
-    content_ids = []
+    def on_start(self):
+        self.content_ids = []
 
     # ------------------------------------------------------------------
     # Visit homepage
