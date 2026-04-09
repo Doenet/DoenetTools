@@ -49,7 +49,7 @@
   },
   {
     "ParameterKey": "ImageUrl",
-    "ParameterValue": "350646758180.dkr.ecr.us-east-2.amazonaws.com/prod/doenet:latest"
+    "ParameterValue": "350646758180.dkr.ecr.us-east-2.amazonaws.com/prod/doenet:main"
   },
   {
     "ParameterKey": "TaskDefIncludesFile",
