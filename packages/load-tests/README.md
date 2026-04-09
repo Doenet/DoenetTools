@@ -21,7 +21,7 @@ Install Locust:
 pip install locust
 ```
 
-The test login endpoint (`POST /api/login/createOrLoginAsTest`) must be enabled on the target server. This requires the `ALLOW_TEST_LOGIN` environment variable to be set.
+The test login endpoint (`POST /api/login/createOrLoginAsTest`) must be enabled on the target server. This requires the `ENABLE_TEST_AUTH_BYPASS` environment variable to be set.
 
 ## Running
 

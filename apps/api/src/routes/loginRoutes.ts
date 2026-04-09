@@ -12,8 +12,8 @@ const passport = passportLib as any;
 export const loginRouter = express.Router();
 
 if (
-  process.env.ALLOW_TEST_LOGIN &&
-  process.env.ALLOW_TEST_LOGIN.toLocaleLowerCase() !== "false"
+  process.env.ENABLE_TEST_AUTH_BYPASS &&
+  process.env.ENABLE_TEST_AUTH_BYPASS.toLocaleLowerCase() !== "false"
 ) {
   loginRouter.post(
     "/createOrLoginAsTest",
