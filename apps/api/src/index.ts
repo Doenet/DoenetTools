@@ -53,8 +53,6 @@ import { metricsRouter } from "./routes/metricsRoutes";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const passport = passportLib as any;
 
-const client = new SESClient({ region: "us-east-2" });
-
 dotenv.config();
 
 declare module "express-serve-static-core" {
@@ -76,8 +74,23 @@ app.use(function (req, res, next) {
   next();
 });
 
-const awsSesArn = process.env.EMAIL_SES_ARN || "";
-const sendingEmailAddress = process.env.EMAIL_SES_FROM_ADDRESS || "";
+function getEnvVar(name: string, required = false): string | undefined {
+  const value = process.env[name]?.trim();
+  if (value) {
+    return value;
+  }
+  if (required) {
+    throw new Error(`Missing required environment variable: ${name}`);
+  }
+  return undefined;
+}
+
+const awsSesArn = getEnvVar("EMAIL_SES_ARN");
+const awsSesRegion = getEnvVar("EMAIL_SES_REGION") ?? "us-east-2";
+const sendingEmailAddress = getEnvVar("EMAIL_SES_FROM_ADDRESS", true) as string;
+const appUrl = getEnvVar("APP_URL", true) as string;
+
+const client = new SESClient({ region: awsSesRegion });
 
 const googleClientId = process.env.GOOGLE_CLIENT_ID || "";
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET || "";
@@ -87,7 +100,7 @@ passport.use(
     {
       clientID: googleClientId,
       clientSecret: googleClientSecret,
-      callbackURL: `${process.env.APP_URL}/api/login/google`,
+      callbackURL: `${appUrl}/api/login/google`,
       scope: ["profile", "email"],
       passReqToCallback: true,
     },
@@ -112,7 +125,7 @@ passport.use(
       tokenField: "token",
     },
     async (user, token) => {
-      const confirmURL = `${process.env.APP_URL}/confirmSignIn?token=${token}`;
+      const confirmURL = `${appUrl}/confirmSignIn?token=${token}`;
 
       if (
         process.env.CONSOLE_LOG_EMAIL &&
@@ -137,7 +150,7 @@ passport.use(
 
       const params = {
         Source: sendingEmailAddress,
-        SourceArn: awsSesArn,
+        ...(awsSesArn ? { SourceArn: awsSesArn } : {}),
         Destination: {
           ToAddresses: [user.email],
         },
