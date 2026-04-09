@@ -1,24 +1,34 @@
 Environment:
   - Name: PORT
     Value: 3000
-  - Name: CONFIRM_SIGNIN_URL
-    Value: "http://prod.doenet.org/confirmSignIn"
-  - Name: LOGIN_CALLBACK_ROOT
-    Value: "http://prod.doenet.org/"
+  - Name: APP_URL
+    Value: "https://prod.doenet.org"
   - Name: DATABASE_PORT
     Value: 3306
-  - Name: SESSION_DATABASE_NAME
-    Value: "doenet_session"
-  - Name: SENDING_EMAIL_ADDRESS
+  - Name: DATABASE_NAME
+    Value: "doenet"
+  - Name: EMAIL_SES_FROM_ADDRESS
     Value: "Doenet Accounts <info@mail.doenet.org>"
-  - Name: AWS_SES_ARN
+  - Name: EMAIL_SES_REGION
+    Value: "us-east-2"
+  - Name: EMAIL_SES_ARN
     Value: "arn:aws:ses:us-east-2:350646758180:identity/mail.doenet.org"
-  - Name: ALLOW_TEST_LOGIN
+  - Name: ENABLE_TEST_AUTH_BYPASS
     Value: "false"
-  - Name: ADD_TEST_APIS
+  - Name: ENABLE_TEST_ROUTES
+    Value: "false"
+  - Name: MOCK_SIGNIN_EMAIL
     Value: "false"
   - Name: NODE_OPTIONS
     Value: "--max-old-space-size=1950"
+  # - Name: DISCOURSE_URL
+  #   Value: "https://community.doenet.org"
+  # - Name: DISCOURSE_SSO_SECRET
+  #   Value: "hi"
+  # - Name: DISCOURSE_API_KEY
+  #   Value: "hi"
+  # - Name: DISCOURSE_API_USERNAME
+  #   Value: "system"
   # These will become secrets
   - Name: SESSION_SECRET
     Value: "hi"

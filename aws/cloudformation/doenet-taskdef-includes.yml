@@ -1,14 +1,12 @@
 Environment:
   - Name: PORT
     Value: 3000
-  - Name: CONFIRM_SIGNIN_URL
-    Value: "http://localhost:8000/confirmSignIn"
-  - Name: LOGIN_CALLBACK_ROOT
-    Value: "http://localhost:8000/"
+  - Name: APP_URL
+    Value: "http://localhost:8000"
   - Name: DATABASE_PORT
     Value: 3306
-  - Name: SESSION_DATABASE_NAME
-    Value: "doenet_session"
+  - Name: DATABASE_NAME
+    Value: "doenet"
   - Name: SESSION_SECRET
     Value: "hi"
   - Name: GOOGLE_CLIENT_ID
@@ -31,13 +29,11 @@ Environment:
   - Name: DATABASE_URL
     Value:
       Fn::Sub: "mysql://root:doenet_password@mysql.${EnvironmentName}.doenet.internal:3306/doenet"
-  - Name: SENDING_EMAIL_ADDRESS
+  - Name: EMAIL_SES_FROM_ADDRESS
     Value: "Doenet Accounts <info@mail.doenet.org>"
-  - Name: AWS_SES_ARN
+  - Name: EMAIL_SES_REGION
+    Value: "us-east-2"
+  - Name: EMAIL_SES_ARN
     Value: "arn:aws:ses:us-east-2:350646758180:identity/mail.doenet.org"
-  - Name: ALLOW_TEST_LOGIN
-    Value: "true"
-  - Name: ADD_TEST_APIS
-    Value: "true"
   - Name: NODE_OPTIONS
     Value: "--max-old-space-size=1950"
