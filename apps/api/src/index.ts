@@ -90,17 +90,21 @@ function getEnvVar(name: string, required = false): string | undefined {
 const mockSigninEmail =
   process.env.MOCK_SIGNIN_EMAIL?.trim().toLowerCase() === "true";
 const awsSesArn = getEnvVar("EMAIL_SES_ARN");
-const awsSesRegion = getEnvVar("EMAIL_SES_REGION", !mockSigninEmail);
-const sendingEmailAddress = getEnvVar(
-  "EMAIL_SES_FROM_ADDRESS",
-  !mockSigninEmail,
-);
 const appUrl = getEnvVar("APP_URL", true).replace(/\/$/, "");
 
-const client =
-  mockSigninEmail || !awsSesRegion
-    ? undefined
-    : new SESClient({ region: awsSesRegion });
+let awsSesRegion: string | undefined;
+let sendingEmailAddress: string | undefined;
+let client: SESClient | undefined;
+
+if (mockSigninEmail) {
+  awsSesRegion = undefined;
+  sendingEmailAddress = undefined;
+  client = undefined;
+} else {
+  awsSesRegion = getEnvVar("EMAIL_SES_REGION", true);
+  sendingEmailAddress = getEnvVar("EMAIL_SES_FROM_ADDRESS", true);
+  client = new SESClient({ region: awsSesRegion });
+}
 
 const googleClientId = process.env.GOOGLE_CLIENT_ID || "";
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET || "";
