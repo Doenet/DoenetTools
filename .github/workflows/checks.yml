@@ -79,8 +79,8 @@ jobs:
       GITHUB_CLIENT_SECRET: ci-test-client-secret
       SESSION_SECRET: ci-test-session-secret
       MAGIC_LINK_SECRET: ci-test-magic-link-secret
-      LOGIN_CALLBACK_ROOT: http://localhost:8000/
-      CONFIRM_SIGNIN_URL: http://localhost:8000/signIn
+      APP_URL: http://localhost:8000
+      EMAIL_SES_FROM_ADDRESS: noreply@example.com
       CONSOLE_LOG_EMAIL: "true"
       # Enable test features for CI
       ALLOW_TEST_LOGIN: "true"
@@ -170,8 +170,8 @@ jobs:
       GITHUB_CLIENT_SECRET: ci-test-client-secret
       SESSION_SECRET: ci-test-session-secret
       MAGIC_LINK_SECRET: ci-test-magic-link-secret
-      LOGIN_CALLBACK_ROOT: http://localhost:8000/
-      CONFIRM_SIGNIN_URL: http://localhost:8000/signIn
+      APP_URL: http://localhost:8000
+      EMAIL_SES_FROM_ADDRESS: noreply@example.com
       CONSOLE_LOG_EMAIL: "true"
       ALLOW_TEST_LOGIN: "true"
       ADD_TEST_APIS: "true"
