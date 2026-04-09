@@ -76,6 +76,9 @@ app.use(function (req, res, next) {
   next();
 });
 
+const awsSesArn = process.env.EMAIL_SES_ARN || "";
+const sendingEmailAddress = process.env.EMAIL_SES_FROM_ADDRESS || "";
+
 const googleClientId = process.env.GOOGLE_CLIENT_ID || "";
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET || "";
 
@@ -84,7 +87,7 @@ passport.use(
     {
       clientID: googleClientId,
       clientSecret: googleClientSecret,
-      callbackURL: (process.env.LOGIN_CALLBACK_ROOT || "") + "api/login/google",
+      callbackURL: `${process.env.APP_URL}/api/login/google`,
       scope: ["profile", "email"],
       passReqToCallback: true,
     },
@@ -109,7 +112,7 @@ passport.use(
       tokenField: "token",
     },
     async (user, token) => {
-      const confirmURL = `${process.env.CONFIRM_SIGNIN_URL}?token=${token}`;
+      const confirmURL = `${process.env.APP_URL}/confirmSignIn?token=${token}`;
 
       if (
         process.env.CONSOLE_LOG_EMAIL &&
@@ -133,7 +136,8 @@ passport.use(
       email_html = email_html.replace(/CONFIRM_LINK/g, confirmURL);
 
       const params = {
-        Source: "Doenet Accounts <info@doenet.org>",
+        Source: sendingEmailAddress,
+        SourceArn: awsSesArn,
         Destination: {
           ToAddresses: [user.email],
         },
