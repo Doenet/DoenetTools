@@ -8,10 +8,9 @@ env:
   ENV_NAME: prod
 
 on:
-  # Making a change
   workflow_dispatch:
   push:
-    branches: ["*"] # Later, only `main` or a `production` branch on Doenet org
+    branches: ["main"]
     paths:
       - .github/**
       - apps/app/**

@@ -3,7 +3,7 @@ name: Prod - Deploy Doenet Backend to AWS ECR
 on:
   workflow_dispatch:
   push:
-    # branches: [main, cloud-formation-charles, cloudformation]
+    branches: [main]
 
 env:
   AWS_REGION: "us-east-2"
