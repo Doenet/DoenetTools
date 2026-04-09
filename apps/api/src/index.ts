@@ -130,8 +130,8 @@ passport.use(
       const confirmURL = `${appUrl}/confirmSignIn?token=${token}`;
 
       if (
-        process.env.CONSOLE_LOG_EMAIL &&
-        process.env.CONSOLE_LOG_EMAIL.toLocaleLowerCase() !== "false"
+        process.env.MOCK_SIGNIN_EMAIL &&
+        process.env.MOCK_SIGNIN_EMAIL.toLocaleLowerCase() !== "false"
       ) {
         console.log(`Confirm email link: ${confirmURL}`);
         return;
@@ -318,8 +318,8 @@ passport.serializeUser(async (req: any, user: any, done: any) => {
     let isAuthor = false;
 
     if (
-      process.env.ALLOW_TEST_LOGIN &&
-      process.env.ALLOW_TEST_LOGIN.toLocaleLowerCase() !== "false"
+      process.env.ENABLE_TEST_AUTH_BYPASS &&
+      process.env.ENABLE_TEST_AUTH_BYPASS.toLocaleLowerCase() !== "false"
     ) {
       if (req.body.email && !req.body.isAnonymous) {
         email = req.body.email;
@@ -408,8 +408,8 @@ app.use("/api/metrics", metricsRouter);
 app.use("/api/discourse", discourseRouter);
 
 if (
-  process.env.ADD_TEST_APIS &&
-  process.env.ADD_TEST_APIS.toLocaleLowerCase() !== "false"
+  process.env.ENABLE_TEST_ROUTES &&
+  process.env.ENABLE_TEST_ROUTES.toLocaleLowerCase() !== "false"
 ) {
   app.use("/api/test", testRouter);
 }

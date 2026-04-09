@@ -82,10 +82,10 @@ jobs:
       APP_URL: http://localhost:8000
       EMAIL_SES_REGION: us-east-1
       EMAIL_SES_FROM_ADDRESS: noreply@example.com
-      CONSOLE_LOG_EMAIL: "true"
+      MOCK_SIGNIN_EMAIL: "true"
       # Enable test features for CI
-      ALLOW_TEST_LOGIN: "true"
-      ADD_TEST_APIS: "true"
+      ENABLE_TEST_AUTH_BYPASS: "true"
+      ENABLE_TEST_ROUTES: "true"
 
     steps:
       # Checkout repo
@@ -174,9 +174,9 @@ jobs:
       APP_URL: http://localhost:8000
       EMAIL_SES_REGION: us-east-1
       EMAIL_SES_FROM_ADDRESS: noreply@example.com
-      CONSOLE_LOG_EMAIL: "true"
-      ALLOW_TEST_LOGIN: "true"
-      ADD_TEST_APIS: "true"
+      MOCK_SIGNIN_EMAIL: "true"
+      ENABLE_TEST_AUTH_BYPASS: "true"
+      ENABLE_TEST_ROUTES: "true"
 
     strategy:
       fail-fast: false
