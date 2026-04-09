@@ -38,7 +38,7 @@ npm install
 npm run setup
 ```
 
-This copies `apps/api/.env.example` to `apps/api/.env`. The defaults work for local development, but edit as needed (e.g. change `DATABASE_PORT` if port `3306` conflicts with another service).
+This copies `apps/api/.env.example` to `apps/api/.env`. The defaults work for local development, but edit as needed (e.g. change `DATABASE_HOST`, `DATABASE_PORT`, or `DATABASE_PASSWORD` if your MySQL setup differs — and update `DATABASE_URL` to match).
 
 **4. Start the database**
 

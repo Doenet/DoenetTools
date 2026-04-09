@@ -204,9 +204,9 @@ Cypress tests (both component and e2e) are tagged with `@group1`–`@group4` for
 
 The API exposes test-only features when these env vars are set:
 
-- `ALLOW_TEST_LOGIN=true` — enables login bypassing real auth (used in Cypress tests)
-- `ADD_TEST_APIS=true` — mounts `/api/test` routes from `apps/api/src/test/testRoutes.ts`
-- `CONSOLE_LOG_EMAIL=true` — logs magic-link emails to console instead of sending via SES
+- `ENABLE_TEST_AUTH_BYPASS=true` — enables login bypassing real auth (used in Cypress and load tests)
+- `ENABLE_TEST_ROUTES=true` — mounts `/api/test` routes from `apps/api/src/test/testRoutes.ts`
+- `MOCK_SIGNIN_EMAIL=true` — logs magic-link emails to console instead of sending via SES
 
 ### API Test Utilities
 

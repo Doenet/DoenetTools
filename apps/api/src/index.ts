@@ -53,8 +53,6 @@ import { metricsRouter } from "./routes/metricsRoutes";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const passport = passportLib as any;
 
-const client = new SESClient({ region: "us-east-2" });
-
 dotenv.config();
 
 declare module "express-serve-static-core" {
@@ -76,6 +74,38 @@ app.use(function (req, res, next) {
   next();
 });
 
+function getEnvVar(name: string, required: true): string;
+function getEnvVar(name: string, required?: boolean): string | undefined;
+function getEnvVar(name: string, required = false): string | undefined {
+  const value = process.env[name]?.trim();
+  if (value) {
+    return value;
+  }
+  if (required) {
+    throw new Error(`Missing required environment variable: ${name}`);
+  }
+  return undefined;
+}
+
+const mockSigninEmail =
+  process.env.MOCK_SIGNIN_EMAIL?.trim().toLowerCase() === "true";
+const awsSesArn = getEnvVar("EMAIL_SES_ARN");
+const appUrl = getEnvVar("APP_URL", true).replace(/\/$/, "");
+
+let awsSesRegion: string | undefined;
+let sendingEmailAddress: string | undefined;
+let client: SESClient | undefined;
+
+if (mockSigninEmail) {
+  awsSesRegion = undefined;
+  sendingEmailAddress = undefined;
+  client = undefined;
+} else {
+  awsSesRegion = getEnvVar("EMAIL_SES_REGION", true);
+  sendingEmailAddress = getEnvVar("EMAIL_SES_FROM_ADDRESS", true);
+  client = new SESClient({ region: awsSesRegion });
+}
+
 const googleClientId = process.env.GOOGLE_CLIENT_ID || "";
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET || "";
 
@@ -84,7 +114,7 @@ passport.use(
     {
       clientID: googleClientId,
       clientSecret: googleClientSecret,
-      callbackURL: (process.env.LOGIN_CALLBACK_ROOT || "") + "api/login/google",
+      callbackURL: `${appUrl}/api/login/google`,
       scope: ["profile", "email"],
       passReqToCallback: true,
     },
@@ -109,12 +139,9 @@ passport.use(
       tokenField: "token",
     },
     async (user, token) => {
-      const confirmURL = `${process.env.CONFIRM_SIGNIN_URL}?token=${token}`;
+      const confirmURL = `${appUrl}/confirmSignIn?token=${token}`;
 
-      if (
-        process.env.CONSOLE_LOG_EMAIL &&
-        process.env.CONSOLE_LOG_EMAIL.toLocaleLowerCase() !== "false"
-      ) {
+      if (mockSigninEmail) {
         console.log(`Confirm email link: ${confirmURL}`);
         return;
       }
@@ -133,7 +160,8 @@ passport.use(
       email_html = email_html.replace(/CONFIRM_LINK/g, confirmURL);
 
       const params = {
-        Source: "Doenet Accounts <info@doenet.org>",
+        Source: sendingEmailAddress,
+        ...(awsSesArn ? { SourceArn: awsSesArn } : {}),
         Destination: {
           ToAddresses: [user.email],
         },
@@ -154,6 +182,10 @@ passport.use(
 
       // Send the email
       const sendEmail = async () => {
+        if (!client) {
+          console.error("SES client not initialized");
+          return;
+        }
         try {
           const command = new SendEmailCommand(params);
           await client.send(command);
@@ -299,8 +331,8 @@ passport.serializeUser(async (req: any, user: any, done: any) => {
     let isAuthor = false;
 
     if (
-      process.env.ALLOW_TEST_LOGIN &&
-      process.env.ALLOW_TEST_LOGIN.toLocaleLowerCase() !== "false"
+      process.env.ENABLE_TEST_AUTH_BYPASS &&
+      process.env.ENABLE_TEST_AUTH_BYPASS.toLocaleLowerCase() !== "false"
     ) {
       if (req.body.email && !req.body.isAnonymous) {
         email = req.body.email;
@@ -389,8 +421,8 @@ app.use("/api/metrics", metricsRouter);
 app.use("/api/discourse", discourseRouter);
 
 if (
-  process.env.ADD_TEST_APIS &&
-  process.env.ADD_TEST_APIS.toLocaleLowerCase() !== "false"
+  process.env.ENABLE_TEST_ROUTES &&
+  process.env.ENABLE_TEST_ROUTES.toLocaleLowerCase() !== "false"
 ) {
   app.use("/api/test", testRouter);
 }

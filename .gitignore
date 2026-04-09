@@ -14,6 +14,8 @@ __pycache__
 .env.production.local
 .env.development
 .env.production
+# Exception: apps/app/.env.production is intentionally committed (Vite public vars)
+!apps/app/.env.production
 .cache
 
 npm-debug.log*
