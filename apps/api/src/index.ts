@@ -75,7 +75,7 @@ app.use(function (req, res, next) {
 });
 
 function getEnvVar(name: string, required: true): string;
-function getEnvVar(name: string, required?: false): string | undefined;
+function getEnvVar(name: string, required?: boolean): string | undefined;
 function getEnvVar(name: string, required = false): string | undefined {
   const value = process.env[name]?.trim();
   if (value) {
@@ -87,12 +87,20 @@ function getEnvVar(name: string, required = false): string | undefined {
   return undefined;
 }
 
+const mockSigninEmail =
+  process.env.MOCK_SIGNIN_EMAIL?.trim().toLowerCase() === "true";
 const awsSesArn = getEnvVar("EMAIL_SES_ARN");
-const awsSesRegion = getEnvVar("EMAIL_SES_REGION", true);
-const sendingEmailAddress = getEnvVar("EMAIL_SES_FROM_ADDRESS", true);
+const awsSesRegion = getEnvVar("EMAIL_SES_REGION", !mockSigninEmail);
+const sendingEmailAddress = getEnvVar(
+  "EMAIL_SES_FROM_ADDRESS",
+  !mockSigninEmail,
+);
 const appUrl = getEnvVar("APP_URL", true).replace(/\/$/, "");
 
-const client = new SESClient({ region: awsSesRegion });
+const client =
+  mockSigninEmail || !awsSesRegion
+    ? undefined
+    : new SESClient({ region: awsSesRegion });
 
 const googleClientId = process.env.GOOGLE_CLIENT_ID || "";
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET || "";
@@ -129,11 +137,8 @@ passport.use(
     async (user, token) => {
       const confirmURL = `${appUrl}/confirmSignIn?token=${token}`;
 
-      if (
-        process.env.MOCK_SIGNIN_EMAIL &&
-        process.env.MOCK_SIGNIN_EMAIL.toLocaleLowerCase() !== "false"
-      ) {
-        console.log(`Confirm email link: ${confirmURL}`);
+      if (mockSigninEmail) {
+                console.log(`Confirm email link: ${confirmURL}`);
         return;
       }
 
@@ -173,6 +178,10 @@ passport.use(
 
       // Send the email
       const sendEmail = async () => {
+        if (!client) {
+          console.error("SES client not initialized");
+          return;
+        }
         try {
           const command = new SendEmailCommand(params);
           await client.send(command);
