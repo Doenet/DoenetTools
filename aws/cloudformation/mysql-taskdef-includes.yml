@@ -1,0 +1,17 @@
+MountPoints:
+  - SourceVolume: efs-share
+    ContainerPath: /var/lib/mysql
+Environment:
+  - Name: DATABASE_PORT
+    Value: 3306
+  - Name: SESSION_DATABASE_NAME
+    Value: "doenet_session"
+  - Name: DATABASE_USER
+    Value: "root"
+  - Name: DATABASE_PASSWORD
+    Value: "doenet_password"
+  - Name: MYSQL_ROOT_PASSWORD
+    Value: "doenet_password"
+  - Name: DATABASE_HOST
+    Value:
+      Fn::Sub: "mysql.${EnvironmentName}.aws"
