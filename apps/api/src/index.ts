@@ -138,7 +138,7 @@ passport.use(
       const confirmURL = `${appUrl}/confirmSignIn?token=${token}`;
 
       if (mockSigninEmail) {
-                console.log(`Confirm email link: ${confirmURL}`);
+        console.log(`Confirm email link: ${confirmURL}`);
         return;
       }
 
