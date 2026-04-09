@@ -80,6 +80,7 @@ jobs:
       SESSION_SECRET: ci-test-session-secret
       MAGIC_LINK_SECRET: ci-test-magic-link-secret
       APP_URL: http://localhost:8000
+      EMAIL_SES_REGION: us-east-1
       EMAIL_SES_FROM_ADDRESS: noreply@example.com
       CONSOLE_LOG_EMAIL: "true"
       # Enable test features for CI
@@ -171,6 +172,7 @@ jobs:
       SESSION_SECRET: ci-test-session-secret
       MAGIC_LINK_SECRET: ci-test-magic-link-secret
       APP_URL: http://localhost:8000
+      EMAIL_SES_REGION: us-east-1
       EMAIL_SES_FROM_ADDRESS: noreply@example.com
       CONSOLE_LOG_EMAIL: "true"
       ALLOW_TEST_LOGIN: "true"

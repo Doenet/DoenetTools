@@ -74,6 +74,8 @@ app.use(function (req, res, next) {
   next();
 });
 
+function getEnvVar(name: string, required: true): string;
+function getEnvVar(name: string, required?: false): string | undefined;
 function getEnvVar(name: string, required = false): string | undefined {
   const value = process.env[name]?.trim();
   if (value) {
@@ -86,9 +88,9 @@ function getEnvVar(name: string, required = false): string | undefined {
 }
 
 const awsSesArn = getEnvVar("EMAIL_SES_ARN");
-const awsSesRegion = getEnvVar("EMAIL_SES_REGION") ?? "us-east-2";
-const sendingEmailAddress = getEnvVar("EMAIL_SES_FROM_ADDRESS", true) as string;
-const appUrl = getEnvVar("APP_URL", true) as string;
+const awsSesRegion = getEnvVar("EMAIL_SES_REGION", true);
+const sendingEmailAddress = getEnvVar("EMAIL_SES_FROM_ADDRESS", true);
+const appUrl = getEnvVar("APP_URL", true).replace(/\/$/, "");
 
 const client = new SESClient({ region: awsSesRegion });
 
