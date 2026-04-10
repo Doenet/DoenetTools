@@ -70,3 +70,4 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
           ecs-cluster: ${{ env.ECS_CLUSTER }}
           ecs-service: ${{ env.ECS_SERVICE }}
+          # sns-topic-arn: arn:aws:sns:us-east-2:568298704244:dev3-critical-cloudwatch-notifications

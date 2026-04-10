@@ -63,3 +63,11 @@ jobs:
             ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:main
           cache-from: type=registry,ref=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:main
           cache-to: type=inline
+      # - name: Update the Doenet ECS Service
+      #   uses: ./.github/actions/update-cluster
+      #   with:
+      #     github-actions-role: ${{ env.GHA_ROLE }}
+      #     role-session-name: doenet-backend-ecs
+      #     aws-region: ${{ env.AWS_REGION }}
+      #     ecs-cluster: ${{ env.ECS_CLUSTER }}
+      #     ecs-service: ${{ env.ECS_SERVICE }}

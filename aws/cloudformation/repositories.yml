@@ -98,6 +98,7 @@ Resources:
               - ecr:GetAuthorizationToken
               - "ecs:List*"
               - cloudfront:CreateInvalidation
+              # - sns:Publish
             Resource: "*"
 
   GitHubActionsRole:
