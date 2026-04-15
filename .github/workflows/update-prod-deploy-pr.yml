@@ -1,0 +1,116 @@
+# name: Update Prod Deployment PR
+
+# on:
+#   workflow_run:
+#     workflows: ["Prod - Deploy Doenet Backend to AWS ECR"]
+#     types: [completed]
+#     branches: [main]
+
+# env:
+#   AWS_REGION: "us-east-2"
+#   ECR_REPOSITORY: prod/doenet
+#   ECR_REGISTRY: 350646758180.dkr.ecr.us-east-2.amazonaws.com
+#   GHA_ROLE: arn:aws:iam::350646758180:role/github-actions-prod
+#   DEPLOY_BRANCH: deploy/prod
+
+# permissions:
+#   id-token: write
+#   contents: write
+#   pull-requests: write
+
+# jobs:
+#   update-deploy-pr:
+#     # Only run when the backend build succeeded
+#     if: ${{ github.event.workflow_run.conclusion == 'success' }}
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout main
+#         uses: actions/checkout@v4
+#         with:
+#           ref: main
+#           fetch-depth: 0
+
+#       - name: Configure AWS credentials
+#         uses: aws-actions/configure-aws-credentials@v5
+#         with:
+#           audience: sts.amazonaws.com
+#           role-to-assume: ${{ env.GHA_ROLE }}
+#           role-skip-session-tagging: true
+#           aws-region: ${{ env.AWS_REGION }}
+
+#       - name: Login to Amazon ECR
+#         id: login-ecr
+#         uses: aws-actions/amazon-ecr-login@v2
+
+#       - name: Get latest ECR image tag
+#         id: ecr-tag
+#         run: |
+#           LATEST_TAG=$(aws ecr describe-images \
+#             --repository-name ${{ env.ECR_REPOSITORY }} \
+#             --region ${{ env.AWS_REGION }} \
+#             --query 'sort_by(imageDetails, &imagePushedAt)[-1].imageTags' \
+#             --output json \
+#             | jq -r '.[] | select(. != "main" and . != "latest")' \
+#             | head -1)
+
+#           if [ -z "$LATEST_TAG" ]; then
+#             echo "Could not find a pinned image tag in ECR" >&2
+#             exit 1
+#           fi
+
+#           echo "tag=$LATEST_TAG" >> $GITHUB_OUTPUT
+#           echo "Found latest ECR tag: $LATEST_TAG"
+
+#       - name: Update prod-doenet.params with new image tag
+#         run: |
+#           NEW_IMAGE_URL="${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ steps.ecr-tag.outputs.tag }}"
+#           jq --arg url "$NEW_IMAGE_URL" \
+#             'map(if .ParameterKey == "ImageUrl" then .ParameterValue = $url else . end)' \
+#             aws/cloudformation/prod-doenet.params > /tmp/prod-doenet.params.tmp
+#           mv /tmp/prod-doenet.params.tmp aws/cloudformation/prod-doenet.params
+#           echo "Updated ImageUrl to: $NEW_IMAGE_URL"
+
+#       - name: Create or update deploy/prod branch
+#         env:
+#           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#         run: |
+#           TAG="${{ steps.ecr-tag.outputs.tag }}"
+
+#           git config user.name "github-actions[bot]"
+#           git config user.email "github-actions[bot]@users.noreply.github.com"
+
+#           # Reset deploy/prod to current main HEAD, then apply the image tag change
+#           git checkout -B ${{ env.DEPLOY_BRANCH }}
+
+#           git add aws/cloudformation/prod-doenet.params
+
+#           # Only commit if there's an actual change (tag may be the same as last run)
+#           if git diff --staged --quiet; then
+#             echo "Image tag is unchanged, no new commit needed"
+#           else
+#             git commit -m "chore(deploy): update prod image tag to ${TAG}"
+#           fi
+
+#           git push origin ${{ env.DEPLOY_BRANCH }} --force
+
+#           # Create the PR if it doesn't already exist
+#           PR_NUMBER=$(gh pr list \
+#             --head ${{ env.DEPLOY_BRANCH }} \
+#             --base main \
+#             --state open \
+#             --json number \
+#             --jq '.[0].number')
+
+#           if [ -n "$PR_NUMBER" ]; then
+#             echo "PR #${PR_NUMBER} already exists, updating title"
+#             gh pr edit "$PR_NUMBER" \
+#               --title "chore(deploy): update prod image tag to ${TAG}"
+#           else
+#             echo "Creating new deployment PR"
+#             PR_BODY=$'## Prod Deployment PR\n\nThis PR is automatically maintained. It always contains the latest successfully built backend image tag.\n\n**Image tag:** `'"${TAG}"$'`\n\n### To deploy to production:\n1. Review and merge this PR\n2. Pull locally\n3. Run `./aws-deploy.sh -s prod`\n\n> Do not merge manually edited changes into this branch \xe2\x80\x94 it is reset automatically on each backend build.'
+#             gh pr create \
+#               --head ${{ env.DEPLOY_BRANCH }} \
+#               --base main \
+#               --title "chore(deploy): update prod image tag to ${TAG}" \
+#               --body "${PR_BODY}"
+#           fi

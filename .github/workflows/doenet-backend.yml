@@ -63,7 +63,7 @@ jobs:
           cache-from: type=registry,ref=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
           cache-to: type=inline
       - name: Update the Doenet ECS Service
-        uses: ./.github/actions/update-cluster
+        uses: ./.github/actions/update-cluster-with-rollback
         with:
           github-actions-role: ${{ env.GHA_ROLE }}
           role-session-name: doenet-backend-ecs
