@@ -97,6 +97,7 @@ Resources:
             Action:
               - ecr:GetAuthorizationToken
               - "ecs:List*"
+              - "ecs:Describe*"
               - cloudfront:CreateInvalidation
               # - sns:Publish
             Resource: "*"
