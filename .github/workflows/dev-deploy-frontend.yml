@@ -1,20 +1,20 @@
-name: Deploy Doenet Frontend to Amazon S3
+name: Development - Deploy Doenet Frontend to Amazon S3
 
 env:
   AWS_REGION: us-east-1
-  GHA_ROLE: "arn:aws:iam::350646758180:role/github-actions-prod"
-  AWS_ACCOUNT_ID: 350646758180
-  DOMAIN: prod.doenet.org
-  ENV_NAME: prod
+  GHA_ROLE: "arn:aws:iam::568298704244:role/github-actions-dev3"
+  AWS_ACCOUNT_ID: 568298704244
+  DOMAIN: dev3.doenet.org
+  ENV_NAME: dev3
 
 on:
+  # Making a change
   workflow_dispatch:
   push:
-    branches: ["main"]
+    branches: ["*"]
     paths:
-      - .github/**
+      - .github/workflows/doenet-frontend.yml
       - apps/app/**
-      - packages/shared/**
       - package.json
       - package-lock.json
 

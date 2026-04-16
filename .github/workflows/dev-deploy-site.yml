@@ -1,4 +1,4 @@
-name: Deploy Doenet Site to Amazon S3
+name: Development - Deploy Doenet Site to Amazon S3
 
 env:
   AWS_REGION: us-east-1

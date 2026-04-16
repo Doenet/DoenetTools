@@ -1,17 +1,16 @@
-name: Prod - Deploy Doenet Backend to AWS ECR
+name: Development - Deploy Doenet Backend to AWS ECR
 
 on:
-  workflow_dispatch:
   push:
-    branches: [main]
+    # branches: [main, cloud-formation-charles, cloudformation]
 
 env:
   AWS_REGION: "us-east-2"
   WORKING_DIR: ./
-  ECR_REPOSITORY: prod/doenet
-  ECS_CLUSTER: prod
+  ECR_REPOSITORY: dev3/doenet
+  ECS_CLUSTER: dev3
   ECS_SERVICE: doenet-FARGATE
-  GHA_ROLE: arn:aws:iam::350646758180:role/github-actions-prod
+  GHA_ROLE: arn:aws:iam::568298704244:role/github-actions-dev3
 
 permissions:
   id-token: write # This is required for requesting the JWT
@@ -60,14 +59,15 @@ jobs:
           push: true
           tags: |
             ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ steps.vars.outputs.tag }}
-            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:main
-          cache-from: type=registry,ref=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:main
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+          cache-from: type=registry,ref=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
           cache-to: type=inline
-      # - name: Update the Doenet ECS Service
-      #   uses: ./.github/actions/update-cluster
-      #   with:
-      #     github-actions-role: ${{ env.GHA_ROLE }}
-      #     role-session-name: doenet-backend-ecs
-      #     aws-region: ${{ env.AWS_REGION }}
-      #     ecs-cluster: ${{ env.ECS_CLUSTER }}
-      #     ecs-service: ${{ env.ECS_SERVICE }}
+      - name: Update the Doenet ECS Service
+        uses: ./.github/actions/update-cluster-with-rollback
+        with:
+          github-actions-role: ${{ env.GHA_ROLE }}
+          role-session-name: doenet-backend-ecs
+          aws-region: ${{ env.AWS_REGION }}
+          ecs-cluster: ${{ env.ECS_CLUSTER }}
+          ecs-service: ${{ env.ECS_SERVICE }}
+          # sns-topic-arn: arn:aws:sns:us-east-2:568298704244:dev3-critical-cloudwatch-notifications
