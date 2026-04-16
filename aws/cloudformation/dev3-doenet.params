@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "DomainNames",
-    "ParameterValue": "doenet.dev3.doenet.org"
+    "ParameterValue": "notapplicable"
   },
   {
     "ParameterKey": "EnvironmentName",
@@ -133,6 +133,6 @@
   },
   {
     "ParameterKey": "PathPattern",
-    "ParameterValue": "notapplicable"
+    "ParameterValue": "/api"
   }
 ]
