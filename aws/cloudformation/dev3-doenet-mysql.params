@@ -53,7 +53,7 @@
   },
   {
     "ParameterKey": "TaskDefIncludesFile",
-    "ParameterValue": "s3://doenet-cf-dev/dev3-doenet/mysql-taskdef-includes.yml"
+    "ParameterValue": "s3://doenet-cf-dev/dev3-doenet/dev3-mysql-taskdef-includes.yml"
   },
   {
     "ParameterKey": "TaskRoleIncludesFile",
