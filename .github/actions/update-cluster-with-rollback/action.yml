@@ -128,8 +128,8 @@ runs:
         if [[ "$NO_RETAG" != true ]]; then
           echo "Attempting to rollback to previous image digest: $CURRENT_DIGEST"
 
-          docker pull "${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}@${CURRENT_DIGEST}}"
-          docker tag "${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}@${CURRENT_DIGEST}}" "${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest"
+          docker pull "${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}@${{CURRENT_DIGEST}}"
+          docker tag "${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}@${{CURRENT_DIGEST}}" "${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest"
           docker push "${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest"
 
           aws ecs update-service \
