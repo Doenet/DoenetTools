@@ -57,17 +57,18 @@ runs:
 
         if ! aws ecs list-clusters | grep -q "$CLUSTER"; then
           echo "cluster \"$CLUSTER\" does not exist"
-          exit 0
+          exit 1
         fi
         echo "cluster \"$CLUSTER\" exists"
 
         if ! aws ecs list-services --cluster "$CLUSTER" | grep -q "$SERVICE"; then
           echo "service \"$SERVICE\" does not exist"
-          exit 0
+          exit 1
         fi
         echo "service \"$SERVICE\" exists"
 
         # 0) Get the SHA256 of the currently running image via the running task
+        HAS_PREVIOUS_IMAGE=false
         RUNNING_TASK_ARNS=$(aws ecs list-tasks \
           --cluster "$CLUSTER" \
           --service-name "$SERVICE" \
@@ -83,9 +84,9 @@ runs:
             --query 'tasks | sort_by(@, &startedAt) | [0].containers[0].imageDigest' --output text)
           echo "Oldest running task: $OLDEST_TASK_ARN"
           echo "Current image SHA256: $CURRENT_DIGEST"
+          HAS_PREVIOUS_IMAGE=true
         else
           echo "No running tasks found; skipping image digest introspection."
-          NO_RETAG=true
         fi
 
         # Force new deployment
@@ -99,12 +100,12 @@ runs:
         DEADLINE=$(( $(date +%s) + TIMEOUT_SECS ))
         NOTIFIED_TASKS=""
 
-        DONE=false
-        while ! $DONE; do
+        DEPLOYMENT_UNSUCCESSFUL=false
+        while ! $DEPLOYMENT_UNSUCCESSFUL; do
           NOW=$(date +%s)
           if (( NOW >= DEADLINE )); then
             echo "ERROR: Deployment did not stabilize within ${{ inputs.timeout-minutes }} minutes."
-            DONE=true
+            DEPLOYMENT_UNSUCCESSFUL=true
           fi
 
           DEPLOYMENT_STATUS=$(aws ecs describe-services \
@@ -115,17 +116,18 @@ runs:
           if [[ "$DEPLOYMENT_STATUS" == "COMPLETED" ]]; then
             echo "Deployment completed successfully."
             exit 0
+
           elif [[ "$DEPLOYMENT_STATUS" == "FAILED" ]]; then
             echo "ERROR: Deployment rollout failed."
-            DONE=true
+            DEPLOYMENT_UNSUCCESSFUL=true
           fi
 
           sleep 15
         done
 
-        # Assume deployment did not succeed, so rollback
+        # Deployment failed or timed out. We will rollback the `latest` tag to the previous image.
 
-        if [[ "$NO_RETAG" != true ]]; then
+        if [[ "$HAS_PREVIOUS_IMAGE" == true ]]; then
           echo "Attempting to rollback to previous image digest: $CURRENT_DIGEST"
 
           docker pull "${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}@$CURRENT_DIGEST"
@@ -136,7 +138,13 @@ runs:
               --cluster  ${{ inputs.ecs-cluster }} \
               --service ${{ inputs.ecs-service }} \
               --force-new-deployment
+
+        else 
+          echo "No previous image found; skipping rollback step."
         fi
+
+        # Exit
+        exit 1
 
         # # 3) Check for stopped tasks with non-zero exit / failed to start
         # STOPPED_TASKS=$(aws ecs list-tasks \
