@@ -309,7 +309,27 @@ export function Events() {
                   <strong>Location:</strong> University of Minnesota
                 </Text>
                 <Text fontSize="1.3rem" lineHeight="1.3">
-                  More information coming soon!
+                  We invite you to participate in a five-day in-person workshop
+                  to learn how to create richly interactive classroom activities
+                  using the free and open-source Doenet platform. Not only is
+                  Doenet a fun way to create cool activities, it is also a
+                  community of STEM instructors and authors who strive to engage
+                  students' minds and spur active interaction with mathematical
+                  ideas. We welcome you to work together with us to develop an
+                  open-source community, resources, and tools that enable anyone
+                  to create exploratory activities with feedback.
+                </Text>
+
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <Button
+                    as="a"
+                    href="https://cse.umn.edu/math/events/doenet-community-workshop-2026"
+                    colorScheme="blue"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Details and registration at the University of Minnesota
+                  </Button>
                 </Text>
               </VStack>
 
@@ -320,20 +340,50 @@ export function Events() {
                 borderLeft="3px solid"
                 borderColor="border"
               >
-                <Heading size="md">MathFest 2026</Heading>
+                <Heading size="md">MathFest Minicourse</Heading>
+                Part B: Friday, August 7, 10:00 am – 11:50 am
                 <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Dates:</strong> August 5–8, 2026
+                  <strong>Title:</strong> Upgrading Online Assignments: Building
+                  Scaffolded Activities for Conceptual Understanding
+                </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <strong>Part A:</strong> Thursday, August 6, 8:00 am – 9:50 am
+                </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <strong>Part B:</strong> Friday, August 7, 10:00 am – 11:50 am
                 </Text>
                 <Text fontSize="1rem" lineHeight="1.4">
                   <strong>Location:</strong> Boston, MA
                 </Text>
                 <Text fontSize="1.3rem" lineHeight="1.3">
-                  During MathFest, Doenet will be leading a minicourse:
-                  Upgrading Online Assignments: Building Scaffolded Activities
-                  for Conceptual Understanding
+                  Do your students get perfect scores on autograded homework
+                  only to demonstrate poor learning on in-class assessments?
+                  What if, rather than just seeing the correctness of their
+                  single answer, students received feedback throughout the
+                  process, helping them discover the solution and develop
+                  conceptual understanding? In this minicourse, you will learn
+                  how to create interactive online mathematics activities that
+                  guide students to discover how to solve a problem. (See more
+                  details in the{" "}
+                  <ChakraLink
+                    href="https://maa.org/events/mathfest-program/minicourses/"
+                    isExternal
+                    textDecoration="underline"
+                  >
+                    MathFest program
+                  </ChakraLink>
+                  .)
                 </Text>
                 <Text fontSize="1.3rem" lineHeight="1.3">
-                  More information, including registration details, coming soon!
+                  Register for the minicourse as part of your{" "}
+                  <ChakraLink
+                    href="https://web.cvent.com/event/ad822b5c-1850-4215-a691-11fd7c371828/summary"
+                    isExternal
+                    textDecoration="underline"
+                  >
+                    MathFest registration
+                  </ChakraLink>
+                  .
                 </Text>
               </VStack>
             </Box>
