@@ -66,15 +66,24 @@ npm run build --workspace @doenet-tools/shared
 
 **7. Start the dev servers**
 
-Run each in its own terminal:
+All three dev servers can be started together with a single command:
 
 ```bash
-npm run dev --workspace @doenet-tools/api   # Express API → http://localhost:3000
-npm run dev --workspace @doenet-tools/app   # React SPA  → http://localhost:8000
-npm run dev --workspace @doenet-tools/web   # Astro site  → http://localhost:4321
+npm run dev
 ```
 
-The `app` dev server proxies `/api/*` to the API, so both must be running for the full app to work.
+This starts:
+- Express API → http://localhost:3000
+- React SPA → http://localhost:8000 (proxies `/api/*` to the API)
+- Astro site → http://localhost:4321
+
+Alternatively, run each in a separate terminal if needed:
+
+```bash
+npm run dev --workspace @doenet-tools/api   # Express API
+npm run dev --workspace @doenet-tools/app   # React SPA
+npm run dev --workspace @doenet-tools/web   # Astro site
+```
 
 ---
 
