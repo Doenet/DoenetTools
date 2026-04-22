@@ -16,7 +16,7 @@
     }
   },
   "scripts": {
-    "dev": "tsc --build --watch --preserveWatchOutput",
+    "dev": "tsc --build --watch --preserveWatchOutput --force",
     "lint": "eslint --fix",
     "lint:check": "eslint",
     "build": "tsc --build"
