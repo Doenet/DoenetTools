@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "../../",
+    "paths": {
+      "@doenet-tools/shared": ["packages/shared/src/index.ts"]
+    }
+  }
+}

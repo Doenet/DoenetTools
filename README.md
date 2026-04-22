@@ -56,15 +56,7 @@ npm run db:setup
 
 This creates the required database tables and seeds them with minimal data.
 
-**6. Build the shared package**
-
-The `shared` package must be built before starting the dev servers:
-
-```bash
-npm run build --workspace @doenet-tools/shared
-```
-
-**7. Start the dev servers**
+**6. Start the dev servers**
 
 All three dev servers can be started together with a single command:
 
@@ -73,9 +65,14 @@ npm run dev
 ```
 
 This starts:
+
 - Express API → http://localhost:3000
 - React SPA → http://localhost:8000 (proxies `/api/*` to the API)
 - Astro site → http://localhost:4321
+
+No separate `shared` build is required for local development. The app and API
+resolve `@doenet-tools/shared` directly from `packages/shared/src` while the dev
+servers are running.
 
 Alternatively, run each in a separate terminal if needed:
 
