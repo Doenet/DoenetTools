@@ -34,7 +34,7 @@ import { FiCode } from "react-icons/fi";
 
 import { loader as settingsLoader } from "../paths/editor/EditorSettingsMode";
 import { editorUrl } from "../utils/url";
-import { isActivityFullyCategorized } from "../utils/classification";
+import { isActivityFullyCategorized } from "@doenet-tools/shared";
 
 export async function loadShareStatus({ params }: { params: any }) {
   const { data } = await axios.get(
