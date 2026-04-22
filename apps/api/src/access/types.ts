@@ -1,4 +1,4 @@
-export type Visibility = "private" | "unlisted" | "public";
+import type { Visibility } from "@prisma/client";
 
 export interface AccessPolicy {
   visibility: Visibility;

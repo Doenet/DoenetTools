@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { createTestUser, fold, setupTestContent, doc } from "../test/utils";
 import { updateVisibility } from "./visibility";
-import { createContent, getDescendantIds } from "../query/activity";
+import { createContent } from "../query/activity";
 import { createAssignment } from "../query/assign";
 import { InvalidRequestError } from "../utils/error";
 import { prisma } from "../model";
@@ -106,20 +106,26 @@ describe("updateVisibility", () => {
   test("Cannot change visibility of content within assignment", async () => {
     const user = await createTestUser();
 
-    // Create a sequence with a child document
+    // Create a sequence with a deeper descendant
     const { contentId: sequenceId } = await createContent({
       loggedInUserId: user.userId,
       contentType: "sequence",
       parentId: null,
     });
 
-    await createContent({
+    const { contentId: nestedSequenceId } = await createContent({
       loggedInUserId: user.userId,
-      contentType: "singleDoc",
+      contentType: "sequence",
       parentId: sequenceId,
     });
 
-    // Create an assignment (copies the sequence and its children)
+    await createContent({
+      loggedInUserId: user.userId,
+      contentType: "singleDoc",
+      parentId: nestedSequenceId,
+    });
+
+    // Create an assignment (copies the sequence and its descendants)
     const { assignmentId } = await createAssignment({
       contentId: sequenceId,
       loggedInUserId: user.userId,
@@ -127,15 +133,22 @@ describe("updateVisibility", () => {
       destinationParentId: null,
     });
 
-    // Get the inner child of the assignment copy
-    const innerIds = await getDescendantIds(assignmentId);
-    const innerChildId = innerIds[0];
+    const nestedAssignmentContent = await prisma.content.findFirstOrThrow({
+      where: {
+        isDeletedOn: null,
+        ownerId: user.userId,
+        parent: {
+          parentId: assignmentId,
+        },
+      },
+      select: { id: true },
+    });
 
-    // Try to change visibility of inner child - should fail
+    // Try to change visibility of a deeper assignment descendant - should fail
     try {
       await updateVisibility({
         loggedInUserId: user.userId,
-        contentId: innerChildId,
+        contentId: nestedAssignmentContent.id,
         visibility: "public",
       });
       expect.fail("Should have thrown assignment content error");
@@ -270,11 +283,17 @@ describe("updateVisibility", () => {
       parentId: folderId,
     });
 
-    // Create assignment as sibling
+    // Create assignment subtree as sibling
     const { contentId: assignmentId } = await createContent({
       loggedInUserId: user.userId,
-      contentType: "singleDoc",
+      contentType: "sequence",
       parentId: folderId,
+    });
+
+    const { contentId: assignmentChildId } = await createContent({
+      loggedInUserId: user.userId,
+      contentType: "singleDoc",
+      parentId: assignmentId,
     });
 
     // Mark as assignment
@@ -301,6 +320,11 @@ describe("updateVisibility", () => {
       where: { id: assignmentId },
     });
     expect(assignment.visibility).toBe("private");
+
+    const assignmentChild = await prisma.content.findUniqueOrThrow({
+      where: { id: assignmentChildId },
+    });
+    expect(assignmentChild.visibility).toBe("private");
   });
 
   test("Cascades when making parent less public (override children)", async () => {
@@ -428,7 +452,7 @@ describe("updateVisibility", () => {
     }
   });
 
-  test("No-op if visibility doesn't change", async () => {
+  test("Returns the requested visibility when the update is idempotent", async () => {
     const user = await createTestUser();
     const { contentId } = await createContent({
       loggedInUserId: user.userId,
