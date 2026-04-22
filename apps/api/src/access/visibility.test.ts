@@ -106,26 +106,20 @@ describe("updateVisibility", () => {
   test("Cannot change visibility of content within assignment", async () => {
     const user = await createTestUser();
 
-    // Create a sequence with a deeper descendant
+    // Assignments are shallow, so assigned content sits directly under the root.
     const { contentId: sequenceId } = await createContent({
       loggedInUserId: user.userId,
       contentType: "sequence",
       parentId: null,
     });
 
-    const { contentId: nestedSequenceId } = await createContent({
-      loggedInUserId: user.userId,
-      contentType: "sequence",
-      parentId: sequenceId,
-    });
-
     await createContent({
       loggedInUserId: user.userId,
       contentType: "singleDoc",
-      parentId: nestedSequenceId,
+      parentId: sequenceId,
     });
 
-    // Create an assignment (copies the sequence and its descendants)
+    // Create an assignment (copies the sequence and its direct children)
     const { assignmentId } = await createAssignment({
       contentId: sequenceId,
       loggedInUserId: user.userId,
@@ -133,22 +127,20 @@ describe("updateVisibility", () => {
       destinationParentId: null,
     });
 
-    const nestedAssignmentContent = await prisma.content.findFirstOrThrow({
+    const assignmentChild = await prisma.content.findFirstOrThrow({
       where: {
         isDeletedOn: null,
         ownerId: user.userId,
-        parent: {
-          parentId: assignmentId,
-        },
+        parentId: assignmentId,
       },
       select: { id: true },
     });
 
-    // Try to change visibility of a deeper assignment descendant - should fail
+    // Try to change visibility of the copied assignment child - should fail
     try {
       await updateVisibility({
         loggedInUserId: user.userId,
-        contentId: nestedAssignmentContent.id,
+        contentId: assignmentChild.id,
         visibility: "public",
       });
       expect.fail("Should have thrown assignment content error");

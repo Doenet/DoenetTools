@@ -105,7 +105,11 @@ const filterRootAssignment = {
 };
 
 /**
- * Filter Prisma's `where` clause to exclude both root and non-root assignments.
+ * Filter Prisma's `where` clause to exclude assignment roots and their direct children.
+ *
+ * Assignments are shallow in the current content model, so excluding those two cases
+ * excludes all assignment-owned content.
+ *
  * Use on table `contents`.
  */
 export const filterExcludeAssignments = {

@@ -1,8 +1,9 @@
 import { Visibility } from "@prisma/client";
 import { prisma } from "../model";
 import { InvalidRequestError } from "../utils/error";
-import { getAncestorIds, getDescendantIds } from "../query/activity";
+import { getDescendantIds } from "../query/activity";
 import type { AccessPolicy } from "./types";
+import { filterExcludeAssignments } from "../utils/permissions";
 import { StatusCodes } from "http-status-codes";
 import { isEqualUUID } from "../utils/uuid";
 
@@ -12,43 +13,6 @@ const visibilityOrder: Record<Visibility, number> = {
   unlisted: 1,
   public: 2,
 };
-
-function uuidKey(id: Uint8Array) {
-  return Buffer.from(id).toString("hex");
-}
-
-async function getUpdatableDescendantIds(contentId: Uint8Array) {
-  const descendantIds = await getDescendantIds(contentId);
-
-  if (descendantIds.length === 0) {
-    return descendantIds;
-  }
-
-  const assignmentRoots = await prisma.content.findMany({
-    where: {
-      id: { in: descendantIds },
-      isAssignmentRoot: true,
-      isDeletedOn: null,
-    },
-    select: { id: true },
-  });
-
-  if (assignmentRoots.length === 0) {
-    return descendantIds;
-  }
-
-  const assignmentDescendants = await Promise.all(
-    assignmentRoots.map(({ id }) => getDescendantIds(id)),
-  );
-  const excludedIds = new Set(
-    assignmentRoots.flatMap(({ id }, index) => [
-      uuidKey(id),
-      ...assignmentDescendants[index].map(uuidKey),
-    ]),
-  );
-
-  return descendantIds.filter((id) => !excludedIds.has(uuidKey(id)));
-}
 
 /**
  * Updates the visibility of a content item and its descendants.
@@ -76,6 +40,7 @@ export async function updateVisibility({
       visibility: true,
       parent: {
         select: {
+          isAssignmentRoot: true,
           visibility: true,
         },
       },
@@ -86,17 +51,9 @@ export async function updateVisibility({
     throw new InvalidRequestError("Content not found", StatusCodes.NOT_FOUND);
   }
 
-  const ancestorIds = await getAncestorIds(contentId);
-  const assignmentAncestor = await prisma.content.findFirst({
-    where: {
-      id: { in: ancestorIds },
-      isAssignmentRoot: true,
-      isDeletedOn: null,
-    },
-    select: { id: true },
-  });
-
-  if (content.isAssignmentRoot || assignmentAncestor) {
+  // Assignment content is shallow by design, so checking the root and immediate
+  // parent is sufficient to exclude all assignment-owned content here.
+  if (content.isAssignmentRoot || content.parent?.isAssignmentRoot) {
     throw new InvalidRequestError("Assignment visibility cannot be changed");
   }
 
@@ -113,7 +70,9 @@ export async function updateVisibility({
     }
   }
 
-  const descendantIds = await getUpdatableDescendantIds(contentId);
+  const descendantIds = await getDescendantIds(contentId, {
+    excludeAssignments: true,
+  });
 
   const publiclySharedAt = visibility === "public" ? new Date() : null;
 
@@ -122,6 +81,7 @@ export async function updateVisibility({
     where: {
       id: { in: [contentId, ...descendantIds] },
       NOT: { visibility },
+      ...filterExcludeAssignments,
     },
     data: { publiclySharedAt },
   });
@@ -129,6 +89,7 @@ export async function updateVisibility({
   const updateContent = prisma.content.updateMany({
     where: {
       id: { in: [contentId, ...descendantIds] },
+      ...filterExcludeAssignments,
     },
     data: {
       visibility,
