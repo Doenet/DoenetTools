@@ -10,7 +10,7 @@
   "scripts": {
     "build:assets": "npx tsx scripts/copy-assets-to-dist.ts",
     "build": "tsc --build && npm run build:assets",
-    "dev": "tsx watch --tsconfig tsconfig.dev.json src/index.ts",
+    "dev": "tsx watch src/index.ts",
     "lint": "eslint --fix",
     "lint:check": "eslint",
     "prisma:generate": "prisma generate",

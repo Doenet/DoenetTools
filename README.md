@@ -58,7 +58,7 @@ This creates the required database tables and seeds them with minimal data.
 
 **6. Start the dev servers**
 
-All three dev servers can be started together with a single command:
+All dev processes can be started together with a single command:
 
 ```bash
 npm run dev
@@ -66,17 +66,18 @@ npm run dev
 
 This starts:
 
+- Shared package watcher
 - Express API → http://localhost:3000
 - React SPA → http://localhost:8000 (proxies `/api/*` to the API)
 - Astro site → http://localhost:4321
 
-No separate `shared` build is required for local development. The app and API
-resolve `@doenet-tools/shared` directly from `packages/shared/src` while the dev
-servers are running.
+This command first builds `shared` once, then starts its watch process alongside
+the app, API, and web dev servers.
 
 Alternatively, run each in a separate terminal if needed:
 
 ```bash
+npm run dev --workspace @doenet-tools/shared   # Shared package watcher
 npm run dev --workspace @doenet-tools/api   # Express API
 npm run dev --workspace @doenet-tools/app   # React SPA
 npm run dev --workspace @doenet-tools/web   # Astro site
