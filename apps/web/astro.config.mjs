@@ -15,6 +15,9 @@ export default defineConfig({
   // and possibly add redirects
   // aka `beta.doenet.org/blog/...` to `doenet.org/blog/...`
   site: "https://beta.doenet.org",
+  devToolbar: {
+    enabled: false,
+  },
   integrations: [mdx(), sitemap(), react()],
   markdown: {
     remarkPlugins: [remarkMath],
