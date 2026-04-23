@@ -1,4 +1,4 @@
-import { CategoryGroup, Category } from "../types/categories.js";
+import type { Category, CategoryGroup } from "../types/categories.js";
 
 /**
  * Detect whether or not this activity has the required categories filled out.
@@ -12,14 +12,13 @@ export function isActivityFullyCategorized({
   allCategories: CategoryGroup[];
   categories: Category[];
 }) {
-  const existingCodes = categories.map((c) => c.code);
+  const existingCodes = new Set(categories.map((c) => c.code));
 
   for (const group of allCategories.filter((g) => g.isRequired)) {
-    const groupCategoryCodes = group.categories.map((c) => c.code);
-    const intersection = existingCodes.filter((code) =>
-      groupCategoryCodes.includes(code),
+    const hasMatch = group.categories.some((category) =>
+      existingCodes.has(category.code),
     );
-    if (intersection.length === 0) {
+    if (!hasMatch) {
       return false;
     }
   }
