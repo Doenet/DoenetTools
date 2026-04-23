@@ -18,7 +18,7 @@ import {
 import { DoenetmlVersion } from "../../types";
 import axios from "axios";
 import { optimistic } from "../../utils/optimistic_ui";
-import { updateSyntaxFromV06toV07 } from "@doenet/v06-to-v07";
+import { updateSyntaxFromV06toV07 } from "../../utils/v06ToV07";
 
 /**
  * Renders a DoenetML version selector.
@@ -159,6 +159,8 @@ async function performSyntaxUpgrade(
 
   const source: string = data.source;
 
+  // This upgrade helper is loaded from public/vendor on demand so the large
+  // converter bundle doesn't inflate the default app asset build.
   const update = await updateSyntaxFromV06toV07(source);
   const upgraded = update.xml;
 
