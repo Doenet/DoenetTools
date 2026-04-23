@@ -46,14 +46,13 @@ import {
   DoenetmlVersion,
   UserInfoWithEmail,
 } from "../types";
-import { isActivitySource } from "@doenet/assignment-viewer";
 import {
   compileActivityFromContent,
   contentTypeToName,
   getIconInfo,
 } from "../utils/activity";
 import { BiDownArrowAlt, BiUpArrowAlt } from "react-icons/bi";
-import { ActivitySource } from "@doenet-tools/shared";
+import { ActivitySource, isActivitySource } from "@doenet-tools/shared";
 import { EditAssignmentSettings } from "../widgets/editor/EditAssignmentSettings";
 import { DateTime } from "luxon";
 import { NameBar } from "../widgets/NameBar";

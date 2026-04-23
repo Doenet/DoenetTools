@@ -7,9 +7,10 @@
     "./src/types": "./src/types.ts"
   },
   "scripts": {
-    "build:assets": "vite build",
-    "build": "tsc --build && npm run build:assets",
-    "dev": "cross-env NODE_ENV=production vite",
+    "prepare:vendor": "node scripts/copy-vendor-assets.mjs",
+    "build:assets": "npm run prepare:vendor && vite build",
+    "build": "tsc --build tsconfig.build.json && npm run build:assets",
+    "dev": "npm run prepare:vendor && cross-env NODE_ENV=production vite",
     "lint": "eslint --fix",
     "lint:check": "eslint",
     "test": "cypress open",
