@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "../../.tsbuildinfo/apps/api.build.tsbuildinfo"
+  },
+  "references": [
+    {
+      "path": "../../packages/shared"
+    }
+  ],
+  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx"]
+}

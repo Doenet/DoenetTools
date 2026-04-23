@@ -2,10 +2,9 @@
 {
   "files": [],
   "references": [
-    { "path": "apps/web" },
-    { "path": "apps/app" },
-    { "path": "apps/api" },
     { "path": "packages/shared" },
-    { "path": "packages/e2e-tests" }
+    { "path": "apps/web" },
+    { "path": "apps/app/tsconfig.build.json" },
+    { "path": "apps/api/tsconfig.build.json" }
   ]
 }
