@@ -24,28 +24,15 @@ import {
   loader as sharedActivitiesLoader,
   SharedActivities,
 } from "./paths/SharedActivities";
-import {
-  loader as activityViewerLoader,
-  ActivityViewer,
-} from "./paths/ActivityViewer";
 import { loader as assignedLoader, Assigned } from "./paths/Assigned";
 import {
   loader as assignmentResponseOverviewLoader,
   AssignmentData as AssignmentResponseOverview,
 } from "./paths/AssignmentResponseOverview";
 import {
-  loader as assignmentResponseStudentLoader,
-  AssignmentResponseStudent,
-} from "./paths/AssignmentResponseStudent";
-import {
   action as enterClassCodeAction,
   EnterClassCode,
 } from "./paths/EnterClassCode";
-import {
-  loader as assignmentViewerLoader,
-  action as assignmentViewerAction,
-  AssignmentViewer,
-} from "./paths/AssignmentViewer";
 import { loader as studentsLoader, Students } from "./paths/Students";
 import {
   loader as studentAssignmentScoresLoader,
@@ -63,12 +50,6 @@ import {
   loader as editorHeaderLoader,
   EditorHeader,
 } from "./paths/editor/EditorHeader";
-import {
-  DoenetMLComparison,
-  loader as doenetMLComparisonLoader,
-  action as doenetMLComparisonAction,
-} from "./paths/DoenetMLComparison";
-import { mathjaxConfig } from "@doenet/doenetml-iframe";
 import { SignIn, action as signInAction } from "./paths/SignIn";
 import {
   ConfirmSignIn,
@@ -84,14 +65,6 @@ import {
   loader as libraryActivitiesLoader,
 } from "./paths/LibraryActivities";
 import {
-  DocEditorViewMode,
-  loader as docEditorViewModeLoader,
-} from "./paths/editor/DocEditorViewMode";
-import {
-  loader as docEditorEditModeLoader,
-  DocEditorEditMode,
-} from "./paths/editor/DocEditorEditMode";
-import {
   CompoundEditorViewMode,
   loader as compoundEditorViewModeLoader,
 } from "./paths/editor/CompoundEditorViewMode";
@@ -106,10 +79,6 @@ import {
 import axios, { AxiosError } from "axios";
 import { loadShareStatus } from "./popups/ShareMyContentModal";
 import {
-  DocEditorHistoryMode,
-  loader as docEditorHistoryModeLoader,
-} from "./paths/editor/DocEditorHistoryMode";
-import {
   DocEditorRemixMode,
   loader as docEditorRemixModeLoader,
 } from "./paths/editor/DocEditorRemixMode";
@@ -122,12 +91,64 @@ import {
   loader as sharedWithMeLoader,
 } from "./paths/SharedWithMe";
 import { editorUrl } from "./utils/url";
-import { ScratchPad, loader as scratchPadLoader } from "./paths/ScratchPad";
 import { About } from "./paths/About";
-import { RawViewer, loader as rawViewerLoader } from "./paths/RawViewer";
 import { GetInvolved } from "./paths/GetInvolved";
 import { Events } from "./paths/Events";
 import { QuickLinks } from "./paths/QuickLinks";
+import { mathjaxConfig } from "./utils/mathjaxConfig";
+
+async function loadActivityViewerRoute() {
+  const route = await import("./paths/ActivityViewer");
+  return { loader: route.loader, Component: route.ActivityViewer };
+}
+
+async function loadAssignmentResponseStudentRoute() {
+  const route = await import("./paths/AssignmentResponseStudent");
+  return { loader: route.loader, Component: route.AssignmentResponseStudent };
+}
+
+async function loadAssignmentViewerRoute() {
+  const route = await import("./paths/AssignmentViewer");
+  return {
+    loader: route.loader,
+    action: route.action,
+    Component: route.AssignmentViewer,
+  };
+}
+
+async function loadDoenetMLComparisonRoute() {
+  const route = await import("./paths/DoenetMLComparison");
+  return {
+    loader: route.loader,
+    action: route.action,
+    Component: route.DoenetMLComparison,
+  };
+}
+
+async function loadDocEditorEditModeRoute() {
+  const route = await import("./paths/editor/DocEditorEditMode");
+  return { loader: route.loader, Component: route.DocEditorEditMode };
+}
+
+async function loadDocEditorViewModeRoute() {
+  const route = await import("./paths/editor/DocEditorViewMode");
+  return { loader: route.loader, Component: route.DocEditorViewMode };
+}
+
+async function loadDocEditorHistoryModeRoute() {
+  const route = await import("./paths/editor/DocEditorHistoryMode");
+  return { loader: route.loader, Component: route.DocEditorHistoryMode };
+}
+
+async function loadScratchPadRoute() {
+  const route = await import("./paths/ScratchPad");
+  return { loader: route.loader, Component: route.ScratchPad };
+}
+
+async function loadRawViewerRoute() {
+  const route = await import("./paths/RawViewer");
+  return { loader: route.loader, Component: route.RawViewer };
+}
 
 const router = createBrowserRouter([
   {
@@ -243,10 +264,9 @@ const router = createBrowserRouter([
       },
       {
         path: "activityViewer/:contentId",
-        loader: activityViewerLoader,
+        lazy: loadActivityViewerRoute,
         action: genericAction,
         errorElement: <ErrorPage />,
-        element: <ActivityViewer />,
       },
       {
         path: "documentEditor/:contentId",
@@ -257,14 +277,12 @@ const router = createBrowserRouter([
         children: [
           {
             path: "edit",
-            loader: docEditorEditModeLoader,
-            element: <DocEditorEditMode />,
+            lazy: loadDocEditorEditModeRoute,
             errorElement: <ErrorPage />,
           },
           {
             path: "view",
-            loader: docEditorViewModeLoader,
-            element: <DocEditorViewMode />,
+            lazy: loadDocEditorViewModeRoute,
             errorElement: <ErrorPage />,
           },
           {
@@ -276,9 +294,8 @@ const router = createBrowserRouter([
           },
           {
             path: "history",
-            loader: docEditorHistoryModeLoader,
+            lazy: loadDocEditorHistoryModeRoute,
             action: genericAction,
-            element: <DocEditorHistoryMode />,
             errorElement: <ErrorPage />,
           },
           {
@@ -335,9 +352,7 @@ const router = createBrowserRouter([
       },
       {
         path: "activityCompare/:contentId/:compareId",
-        loader: doenetMLComparisonLoader,
-        action: doenetMLComparisonAction,
-        element: <DoenetMLComparison />,
+        lazy: loadDoenetMLComparisonRoute,
         errorElement: <ErrorPage />,
       },
       {
@@ -355,8 +370,7 @@ const router = createBrowserRouter([
       },
       {
         path: "assignedData/:contentId",
-        loader: assignmentResponseStudentLoader,
-        element: <AssignmentResponseStudent />,
+        lazy: loadAssignmentResponseStudentRoute,
         errorElement: <ErrorPage />,
       },
       {
@@ -368,8 +382,7 @@ const router = createBrowserRouter([
       },
       {
         path: "assignmentData/:contentId/:studentUserId",
-        loader: assignmentResponseStudentLoader,
-        element: <AssignmentResponseStudent />,
+        lazy: loadAssignmentResponseStudentRoute,
         errorElement: <ErrorPage />,
       },
       {
@@ -386,9 +399,7 @@ const router = createBrowserRouter([
       },
       {
         path: "code/:classCode",
-        loader: assignmentViewerLoader,
-        action: assignmentViewerAction,
-        element: <AssignmentViewer />,
+        lazy: loadAssignmentViewerRoute,
         errorElement: <ErrorPage />,
       },
       {
@@ -417,17 +428,15 @@ const router = createBrowserRouter([
       },
       {
         path: "scratchPad",
-        loader: scratchPadLoader,
+        lazy: loadScratchPadRoute,
         action: genericAction,
         errorElement: <ErrorPage />,
-        element: <ScratchPad />,
       },
     ],
   },
   {
     path: "/embed/:viewId",
-    element: <RawViewer />,
-    loader: rawViewerLoader,
+    lazy: loadRawViewerRoute,
     errorElement: (
       <ChakraProvider theme={theme}>
         <ErrorPage />
