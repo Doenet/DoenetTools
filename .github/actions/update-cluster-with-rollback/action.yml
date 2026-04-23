@@ -57,15 +57,24 @@ runs:
 
         if ! aws ecs list-clusters | grep -q "$CLUSTER"; then
           echo "cluster \"$CLUSTER\" does not exist"
-          exit 1
+          exit 0
         fi
         echo "cluster \"$CLUSTER\" exists"
 
         if ! aws ecs list-services --cluster "$CLUSTER" | grep -q "$SERVICE"; then
           echo "service \"$SERVICE\" does not exist"
-          exit 1
+          exit 0
         fi
         echo "service \"$SERVICE\" exists"
+
+        # dev3-doenet-lights
+
+        LIGHTS=$(aws ssm get-parameter --name /${CLUSTER}/${SERVICE}/lights | jq -r '.Parameter.Value')
+        if [[ "$LIGHTS" == "off" ]]; then
+          echo "lights for service \"$SERVICE\" are off"
+          exit 0
+        fi
+        echo "lights for service \"$SERVICE\" are on"
 
         # 0) Get the SHA256 of the currently running image via the running task
         HAS_PREVIOUS_IMAGE=false
@@ -145,32 +154,3 @@ runs:
 
         # Exit
         exit 1
-
-        # # 3) Check for stopped tasks with non-zero exit / failed to start
-        # STOPPED_TASKS=$(aws ecs list-tasks \
-        #   --cluster "$CLUSTER" \
-        #   --service-name "$SERVICE" \
-        #   --desired-status STOPPED \
-        #   --query 'taskArns' --output text)
-
-        # if [[ -n "$STOPPED_TASKS" ]]; then
-        #   for TASK_ARN in $STOPPED_TASKS; do
-        #     if echo "$NOTIFIED_TASKS" | grep -q "$TASK_ARN"; then
-        #       continue
-        #     fi
-        #     STOP_CODE=$(aws ecs describe-tasks \
-        #       --cluster "$CLUSTER" --tasks "$TASK_ARN" \
-        #       --query 'tasks[0].stopCode' --output text)
-        #     if [[ "$STOP_CODE" == "TaskFailedToStart" || "$STOP_CODE" == "EssentialContainerExited" ]]; then
-        #       REASON=$(aws ecs describe-tasks \
-        #         --cluster "$CLUSTER" --tasks "$TASK_ARN" \
-        #         --query 'tasks[0].stoppedReason' --output text)
-        #       MSG="Task failed to start in $CLUSTER/$SERVICE. Task: $TASK_ARN. Reason: $REASON"
-        #       echo "$MSG"
-        #       aws sns publish \
-        #         --topic-arn "$SNS_TOPIC" \
-        #         --message "$MSG" > /dev/null
-        #       NOTIFIED_TASKS="$NOTIFIED_TASKS $TASK_ARN"
-        #     fi
-        #   done
-        # fi
