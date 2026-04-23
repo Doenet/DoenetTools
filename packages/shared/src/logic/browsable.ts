@@ -1,17 +1,25 @@
 import type { Category, CategoryGroup } from "../types/categories.js";
 
+type BrowsableData = {
+  allCategories: CategoryGroup[];
+  categories: Category[];
+};
+
+export function isBrowsable(data: BrowsableData) {
+  const fullyCategorized = isActivityFullyCategorized(data);
+  // TODO: check for no errors
+  // TODO: check for no accessibility violations
+  return fullyCategorized;
+}
+
 /**
  * Detect whether or not this activity has the required categories filled out.
  * For each group that is required, make sure this activity has at least 1 category in that group.
- * Returns true if all required groups have at least one category filled out, false otherwise.
  */
-export function isActivityFullyCategorized({
+function isActivityFullyCategorized({
   allCategories,
   categories,
-}: {
-  allCategories: CategoryGroup[];
-  categories: Category[];
-}) {
+}: BrowsableData) {
   const existingCodes = new Set(categories.map((c) => c.code));
 
   for (const group of allCategories.filter((g) => g.isRequired)) {

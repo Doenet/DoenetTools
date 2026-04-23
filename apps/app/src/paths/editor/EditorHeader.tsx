@@ -62,11 +62,7 @@ import { MenuDismissOverlay } from "../../components/MenuDismissOverlay";
 import { IFRAME_MENU_IDS } from "../../utils/iframeMenuIds";
 import { useControlledMenu } from "../../utils/useControlledMenu";
 import { useMenuTooltipSuppression } from "../../utils/useMenuTooltipSuppression";
-import {
-  Category,
-  CategoryGroup,
-  isActivityFullyCategorized,
-} from "@doenet-tools/shared";
+import { Category, CategoryGroup, isBrowsable } from "@doenet-tools/shared";
 
 export async function loader({
   params,
@@ -163,7 +159,7 @@ export function EditorHeader() {
   const notBrowsable =
     isPublic &&
     categoryCheckFetcher.data &&
-    !isActivityFullyCategorized({
+    !isBrowsable({
       allCategories: categoryCheckFetcher.data.allCategories as CategoryGroup[],
       categories: categoryCheckFetcher.data.categories as Category[],
     });
