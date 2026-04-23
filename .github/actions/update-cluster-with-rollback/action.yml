@@ -69,7 +69,7 @@ runs:
 
         # dev3-doenet-lights
 
-        LIGHTS=$(aws ssm get-parameter --name /${CLUSTER}/${SERVICE}/lights | jq -r '.Parameter.Value')
+        LIGHTS=$(aws ssm get-parameter --name /${CLUSTER}/${SERVICE%%-*}/lights | jq -r '.Parameter.Value')
         if [[ "$LIGHTS" == "off" ]]; then
           echo "lights for service \"$SERVICE\" are off"
           exit 0
