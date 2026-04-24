@@ -37,6 +37,11 @@ export function createBaseConfig(dirname) {
     {
       files: ["**/*.ts", "**/*.tsx"],
       extends: [...tseslint.configs.recommended],
+      languageOptions: {
+        parserOptions: {
+          tsconfigRootDir: dirname,
+        },
+      },
       plugins: {
         "unused-imports": unusedImports,
         import: importPlugin,

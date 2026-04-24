@@ -44,7 +44,6 @@ export default defineConfig({
       //"/api": "http://apache",
     },
   },
-  resolve: {},
   worker: {
     format: "iife",
   },
