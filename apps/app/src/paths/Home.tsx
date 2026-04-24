@@ -294,20 +294,21 @@ export function Home() {
         <Card>
           <CardHeader>
             <Heading size="sm">
-              Creating accessible activities in Doenet Virtual Workshop
-              <br /> April 28, 3:30–5:30pm Eastern, 12:30–2:30pm Pacific
+              Intro to Doenet Virtual Workshop
+              <br /> May 5, 5–7pm Eastern, 2pm–4pm Pacific
             </Heading>
           </CardHeader>
           <CardBody>
             <Text fontSize={"18px"} fontWeight="500">
-              In this workshop, we will discuss best practices for creating
-              accessible activities in Doenet, and how to use the accessibility
-              features of Doenet to make your activities more inclusive.
+              In this workshop, participants will be introduced to the free and
+              open-source platform Doenet. They will learn about the key
+              constructs of Doenet and learn how to create Doenet activities
+              with basic answer validation.
             </Text>
 
             <Button
               as="a"
-              href="https://scholarlattice.org/collections/eab4d5ce-064d-409a-a576-bcab507f7836"
+              href="https://scholarlattice.org/collections/b8ec4af3-8f71-4e4a-b86e-838242e47058"
               colorScheme="blue"
               target="_blank"
               rel="noopener noreferrer"
