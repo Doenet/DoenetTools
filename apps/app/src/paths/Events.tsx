@@ -77,49 +77,6 @@ export function Events() {
               >
                 <Heading size="md">
                   <ChakraLink
-                    href="https://scholarlattice.org/collections/eab4d5ce-064d-409a-a576-bcab507f7836"
-                    isExternal
-                    textDecoration="underline"
-                  >
-                    Creating accessible activities in Doenet
-                  </ChakraLink>
-                </Heading>
-                <Text fontSize="1.3rem" lineHeight="1.3">
-                  In this workshop, we will discuss best practices for creating
-                  accessible activities in Doenet, and how to use the
-                  accessibility features of Doenet to make your activities more
-                  inclusive.
-                </Text>
-                <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Date:</strong> Tuesday, April 28, 2026
-                </Text>
-                <Text fontSize="1rem" lineHeight="1.4">
-                  <strong>Time:</strong> 3:30–5:30pm Eastern, 12:30–2:30pm
-                  Pacific
-                </Text>
-                <Text fontSize="1rem" lineHeight="1.4">
-                  <Button
-                    as="a"
-                    href="https://scholarlattice.org/collections/eab4d5ce-064d-409a-a576-bcab507f7836"
-                    colorScheme="blue"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Details and registration at ScholarLattice
-                  </Button>
-                </Text>
-              </VStack>
-
-              <VStack
-                align="start"
-                spacing={3}
-                mb={6}
-                pl={4}
-                borderLeft="3px solid"
-                borderColor="border"
-              >
-                <Heading size="md">
-                  <ChakraLink
                     href="https://scholarlattice.org/collections/b8ec4af3-8f71-4e4a-b86e-838242e47058"
                     isExternal
                     textDecoration="underline"
