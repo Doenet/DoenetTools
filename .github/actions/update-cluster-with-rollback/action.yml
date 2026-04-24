@@ -16,14 +16,16 @@ inputs:
   ecs-service:
     description: The target ECS Service
     required: true
-  sns-topic-arn:
-    description: SNS topic ARN to notify when tasks fail to start
+  tag-name:
+    description: The image tag to deploy (e.g. "latest" or "main")
     required: true
   timeout-minutes:
     description: Minutes to wait for deployment to stabilize
     required: false
-    # default: "10"
     default: "5"
+  sns-topic-arn:
+    description: SNS topic ARN to notify when tasks fail to start
+    required: true
 
 runs:
   using: composite
@@ -66,8 +68,6 @@ runs:
           exit 0
         fi
         echo "service \"$SERVICE\" exists"
-
-        # dev3-doenet-lights
 
         LIGHTS=$(aws ssm get-parameter --name /${CLUSTER}/${SERVICE%%-*}/lights | jq -r '.Parameter.Value')
         if [[ "$LIGHTS" == "off" ]]; then
@@ -134,14 +134,14 @@ runs:
           sleep 15
         done
 
-        # Deployment failed or timed out. We will rollback the `latest` tag to the previous image.
+        # Deployment failed or timed out. We will rollback the specified tag to the previous image.
 
         if [[ "$HAS_PREVIOUS_IMAGE" == true ]]; then
           echo "Attempting to rollback to previous image digest: $CURRENT_DIGEST"
 
           docker pull "${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}@$CURRENT_DIGEST"
-          docker tag "${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}@$CURRENT_DIGEST" "${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest"
-          docker push "${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest"
+          docker tag "${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}@$CURRENT_DIGEST" "${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ inputs.tag-name }}"
+          docker push "${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ inputs.tag-name }}"
 
           aws ecs update-service \
               --cluster  ${{ inputs.ecs-cluster }} \
@@ -151,6 +151,8 @@ runs:
         else 
           echo "No previous image found; skipping rollback step."
         fi
+
+        aws sns publish --topic-arn "${{ inputs.sns-topic-arn }}" --message "Failed to deploy ${SERVICE} to ${CLUSTER}" --subject "Deployment Failure"
 
         # Exit
         exit 1

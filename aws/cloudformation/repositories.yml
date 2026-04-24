@@ -95,11 +95,14 @@ Resources:
               - !Sub "arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:service/${EnvironmentName}*"
           - Effect: Allow
             Action:
+              - sns:Publish
+            Resource: !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${EnvironmentName}-critical-cloudwatch-notifications"
+          - Effect: Allow
+            Action:
               - ecr:GetAuthorizationToken
               - "ecs:List*"
               - "ecs:Describe*"
               - cloudfront:CreateInvalidation
-              # - sns:Publish
             Resource: "*"
 
   GitHubActionsRole:
