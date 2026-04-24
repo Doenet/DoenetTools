@@ -30,14 +30,6 @@ Environment:
   # - Name: DISCOURSE_API_USERNAME
   #   Value: "system"
   # These will become secrets
-  - Name: SESSION_SECRET
-    Value: "hi"
-  - Name: GOOGLE_CLIENT_ID
-    Value: "hi"
-  - Name: GOOGLE_CLIENT_SECRET
-    Value: "hi"
-  - Name: MAGIC_LINK_SECRET
-    Value: "hi"
 Secrets:
   - Name: DATABASE_HOST
     ValueFrom:
@@ -51,3 +43,15 @@ Secrets:
   - Name: DATABASE_URL
     ValueFrom:
       Fn::Sub: "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${EnvironmentName}/mysql/DBUrl"
+  - Name: SESSION_SECRET
+    ValueFrom:
+      Fn::Sub: "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${EnvironmentName}/doenet/SessionSecret"
+  - Name: GOOGLE_CLIENT_ID
+    ValueFrom:
+      Fn::Sub: "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${EnvironmentName}/doenet/GoogleClientId"
+  - Name: GOOGLE_CLIENT_SECRET
+    ValueFrom:
+      Fn::Sub: "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${EnvironmentName}/doenet/GoogleClientSecret"
+  - Name: MAGIC_LINK_SECRET
+    ValueFrom:
+      Fn::Sub: "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${EnvironmentName}/doenet/MagicLinkSecret"
