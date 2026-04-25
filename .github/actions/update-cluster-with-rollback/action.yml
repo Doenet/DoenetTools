@@ -69,12 +69,16 @@ runs:
         fi
         echo "service \"$SERVICE\" exists"
 
-        LIGHTS=$(aws ssm get-parameter --name /${CLUSTER}/${SERVICE%%-*}/lights | jq -r '.Parameter.Value')
-        if [[ "$LIGHTS" == "off" ]]; then
-          echo "lights for service \"$SERVICE\" are off"
-          exit 0
+        LIGHTS_PARAMETER="/${CLUSTER}/${SERVICE%%-*}/lights"
+        if LIGHTS=$(aws ssm get-parameter --name "$LIGHTS_PARAMETER" --query 'Parameter.Value' --output text 2>/dev/null); then
+          if [[ "$LIGHTS" == "off" ]]; then
+            echo "lights for service \"$SERVICE\" are off; exiting"
+            exit 0
+          fi
+          echo "lights for service \"$SERVICE\" are on; proceeding"
+        else
+          echo "lights parameter \"$LIGHTS_PARAMETER\" not found; proceeding"
         fi
-        echo "lights for service \"$SERVICE\" are on"
 
         # 0) Get the SHA256 of the currently running image via the running task
         HAS_PREVIOUS_IMAGE=false
