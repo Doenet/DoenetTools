@@ -11,7 +11,7 @@ on:
   push:
     branches: ["*"]
     paths:
-      - .github/workflows/doenet-site.yml
+      - .github/workflows/dev-deploy-site.yml
       - apps/web/**
       - package.json
       - package-lock.json
@@ -41,7 +41,7 @@ jobs:
       - name: Build the site
         run: |
           npm ci
-          cd apps/web && npm run build
+          cd apps/web && npm run build -- --mode dev3
 
       - name: Sync to S3
         run: |

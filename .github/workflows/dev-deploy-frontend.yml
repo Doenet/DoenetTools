@@ -13,7 +13,7 @@ on:
   push:
     branches: ["*"]
     paths:
-      - .github/workflows/doenet-frontend.yml
+      - .github/workflows/dev-deploy-frontend.yml
       - apps/app/**
       - package.json
       - package-lock.json
@@ -48,7 +48,7 @@ jobs:
         run: |
           npm ci
           cd apps/app
-          npm run build
+          npm run build -- --mode dev3
 
       - name: Sync to S3
         shell: bash

@@ -48,7 +48,7 @@ jobs:
         run: |
           npm ci
           cd apps/app
-          npm run build
+          npm run build -- --mode prod
 
       - name: Sync to S3
         shell: bash
