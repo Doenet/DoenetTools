@@ -50,7 +50,7 @@ permissions:
   contents: read
 
 jobs:
-  doenet-backend:
+  backend:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
