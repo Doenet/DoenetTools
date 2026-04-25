@@ -6,17 +6,19 @@ env:
   AWS_ACCOUNT_ID: 350646758180
   DOMAIN: prod.doenet.org
   ENV_NAME: prod
+  BUILD_MODE: prod
 
 on:
   workflow_dispatch:
   push:
-    branches: ["main"]
-    paths:
-      - .github/**
-      - apps/app/**
-      - packages/shared/**
-      - package.json
-      - package-lock.json
+    # TODO: remove cloudformation
+    branches: ["main", "cloudformation"]
+    # paths:
+    #   - .github/workflows/prod-deploy-frontend.yml
+    #   - apps/app/**
+    #   - packages/shared/**
+    #   - package.json
+    #   - package-lock.json
 
 permissions:
   id-token: write
@@ -48,7 +50,7 @@ jobs:
         run: |
           npm ci
           cd apps/app
-          npm run build -- --mode prod
+          npm run build -- --mode ${{ env.BUILD_MODE }}
 
       - name: Sync to S3
         shell: bash

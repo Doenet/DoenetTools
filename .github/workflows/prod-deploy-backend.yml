@@ -3,8 +3,14 @@ name: Production - Deploy Doenet Backend to AWS ECR
 on:
   workflow_dispatch:
   push:
-    # We'll remove cloudformation in the future
-    branches: [main, cloudformation]
+    # TODO: remove cloudformation
+    branches: ["main", "cloudformation"]
+    # paths:
+    #   - .github/workflows/prod-deploy-backend.yml
+    #   - apps/api/**
+    #   - packages/shared/**
+    #   - package.json
+    #   - package-lock.json
 
 env:
   AWS_REGION: "us-east-2"
@@ -64,11 +70,14 @@ jobs:
             ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:main
           cache-from: type=registry,ref=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:main
           cache-to: type=inline
-      # - name: Update the Doenet ECS Service
-      #   uses: ./.github/actions/update-cluster
-      #   with:
-      #     github-actions-role: ${{ env.GHA_ROLE }}
-      #     role-session-name: doenet-backend-ecs
-      #     aws-region: ${{ env.AWS_REGION }}
-      #     ecs-cluster: ${{ env.ECS_CLUSTER }}
-      #     ecs-service: ${{ env.ECS_SERVICE }}
+
+      - name: Update the Doenet ECS Service
+        uses: ./.github/actions/update-cluster-with-rollback
+        with:
+          github-actions-role: ${{ env.GHA_ROLE }}
+          role-session-name: doenet-backend-ecs
+          aws-region: ${{ env.AWS_REGION }}
+          ecs-cluster: ${{ env.ECS_CLUSTER }}
+          ecs-service: ${{ env.ECS_SERVICE }}
+          sns-topic-arn: ${{ env.SNS_TOPIC }}
+          tag-name: main

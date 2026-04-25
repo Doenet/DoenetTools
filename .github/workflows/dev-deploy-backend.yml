@@ -1,8 +1,15 @@
 name: Development - Deploy Doenet Backend to AWS ECR
 
 on:
+  workflow_dispatch:
   push:
-    # branches: [main, cloud-formation-charles, cloudformation]
+    branches: ["main", "cloudformation"]
+    # paths:
+    #   - .github/workflows/dev-deploy-backend.yml
+    #   - apps/api/**
+    #   - packages/shared/**
+    #   - package.json
+    #   - package-lock.json
 
 env:
   AWS_REGION: "us-east-2"
