@@ -1,34 +1,62 @@
-name: Development - Deploy Doenet Backend to AWS ECR
+name: Reusable - Deploy Doenet Backend to AWS ECR
 
 on:
-  workflow_dispatch:
-  push:
-    branches: ["main", "cloudformation"]
-    # paths:
-    #   - .github/workflows/dev-deploy-backend.yml
-    #   - apps/api/**
-    #   - packages/shared/**
-    #   - package.json
-    #   - package-lock.json
+  workflow_call:
+    inputs:
+      deploy_ref:
+        description: Git ref or SHA to deploy
+        required: true
+        type: string
+      aws_region:
+        description: AWS region for ECR and ECS
+        required: true
+        type: string
+      ecr_repository:
+        description: ECR repository path
+        required: true
+        type: string
+      ecs_cluster:
+        description: ECS cluster name
+        required: true
+        type: string
+      ecs_service:
+        description: ECS service name
+        required: true
+        type: string
+      gha_role:
+        description: GitHub Actions role ARN
+        required: true
+        type: string
+      sns_topic:
+        description: SNS topic ARN for deployment failures
+        required: true
+        type: string
+      tag_name:
+        description: Stable image tag to deploy
+        required: true
+        type: string
 
 env:
-  AWS_REGION: "us-east-2"
+  AWS_REGION: ${{ inputs.aws_region }}
   WORKING_DIR: ./
-  ECR_REPOSITORY: dev3/doenet
-  ECS_CLUSTER: dev3
-  ECS_SERVICE: doenet-FARGATE
-  GHA_ROLE: arn:aws:iam::568298704244:role/github-actions-dev3
-  SNS_TOPIC: arn:aws:sns:us-east-2:568298704244:dev3-critical-cloudwatch-notifications
+  ECR_REPOSITORY: ${{ inputs.ecr_repository }}
+  ECS_CLUSTER: ${{ inputs.ecs_cluster }}
+  ECS_SERVICE: ${{ inputs.ecs_service }}
+  GHA_ROLE: ${{ inputs.gha_role }}
+  SNS_TOPIC: ${{ inputs.sns_topic }}
 
 permissions:
-  id-token: write # This is required for requesting the JWT
-  contents: read # This is required for actions/checkout
+  id-token: write
+  contents: read
+
 jobs:
   doenet-backend:
     runs-on: ubuntu-latest
     steps:
-      - name: Git clone the repository
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.deploy_ref }}
 
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v5
@@ -36,9 +64,8 @@ jobs:
           audience: sts.amazonaws.com
           role-to-assume: ${{ env.GHA_ROLE }}
           role-skip-session-tagging: true
-          # role-session-name: GitHub_to_AWS_via_FederatedOIDC
           aws-region: ${{ env.AWS_REGION }}
-      # Hello from AWS: WhoAmI
+
       - name: Sts GetCallerIdentity
         run: |
           aws sts get-caller-identity
@@ -63,13 +90,13 @@ jobs:
           context: ${{ env.WORKING_DIR }}
           file: ./apps/api/Dockerfile
           platforms: linux/amd64
-          # build-args: ${{ inputs.build-args }}
           push: true
           tags: |
             ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ steps.vars.outputs.tag }}
-            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
-          cache-from: type=registry,ref=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ inputs.tag_name }}
+          cache-from: type=registry,ref=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ inputs.tag_name }}
           cache-to: type=inline
+
       - name: Update the Doenet ECS Service
         uses: ./.github/actions/update-cluster-with-rollback
         with:
@@ -79,4 +106,4 @@ jobs:
           ecs-cluster: ${{ env.ECS_CLUSTER }}
           ecs-service: ${{ env.ECS_SERVICE }}
           sns-topic-arn: ${{ env.SNS_TOPIC }}
-          tag-name: latest
+          tag-name: ${{ inputs.tag_name }}

@@ -1,0 +1,66 @@
+name: Prod deploy
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: prod-deploy
+  cancel-in-progress: true
+
+jobs:
+  approve:
+    if: >-
+      ${{
+        github.event.workflow_run.conclusion == 'success' &&
+        contains(fromJson('["main","cloudformation"]'), github.event.workflow_run.head_branch)
+      }}
+    runs-on: ubuntu-latest
+    environment:
+      name: prod
+    steps:
+      - name: Queue prod deploy
+        run: echo "Preparing prod deploy for ${{ github.event.workflow_run.head_sha }}"
+
+  deploy-backend:
+    needs: approve
+    uses: ./.github/workflows/reusable-deploy-backend.yml
+    with:
+      deploy_ref: ${{ github.event.workflow_run.head_sha }}
+      aws_region: us-east-2
+      ecr_repository: prod/doenet
+      ecs_cluster: prod
+      ecs_service: doenet-FARGATE
+      gha_role: arn:aws:iam::350646758180:role/github-actions-prod
+      sns_topic: arn:aws:sns:us-east-2:350646758180:prod-critical-cloudwatch-notifications
+      tag_name: main
+    secrets: inherit
+
+  deploy-frontend:
+    needs: approve
+    uses: ./.github/workflows/reusable-deploy-frontend.yml
+    with:
+      deploy_ref: ${{ github.event.workflow_run.head_sha }}
+      aws_region: us-east-1
+      gha_role: arn:aws:iam::350646758180:role/github-actions-prod
+      aws_account_id: "350646758180"
+      env_name: prod
+      build_mode: prod
+    secrets: inherit
+
+  deploy-site:
+    needs: approve
+    uses: ./.github/workflows/reusable-deploy-site.yml
+    with:
+      deploy_ref: ${{ github.event.workflow_run.head_sha }}
+      aws_region: us-east-1
+      gha_role: arn:aws:iam::350646758180:role/github-actions-prod
+      aws_account_id: "350646758180"
+      env_name: prod
+      build_mode: prod
+    secrets: inherit
