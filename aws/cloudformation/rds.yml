@@ -49,8 +49,7 @@ Parameters:
     ConstraintDescription: must be between 5 and 1024Gb.
   MultiAZDatabase:
     Default: false
-    Description:
-      Create a multi-AZ MySQL Amazon RDS database instance, cannot be true
+    Description: Create a multi-AZ Amazon RDS database instance, cannot be true
       if the Availability Zone is selected
     Type: String
     AllowedValues:
@@ -151,9 +150,11 @@ Mappings:
     PostgreSQL:
       port: 5432
       engine: postgres
+      urlScheme: postgresql
     MySQL:
       port: 3306
       engine: mysql
+      urlScheme: mysql
 
 Resources:
   DBSubnetGroup:
@@ -197,8 +198,8 @@ Resources:
     Properties:
       GroupId: !Ref DBASecurityGroup
       IpProtocol: tcp
-      FromPort: 5432
-      ToPort: 5432
+      FromPort: !FindInMap [Engine, !Ref DBType, port]
+      ToPort: !FindInMap [Engine, !Ref DBType, port]
       SourceSecurityGroupId: !Ref DBASecurityGroup
       Description: Permit all inbound traffic from the same security group
   MainSecurityGroup:
@@ -427,7 +428,10 @@ Resources:
           - /
           - DBUrl
       Type: String
-      Value: !Sub "mysql://${DBUsername}:${DBPassword}@${DnsRecord}:3306/doenet"
+      Value: !Sub
+        - "${DatabaseUrlScheme}://${DBUsername}:${DBPassword}@${DnsRecord}:${DatabasePort}/doenet"
+        - DatabaseUrlScheme: !FindInMap [Engine, !Ref DBType, urlScheme]
+          DatabasePort: !FindInMap [Engine, !Ref DBType, port]
 
 Outputs:
   DatabaseHost:
