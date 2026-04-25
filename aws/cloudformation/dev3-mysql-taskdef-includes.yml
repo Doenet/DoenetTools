@@ -6,12 +6,16 @@ Environment:
     Value: 3306
   - Name: SESSION_DATABASE_NAME
     Value: "doenet_session"
-  - Name: DATABASE_USER
-    Value: "root"
-  - Name: DATABASE_PASSWORD
-    Value: "doenet_password"
-  - Name: MYSQL_ROOT_PASSWORD
-    Value: "doenet_password"
+Secrets:
   - Name: DATABASE_HOST
-    Value:
-      Fn::Sub: "mysql.${EnvironmentName}.aws"
+    ValueFrom:
+      Fn::Sub: "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${EnvironmentName}/mysql/DBHost"
+  - Name: DATABASE_USER
+    ValueFrom:
+      Fn::Sub: "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${EnvironmentName}/mysql/DBUsername"
+  - Name: DATABASE_PASSWORD
+    ValueFrom:
+      Fn::Sub: "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${EnvironmentName}/mysql/DBPassword"
+  - Name: MYSQL_ROOT_PASSWORD
+    ValueFrom:
+      Fn::Sub: "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${EnvironmentName}/mysql/DBPassword"

@@ -58,7 +58,7 @@ Parameters:
     Default: /dev3/AdminSecurityGroup
   EcsInstanceSecurityGroup:
     Type: "AWS::SSM::Parameter::Value<String>"
-    Default: /dev3/AdminSecurityGroup
+    Default: /dev3/EcsInstanceSecurityGroup
   PublicLoadBalancerHttpsListener:
     Type: "AWS::SSM::Parameter::Value<String>"
     Default: "/dev3/PublicLoadBalancerHttpsListener"
