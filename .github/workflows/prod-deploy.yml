@@ -4,6 +4,8 @@ on:
   workflow_run:
     workflows: ["CI"]
     types: [completed]
+  # Temporary!!
+  push: "cloudformation"
 
 permissions:
   contents: read
