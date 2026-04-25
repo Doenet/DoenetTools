@@ -184,10 +184,10 @@ updateEcs() {
   for service in "${services[@]}"; do
     service=${service##*/}
     echo "Forcing new deployment on $service"
-    $(aws ecs update-service \
+    aws ecs update-service \
       --cluster  ${FARGATE_CLUSTER} \
       --service $service \
-      --force-new-deployment > /dev/null)
+      --force-new-deployment > /dev/null
   done
 }
 

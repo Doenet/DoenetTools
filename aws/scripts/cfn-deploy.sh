@@ -106,7 +106,7 @@ usage: $0 -s stack name -t template file -p parameters file [--changeset-only] [
     -s, --stack-name            The top-level stack name to update
     -p, --parameters            A JSON file with the key-value stack parameters
     -t, --template              The S3 URL of the template file for this stack
-    -r, --aws-region            The AWS Region (defaults to us-west-2)
+    -r, --aws-region            The AWS Region (defaults to us-east-1)
     --profile                   AWS CLI credentials config profile name
     --deployment-role           ARN of a service-linked role to pass to CloudFormation
     --changeset-name            The name of the changeset
