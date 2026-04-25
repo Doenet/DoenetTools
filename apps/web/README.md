@@ -55,9 +55,23 @@ All commands are run from the root of the project, from a terminal:
 
 ## Configuration
 
-The header logo link can be configured with a public env var:
+Builds use committed mode-based env files:
 
-- `PUBLIC_DOENET_MAIN_URL`: URL for the main Doenet site (If not specified, shows plain image).
+- `.env`: default local values
+- `.env.dev3`: dev3 deployment values
+- `.env.prod`: production deployment values
+- `.env.local`: optional machine-specific overrides (gitignored)
+
+Build commands:
+
+- `npm run build`: use the default `.env` values
+- `npm run build -- --mode dev3`: use `.env.dev3`
+- `npm run build -- --mode prod`: use `.env.prod`
+
+Public env vars:
+
+- `PUBLIC_DOENET_MAIN_URL`: URL for the main Doenet site. If not specified, the header shows a plain image.
+- `PUBLIC_SITE_URL`: canonical site URL used for build-time metadata and sitemap generation.
 
 ## 👀 Want to learn more?
 
