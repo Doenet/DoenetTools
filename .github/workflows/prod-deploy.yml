@@ -5,6 +5,7 @@ on:
     workflows: ["CI"]
     types: [completed]
   # TEMPORARY TESTING ONLY: remove this push trigger after validating cloudformation.
+  # Cloudformation pushes still pause at the prod environment approval gate below.
   push:
     branches: [cloudformation]
 
@@ -19,7 +20,8 @@ concurrency:
 jobs:
   approve:
     # TEMPORARY TESTING ONLY: remove the cloudformation branch allowance and push-event
-    # fallback after validating the prod deploy workflow.
+    # fallback after validating the prod deploy workflow. Cloudformation pushes still
+    # require manual approval because this job targets the protected prod environment.
     if: >-
       ${{
         (github.event_name == 'workflow_run' &&
@@ -71,3 +73,28 @@ jobs:
       env_name: prod
       build_mode: prod
     secrets: inherit
+
+  tag-prod:
+    needs:
+      - approve
+      - deploy-backend
+      - deploy-frontend
+      - deploy-site
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+
+      - name: Update prod tag
+        shell: bash
+        run: |
+          DEPLOY_REF="${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -f prod "$DEPLOY_REF"
+          git push origin refs/tags/prod --force
