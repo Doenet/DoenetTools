@@ -6,7 +6,7 @@
     "dev": "astro dev",
     "build:ts": "astro sync",
     "build:assets": "astro build",
-    "build": "npm run build:ts && npm run build:assets",
+    "build": "node ./scripts/build.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "lint": "eslint --fix",
