@@ -4,8 +4,9 @@ on:
   workflow_run:
     workflows: ["CI"]
     types: [completed]
-  # Temporary!!
-  push: "cloudformation"
+  # TEMPORARY TESTING ONLY: remove this push trigger after validating cloudformation.
+  push:
+    branches: [cloudformation]
 
 permissions:
   contents: read
@@ -17,25 +18,27 @@ concurrency:
 
 jobs:
   approve:
-    #TODO: remove cloudformation, use:
-    # github.event.workflow_run.head_branch == 'main'
+    # TEMPORARY TESTING ONLY: remove the cloudformation branch allowance and push-event
+    # fallback after validating the prod deploy workflow.
     if: >-
       ${{
-        github.event.workflow_run.conclusion == 'success' &&
-        contains(fromJson('["main","cloudformation"]'), github.event.workflow_run.head_branch)
+        (github.event_name == 'workflow_run' &&
+          github.event.workflow_run.conclusion == 'success' &&
+          contains(fromJson('["main","cloudformation"]'), github.event.workflow_run.head_branch)) ||
+        (github.event_name == 'push' && github.ref_name == 'cloudformation')
       }}
     runs-on: ubuntu-latest
     environment:
       name: prod
     steps:
       - name: Queue prod deploy
-        run: echo "Preparing prod deploy for ${{ github.event.workflow_run.head_sha }}"
+        run: echo "Preparing prod deploy for ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}"
 
   deploy-backend:
     needs: approve
     uses: ./.github/workflows/reusable-deploy-backend.yml
     with:
-      deploy_ref: ${{ github.event.workflow_run.head_sha }}
+      deploy_ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
       aws_region: us-east-2
       ecr_repository: prod/doenet
       ecs_cluster: prod
@@ -49,7 +52,7 @@ jobs:
     needs: approve
     uses: ./.github/workflows/reusable-deploy-frontend.yml
     with:
-      deploy_ref: ${{ github.event.workflow_run.head_sha }}
+      deploy_ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
       aws_region: us-east-1
       gha_role: arn:aws:iam::350646758180:role/github-actions-prod
       aws_account_id: "350646758180"
@@ -61,7 +64,7 @@ jobs:
     needs: approve
     uses: ./.github/workflows/reusable-deploy-site.yml
     with:
-      deploy_ref: ${{ github.event.workflow_run.head_sha }}
+      deploy_ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
       aws_region: us-east-1
       gha_role: arn:aws:iam::350646758180:role/github-actions-prod
       aws_account_id: "350646758180"
