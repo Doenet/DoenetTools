@@ -2,7 +2,7 @@ Environment:
   - Name: PORT
     Value: 3000
   - Name: APP_URL
-    Value: "https://prod.doenet.org"
+    Value: "https://beta.doenet.org"
   - Name: DATABASE_PORT
     Value: 3306
   - Name: DATABASE_NAME
@@ -21,15 +21,10 @@ Environment:
     Value: "false"
   - Name: NODE_OPTIONS
     Value: "--max-old-space-size=1950"
-  # - Name: DISCOURSE_URL
-  #   Value: "https://community.doenet.org"
-  # - Name: DISCOURSE_SSO_SECRET
-  #   Value: "hi"
-  # - Name: DISCOURSE_API_KEY
-  #   Value: "hi"
-  # - Name: DISCOURSE_API_USERNAME
-  #   Value: "system"
-  # These will become secrets
+  - Name: DISCOURSE_API_USERNAME
+    Value: "system"
+  - Name: DISCOURSE_URL
+    Value: "https://community.doenet.org"
 Secrets:
   - Name: DATABASE_HOST
     ValueFrom:
@@ -55,3 +50,9 @@ Secrets:
   - Name: MAGIC_LINK_SECRET
     ValueFrom:
       Fn::Sub: "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${EnvironmentName}/doenet/MagicLinkSecret"
+  - Name: DISCOURSE_SSO_SECRET
+    ValueFrom:
+      Fn::Sub: "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${EnvironmentName}/doenet/DiscourseSsoSecret"
+  # - Name: DISCOURSE_API_KEY
+  #   ValueFrom:
+  #     Fn::Sub: "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${EnvironmentName}/doenet/DiscourseApiKey"

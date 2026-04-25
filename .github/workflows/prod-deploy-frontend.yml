@@ -4,7 +4,6 @@ env:
   AWS_REGION: us-east-1
   GHA_ROLE: "arn:aws:iam::350646758180:role/github-actions-prod"
   AWS_ACCOUNT_ID: 350646758180
-  DOMAIN: prod.doenet.org
   ENV_NAME: prod
   BUILD_MODE: prod
 

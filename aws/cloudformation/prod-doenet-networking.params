@@ -49,11 +49,11 @@
   },
   {
     "ParameterKey": "PublicHostedZoneId",
-    "ParameterValue": "Z0007436Y6K8U1100OA9"
+    "ParameterValue": "Z0126382ZHTT46RB59N8"
   },
   {
     "ParameterKey": "PublicHostedZoneName",
-    "ParameterValue": "prod.doenet.org"
+    "ParameterValue": "beta.doenet.org"
   },
   {
     "ParameterKey": "SecurityZoneId",
