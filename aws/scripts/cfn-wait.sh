@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 cloudformation_tail() {
   local stack="$1"
   local region="$2"

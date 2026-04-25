@@ -1,4 +1,6 @@
-#!/bin/bash -eu
+#!/usr/bin/env bash
+
+set -eu
 
 #title           :exec
 #description     :This script helps you exec into a running Fargate container
