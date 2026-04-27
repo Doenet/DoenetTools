@@ -73,7 +73,7 @@
   },
   {
     "ParameterKey": "HealthCheckGracePeriod",
-    "ParameterValue": "600"
+    "ParameterValue": "300"
   },
   {
     "ParameterKey": "MaxCount",
