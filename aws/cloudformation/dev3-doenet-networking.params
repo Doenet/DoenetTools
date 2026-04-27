@@ -25,7 +25,7 @@
   },
   {
     "ParameterKey": "CreateNatGateway",
-    "ParameterValue": "false"
+    "ParameterValue": "true"
   },
   {
     "ParameterKey": "EnableInspection",
