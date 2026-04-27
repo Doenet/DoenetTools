@@ -1,4 +1,4 @@
-name: Dev deploy
+name: Dev Deploy
 
 on:
   workflow_dispatch:
@@ -8,8 +8,7 @@ on:
         required: false
         type: string
   push:
-    # TODO: remove cloudformation
-    branches: ["main", "cloudformation"]
+    branches: ["main"]
 
 permissions:
   contents: read
