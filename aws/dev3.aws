@@ -23,7 +23,6 @@ STACK_ORDER=(
   dev3-doenet-mysql
   dev3-doenet
   dev3-doenet-frontend
-  dev3-discourse-forums
 )
 
 declare -g -a SAM_STACKS
