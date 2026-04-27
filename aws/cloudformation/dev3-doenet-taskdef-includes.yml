@@ -7,9 +7,6 @@ Environment:
     Value: 3306
   - Name: DATABASE_NAME
     Value: "doenet"
-  - Name: DATABASE_HOST
-    Value:
-      Fn::Sub: "mysql.${EnvironmentName}.doenet.internal"
   - Name: EMAIL_SES_FROM_ADDRESS
     Value: "Doenet Accounts <info@mail.doenet.org>"
   - Name: EMAIL_SES_REGION
@@ -27,8 +24,11 @@ Environment:
   # - Name: DISCOURSE_API_USERNAME
   #   Value: "system"
   # - Name: DISCOURSE_URL
-  #   Value: "https://community.doenet.org"
+  #   Value: "https://dev3-community.doenet.org"
 Secrets:
+  - Name: DATABASE_HOST
+    ValueFrom:
+      Fn::Sub: "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${EnvironmentName}/mysql/DBHost"
   - Name: DATABASE_USER
     ValueFrom:
       Fn::Sub: "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${EnvironmentName}/mysql/DBUsername"
@@ -50,3 +50,9 @@ Secrets:
   - Name: MAGIC_LINK_SECRET
     ValueFrom:
       Fn::Sub: "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${EnvironmentName}/doenet/MagicLinkSecret"
+  # - Name: DISCOURSE_SSO_SECRET
+  #   ValueFrom:
+  #     Fn::Sub: "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${EnvironmentName}/doenet/DiscourseSsoSecret"
+  # - Name: DISCOURSE_API_KEY
+  #   ValueFrom:
+  #     Fn::Sub: "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${EnvironmentName}/doenet/DiscourseApiKey"
