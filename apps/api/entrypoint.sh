@@ -2,4 +2,3 @@
 set -euo pipefail
 npm run prisma:deploy
 exec npm run start
-# exit 1
