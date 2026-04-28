@@ -1,5 +1,5 @@
-//@ts-expect-error Math expressions is not typed
 import me from "math-expressions";
+import type { Tree } from "math-expressions";
 import { MathJax } from "better-react-mathjax";
 import { JSX } from "react";
 
@@ -23,7 +23,9 @@ export function parseAndFormatResponse(response: string): JSX.Element {
   return parsedResp.response.map((v: unknown, i: number) => {
     const componentType = parsedResp.componentTypes[i];
     if (["math", "point", "matrix", "vector"].includes(componentType)) {
-      const expr = me.fromAst(v).round_numbers_to_precision_plus_decimals(6, 2);
+      const expr = me
+        .fromAst(v as Tree)
+        .round_numbers_to_precision_plus_decimals(6, 2);
       return (
         <div key={i}>
           <MathJax hideUntilTypeset={"first"} inline dynamic key={i}>
