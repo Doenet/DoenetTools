@@ -1,6 +1,5 @@
 import { ReactElement, useEffect } from "react";
 import { ActionFunctionArgs, useFetcher, useLoaderData } from "react-router";
-// @ts-expect-error math-expression doesn't have types
 import me from "math-expressions";
 
 import {
