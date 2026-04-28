@@ -8,7 +8,7 @@
 # Stage 1 — Build
 ########################################
 
-FROM node:lts-trixie AS builder
+FROM node:lts-trixie-slim AS builder
 WORKDIR /DoenetTools
 
 # Copy workspace manifests first so dependency install can cache well
@@ -36,7 +36,7 @@ RUN npm run build --workspace=@doenet-tools/api
 ########################################
 # Stage 2 — Production runtime
 ########################################
-FROM node:lts-trixie AS runtime
+FROM node:lts-trixie-slim AS runtime
 WORKDIR /DoenetTools
 ENV NODE_ENV=production
 

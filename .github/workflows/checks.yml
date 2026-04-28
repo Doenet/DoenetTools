@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: main
+    branches: ["main"]
   pull_request:
     branches: ["*"]
 
@@ -16,10 +16,10 @@ jobs:
 
     steps:
       # Checkout repo
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       # Setup Node with caching
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: npm
@@ -89,10 +89,10 @@ jobs:
 
     steps:
       # Checkout repo
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       # Setup Node with caching
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: npm
@@ -145,18 +145,18 @@ jobs:
         run: npm run test:${{ matrix.test-group }} --workspace @doenet-tools/e2e-tests
 
       # Upload screenshots and videos on failure
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: cypress-screenshots
-          path: tests-cypress/cypress/screenshots
+          path: packages/e2e-tests/cypress/screenshots
           if-no-files-found: ignore
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: cypress-videos
-          path: tests-cypress/cypress/videos
+          path: packages/e2e-tests/cypress/videos
           if-no-files-found: ignore
 
   # Separate job for brittle tests
@@ -185,10 +185,10 @@ jobs:
 
     steps:
       # Checkout repo
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       # Setup Node with caching
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: npm
@@ -238,21 +238,21 @@ jobs:
 
       # Run brittle tests with aggressive retry (grouped)
       - name: Run Brittle Tests
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@v4
         with:
           timeout_minutes: 30
           max_attempts: 3
           command: npm run test:${{ matrix.test-group }} --workspace @doenet-tools/e2e-tests
 
       # Upload screenshots and videos on failure
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: brittle-cypress-screenshots
           path: e2e-tests/cypress/screenshots
           if-no-files-found: ignore
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: brittle-cypress-videos
@@ -269,10 +269,10 @@ jobs:
 
     steps:
       # Checkout repo
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       # Setup Node with caching
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: npm
@@ -290,10 +290,10 @@ jobs:
       # Upload artifacts on failure
       - name: Upload test artifacts
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: component-test-artifacts
           path: |
-            app/cypress/screenshots/
-            app/cypress/videos/
+            apps/app/cypress/screenshots/
+            apps/app/cypress/videos/
           retention-days: 7
