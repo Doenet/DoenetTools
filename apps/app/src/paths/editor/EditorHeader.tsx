@@ -62,7 +62,11 @@ import { MenuDismissOverlay } from "../../components/MenuDismissOverlay";
 import { IFRAME_MENU_IDS } from "../../utils/iframeMenuIds";
 import { useControlledMenu } from "../../utils/useControlledMenu";
 import { useMenuTooltipSuppression } from "../../utils/useMenuTooltipSuppression";
-import { Category, CategoryGroup, isBrowsable } from "@doenet-tools/shared";
+import {
+  isBrowsable,
+  type Category,
+  type CategoryGroup,
+} from "@doenet-tools/shared";
 
 export async function loader({
   params,

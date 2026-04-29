@@ -5,11 +5,14 @@ type BrowsableData = {
   categories: Category[];
 };
 
+/**
+ * Determine whether this activity should be discoverable.
+ * Currently this checks category completeness; additional browsable criteria may be added here later.
+ * TODO: check for no errors
+ * TODO: check for no accessibility violations
+ */
 export function isBrowsable(data: BrowsableData) {
-  const fullyCategorized = isActivityFullyCategorized(data);
-  // TODO: check for no errors
-  // TODO: check for no accessibility violations
-  return fullyCategorized;
+  return isActivityFullyCategorized(data);
 }
 
 /**
