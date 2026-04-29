@@ -49,6 +49,7 @@ import { generateHandle } from "./utils/names";
 import { codeRouter } from "./routes/code";
 import { metricsRouter } from "./routes/metricsRoutes";
 import { contentRouter } from "./routes/content.route";
+import { initRequestLogger } from "./middleware/requestLogger";
 
 // Type assertion to work around passport type declaration issues
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -394,6 +395,7 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
+app.use("/api", initRequestLogger());
 
 const port = process.env.PORT || 3000;
 

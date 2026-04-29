@@ -45,6 +45,7 @@
     "passport-local": "^1.0.0",
     "passport-magic-link": "^2.1.1",
     "passport-strategy": "^1.0.0",
+    "pino-http": "^11.0.0",
     "prisma": "6.4.1",
     "short-uuid": "^5.2.0",
     "zod": "^4.0.14"
