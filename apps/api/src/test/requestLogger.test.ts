@@ -34,8 +34,8 @@ function parseLogs(lines: string[]) {
   return lines.map((line) => JSON.parse(line));
 }
 
-describe("createApiRequestLogger", () => {
-  test("logs request start and end for completed requests", () => {
+describe("initRequestLogger", () => {
+  test("logs request start at debug and request end at info", () => {
     const { lines, stream } = createLogCapture();
     const middleware = initRequestLogger({ stream });
     const req = createMockRequest();
@@ -54,12 +54,14 @@ describe("createApiRequestLogger", () => {
       anonymous: false,
       authenticated: false,
       event: "request_start",
+      level: 20,
       method: "GET",
       msg: "API request started",
       path: "/api/health",
     });
     expect(endLog).toMatchObject({
       event: "request_end",
+      level: 30,
       msg: "API request completed",
       statusCode: 204,
     });

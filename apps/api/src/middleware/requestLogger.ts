@@ -1,4 +1,4 @@
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import pinoHttp from "pino-http";
 
 type LoggableObject = Record<string, unknown>;
@@ -10,13 +10,13 @@ type RequestLoggerOptions = {
  * Initialize the pino-http middleware for logging API requests.
  *
  * The middleware logs two events per API call
- * 1) a start event as soon as a request enters the API
- * 2) a completion event when the response ends
+ * 1) a start event as soon as a request enters the API (level: debug)
+ * 2) a completion event when the response ends (level: info)
  *
  * Each log entry includes only the metadata fields we want. No sensitive data.
  */
 export function initRequestLogger(options: RequestLoggerOptions = {}) {
-  return pinoHttp({
+  const httpLogger = pinoHttp({
     customErrorMessage() {
       return "API request completed";
     },
@@ -26,15 +26,6 @@ export function initRequestLogger(options: RequestLoggerOptions = {}) {
         res as Response,
         loggableObject as LoggableObject,
       );
-    },
-    customReceivedMessage() {
-      return "API request started";
-    },
-    customReceivedObject(req) {
-      return {
-        ...getRequestMetadata(req as Request),
-        event: "request_start",
-      };
     },
     customSuccessMessage() {
       return "API request completed";
@@ -46,10 +37,23 @@ export function initRequestLogger(options: RequestLoggerOptions = {}) {
         loggableObject as LoggableObject,
       );
     },
-    level: process.env.LOG_LEVEL?.trim() || "info",
+    level: "debug",
     quietReqLogger: true,
     stream: options.stream,
+    useLevel: "info",
   });
+
+  return (req: Request, res: Response, next: NextFunction) => {
+    httpLogger(req, res);
+    req.log.debug(
+      {
+        ...getRequestMetadata(req),
+        event: "request_start",
+      },
+      "API request started",
+    );
+    next();
+  };
 }
 
 /**
