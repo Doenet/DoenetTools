@@ -32,18 +32,15 @@ cd DoenetTools
 npm install
 ```
 
-**3. Create the `.env` files**
+**3. Create the API `.env` file**
 
 ```bash
 npm run setup
 ```
 
-This copies:
+This copies `apps/api/.env.example` to `apps/api/.env`.
 
-- `apps/api/.env.example` to `apps/api/.env`
-- `apps/web/.env.example` to `apps/web/.env`
-
-The API defaults work for local development, but edit as needed (e.g. change `DATABASE_HOST`, `DATABASE_PORT`, or `DATABASE_PASSWORD` if your MySQL setup differs — and update `DATABASE_URL` to match). The web env sets the Astro header logo link target used in local development.
+The API defaults work for local development, but edit as needed (e.g. change `DATABASE_HOST`, `DATABASE_PORT`, or `DATABASE_PASSWORD` if your MySQL setup differs — and update `DATABASE_URL` to match). The web defaults are already committed in `apps/web/.env`; use `apps/web/.env.local` for machine-specific overrides.
 
 **4. Start the database**
 

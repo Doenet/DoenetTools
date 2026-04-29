@@ -19,7 +19,3 @@ copyEnv(
   path.join(root, "apps/api/.env"),
   path.join(root, "apps/api/.env.example"),
 );
-copyEnv(
-  path.join(root, "apps/web/.env"),
-  path.join(root, "apps/web/.env.example"),
-);
