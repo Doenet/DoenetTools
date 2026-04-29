@@ -2,27 +2,31 @@
 dist
 node_modules
 .tsbuildinfo
+.cache
 __pycache__
 
 # Environment variables
 **/.env
+**/.env.*
+!**/.env.example
+# Exceptions: these frontend defaults are intentionally committed because they
+# only contain public build-time vars that are bundled into the browser assets.
+!apps/app/.env
+!apps/app/.env.dev3
+!apps/app/.env.prod
+!apps/web/.env
+!apps/web/.env.dev3
+!apps/web/.env.prod
 
 # misc
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.env.development
-.env.production
-# Exception: apps/app/.env.production is intentionally committed (Vite public vars)
-!apps/app/.env.production
-.cache
 
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-.vscode
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
 
 **/cypress/accessibility
 **/cypress/videos
