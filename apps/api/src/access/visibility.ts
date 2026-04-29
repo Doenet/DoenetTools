@@ -57,12 +57,10 @@ export async function updateVisibility({
     throw new InvalidRequestError("Assignment visibility cannot be changed");
   }
 
-  // Validate hierarchy: check if parent is more restrictive than new visibility
+  // Validate hierarchy: child cannot be less public than parent
   if (content.parent) {
     const parentLevel = visibilityOrder[content.parent.visibility];
     const newLevel = visibilityOrder[visibility];
-
-    // Child cannot be less public than parent
     if (newLevel < parentLevel) {
       throw new InvalidRequestError(
         `Cannot set visibility to ${visibility} (less public than parent's ${content.parent.visibility})`,
