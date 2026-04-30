@@ -1,0 +1,75 @@
+export type LogLevel =
+  | "trace"
+  | "debug"
+  | "info"
+  | "warn"
+  | "error"
+  | "fatal"
+  | "silent";
+
+export type LoggerConfigOptions = {
+  prettyIgnore?: string[];
+  stream?: NodeJS.WritableStream;
+};
+
+/**
+ * Shared pino configuration for logs
+ */
+export function getApiLoggerOptions(options: LoggerConfigOptions = {}) {
+  const logLevel = getLogLevel();
+
+  return {
+    level: logLevel,
+    stream: options.stream,
+    ...(shouldUsePrettyLogs(options)
+      ? getPrettyTransportOptions(logLevel, options.prettyIgnore)
+      : {}),
+  };
+}
+
+function getLogLevel(): LogLevel {
+  const logLevel = process.env.LOG_LEVEL?.trim().toLowerCase();
+  return isLogLevel(logLevel) ? logLevel : "info";
+}
+
+function isLogLevel(logLevel: string | undefined): logLevel is LogLevel {
+  return (
+    logLevel === "trace" ||
+    logLevel === "debug" ||
+    logLevel === "info" ||
+    logLevel === "warn" ||
+    logLevel === "error" ||
+    logLevel === "fatal" ||
+    logLevel === "silent"
+  );
+}
+
+function shouldUsePrettyLogs(options: LoggerConfigOptions) {
+  if (options.stream) {
+    return false;
+  }
+
+  return (
+    process.env.NODE_ENV === "development" ||
+    process.env.npm_lifecycle_event === "dev"
+  );
+}
+
+function getPrettyTransportOptions(
+  logLevel: LogLevel,
+  prettyIgnore: string[] | undefined,
+) {
+  return {
+    transport: {
+      target: "pino-pretty",
+      options: {
+        colorize: true,
+        hideObject: true,
+        messageFormat: "{msg}",
+        translateTime: "SYS:standard",
+        ...(logLevel === "silent" ? {} : { minimumLevel: logLevel }),
+        ...(prettyIgnore?.length ? { ignore: prettyIgnore.join(",") } : {}),
+      },
+    },
+  };
+}

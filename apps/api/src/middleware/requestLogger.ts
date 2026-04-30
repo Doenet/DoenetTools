@@ -1,9 +1,16 @@
 import type { NextFunction, Request, Response } from "express";
 import pinoHttp from "pino-http";
+import {
+  getApiLoggerOptions,
+  type LoggerConfigOptions,
+  type LogLevel,
+} from "../logging/loggerConfig";
 
 type LoggableObject = Record<string, unknown>;
-type RequestLoggerOptions = {
-  stream?: NodeJS.WritableStream;
+type RequestWithLogger = Request & {
+  log: {
+    debug: (object: Record<string, unknown>, message: string) => void;
+  };
 };
 
 /**
@@ -11,47 +18,43 @@ type RequestLoggerOptions = {
  *
  * The middleware logs two events per API call
  * 1) a start event as soon as a request enters the API (level: debug)
- * 2) a completion event when the response ends (level: info)
+ * 2) a completion event when the response ends (level: info/warn/error)
  *
  * Each log entry includes only the metadata fields we want. No sensitive data.
+ * LOG_LEVEL controls the minimum emitted log level in both local dev and prod.
  */
-export function initRequestLogger(options: RequestLoggerOptions = {}) {
+export function initRequestLogger(options: LoggerConfigOptions = {}) {
   const httpLogger = pinoHttp({
-    customErrorMessage() {
-      return "API request completed";
+    ...getApiLoggerOptions({
+      ...options,
+      prettyIgnore: getRequestPrettyIgnore(),
+    }),
+    customErrorMessage: getRequestCompletionMessage,
+    customErrorObject(
+      req: Request,
+      res: Response,
+      _err: Error,
+      loggableObject: LoggableObject,
+    ) {
+      return getRequestCompletionObject(req, res, loggableObject);
     },
-    customErrorObject(req, res, _err, loggableObject) {
-      return getRequestEndObject(
-        req as Request,
-        res as Response,
-        loggableObject as LoggableObject,
-      );
+    customSuccessMessage: getRequestCompletionMessage,
+    customSuccessObject(
+      req: Request,
+      res: Response,
+      loggableObject: LoggableObject,
+    ) {
+      return getRequestCompletionObject(req, res, loggableObject);
     },
-    customSuccessMessage() {
-      return "API request completed";
+    customLogLevel(_req: Request, res: Response, err?: Error) {
+      return getRequestCompletionLogLevel(res, err);
     },
-    customSuccessObject(req, res, loggableObject) {
-      return getRequestEndObject(
-        req as Request,
-        res as Response,
-        loggableObject as LoggableObject,
-      );
-    },
-    level: "debug",
     quietReqLogger: true,
-    stream: options.stream,
-    useLevel: "info",
   });
 
   return (req: Request, res: Response, next: NextFunction) => {
     httpLogger(req, res);
-    req.log.debug(
-      {
-        ...getRequestMetadata(req),
-        event: "request_start",
-      },
-      "API request started",
-    );
+    logRequestStart(req);
     next();
   };
 }
@@ -64,7 +67,7 @@ function getRequestMetadata(req: Request) {
     anonymous: req.user?.isAnonymous ?? false,
     authenticated: req.user !== undefined,
     method: req.method,
-    path: req.originalUrl || req.url,
+    path: getRequestPath(req),
   };
 }
 
@@ -74,7 +77,59 @@ function getDurationMs(loggableObject: LoggableObject) {
   return typeof responseTime === "number" ? responseTime : undefined;
 }
 
-function getRequestEndObject(
+function getRequestPath(req: Request) {
+  if (req.baseUrl || req.path) {
+    return `${req.baseUrl}${req.path}`;
+  }
+
+  return (req.originalUrl || req.url).split("?")[0];
+}
+
+function getRequestStartMessage(req: Request) {
+  return `START: ${req.method} ${getRequestPath(req)}`;
+}
+
+function getRequestCompletionMessage(req: Request, res: Response) {
+  return `${res.statusCode} ${req.method} ${getRequestPath(req)}`;
+}
+
+function getRequestCompletionLogLevel(res: Response, err?: Error): LogLevel {
+  if (res.statusCode >= 500 || err) {
+    return "error";
+  }
+
+  if (res.statusCode >= 400) {
+    return "warn";
+  }
+
+  return "info";
+}
+
+function getRequestPrettyIgnore() {
+  return [
+    "pid",
+    "hostname",
+    "event",
+    "method",
+    "path",
+    "statusCode",
+    "durationMs",
+    "authenticated",
+    "anonymous",
+  ];
+}
+
+function logRequestStart(req: Request) {
+  (req as RequestWithLogger).log.debug(
+    {
+      ...getRequestMetadata(req),
+      event: "request_start",
+    },
+    getRequestStartMessage(req),
+  );
+}
+
+function getRequestCompletionObject(
   req: Request,
   res: Response,
   loggableObject: LoggableObject,

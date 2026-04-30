@@ -1,19 +1,24 @@
 import { EventEmitter } from "node:events";
 import { Writable } from "node:stream";
 import type { Request, Response } from "express";
-import { describe, expect, test } from "vitest";
+import { afterEach, describe, expect, test } from "vitest";
 import { initRequestLogger } from "../middleware/requestLogger";
 
 class MockResponse extends EventEmitter {
+  err?: Error;
   statusCode = 200;
   writableEnded = false;
 }
 
+const originalLogLevel = process.env.LOG_LEVEL;
+
 function createMockRequest(overrides: Partial<Request> = {}) {
   return {
+    baseUrl: "/api",
     method: "GET",
     originalUrl: "/api/health",
-    url: "/api/health",
+    path: "/health",
+    url: "/health",
     ...overrides,
   } as Request;
 }
@@ -35,7 +40,18 @@ function parseLogs(lines: string[]) {
 }
 
 describe("initRequestLogger", () => {
-  test("logs request start at debug and request end at info", () => {
+  afterEach(() => {
+    if (originalLogLevel === undefined) {
+      delete process.env.LOG_LEVEL;
+      return;
+    }
+
+    process.env.LOG_LEVEL = originalLogLevel;
+  });
+
+  test("defaults to info and suppresses the debug start log", () => {
+    delete process.env.LOG_LEVEL;
+
     const { lines, stream } = createLogCapture();
     const middleware = initRequestLogger({ stream });
     const req = createMockRequest();
@@ -48,33 +64,28 @@ describe("initRequestLogger", () => {
     mockResponse.writableEnded = true;
     mockResponse.emit("finish");
 
-    const [startLog, endLog] = parseLogs(lines);
+    const [endLog] = parseLogs(lines);
 
-    expect(startLog).toMatchObject({
-      anonymous: false,
-      authenticated: false,
-      event: "request_start",
-      level: 20,
-      method: "GET",
-      msg: "API request started",
-      path: "/api/health",
-    });
+    expect(lines).toHaveLength(1);
     expect(endLog).toMatchObject({
       event: "request_end",
       level: 30,
-      msg: "API request completed",
+      msg: "204 GET /api/health",
       statusCode: 204,
     });
     expect(endLog.durationMs).toBeGreaterThanOrEqual(0);
   });
 
-  test("includes safe authenticated request metadata in both lifecycle logs", () => {
+  test("emits the request start log when LOG_LEVEL=debug", () => {
+    process.env.LOG_LEVEL = "debug";
+
     const { lines, stream } = createLogCapture();
     const middleware = initRequestLogger({ stream });
     const req = createMockRequest({
       method: "POST",
-      originalUrl: "/api/login/anonymous",
-      url: "/api/login/anonymous",
+      originalUrl: "/api/login/anonymous?token=secret",
+      path: "/login/anonymous",
+      url: "/login/anonymous?token=secret",
       user: { isAnonymous: true } as Request["user"],
     });
     const mockResponse = new MockResponse();
@@ -99,9 +110,73 @@ describe("initRequestLogger", () => {
       anonymous: true,
       authenticated: true,
       event: "request_end",
+      level: 30,
       method: "POST",
+      msg: "200 POST /api/login/anonymous",
       path: "/api/login/anonymous",
       statusCode: 200,
+    });
+  });
+
+  test("logs 4xx responses at warn", () => {
+    delete process.env.LOG_LEVEL;
+
+    const { lines, stream } = createLogCapture();
+    const middleware = initRequestLogger({ stream });
+    const req = createMockRequest({
+      originalUrl: "/api/content/not-found?token=super-secret",
+      path: "/content/not-found",
+      url: "/content/not-found?token=super-secret",
+    });
+    const mockResponse = new MockResponse();
+    const res = mockResponse as unknown as Response;
+
+    middleware(req, res, () => {});
+
+    mockResponse.statusCode = 404;
+    mockResponse.writableEnded = true;
+    mockResponse.emit("finish");
+
+    const [endLog] = parseLogs(lines);
+
+    expect(lines).toHaveLength(1);
+    expect(endLog).toMatchObject({
+      event: "request_end",
+      level: 40,
+      msg: "404 GET /api/content/not-found",
+      path: "/api/content/not-found",
+      statusCode: 404,
+    });
+  });
+
+  test("uses a failure-specific completion message for errored requests", () => {
+    delete process.env.LOG_LEVEL;
+
+    const { lines, stream } = createLogCapture();
+    const middleware = initRequestLogger({ stream });
+    const req = createMockRequest({
+      originalUrl: "/api/login/magic?token=super-secret",
+      path: "/login/magic",
+      url: "/login/magic?token=super-secret",
+    });
+    const mockResponse = new MockResponse();
+    const res = mockResponse as unknown as Response;
+
+    middleware(req, res, () => {});
+
+    mockResponse.err = new Error("boom");
+    mockResponse.statusCode = 500;
+    mockResponse.writableEnded = true;
+    mockResponse.emit("finish");
+
+    const [endLog] = parseLogs(lines);
+
+    expect(endLog).toMatchObject({
+      event: "request_end",
+      level: 50,
+      msg: "500 GET /api/login/magic",
+      path: "/api/login/magic",
+      statusCode: 500,
     });
   });
 });
