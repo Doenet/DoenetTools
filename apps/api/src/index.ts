@@ -18,6 +18,7 @@ import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 import { nanoid } from "nanoid";
 import * as fs from "fs/promises";
 import { fromUUID, toUUID } from "./utils/uuid";
+import { formatApiReadyMessage } from "./utils/cli";
 import { UserInfo, UserInfoWithEmail } from "./types";
 import {
   findOrCreateUser,
@@ -475,5 +476,6 @@ app.post(
 // );
 
 app.listen(port, () => {
-  console.log(`[server]: Server is running at http://localhost:${port}`);
+  const localUrl = `http://localhost:${port}`;
+  console.log(formatApiReadyMessage(localUrl));
 });
