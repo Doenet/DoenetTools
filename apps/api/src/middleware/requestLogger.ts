@@ -68,6 +68,7 @@ function getRequestMetadata(req: Request) {
     authenticated: req.user !== undefined,
     method: req.method,
     path: getRequestPath(req),
+    ...(req.user?.userId ? { userId: req.user.userId } : {}),
   };
 }
 

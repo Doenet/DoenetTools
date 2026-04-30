@@ -3,6 +3,7 @@ import { Writable } from "node:stream";
 import type { Request, Response } from "express";
 import { afterEach, describe, expect, test } from "vitest";
 import { initRequestLogger } from "../middleware/requestLogger";
+import type { Uuid } from "../types";
 
 class MockResponse extends EventEmitter {
   err?: Error;
@@ -86,7 +87,13 @@ describe("initRequestLogger", () => {
       originalUrl: "/api/login/anonymous?token=secret",
       path: "/login/anonymous",
       url: "/login/anonymous?token=secret",
-      user: { isAnonymous: true } as Request["user"],
+      user: {
+        email: null,
+        firstNames: null,
+        isAnonymous: true,
+        lastNames: "",
+        userId: "test-user-id-1" as unknown as Uuid,
+      } as Request["user"],
     });
     const mockResponse = new MockResponse();
     const res = mockResponse as unknown as Response;
@@ -105,6 +112,7 @@ describe("initRequestLogger", () => {
       event: "request_start",
       method: "POST",
       path: "/api/login/anonymous",
+      userId: "test-user-id-1",
     });
     expect(endLog).toMatchObject({
       anonymous: true,
@@ -115,6 +123,7 @@ describe("initRequestLogger", () => {
       msg: "200 POST /api/login/anonymous",
       path: "/api/login/anonymous",
       statusCode: 200,
+      userId: "test-user-id-1",
     });
   });
 
