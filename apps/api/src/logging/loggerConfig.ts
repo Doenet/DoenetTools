@@ -12,6 +12,17 @@ export type LoggerConfigOptions = {
   stream?: NodeJS.WritableStream;
 };
 
+const sensitiveHeaderPaths = [
+  "req.headers.cookie",
+  "req.headers.authorization",
+  'req.headers["proxy-authorization"]',
+  'req.headers["x-api-key"]',
+  'req.headers["x-auth-token"]',
+  'req.headers["x-csrf-token"]',
+  'req.headers["csrf-token"]',
+  'res.headers["set-cookie"]',
+];
+
 /**
  * Shared pino configuration for logs
  */
@@ -20,6 +31,10 @@ export function getApiLoggerOptions(options: LoggerConfigOptions = {}) {
 
   return {
     level: logLevel,
+    redact: {
+      paths: sensitiveHeaderPaths,
+      remove: true,
+    },
     stream: options.stream,
     ...(shouldUsePrettyLogs(options)
       ? getPrettyTransportOptions(logLevel, options.prettyIgnore)

@@ -3,12 +3,18 @@ import { Writable } from "node:stream";
 import type { Request, Response } from "express";
 import { afterEach, describe, expect, test } from "vitest";
 import { initRequestLogger } from "../middleware/requestLogger";
-import type { Uuid } from "../types";
+import { fromUUID, newUUID } from "../utils/uuid";
 
 class MockResponse extends EventEmitter {
   err?: Error;
+  headers: Record<string, string | string[]> = {};
+  headersSent = true;
   statusCode = 200;
   writableEnded = false;
+
+  getHeaders() {
+    return this.headers;
+  }
 }
 
 const originalLogLevel = process.env.LOG_LEVEL;
@@ -72,6 +78,7 @@ describe("initRequestLogger", () => {
       event: "request_end",
       level: 30,
       msg: "204 GET /api/health",
+      route: "/api/health",
       statusCode: 204,
     });
     expect(endLog.durationMs).toBeGreaterThanOrEqual(0);
@@ -82,6 +89,7 @@ describe("initRequestLogger", () => {
 
     const { lines, stream } = createLogCapture();
     const middleware = initRequestLogger({ stream });
+    const userId = newUUID();
     const req = createMockRequest({
       method: "POST",
       originalUrl: "/api/login/anonymous?token=secret",
@@ -92,8 +100,8 @@ describe("initRequestLogger", () => {
         firstNames: null,
         isAnonymous: true,
         lastNames: "",
-        userId: "test-user-id-1" as unknown as Uuid,
-      } as Request["user"],
+        userId,
+      } as unknown as Request["user"],
     });
     const mockResponse = new MockResponse();
     const res = mockResponse as unknown as Response;
@@ -112,7 +120,8 @@ describe("initRequestLogger", () => {
       event: "request_start",
       method: "POST",
       path: "/api/login/anonymous",
-      userId: "test-user-id-1",
+      route: "/api/login/anonymous",
+      userId: fromUUID(userId),
     });
     expect(endLog).toMatchObject({
       anonymous: true,
@@ -122,8 +131,9 @@ describe("initRequestLogger", () => {
       method: "POST",
       msg: "200 POST /api/login/anonymous",
       path: "/api/login/anonymous",
+      route: "/api/login/anonymous",
       statusCode: 200,
-      userId: "test-user-id-1",
+      userId: fromUUID(userId),
     });
   });
 
@@ -142,6 +152,11 @@ describe("initRequestLogger", () => {
 
     middleware(req, res, () => {});
 
+    Object.assign(req, {
+      baseUrl: "/api/content",
+      path: "/not-found",
+      route: { path: "/:contentId" } as Request["route"],
+    });
     mockResponse.statusCode = 404;
     mockResponse.writableEnded = true;
     mockResponse.emit("finish");
@@ -153,6 +168,7 @@ describe("initRequestLogger", () => {
       event: "request_end",
       level: 40,
       msg: "404 GET /api/content/not-found",
+      route: "/api/content/:contentId",
       path: "/api/content/not-found",
       statusCode: 404,
     });
@@ -187,5 +203,64 @@ describe("initRequestLogger", () => {
       path: "/api/login/magic",
       statusCode: 500,
     });
+  });
+
+  test("sanitizes request headers and redacts sensitive ones", () => {
+    delete process.env.LOG_LEVEL;
+
+    const { lines, stream } = createLogCapture();
+    const middleware = initRequestLogger({ stream });
+    const req = createMockRequest({
+      headers: {
+        accept: "application/json",
+        "accept-encoding": "gzip, br",
+        authorization: "Bearer secret-token",
+        connection: "close",
+        cookie: "session=top-secret",
+        referer: "http://localhost:8000/library?token=secret",
+        "sec-fetch-mode": "cors",
+        "user-agent": "Mozilla/5.0",
+        "x-api-key": "key-123",
+      },
+      params: { ownerId: "abc123" },
+      query: { parentId: "folder1" },
+      // pino-http request serializer includes remotePort
+      socket: {
+        remoteAddress: "::1",
+        remotePort: 62051,
+      } as Request["socket"],
+    });
+    const mockResponse = new MockResponse();
+    mockResponse.headers = {
+      "content-type": "application/json",
+      "set-cookie": ["session=top-secret"],
+    };
+    const res = mockResponse as unknown as Response;
+
+    middleware(req, res, () => {});
+
+    mockResponse.writableEnded = true;
+    mockResponse.emit("finish");
+
+    const [endLog] = parseLogs(lines);
+
+    expect(endLog.req.headers).toMatchObject({
+      referer: "http://localhost:8000",
+    });
+    expect(endLog.req).toMatchObject({
+      remoteAddress: "::1",
+    });
+    expect(endLog.req).not.toHaveProperty("params");
+    expect(endLog.req).not.toHaveProperty("query");
+    expect(endLog.req).not.toHaveProperty("remotePort");
+    expect(endLog.req.headers).not.toHaveProperty("accept");
+    expect(endLog.req.headers).not.toHaveProperty("accept-encoding");
+    expect(endLog.req.headers).not.toHaveProperty("authorization");
+    expect(endLog.req.headers).not.toHaveProperty("connection");
+    expect(endLog.req.headers).not.toHaveProperty("cookie");
+    expect(endLog.req.headers).not.toHaveProperty("sec-fetch-mode");
+    expect(endLog.req.headers).not.toHaveProperty("user-agent");
+    expect(endLog.req.headers).not.toHaveProperty("x-api-key");
+    expect(endLog.res?.headers?.["set-cookie"]).toBeUndefined();
   });
 });
