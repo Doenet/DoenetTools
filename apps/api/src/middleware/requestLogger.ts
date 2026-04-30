@@ -47,9 +47,16 @@ export function initRequestLogger(options: LoggerConfigOptions = {}) {
   const httpLogger = pinoHttp({
     ...getApiLoggerOptions({
       ...options,
-      prettyIgnore: getRequestPrettyIgnore(),
+      prettyIgnore: ["pid", "hostname"],
     }),
-    customErrorMessage: getRequestCompletionMessage,
+    customErrorMessage(
+      req: Request,
+      res: Response,
+      _err: Error,
+      responseTime?: number,
+    ) {
+      return getRequestCompletionMessage(req, res, responseTime);
+    },
     customErrorObject(
       req: Request,
       res: Response,
@@ -58,7 +65,9 @@ export function initRequestLogger(options: LoggerConfigOptions = {}) {
     ) {
       return getRequestCompletionObject(req, res, loggableObject);
     },
-    customSuccessMessage: getRequestCompletionMessage,
+    customSuccessMessage(req: Request, res: Response, responseTime?: number) {
+      return getRequestCompletionMessage(req, res, responseTime);
+    },
     customSuccessObject(
       req: Request,
       res: Response,
@@ -136,8 +145,18 @@ function getRequestStartMessage(req: Request) {
   return `START: ${req.method} ${getRequestPath(req)}`;
 }
 
-function getRequestCompletionMessage(req: Request, res: Response) {
-  return `${res.statusCode} ${req.method} ${getRequestPath(req)}`;
+function getRequestCompletionMessage(
+  req: Request,
+  res: Response,
+  responseTime?: number,
+) {
+  const baseMessage = `${res.statusCode} ${req.method} ${getRequestPath(req)}`;
+
+  if (responseTime === undefined) {
+    return baseMessage;
+  }
+
+  return `${baseMessage} (${Math.round(responseTime)}ms)`;
 }
 
 function getRequestCompletionLogLevel(res: Response, err?: Error): LogLevel {
@@ -150,20 +169,6 @@ function getRequestCompletionLogLevel(res: Response, err?: Error): LogLevel {
   }
 
   return "info";
-}
-
-function getRequestPrettyIgnore() {
-  return [
-    "pid",
-    "hostname",
-    "event",
-    "method",
-    "path",
-    "statusCode",
-    "durationMs",
-    "authenticated",
-    "anonymous",
-  ];
 }
 
 function sanitizeSerializedRequest(req: SerializedRequest) {

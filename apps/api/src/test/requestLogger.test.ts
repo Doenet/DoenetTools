@@ -77,11 +77,13 @@ describe("initRequestLogger", () => {
     expect(endLog).toMatchObject({
       event: "request_end",
       level: 30,
-      msg: "204 GET /api/health",
       route: "/api/health",
       statusCode: 204,
     });
     expect(endLog.durationMs).toBeGreaterThanOrEqual(0);
+    expect(endLog.msg).toBe(
+      `204 GET /api/health (${Math.round(endLog.durationMs)}ms)`,
+    );
   });
 
   test("emits the request start log when LOG_LEVEL=debug", () => {
@@ -129,12 +131,14 @@ describe("initRequestLogger", () => {
       event: "request_end",
       level: 30,
       method: "POST",
-      msg: "200 POST /api/login/anonymous",
       path: "/api/login/anonymous",
       route: "/api/login/anonymous",
       statusCode: 200,
       userId: fromUUID(userId),
     });
+    expect(endLog.msg).toBe(
+      `200 POST /api/login/anonymous (${Math.round(endLog.durationMs)}ms)`,
+    );
   });
 
   test("logs 4xx responses at warn", () => {
@@ -167,11 +171,13 @@ describe("initRequestLogger", () => {
     expect(endLog).toMatchObject({
       event: "request_end",
       level: 40,
-      msg: "404 GET /api/content/not-found",
       route: "/api/content/:contentId",
       path: "/api/content/not-found",
       statusCode: 404,
     });
+    expect(endLog.msg).toBe(
+      `404 GET /api/content/not-found (${Math.round(endLog.durationMs)}ms)`,
+    );
   });
 
   test("uses a failure-specific completion message for errored requests", () => {
@@ -199,10 +205,12 @@ describe("initRequestLogger", () => {
     expect(endLog).toMatchObject({
       event: "request_end",
       level: 50,
-      msg: "500 GET /api/login/magic",
       path: "/api/login/magic",
       statusCode: 500,
     });
+    expect(endLog.msg).toBe(
+      `500 GET /api/login/magic (${Math.round(endLog.durationMs)}ms)`,
+    );
   });
 
   test("sanitizes request headers and redacts sensitive ones", () => {

@@ -81,6 +81,7 @@ function getPrettyTransportOptions(
         colorize: true,
         hideObject: true,
         messageFormat: "{msg}",
+        timestampKey: "__pretty_timestamp_disabled__",
         translateTime: "SYS:standard",
         ...(logLevel === "silent" ? {} : { minimumLevel: logLevel }),
         ...(prettyIgnore?.length ? { ignore: prettyIgnore.join(",") } : {}),
