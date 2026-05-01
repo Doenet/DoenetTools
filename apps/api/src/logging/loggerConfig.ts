@@ -64,10 +64,7 @@ function shouldUsePrettyLogs(options: LoggerConfigOptions) {
     return false;
   }
 
-  return (
-    process.env.NODE_ENV === "development" ||
-    process.env.npm_lifecycle_event === "dev"
-  );
+  return process.env.PRETTY_LOGS?.trim().toLowerCase() === "true";
 }
 
 function getPrettyTransportOptions(
