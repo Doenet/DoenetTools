@@ -5,6 +5,7 @@ import {
   Text,
   VStack,
   Link as ChakraLink,
+  Button,
 } from "@chakra-ui/react";
 import { WithSideBanners } from "../layout/WithSideBanners";
 
@@ -66,10 +67,65 @@ export function Events() {
                 Virtual training workshops
               </Heading>
 
-              <p>
+              <Text fontSize="1.3rem" lineHeight="1.3" mb={6}>
+                <ChakraLink
+                  href="https://www.youtube.com/playlist?list=PLjR3fTlPri1cApUaszZrRwmvl0UtsR_GU"
+                  isExternal
+                  textDecoration="underline"
+                >
+                  Watch our past workshops on YouTube
+                </ChakraLink>
+              </Text>
+
+              <VStack
+                align="start"
+                spacing={3}
+                mb={6}
+                pl={4}
+                borderLeft="3px solid"
+                borderColor="border"
+              >
+                <Heading size="md">
+                  <ChakraLink
+                    href="https://docs.google.com/forms/d/e/1FAIpQLSdSWVecpISTxnIkFbM0PZ3wtQ-q_ObBWlzJvS1iPf7wFAd58g/viewform"
+                    isExternal
+                    textDecoration="underline"
+                  >
+                    August Doenet Virtual Workshop
+                  </ChakraLink>
+                </Heading>
+                <Text fontSize="1.3rem" lineHeight="1.3">
+                  In this free 2-day virtual workshop held on Zoom, participants
+                  will learn how to create accessible, dynamic and interactive
+                  activities in Doenet. The workshop will also provide guidance
+                  on using the available resources to learn more about Doenet,
+                  including how to connect with the supportive Doenet community
+                  of developers and experienced instructors.
+                </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <strong>Date:</strong> Monday August 10 and Wednesday August
+                  12, 2026
+                </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <strong>Time:</strong> 3–6pm Eastern, noon–3pm Pacific
+                </Text>
+                <Text fontSize="1rem" lineHeight="1.4">
+                  <Button
+                    as="a"
+                    href="https://docs.google.com/forms/d/e/1FAIpQLSdSWVecpISTxnIkFbM0PZ3wtQ-q_ObBWlzJvS1iPf7wFAd58g/viewform"
+                    colorScheme="blue"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Registration form
+                  </Button>
+                </Text>
+              </VStack>
+
+              {/* <p>
                 Email <a href="mailto:info@doenet.org">info@doenet.org</a> to
                 inquire about any upcoming virtual training workshops.
-              </p>
+              </p> */}
             </Box>
 
             {/* In-person Workshops and Conferences Section */}
