@@ -145,6 +145,10 @@ export async function updateVisibility({
  * a child may not be less public than its parent. Unlike {@link updateVisibility},
  * this never demotes, so moving a folder holding public content into an unlisted
  * one does not hide that content.
+ *
+ * Assignments are skipped, as they are always private. Ownership and the criteria
+ * for public sharing (see {@link getPublicShareViolations}) are not checked here:
+ * the content is following a parent that already satisfies them.
  */
 export async function raiseVisibility({
   contentId,
@@ -164,27 +168,20 @@ export async function raiseVisibility({
     (v) => visibilityOrder[v] < visibilityOrder[visibility],
   );
 
-  const filter = {
-    id: { in: [contentId, ...descendantIds] },
-    visibility: { in: lessPublic },
-    ...filterExcludeAssignments,
-  };
-
-  const updateTimestamp = prisma.content.updateMany({
-    where: filter,
-    data: { publiclySharedAt: visibility === "public" ? new Date() : null },
-  });
-
-  const updateContent = prisma.content.updateMany({
-    where: filter,
+  // Since the filter already selects only the rows whose visibility changes,
+  // visibility and the share timestamp can be updated in a single statement.
+  await prisma.content.updateMany({
+    where: {
+      id: { in: [contentId, ...descendantIds] },
+      visibility: { in: lessPublic },
+      ...filterExcludeAssignments,
+    },
     data: {
       visibility,
       isPublic: visibility === "public", // legacy flag, remove eventually
+      publiclySharedAt: visibility === "public" ? new Date() : null,
     },
   });
-
-  // Note: updateTimestamp first because it checks `visibility` status
-  await prisma.$transaction([updateTimestamp, updateContent]);
 }
 
 // __________________________________________________________________________
