@@ -137,6 +137,56 @@ export async function updateVisibility({
   return { visibility };
 }
 
+/**
+ * Raises `contentId` and its descendants to at least `visibility`, leaving any
+ * that are already more public untouched.
+ *
+ * Used when content lands inside a parent that is more public than it is, since
+ * a child may not be less public than its parent. Unlike {@link updateVisibility},
+ * this never demotes, so moving a folder holding public content into an unlisted
+ * one does not hide that content.
+ */
+export async function raiseVisibility({
+  contentId,
+  visibility,
+}: {
+  contentId: Uint8Array;
+  visibility: Visibility;
+}) {
+  if (visibility === "private") {
+    return;
+  }
+
+  const descendantIds = await getDescendantIds(contentId, {
+    excludeAssignments: true,
+  });
+  const lessPublic = (Object.keys(visibilityOrder) as Visibility[]).filter(
+    (v) => visibilityOrder[v] < visibilityOrder[visibility],
+  );
+
+  const filter = {
+    id: { in: [contentId, ...descendantIds] },
+    visibility: { in: lessPublic },
+    ...filterExcludeAssignments,
+  };
+
+  const updateTimestamp = prisma.content.updateMany({
+    where: filter,
+    data: { publiclySharedAt: visibility === "public" ? new Date() : null },
+  });
+
+  const updateContent = prisma.content.updateMany({
+    where: filter,
+    data: {
+      visibility,
+      isPublic: visibility === "public", // legacy flag, remove eventually
+    },
+  });
+
+  // Note: updateTimestamp first because it checks `visibility` status
+  await prisma.$transaction([updateTimestamp, updateContent]);
+}
+
 // __________________________________________________________________________
 //
 //
