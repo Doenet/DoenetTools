@@ -132,9 +132,13 @@ export async function moveContent({
 
     // If the parent is shared, then we'll need to share the resulting content, as well.
     if (parent.visibility !== "private") {
-      // Moving into a shared parent raises the content's visibility, which for
-      // an unpublished library draft would share curated content implicitly.
-      if (content.owner.isLibrary && content.visibility !== "public") {
+      // Moving into a public parent would publish an unpublished library draft,
+      // bypassing curation. Moving into an unlisted parent is not publishing.
+      if (
+        parent.visibility === "public" &&
+        content.owner.isLibrary &&
+        content.visibility !== "public"
+      ) {
         throw new InvalidRequestError(
           "Cannot move draft from library to published folder/activity",
         );
