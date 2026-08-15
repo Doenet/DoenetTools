@@ -436,6 +436,43 @@ test("A description is not one of the scored items", async () => {
   ).eqls([true, false]);
 });
 
+test("A description is not repeated", async () => {
+  const { userId } = await createTestUser();
+  const [ps, psDoc] = await setupTestContent(userId, {
+    ps: pset({
+      psDoc: doc(`<selectFromSequence from="1" to="5"/>`),
+    }),
+  });
+  await updateContent({
+    contentId: psDoc,
+    loggedInUserId: userId,
+    numVariants: 5,
+  });
+  await updateContent({
+    contentId: psDoc,
+    loggedInUserId: userId,
+    repeatInProblemSet: 3,
+  });
+  await updateContent({
+    contentId: psDoc,
+    loggedInUserId: userId,
+    isDescription: true,
+  });
+
+  const content = await getContent({ contentId: ps, loggedInUserId: userId });
+  const source = compileActivityFromContent(content);
+
+  if (source.type !== "sequence") {
+    throw Error("shouldn't happen");
+  }
+
+  // The viewer throws on a select whose items include a description, and a
+  // description is not a scored item, so the repeat is ignored.
+  // Mirrored by "does not repeat a description" in
+  // `apps/app/src/utils/activity.cy.tsx`.
+  expect(source.items[0].type).eqls("singleDoc");
+});
+
 test("deleteContent marks a activity and document as deleted and prevents its retrieval", async () => {
   const user = await createTestUser();
   const userId = user.userId;

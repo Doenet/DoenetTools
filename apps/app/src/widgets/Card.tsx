@@ -434,8 +434,10 @@ export default function Card({
   // The explanation also rides on `aria-label`, so it is not tooltip-only.
   const repeatExplanation =
     "Include this problem in the problem set more than once, each copy using a different variant of the document. Offered only for documents that have more than one variant.";
+  // A description is not a scored item, so it is never repeated.
   const repeatInProblemSet = cardContent.repeatInProblemSet &&
-    numVariants > 1 && (
+    numVariants > 1 &&
+    !cardContent.isDescription && (
       <HoverFocusTooltip label={repeatExplanation}>
         <HStack>
           <Text>Repeat:</Text>

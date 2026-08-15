@@ -649,25 +649,36 @@ export function returnClassificationListSelect() {
  * rather than the full doenetml version. Useful for generating a cid from the source
  * that won't change if we upgrade the minor version for all documents (though it does not
  * produce a valid source for viewing the activity).
+ *
+ * `inProblemSet` says whether `activity` is a child of a problem set, which is
+ * where the document settings `isDescription` and `repeatInProblemSet` apply.
  */
 export function compileActivityFromContent(
   activity: Content,
   useVersionIds = false,
+  inProblemSet = false,
 ): ActivitySource {
   switch (activity.type) {
     case "singleDoc": {
+      const isDescription = inProblemSet && (activity.isDescription ?? false);
       const documentJson = {
         id: fromUUID(activity.contentId),
         type: activity.type,
         title: activity.name,
-        isDescription: activity.isDescription ?? false,
+        isDescription,
         doenetML: activity.doenetML!,
         version: useVersionIds
           ? activity.doenetmlVersion.id.toString()
           : activity.doenetmlVersion.fullVersion,
         numVariants: activity.numVariants,
       };
-      if (activity.repeatInProblemSet && activity.repeatInProblemSet > 1) {
+      // A description is not a scored item, so it is never repeated: the viewer
+      // does not support a select whose items include a description.
+      if (
+        !isDescription &&
+        activity.repeatInProblemSet &&
+        activity.repeatInProblemSet > 1
+      ) {
         // If the document repeats, wrap this document in
         // a `select` which can select that many variants.
         return {
@@ -690,7 +701,7 @@ export function compileActivityFromContent(
         numToSelect: activity.numToSelect,
         selectByVariant: activity.selectByVariant,
         items: activity.children.map((child) =>
-          compileActivityFromContent(child, useVersionIds),
+          compileActivityFromContent(child, useVersionIds, false),
         ),
       };
     }
@@ -701,7 +712,7 @@ export function compileActivityFromContent(
         title: activity.name,
         shuffle: activity.shuffle,
         items: activity.children.map((child) =>
-          compileActivityFromContent(child, useVersionIds),
+          compileActivityFromContent(child, useVersionIds, true),
         ),
       };
     }

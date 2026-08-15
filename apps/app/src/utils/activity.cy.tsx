@@ -91,6 +91,43 @@ describe("compileActivityFromContent", { tags: ["@group4"] }, () => {
     expect(item.items[0].id).to.equal("doc1");
   });
 
+  it("does not repeat a description", () => {
+    // The viewer throws on a select whose items include a description
+    // ("The case where a select contains a description is not implemented"),
+    // and a description is not a scored item, so it never repeats.
+    const source = compileActivityFromContent(
+      mkProblemSet([
+        mkDoc("doc1", "Intro", { isDescription: true, repeatInProblemSet: 3 }),
+      ]),
+    );
+    if (source.type !== "sequence") {
+      throw Error("expected a sequence");
+    }
+    expect(source.items[0].type).to.equal("singleDoc");
+  });
+
+  it("ignores isDescription outside a problem set", () => {
+    // `isDescription` is a setting for a document in a problem set; a document
+    // that carries the flag into a question bank is a normal scored item.
+    const source = compileActivityFromContent({
+      contentId: "bank",
+      name: "My question bank",
+      type: "select",
+      numToSelect: 1,
+      selectByVariant: false,
+      children: [mkDoc("doc1", "Intro", { isDescription: true })],
+    } as unknown as Content);
+
+    if (source.type !== "select") {
+      throw Error("expected a select");
+    }
+    const item = source.items[0];
+    if (item.type !== "singleDoc") {
+      throw Error("expected a singleDoc");
+    }
+    expect(item.isDescription).to.equal(false);
+  });
+
   it("does not wrap when the document repeats once", () => {
     const source = compileActivityFromContent(
       mkProblemSet([mkDoc("doc1", "Problem", { repeatInProblemSet: 1 })]),
