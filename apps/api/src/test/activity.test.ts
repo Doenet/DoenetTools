@@ -354,9 +354,6 @@ test("Test updating isDescription", async () => {
 });
 
 test("repeatInProblemSet survives into the compiled activity", async () => {
-  // `repeatInProblemSet` used to be selected only behind an opt-in flag that
-  // most callers left off, so it silently vanished from every compiled
-  // activity except the compound-editor preview.
   const { userId } = await createTestUser();
   const [ps, psDoc] = await setupTestContent(userId, {
     ps: pset({
@@ -374,7 +371,8 @@ test("repeatInProblemSet survives into the compiled activity", async () => {
     repeatInProblemSet: 3,
   });
 
-  // `getContent` without any opt-in flag must still carry the setting
+  // A plain `getContent` must carry the setting, since it is what every
+  // activity-compiling caller (revisions, cids, assignments) uses.
   const content = await getContent({ contentId: ps, loggedInUserId: userId });
   const source = compileActivityFromContent(content);
 

@@ -252,11 +252,10 @@ export function returnContentSelect({
     _count: { select: { contentStates: true } },
   };
 
-  // Settings for a document inside a problem set. Both determine the item
-  // structure of the compiled activity, so they must be present every time an
-  // activity is compiled — including for revisions, cids, and assigned
-  // content. They were previously gated behind a flag that most callers left
-  // off, which silently dropped them.
+  // `isDescription` and `repeatInProblemSet` are settings for a document inside
+  // a problem set. Both determine the item structure of the compiled activity,
+  // so they are always selected: every caller that compiles an activity —
+  // including for revisions, cids, and assigned content — needs them.
   const docSelect = {
     numVariants: true,
     source: true,

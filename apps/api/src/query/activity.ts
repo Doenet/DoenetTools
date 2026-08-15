@@ -471,7 +471,7 @@ export async function updateContent({
       throw new InvalidRequestError("Cannot change assigned content");
     }
   }
-  if (repeatInProblemSet || isDescription !== undefined) {
+  if (repeatInProblemSet !== undefined || isDescription !== undefined) {
     // Make sure this content is a document and the parent is a problem set
     const check = await prisma.content.findUniqueOrThrow({
       where: {
@@ -493,7 +493,7 @@ export async function updateContent({
       );
     }
 
-    if (repeatInProblemSet) {
+    if (repeatInProblemSet !== undefined) {
       // Clamp the repeats between 1 and the number of variants this doc has
       // (doesn't make sense to repeat exact problem twice)
       repeatInProblemSet = Math.max(repeatInProblemSet, 1);

@@ -1,4 +1,4 @@
-import { ReactElement, useState } from "react";
+import { ReactElement, ReactNode, useState } from "react";
 import {
   Text,
   Card as ChakraCard,
@@ -36,6 +36,53 @@ import { SmallLicenseBadges } from "./Licenses";
 import { IoDiceOutline } from "react-icons/io5";
 import { SiteContext } from "../paths/SiteHeader";
 import { AccessibleAvatar } from "./AccessibleAvatar";
+
+/**
+ * A tooltip that opens on keyboard focus as well as on hover.
+ *
+ * Chakra binds its own handlers to the outermost element of the tooltip's child,
+ * which for a form control is a label wrapper that never takes focus itself, so
+ * an uncontrolled tooltip never opens for a keyboard user. React's synthetic
+ * focus events bubble, so driving a controlled tooltip from a wrapper covers
+ * both pointer and keyboard.
+ */
+function HoverFocusTooltip({
+  label,
+  children,
+}: {
+  label: string;
+  children: ReactNode;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <Tooltip
+      isOpen={isOpen}
+      label={label}
+      maxWidth="18rem"
+      // These controls sit at the right edge of the card, so anchor the
+      // tooltip's right edge to them and keep it inside the viewport —
+      // otherwise it hangs off the page and adds scrollbars.
+      placement="bottom-end"
+      modifiers={[
+        {
+          name: "preventOverflow",
+          options: { boundary: "clippingParents", padding: 8 },
+        },
+      ]}
+    >
+      <Flex
+        alignItems="center"
+        onMouseEnter={() => setIsOpen(true)}
+        onMouseLeave={() => setIsOpen(false)}
+        onFocus={() => setIsOpen(true)}
+        onBlur={() => setIsOpen(false)}
+      >
+        {children}
+      </Flex>
+    </Tooltip>
+  );
+}
 
 export type CardContent = {
   menuRef?: (arg: HTMLButtonElement) => void;
@@ -381,36 +428,16 @@ export default function Card({
   );
 
   const [copyNum, setCopyNum] = useState(cardContent.repeatInProblemSet);
-  const [descriptionTipOpen, setDescriptionTipOpen] = useState(false);
-  const [repeatTipOpen, setRepeatTipOpen] = useState(false);
 
   // Repeating compiles the document into a select that draws that many of its
   // variants, so the student gets that many differing copies of the problem.
-  // Like the description toggle, the explanation rides on `aria-label` so it
-  // is not tooltip-only, and the tooltip is controlled so keyboard focus
-  // opens it too.
+  // The explanation also rides on `aria-label`, so it is not tooltip-only.
   const repeatExplanation =
     "Include this problem in the problem set more than once, each copy using a different variant of the document. Offered only for documents that have more than one variant.";
   const repeatInProblemSet = cardContent.repeatInProblemSet &&
     numVariants > 1 && (
-      <Tooltip
-        isOpen={repeatTipOpen}
-        label={repeatExplanation}
-        maxWidth="18rem"
-        placement="bottom-end"
-        modifiers={[
-          {
-            name: "preventOverflow",
-            options: { boundary: "clippingParents", padding: 8 },
-          },
-        ]}
-      >
-        <HStack
-          onMouseEnter={() => setRepeatTipOpen(true)}
-          onMouseLeave={() => setRepeatTipOpen(false)}
-          onFocus={() => setRepeatTipOpen(true)}
-          onBlur={() => setRepeatTipOpen(false)}
-        >
+      <HoverFocusTooltip label={repeatExplanation}>
+        <HStack>
           <Text>Repeat:</Text>
           <NumberInput
             size="sm"
@@ -442,56 +469,29 @@ export default function Card({
             </NumberInputStepper>
           </NumberInput>
         </HStack>
-      </Tooltip>
+      </HoverFocusTooltip>
     );
 
   // A description is shown to students like any other document but is not one
   // of the scored problems, so it gets no number and no credit. The warning
-  // rides on `aria-label` rather than only on the tooltip, so a screen reader
-  // announces it when the checkbox takes focus.
-  //
-  // The tooltip is controlled: Chakra binds its own focus handlers to the
-  // Checkbox's label wrapper, but focus lands on the inner input, so an
-  // uncontrolled tooltip never opens for a keyboard user. React's synthetic
-  // onFocus/onBlur bubble, so driving it from the wrapper covers both.
+  // also rides on `aria-label`, so a screen reader announces it when the
+  // checkbox takes focus.
   const isDescriptionToggle = cardContent.isDescription !== undefined && (
-    <Tooltip
-      isOpen={descriptionTipOpen}
-      label={descriptionExplanation}
-      maxWidth="18rem"
-      // The control sits at the right edge of the card, so anchor the
-      // tooltip's right edge to it and keep it inside the viewport —
-      // otherwise it hangs off the page and adds scrollbars.
-      placement="bottom-end"
-      modifiers={[
-        {
-          name: "preventOverflow",
-          options: { boundary: "clippingParents", padding: 8 },
-        },
-      ]}
-    >
-      <Flex
-        alignItems="center"
-        onMouseEnter={() => setDescriptionTipOpen(true)}
-        onMouseLeave={() => setDescriptionTipOpen(false)}
-        onFocus={() => setDescriptionTipOpen(true)}
-        onBlur={() => setDescriptionTipOpen(false)}
+    <HoverFocusTooltip label={descriptionExplanation}>
+      <Checkbox
+        size="sm"
+        isChecked={cardContent.isDescription}
+        isDisabled={cardContent.updateIsDescription === undefined}
+        aria-label={`Description: ${descriptionExplanation}`}
+        onChange={(e) => {
+          cardContent.updateIsDescription?.(e.target.checked);
+        }}
       >
-        <Checkbox
-          size="sm"
-          isChecked={cardContent.isDescription}
-          isDisabled={cardContent.updateIsDescription === undefined}
-          aria-label={`Description: ${descriptionExplanation}`}
-          onChange={(e) => {
-            cardContent.updateIsDescription?.(e.target.checked);
-          }}
-        >
-          <Text fontSize="sm" whiteSpace="nowrap">
-            Description
-          </Text>
-        </Checkbox>
-      </Flex>
-    </Tooltip>
+        <Text fontSize="sm" whiteSpace="nowrap">
+          Description
+        </Text>
+      </Checkbox>
+    </HoverFocusTooltip>
   );
 
   const menuMarginLeft = ["0em", "3em"];

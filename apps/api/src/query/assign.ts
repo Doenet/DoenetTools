@@ -869,6 +869,7 @@ export async function getAssignmentResponseStudent({
           name: true,
           type: true,
           numToSelect: true,
+          repeatInProblemSet: true,
           isDescription: true,
         },
       },
@@ -1417,10 +1418,24 @@ async function getAllAttemptScores({
 }
 
 /**
+ * Names for the `count` items that `name` contributes to an activity,
+ * disambiguated by index unless there is just the one.
+ */
+function repeatedItemNames(name: string, count: number) {
+  if (count <= 1) {
+    return [name];
+  }
+  return Array.from({ length: count }, (_, i) => `${name} (${i + 1})`);
+}
+
+/**
  * Get a list of the names of the documents/selects in `content`, in original order.
  *
- * Descriptions are skipped: they are not scored items, so they hold no column
- * in the gradebook and no `itemNumber` in the stored item state.
+ * The result must line up one-to-one with the items of the compiled activity
+ * (see `compileActivityFromContent`), since the item names label the columns of
+ * the gradebook indexed by `itemNumber`. So a question bank contributes one name
+ * per selected item, a repeated document one name per copy, and a description
+ * none at all — a description is not a scored item.
  */
 function getItemNames(
   content:
@@ -1433,40 +1448,29 @@ function getItemNames(
           name: string;
           type: ContentType;
           numToSelect: number;
+          repeatInProblemSet?: number;
           isDescription?: boolean;
         }[];
       },
 ) {
-  const itemNames: string[] = [];
-
   if (content.type === "select") {
-    if (content.numToSelect === 1) {
-      itemNames.push(content.name);
-    } else {
-      for (let i = 1; i <= content.numToSelect; i++) {
-        itemNames.push(`${content.name} (${i})`);
-      }
-    }
-  } else if (content.type === "sequence") {
-    for (const child of content.children) {
-      if (child.type === "singleDoc") {
-        if (child.isDescription) {
-          continue;
-        }
-        itemNames.push(child.name);
-      } else if (child.type === "select") {
-        if (child.numToSelect === 1) {
-          itemNames.push(child.name);
-        } else {
-          for (let i = 1; i <= child.numToSelect; i++) {
-            itemNames.push(`${child.name} (${i})`);
-          }
-        }
-      }
-    }
+    return repeatedItemNames(content.name, content.numToSelect);
+  }
+  if (content.type !== "sequence") {
+    return [];
   }
 
-  return itemNames;
+  return content.children.flatMap((child) => {
+    if (child.type === "singleDoc") {
+      return child.isDescription
+        ? []
+        : repeatedItemNames(child.name, child.repeatInProblemSet ?? 1);
+    }
+    if (child.type === "select") {
+      return repeatedItemNames(child.name, child.numToSelect);
+    }
+    return [];
+  });
 }
 
 /**

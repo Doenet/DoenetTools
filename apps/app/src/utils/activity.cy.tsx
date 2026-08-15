@@ -6,8 +6,9 @@ import { Content } from "../types";
 // function, while revisions and cids are compiled by the server twin in
 // `apps/api/src/utils/contentStructure.ts`. The two must agree, or the same
 // problem set renders differently depending on how it is opened. The
-// assertions here are mirrored by "problem set compiles the same way on the
-// client and the server" in `apps/api/src/test/activity.test.ts`.
+// assertions here are mirrored by "repeatInProblemSet survives into the
+// compiled activity" and "A description is not one of the scored items" in
+// `apps/api/src/test/activity.test.ts`.
 
 function mkDoc(
   contentId: string,
