@@ -12,23 +12,40 @@
      Registered before the iframe loads so it catches the first report. -->
 <script>
   (function () {
-    var SPM_3RD = 4000;    // cmi.suspend_data SPM, SCORM 2004 3rd Edition
-    var SPM_4TH = 64000;   // cmi.suspend_data SPM, SCORM 2004 4th Edition
-    window.addEventListener('message', function (event) {
+    var SPM_3RD = 4000; // cmi.suspend_data SPM, SCORM 2004 3rd Edition
+    var SPM_4TH = 64000; // cmi.suspend_data SPM, SCORM 2004 4th Edition
+    window.addEventListener("message", function (event) {
       var data = event.data;
-      if (!data || typeof data !== 'object') return;
-      if (data.subject !== 'SPLICE.reportScoreAndState') return;
+      if (!data || typeof data !== "object") return;
+      if (data.subject !== "SPLICE.reportScoreAndState") return;
       if (data.state === undefined || data.state === null) {
-        console.log('[DOENET-SIZE-PROBE] reportScoreAndState with no state field.');
+        console.log(
+          "[DOENET-SIZE-PROBE] reportScoreAndState with no state field.",
+        );
         return;
       }
-      var str = typeof data.state === 'string' ? data.state : JSON.stringify(data.state);
-      var chars = str.length;                                  // SPM is defined in characters
-      var bytes = (new TextEncoder().encode(str)).length;      // UTF-8 bytes, for reference
+      var str =
+        typeof data.state === "string"
+          ? data.state
+          : JSON.stringify(data.state);
+      var chars = str.length; // SPM is defined in characters
+      var bytes = new TextEncoder().encode(str).length; // UTF-8 bytes, for reference
       console.log(
-        '[DOENET-SIZE-PROBE] Doenet state blob: ' + chars + ' chars (' + bytes + ' UTF-8 bytes). ' +
-        'Fits 3rd Ed (' + SPM_3RD + '): ' + (chars <= SPM_3RD ? 'YES' : 'NO') + '. ' +
-        'Fits 4th Ed (' + SPM_4TH + '): ' + (chars <= SPM_4TH ? 'YES' : 'NO') + '.'
+        "[DOENET-SIZE-PROBE] Doenet state blob: " +
+          chars +
+          " chars (" +
+          bytes +
+          " UTF-8 bytes). " +
+          "Fits 3rd Ed (" +
+          SPM_3RD +
+          "): " +
+          (chars <= SPM_3RD ? "YES" : "NO") +
+          ". " +
+          "Fits 4th Ed (" +
+          SPM_4TH +
+          "): " +
+          (chars <= SPM_4TH ? "YES" : "NO") +
+          ".",
       );
     });
 
@@ -42,32 +59,63 @@
       function scan(w) {
         var hops = 0;
         while (w && hops++ < 12) {
-          if (w.API_1484_11) return { api: w.API_1484_11, get: 'GetValue', err: 'GetLastError' };
-          if (w.API)          return { api: w.API,          get: 'LMSGetValue', err: 'LMSGetLastError' };
+          if (w.API_1484_11)
+            return { api: w.API_1484_11, get: "GetValue", err: "GetLastError" };
+          if (w.API)
+            return { api: w.API, get: "LMSGetValue", err: "LMSGetLastError" };
           if (w.parent === w) break;
-          try { w = w.parent; } catch (e) { break; }  // cross-origin guard
+          try {
+            w = w.parent;
+          } catch (e) {
+            break;
+          } // cross-origin guard
         }
         return null;
       }
       var found = scan(window);
-      if (!found) { try { found = window.top && scan(window.top); } catch (e) {} }
-      if (!found) { try { found = window.opener && scan(window.opener); } catch (e) {} }
+      if (!found) {
+        try {
+          found = window.top && scan(window.top);
+        } catch (e) {}
+      }
+      if (!found) {
+        try {
+          found = window.opener && scan(window.opener);
+        } catch (e) {}
+      }
       return found;
     }
-    window.addEventListener('load', function () {
+    window.addEventListener("load", function () {
       // Delay so the bridge has discovered the API and Initialized the session.
       setTimeout(function () {
         var f = findSCORMAPI();
-        if (!f) { console.log('[DOENET-SIZE-PROBE] launch: no SCORM API reachable from probe.'); return; }
-        var sd = '';
-        try { sd = f.api[f.get]('cmi.suspend_data') || ''; } catch (e) {
-          console.log('[DOENET-SIZE-PROBE] launch: suspend_data read threw', e); return;
+        if (!f) {
+          console.log(
+            "[DOENET-SIZE-PROBE] launch: no SCORM API reachable from probe.",
+          );
+          return;
         }
-        var hasDz = false, dzLen = 0;
-        try { var o = JSON.parse(sd); hasDz = !!(o && o.dz); dzLen = hasDz ? o.dz.length : 0; } catch (e) {}
-        console.log('[DOENET-SIZE-PROBE] launch: suspend_data = ' + sd.length +
-          ' chars; contains Doenet state (dz): ' + hasDz +
-          (hasDz ? ' (' + dzLen + ' compressed chars)' : ''));
+        var sd = "";
+        try {
+          sd = f.api[f.get]("cmi.suspend_data") || "";
+        } catch (e) {
+          console.log("[DOENET-SIZE-PROBE] launch: suspend_data read threw", e);
+          return;
+        }
+        var hasDz = false,
+          dzLen = 0;
+        try {
+          var o = JSON.parse(sd);
+          hasDz = !!(o && o.dz);
+          dzLen = hasDz ? o.dz.length : 0;
+        } catch (e) {}
+        console.log(
+          "[DOENET-SIZE-PROBE] launch: suspend_data = " +
+            sd.length +
+            " chars; contains Doenet state (dz): " +
+            hasDz +
+            (hasDz ? " (" + dzLen + " compressed chars)" : ""),
+        );
       }, 2000);
     });
 
@@ -80,28 +128,47 @@
     //   • "OUTER frame overflows"  → index.html is taller than the space the
     //                                LMS player allotted, so the scrollbar is
     //                                the LMS player's (not fixable in the SCO)
-    window.addEventListener('message', function (event) {
+    window.addEventListener("message", function (event) {
       var data = event.data;
       // lti_iframe_resizer.js accepts a JSON-string form too; mirror that.
-      if (typeof data === 'string' && /lti\.frameResize/.test(data)) {
-        try { data = JSON.parse(data); } catch (e) { return; }
+      if (typeof data === "string" && /lti\.frameResize/.test(data)) {
+        try {
+          data = JSON.parse(data);
+        } catch (e) {
+          return;
+        }
       }
-      if (!data || typeof data !== 'object' || data.subject !== 'lti.frameResize') return;
+      if (
+        !data ||
+        typeof data !== "object" ||
+        data.subject !== "lti.frameResize"
+      )
+        return;
       var reported = data.height;
       // Defer so lti_iframe_resizer.js — registered later, so it runs after
       // this listener — has applied the height before we read it back.
       setTimeout(function () {
         var frame = document.querySelector('[data-component="doenet"] iframe');
-        var applied = frame ? Math.round(frame.getBoundingClientRect().height) : null;
+        var applied = frame
+          ? Math.round(frame.getBoundingClientRect().height)
+          : null;
         var docH = document.documentElement.scrollHeight;
         var viewH = window.innerHeight;
-        var overflow = docH > viewH + 1;   // +1 absorbs sub-pixel rounding
-        console.log('[DOENET-RESIZE-PROBE] lti.frameResize height=' + reported +
-          '; activity iframe now ' + applied + 'px; page ' + docH +
-          'px vs viewport ' + viewH + 'px → ' +
-          (overflow
-            ? 'OUTER frame overflows (scrollbar is the LMS player, not our iframe)'
-            : 'fits viewport'));
+        var overflow = docH > viewH + 1; // +1 absorbs sub-pixel rounding
+        console.log(
+          "[DOENET-RESIZE-PROBE] lti.frameResize height=" +
+            reported +
+            "; activity iframe now " +
+            applied +
+            "px; page " +
+            docH +
+            "px vs viewport " +
+            viewH +
+            "px → " +
+            (overflow
+              ? "OUTER frame overflows (scrollbar is the LMS player, not our iframe)"
+              : "fits viewport"),
+        );
       }, 0);
     });
   })();
