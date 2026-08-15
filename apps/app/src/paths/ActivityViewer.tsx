@@ -36,6 +36,7 @@ import {
   Text,
   Tooltip,
   useDisclosure,
+  useToast,
   VStack,
 } from "@chakra-ui/react";
 import { BsPlayBtnFill } from "react-icons/bs";
@@ -43,6 +44,7 @@ import {
   MdEditNote,
   MdOutlineAdd,
   MdOutlineEditOff,
+  MdOutlineFileDownload,
   MdOutlineInfo,
 } from "react-icons/md";
 import { useFetcher } from "react-router";
@@ -88,6 +90,7 @@ import { IFRAME_MENU_IDS } from "../utils/iframeMenuIds";
 import { useControlledMenu } from "../utils/useControlledMenu";
 import { MenuDismissOverlay } from "../components/MenuDismissOverlay";
 import { editorUrl } from "../utils/url";
+import { downloadScormPackage } from "../utils/scorm";
 
 export async function loader({ params }: { params: any }) {
   const {
@@ -163,6 +166,7 @@ export function ActivityViewer() {
     allLicenses.find((l) => l.code === activityData.licenseCode) ?? null;
 
   const navigate = useNavigate();
+  const toast = useToast();
 
   const infoBtnRef = useRef<HTMLButtonElement>(null);
   const doenetViewerContainer = useRef<HTMLDivElement>(null);
@@ -462,6 +466,45 @@ export function ActivityViewer() {
   const contentTypeName = contentTypeToName[data.type];
   const ownerName = createNameCheckCurateTag(activityData.owner!);
 
+  // Only single documents can be exported: a SCORM package is one SCO wrapping
+  // one DoenetML source in one iframe, so problem sets and sequences would need
+  // a different manifest and shell.
+  const scormButton =
+    data.type === "singleDoc" ? (
+      <Tooltip
+        hasArrow
+        label="Download as a SCORM package to upload to an LMS"
+        placement="bottom-end"
+      >
+        <Button
+          data-test="Download SCORM Button"
+          size="sm"
+          pr={{ base: "0px", md: "10px" }}
+          colorScheme="blue"
+          leftIcon={<MdOutlineFileDownload size={20} />}
+          onClick={() => {
+            try {
+              downloadScormPackage({
+                doenetML: data.doenetML,
+                title: activityData.name,
+                contentId: activityData.contentId,
+                doenetmlVersion: data.doenetmlVersion.fullVersion,
+              });
+            } catch (error) {
+              console.error("SCORM export failed", error);
+              toast({
+                title: "Could not create the SCORM package.",
+                status: "error",
+                isClosable: true,
+              });
+            }
+          }}
+        >
+          <Show above="md">SCORM</Show>
+        </Button>
+      </Tooltip>
+    ) : null;
+
   const { iconImage, iconColor } = getIconInfo(data.type, false);
 
   const typeIcon = (
@@ -756,6 +799,8 @@ export function ActivityViewer() {
                           )}
                       </>
                     )}
+
+                    {scormButton}
 
                     <Tooltip
                       hasArrow

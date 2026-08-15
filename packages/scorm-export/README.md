@@ -1,9 +1,24 @@
 # doenet-scorm-export
 
-Prototype for a "Download SCORM" button on doenet.org: wraps a single
-DoenetML activity in an LMS-ready SCORM 2004 package, **without** the PreTeXt
+Backs the "Download SCORM" button on doenet.org: wraps a single DoenetML
+activity in an LMS-ready SCORM 2004 package, **without** the PreTeXt
 toolchain. The SCORM runtime intelligence is reused from PreTeXt as two
 verbatim-vendored JavaScript files (see `vendor/VENDORED.md`).
+
+## Layout
+
+Building a package is pure string substitution plus a zip, so that work lives
+in `src/index.js` with no `fs`, no `child_process`, and no DOM — it runs
+unchanged in Node and in the browser. Two thin adapters call it:
+
+| Caller                                     | Loads the constant files with |
+| ------------------------------------------ | ----------------------------- |
+| `build.mjs` (this package's CLI)           | `readFileSync`                |
+| `apps/app/src/utils/scorm.ts` (the button) | Vite's `?raw` imports         |
+
+Both hand those files to `buildScormPackage(assets, options)` as strings, which
+is why `vendor/` stays the single verbatim copy of the GPL sources rather than
+being duplicated into a generated module.
 
 ## Try it
 
@@ -73,21 +88,22 @@ node build.mjs sample/sample.doenet --debug
 The file count is unchanged (it is inlined, not added as a separate file);
 without `--debug` the package contains no trace of it.
 
-## Toward production on doenet.org
+## Notes and remaining limits
 
-- The build is template substitution + zip, so it can run entirely
-  client-side behind the button: fetch the six files, substitute, zip with
-  JSZip, trigger the download. `build.mjs` exists only so the package can be
-  produced and tested from a shell.
-- Keep `--id` stable across re-exports of the same activity: it keys the
-  student's saved score and state in the LMS and in localStorage.
-- The viewer loads from `cdn.jsdelivr.net`; pin `--doenet-version` for
-  reproducible packages. A fully offline package would need the standalone
-  viewer bundled into the zip instead.
-- `</script>` cannot appear in the DoenetML source (it terminates the inline
-  script element); `build.mjs` rejects such sources. A production version
-  could instead ship the source as a separate `.doenet` file fetched at
-  runtime, which also removes any escaping concerns.
+- Only single documents can be exported. A package is one SCO wrapping one
+  DoenetML source in one iframe, so problem sets and sequences would need a
+  different manifest and a different shell; the button is hidden for them.
+- Keep the id stable across re-exports of the same activity: it keys the
+  student's saved score and state in the LMS and in localStorage. The website
+  passes the activity's `contentId` so renames don't orphan student work.
+- The viewer loads from `cdn.jsdelivr.net`. The website pins the activity's
+  own `doenetmlVersion`; from the CLI, pass `--doenet-version`. A fully
+  offline package would need the standalone viewer bundled into the zip.
+- The DoenetML source is injected into `activity.html` at runtime from a JS
+  string literal with every `<` escaped, so a source containing `</script>`
+  can't terminate the enclosing element — there is no source this rejects.
+- Zips use a fixed timestamp, so re-exporting an unchanged activity produces
+  the same bytes rather than embedding the build time.
 - The vendored files are GPL (v2 or v3) from PreTeXt — preserve
   `vendor/VENDORED.md`, don't edit the copies, and pull upstream fixes by
   re-copying (instructions in that file).
