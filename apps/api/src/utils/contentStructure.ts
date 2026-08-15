@@ -151,7 +151,6 @@ export function returnContentSelect({
   includeClassifications = false,
   includeShareDetails = false,
   includeOwnerDetails = false,
-  includeRepeatInProblemSet = false,
 }) {
   const sharedWith = {
     select: includeShareDetails
@@ -253,10 +252,17 @@ export function returnContentSelect({
     _count: { select: { contentStates: true } },
   };
 
+  // Settings for a document inside a problem set. Both determine the item
+  // structure of the compiled activity, so they must be present every time an
+  // activity is compiled — including for revisions, cids, and assigned
+  // content. They were previously gated behind a flag that most callers left
+  // off, which silently dropped them.
   const docSelect = {
     numVariants: true,
     source: true,
     doenetmlVersion: true,
+    isDescription: true,
+    repeatInProblemSet: true,
   };
 
   const questionBankSelect = {
@@ -269,16 +275,11 @@ export function returnContentSelect({
     paginate: true,
   };
 
-  const repeatInProblemSetSelect = includeRepeatInProblemSet && {
-    repeatInProblemSet: true,
-  };
-
   return {
     ...baseSelect,
     ...docSelect,
     ...questionBankSelect,
     ...problemSetSelect,
-    ...repeatInProblemSetSelect,
     ...assignmentSelect,
   };
 }
@@ -355,6 +356,7 @@ type PreliminaryContent = {
   activityLevelAttempts: boolean;
   itemLevelAttempts: boolean;
   repeatInProblemSet?: number;
+  isDescription?: boolean;
 
   // Assignment related fields
   classCode: number | null;
@@ -466,6 +468,7 @@ export function processContent(
 
     // document inside problem set
     repeatInProblemSet,
+    isDescription,
 
     // Image-only 1:1 data, re-exposed (as `imageSource` + attribution) on the
     // image case below and kept off every other content type.
@@ -523,6 +526,7 @@ export function processContent(
         doenetmlVersion: DoenetmlVersion;
         revisionNum?: number;
         repeatInProblemSet?: number;
+        isDescription: boolean;
       };
 
       if (
@@ -535,6 +539,7 @@ export function processContent(
           numVariants: numVariantsOrig,
           doenetmlVersion: doenetmlVersionOrig,
           repeatInProblemSet,
+          isDescription: isDescription ?? false,
         };
       } else {
         throw new InvalidRequestError("Invalid document");
@@ -655,7 +660,8 @@ export function compileActivityFromContent(
       const documentJson = {
         id: fromUUID(activity.contentId),
         type: activity.type,
-        isDescription: false,
+        title: activity.name,
+        isDescription: activity.isDescription ?? false,
         doenetML: activity.doenetML!,
         version: useVersionIds
           ? activity.doenetmlVersion.id.toString()

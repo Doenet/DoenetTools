@@ -1,6 +1,7 @@
 import { TbPuzzle } from "react-icons/tb";
 import {
   MdAssignment,
+  MdNotes,
   MdOutlineOndemandVideo,
   MdOutlineSwipeLeft,
 } from "react-icons/md";
@@ -119,15 +120,32 @@ export function findClassificationDescriptionIndex({
 export function compileActivityFromContent(activity: Content): ActivitySource {
   switch (activity.type) {
     case "singleDoc": {
-      return {
+      const documentJson = {
         id: activity.contentId,
         type: activity.type,
         title: activity.name,
-        isDescription: false,
+        isDescription: activity.isDescription ?? false,
         doenetML: activity.doenetML,
         version: activity.doenetmlVersion.fullVersion,
         numVariants: activity.numVariants,
       };
+      if (activity.repeatInProblemSet && activity.repeatInProblemSet > 1) {
+        // If the document repeats, wrap this document in
+        // a `select` which can select that many variants.
+        // Must stay in sync with the server compiler in
+        // `apps/api/src/utils/contentStructure.ts`, since the two produce the
+        // source for different views of the same problem set.
+        return {
+          id: `select_for_${activity.contentId}`,
+          type: "select",
+          title: `Repeat ${activity.repeatInProblemSet} times`,
+          numToSelect: activity.repeatInProblemSet,
+          selectByVariant: true,
+          items: [documentJson],
+        };
+      } else {
+        return documentJson;
+      }
     }
     case "select": {
       return {
@@ -184,12 +202,22 @@ export function getAllowedParentTypes(childTypes: ContentType[]) {
   return allowedParentTypes.reverse();
 }
 
-export function getIconInfo(contentType: ContentType, isAssignment: boolean) {
+export function getIconInfo(
+  contentType: ContentType,
+  isAssignment: boolean,
+  /** A document marked as a description: shown to students, but not scored. */
+  isDescription = false,
+) {
   let iconImage: IconType;
   let iconColor: string;
   if (isAssignment) {
     iconImage = IoStatsChart;
     iconColor = "blue";
+  } else if (isDescription) {
+    // Distinct shape as well as color, so the difference does not rely on
+    // color alone.
+    iconImage = MdNotes;
+    iconColor = "#6b7c93";
   } else if (contentType === "folder") {
     iconImage = FaFolder;
     iconColor = "#e6b800";

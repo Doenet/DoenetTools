@@ -190,11 +190,15 @@ export type Doc = ContentBase & {
   doenetML: string;
   doenetmlVersion: DoenetmlVersion;
   repeatInProblemSet?: number;
+  /**
+   * A description is rendered like any other document in a problem set but is
+   * not one of the scored items: no problem number, no credit, no item state.
+   */
+  isDescription?: boolean;
 };
 
 export type QuestionBank = ContentBase & {
   type: "select";
-  activityJson?: string;
   revisionNum?: number;
   numToSelect: number;
   selectByVariant: boolean;
@@ -203,7 +207,6 @@ export type QuestionBank = ContentBase & {
 
 export type ProblemSet = ContentBase & {
   type: "sequence";
-  activityJson?: string;
   revisionNum?: number;
   shuffle: boolean;
   paginate: boolean;

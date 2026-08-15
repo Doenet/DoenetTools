@@ -43,6 +43,7 @@ import { setContentLicense } from "../query/license";
 import { updateVisibility } from "../access";
 import { fromUUID, isEqualUUID } from "../utils/uuid";
 import { Doc } from "../types";
+import { compileActivityFromContent } from "../utils/contentStructure";
 import {
   InvalidRequestError,
   PermissionDeniedRedirectError,
@@ -275,7 +276,6 @@ test("Test updating repeatInProblemSet", async () => {
     const result = (await getContent({
       contentId: psDoc,
       loggedInUserId: userId,
-      includeRepeatInProblemSet: true,
     })) as Doc;
     return result.repeatInProblemSet;
   }
@@ -306,6 +306,136 @@ test("Test updating repeatInProblemSet", async () => {
     repeatInProblemSet: 24,
   });
   expect(await repeatVal()).eqls(23);
+});
+
+test("Test updating isDescription", async () => {
+  const { userId } = await createTestUser();
+  const [_ps, psDoc, nonPsDoc] = await setupTestContent(userId, {
+    ps: pset({
+      psDoc: doc("a description"),
+    }),
+    nonPsDoc: doc("not inside problem set"),
+  });
+
+  // Cannot update outside of problem set
+  await expect(
+    updateContent({
+      contentId: nonPsDoc,
+      loggedInUserId: userId,
+      isDescription: true,
+    }),
+  ).rejects.toThrowError();
+
+  async function descriptionVal() {
+    const result = (await getContent({
+      contentId: psDoc,
+      loggedInUserId: userId,
+    })) as Doc;
+    return result.isDescription;
+  }
+
+  // Defaults to false
+  expect(await descriptionVal()).eqls(false);
+
+  await updateContent({
+    contentId: psDoc,
+    loggedInUserId: userId,
+    isDescription: true,
+  });
+  expect(await descriptionVal()).eqls(true);
+
+  // `false` is a meaningful value, not a no-op
+  await updateContent({
+    contentId: psDoc,
+    loggedInUserId: userId,
+    isDescription: false,
+  });
+  expect(await descriptionVal()).eqls(false);
+});
+
+test("repeatInProblemSet survives into the compiled activity", async () => {
+  // `repeatInProblemSet` used to be selected only behind an opt-in flag that
+  // most callers left off, so it silently vanished from every compiled
+  // activity except the compound-editor preview.
+  const { userId } = await createTestUser();
+  const [ps, psDoc] = await setupTestContent(userId, {
+    ps: pset({
+      psDoc: doc(`<selectFromSequence from="1" to="5"/>`),
+    }),
+  });
+  await updateContent({
+    contentId: psDoc,
+    loggedInUserId: userId,
+    numVariants: 5,
+  });
+  await updateContent({
+    contentId: psDoc,
+    loggedInUserId: userId,
+    repeatInProblemSet: 3,
+  });
+
+  // `getContent` without any opt-in flag must still carry the setting
+  const content = await getContent({ contentId: ps, loggedInUserId: userId });
+  const source = compileActivityFromContent(content);
+
+  if (source.type !== "sequence") {
+    throw Error("shouldn't happen");
+  }
+
+  // the repeated document is wrapped in a select that picks 3 variants.
+  // Mirrored by "wraps a repeated document in a select, as the server does"
+  // in `apps/app/src/utils/activity.cy.tsx` — the client compiler produces the
+  // source for every viewer path, so the two must stay in agreement.
+  const item = source.items[0];
+  expect(item.type).eqls("select");
+  if (item.type !== "select") {
+    throw Error("shouldn't happen");
+  }
+  expect(item.id).eqls(`select_for_${fromUUID(psDoc)}`);
+  expect(item.title).eqls("Repeat 3 times");
+  expect(item.numToSelect).eqls(3);
+  expect(item.selectByVariant).eqls(true);
+  expect(item.items.length).eqls(1);
+
+  const inner = item.items[0];
+  if (inner.type !== "singleDoc") {
+    throw Error("shouldn't happen");
+  }
+  expect(inner.id).eqls(fromUUID(psDoc));
+  // the document carries its title, as it does on the client
+  expect(inner.title).eqls("psDoc");
+});
+
+test("A description is not one of the scored items", async () => {
+  const { userId } = await createTestUser();
+  const [ps, psDoc1, _psDoc2] = await setupTestContent(userId, {
+    ps: pset({
+      psDoc1: doc("intro text"),
+      psDoc2: doc("<problem><answer>1</answer></problem>"),
+    }),
+  });
+
+  await updateContent({
+    contentId: psDoc1,
+    loggedInUserId: userId,
+    isDescription: true,
+  });
+
+  const content = await getContent({ contentId: ps, loggedInUserId: userId });
+  const source = compileActivityFromContent(content);
+
+  if (source.type !== "sequence") {
+    throw Error("shouldn't happen");
+  }
+
+  // both documents are compiled into the activity, but only the second one
+  // counts as a scored item
+  expect(source.items.length).eqls(2);
+  expect(
+    source.items.map((item) =>
+      item.type === "singleDoc" ? item.isDescription : undefined,
+    ),
+  ).eqls([true, false]);
 });
 
 test("deleteContent marks a activity and document as deleted and prevents its retrieval", async () => {

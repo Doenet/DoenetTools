@@ -865,7 +865,12 @@ export async function getAssignmentResponseStudent({
       children: {
         where: { isDeletedOn: null },
         orderBy: { sortIndex: "asc" },
-        select: { name: true, type: true, numToSelect: true },
+        select: {
+          name: true,
+          type: true,
+          numToSelect: true,
+          isDescription: true,
+        },
       },
     },
   });
@@ -1411,7 +1416,12 @@ async function getAllAttemptScores({
   }
 }
 
-/** Get a list of the names of the documents/selects in `content`, in original order. */
+/**
+ * Get a list of the names of the documents/selects in `content`, in original order.
+ *
+ * Descriptions are skipped: they are not scored items, so they hold no column
+ * in the gradebook and no `itemNumber` in the stored item state.
+ */
 function getItemNames(
   content:
     | Content
@@ -1423,6 +1433,7 @@ function getItemNames(
           name: string;
           type: ContentType;
           numToSelect: number;
+          isDescription?: boolean;
         }[];
       },
 ) {
@@ -1439,6 +1450,9 @@ function getItemNames(
   } else if (content.type === "sequence") {
     for (const child of content.children) {
       if (child.type === "singleDoc") {
+        if (child.isDescription) {
+          continue;
+        }
         itemNames.push(child.name);
       } else if (child.type === "select") {
         if (child.numToSelect === 1) {

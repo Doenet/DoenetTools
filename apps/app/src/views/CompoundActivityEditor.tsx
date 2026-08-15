@@ -281,6 +281,25 @@ export function CompoundActivityEditor({
             { method: "post", encType: "application/json" },
           );
         },
+        // Only documents directly inside a problem set can be descriptions.
+        isDescription:
+          content.type === "singleDoc" && content.parent?.type === "sequence"
+            ? (content.isDescription ?? false)
+            : undefined,
+        // Changing this renumbers the items, so the server rejects it once
+        // the content is assigned.
+        updateIsDescription: readOnly
+          ? undefined
+          : (isDescription) => {
+              fetcher.submit(
+                {
+                  path: "updateContent/updateContentSettings",
+                  contentId: content.contentId,
+                  isDescription,
+                },
+                { method: "post", encType: "application/json" },
+              );
+            },
       });
     }
 

@@ -54,6 +54,10 @@ export type CardContent = {
   libraryEditorAvatarName?: string;
   repeatInProblemSet?: number;
   updateRepeatInProblemSet?: (copies: number) => void;
+  // Defined only for a document inside a problem set; `updateIsDescription` is
+  // omitted when the content cannot be changed (e.g. it is assigned).
+  isDescription?: boolean;
+  updateIsDescription?: (isDescription: boolean) => void;
 };
 
 export default function Card({
@@ -148,17 +152,30 @@ export default function Card({
     ></Checkbox>
   );
 
-  // Content type icon
+  const descriptionExplanation =
+    "Shown to students but not numbered or scored. Do not put anything a student answers in a description — their work there is not saved or graded.";
+
+  // Content type icon. A description gets its own icon and color so that it
+  // reads as structurally different from the scored problems around it.
   const { iconImage, iconColor } = getIconInfo(
     contentType,
     Boolean(cardContent.content.assignmentInfo),
+    cardContent.isDescription,
   );
+  const contentTypeLabel = cardContent.content.assignmentInfo
+    ? "Assignment"
+    : cardContent.isDescription
+      ? "Description (not scored)"
+      : contentTypeName;
   const contentTypeIcon = (
     <Tooltip
       openDelay={500}
       label={
-        cardContent.content.assignmentInfo ? "Assignment" : contentTypeName
+        cardContent.isDescription
+          ? `Description: ${descriptionExplanation}`
+          : contentTypeLabel
       }
+      maxWidth="18rem"
     >
       <Flex
         alignItems="center"
@@ -170,9 +187,7 @@ export default function Card({
           color={iconColor}
           width={contentTypeIconSize}
           height={contentTypeIconSize}
-          aria-label={
-            cardContent.content.assignmentInfo ? "Assignment" : contentTypeName
-          }
+          aria-label={contentTypeLabel}
         />
       </Flex>
     </Tooltip>
@@ -366,40 +381,118 @@ export default function Card({
   );
 
   const [copyNum, setCopyNum] = useState(cardContent.repeatInProblemSet);
+  const [descriptionTipOpen, setDescriptionTipOpen] = useState(false);
+  const [repeatTipOpen, setRepeatTipOpen] = useState(false);
 
+  // Repeating compiles the document into a select that draws that many of its
+  // variants, so the student gets that many differing copies of the problem.
+  // Like the description toggle, the explanation rides on `aria-label` so it
+  // is not tooltip-only, and the tooltip is controlled so keyboard focus
+  // opens it too.
+  const repeatExplanation =
+    "Include this problem in the problem set more than once, each copy using a different variant of the document. Offered only for documents that have more than one variant.";
   const repeatInProblemSet = cardContent.repeatInProblemSet &&
     numVariants > 1 && (
-      <HStack>
-        <Text>Repeat:</Text>
-        <NumberInput
-          size="sm"
-          maxWidth="20"
-          min={1}
-          max={numVariants}
-          value={copyNum}
-          onChange={(valueString) => setCopyNum(parseInt(valueString))}
-          onKeyDown={(e) => {
-            if (e.key == "Enter") {
-              const target = e.target as HTMLInputElement;
-              if (parseInt(target.value) >= 1) {
-                cardContent.updateRepeatInProblemSet!(parseInt(target.value));
+      <Tooltip
+        isOpen={repeatTipOpen}
+        label={repeatExplanation}
+        maxWidth="18rem"
+        placement="bottom-end"
+        modifiers={[
+          {
+            name: "preventOverflow",
+            options: { boundary: "clippingParents", padding: 8 },
+          },
+        ]}
+      >
+        <HStack
+          onMouseEnter={() => setRepeatTipOpen(true)}
+          onMouseLeave={() => setRepeatTipOpen(false)}
+          onFocus={() => setRepeatTipOpen(true)}
+          onBlur={() => setRepeatTipOpen(false)}
+        >
+          <Text>Repeat:</Text>
+          <NumberInput
+            size="sm"
+            maxWidth="20"
+            min={1}
+            max={numVariants}
+            value={copyNum}
+            onChange={(valueString) => setCopyNum(parseInt(valueString))}
+            onKeyDown={(e) => {
+              if (e.key == "Enter") {
+                const target = e.target as HTMLInputElement;
+                if (parseInt(target.value) >= 1) {
+                  cardContent.updateRepeatInProblemSet!(parseInt(target.value));
+                }
               }
-            }
-          }}
-          onBlur={(e) => {
-            if (parseInt(e.target.value) >= 1) {
-              cardContent.updateRepeatInProblemSet!(parseInt(e.target.value));
-            }
+            }}
+            onBlur={(e) => {
+              if (parseInt(e.target.value) >= 1) {
+                cardContent.updateRepeatInProblemSet!(parseInt(e.target.value));
+              }
+            }}
+          >
+            <NumberInputField
+              aria-label={`Number of times to repeat this problem: ${repeatExplanation}`}
+            />
+            <NumberInputStepper>
+              <NumberIncrementStepper />
+              <NumberDecrementStepper />
+            </NumberInputStepper>
+          </NumberInput>
+        </HStack>
+      </Tooltip>
+    );
+
+  // A description is shown to students like any other document but is not one
+  // of the scored problems, so it gets no number and no credit. The warning
+  // rides on `aria-label` rather than only on the tooltip, so a screen reader
+  // announces it when the checkbox takes focus.
+  //
+  // The tooltip is controlled: Chakra binds its own focus handlers to the
+  // Checkbox's label wrapper, but focus lands on the inner input, so an
+  // uncontrolled tooltip never opens for a keyboard user. React's synthetic
+  // onFocus/onBlur bubble, so driving it from the wrapper covers both.
+  const isDescriptionToggle = cardContent.isDescription !== undefined && (
+    <Tooltip
+      isOpen={descriptionTipOpen}
+      label={descriptionExplanation}
+      maxWidth="18rem"
+      // The control sits at the right edge of the card, so anchor the
+      // tooltip's right edge to it and keep it inside the viewport —
+      // otherwise it hangs off the page and adds scrollbars.
+      placement="bottom-end"
+      modifiers={[
+        {
+          name: "preventOverflow",
+          options: { boundary: "clippingParents", padding: 8 },
+        },
+      ]}
+    >
+      <Flex
+        alignItems="center"
+        onMouseEnter={() => setDescriptionTipOpen(true)}
+        onMouseLeave={() => setDescriptionTipOpen(false)}
+        onFocus={() => setDescriptionTipOpen(true)}
+        onBlur={() => setDescriptionTipOpen(false)}
+      >
+        <Checkbox
+          size="sm"
+          isChecked={cardContent.isDescription}
+          isDisabled={cardContent.updateIsDescription === undefined}
+          aria-label={`Description: ${descriptionExplanation}`}
+          onChange={(e) => {
+            cardContent.updateIsDescription?.(e.target.checked);
           }}
         >
-          <NumberInputField />
-          <NumberInputStepper>
-            <NumberIncrementStepper />
-            <NumberDecrementStepper />
-          </NumberInputStepper>
-        </NumberInput>
-      </HStack>
-    );
+          <Text fontSize="sm" whiteSpace="nowrap">
+            Description
+          </Text>
+        </Checkbox>
+      </Flex>
+    </Tooltip>
+  );
 
   const menuMarginLeft = ["0em", "3em"];
   const menuDisplay = cardContent.inlineActions ? (
@@ -487,8 +580,16 @@ export default function Card({
               {addMenu}
             </Flex>
           )}
-          {/* Right-aligned, not main link */}
-          {repeatInProblemSet}
+          {/* Right-aligned, not main link. Repeat comes first: the description
+              toggle is on every document, so keeping it last lines it up in a
+              single column whether or not the optional repeat control is
+              present. */}
+          {(isDescriptionToggle || repeatInProblemSet) && (
+            <HStack spacing="0.75rem" paddingLeft="0.75rem">
+              {repeatInProblemSet}
+              {isDescriptionToggle}
+            </HStack>
+          )}
           {menuDisplay}
         </Flex>
       </CardBody>

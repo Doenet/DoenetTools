@@ -374,7 +374,8 @@ export async function restoreDeletedContent({
  * Update the content with `contentId`, changing any of the parameters that are given:
  * `name`, `source`, `doenetmlVersionId`, `numVariants`,
  * `shuffle`, `numToSelect`, `selectByVariant`,
- * `paginate`, `activityLevelAttempts`, `itemLevelAttempts`, and/or `repeatInProblemSet`.
+ * `paginate`, `activityLevelAttempts`, `itemLevelAttempts`, `repeatInProblemSet`,
+ * and/or `isDescription`.
  *
  * For the change to succeed, either
  * - the content must be owned by `loggedInUserId`, or
@@ -382,8 +383,8 @@ export async function restoreDeletedContent({
  * In addition, if the content is assigned, then the change will succeed
  * only if just modifying `name`, and/or `paginate`.
  *
- * If you are trying to modify `repeatInProblemSet`, the content must be a document and
- * the content's parent must be a problem set.
+ * If you are trying to modify `repeatInProblemSet` or `isDescription`, the content
+ * must be a document and the content's parent must be a problem set.
  */
 export async function updateContent({
   contentId,
@@ -396,6 +397,7 @@ export async function updateContent({
   selectByVariant,
   paginate,
   repeatInProblemSet,
+  isDescription,
   loggedInUserId,
 }: {
   contentId: Uint8Array;
@@ -408,6 +410,7 @@ export async function updateContent({
   selectByVariant?: boolean;
   paginate?: boolean;
   repeatInProblemSet?: number;
+  isDescription?: boolean;
   loggedInUserId: Uint8Array;
 }) {
   if (
@@ -421,6 +424,7 @@ export async function updateContent({
       selectByVariant,
       paginate,
       repeatInProblemSet,
+      isDescription,
     ].every((x) => x === undefined)
   ) {
     // if no information passed in, don't update anything, including `lastEdited`.
@@ -459,12 +463,15 @@ export async function updateContent({
         selectByVariant,
         // paginate,
         repeatInProblemSet,
+        // Changing `isDescription` renumbers the items, which would no longer
+        // line up with the item numbers of existing attempts.
+        isDescription,
       ].some((x) => x !== undefined)
     ) {
       throw new InvalidRequestError("Cannot change assigned content");
     }
   }
-  if (repeatInProblemSet) {
+  if (repeatInProblemSet || isDescription !== undefined) {
     // Make sure this content is a document and the parent is a problem set
     const check = await prisma.content.findUniqueOrThrow({
       where: {
@@ -482,17 +489,19 @@ export async function updateContent({
     });
     if (check.type !== "singleDoc" || check.parent?.type !== "sequence") {
       throw new InvalidRequestError(
-        "Cannot modify `repeatInProblemSet` when content is not a document or parent is not a problem set.",
+        "Cannot modify `repeatInProblemSet` or `isDescription` when content is not a document or parent is not a problem set.",
       );
     }
 
-    // Clamp the repeats between 1 and the number of variants this doc has
-    // (doesn't make sense to repeat exact problem twice)
-    repeatInProblemSet = Math.max(repeatInProblemSet, 1);
-    repeatInProblemSet = Math.min(
-      repeatInProblemSet,
-      numVariants ?? check.numVariants,
-    );
+    if (repeatInProblemSet) {
+      // Clamp the repeats between 1 and the number of variants this doc has
+      // (doesn't make sense to repeat exact problem twice)
+      repeatInProblemSet = Math.max(repeatInProblemSet, 1);
+      repeatInProblemSet = Math.min(
+        repeatInProblemSet,
+        numVariants ?? check.numVariants,
+      );
+    }
   }
 
   await prisma.content.update({
@@ -511,6 +520,7 @@ export async function updateContent({
       selectByVariant,
       paginate,
       repeatInProblemSet,
+      isDescription,
       lastEdited: DateTime.now().toJSDate(),
     },
   });

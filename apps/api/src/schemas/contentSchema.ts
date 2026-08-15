@@ -32,6 +32,7 @@ export const updateContentSettingsSchema = z.object({
   activityLevelAttempts: z.boolean().optional(),
   itemLevelAttempts: z.boolean().optional(),
   repeatInProblemSet: z.number().optional(),
+  isDescription: z.boolean().optional(),
 });
 
 export const updateCategoriesSchema = z.object({
