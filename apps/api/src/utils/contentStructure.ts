@@ -15,7 +15,7 @@ import {
 import { sortClassifications } from "./classificationsCategories";
 import { fromUUID, isEqualUUID } from "./uuid";
 import { DateTime } from "luxon";
-import { ActivitySource } from "@doenet-tools/shared";
+import { ActivitySource, repeatCountInProblemSet } from "@doenet-tools/shared";
 import { InvalidRequestError } from "./error";
 import { imageSourceFromStorageKey } from "../media/upload.schema";
 
@@ -640,29 +640,6 @@ export function returnClassificationListSelect() {
       orderBy: { isPrimary: "desc" as const },
     },
   };
-}
-
-/**
- * The number of copies of a document that a problem set contains.
- *
- * A description is not a scored item, so it is never repeated. Otherwise the
- * document is repeated `repeatInProblemSet` times, capped by the number of
- * variants it has: each copy uses a different variant, and `numVariants` can
- * drop below a previously saved `repeatInProblemSet` (by editing the source or
- * reverting the document to an earlier revision).
- */
-export function repeatCountInProblemSet(doc: {
-  isDescription?: boolean;
-  repeatInProblemSet?: number;
-  numVariants?: number;
-}) {
-  if (doc.isDescription) {
-    return 1;
-  }
-  return Math.max(
-    1,
-    Math.min(doc.repeatInProblemSet ?? 1, doc.numVariants ?? 1),
-  );
 }
 
 /**

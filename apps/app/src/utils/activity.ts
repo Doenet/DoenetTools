@@ -11,7 +11,7 @@ import {
   ContentType,
   DoenetmlVersion,
 } from "../types";
-import { ActivitySource } from "@doenet-tools/shared";
+import { ActivitySource, repeatCountInProblemSet } from "@doenet-tools/shared";
 import { IconType } from "react-icons/lib";
 import { FaFolder, FaImage } from "react-icons/fa";
 import { FaListOl } from "react-icons/fa6";
@@ -115,29 +115,6 @@ export function findClassificationDescriptionIndex({
     }
     return c.subCategory === subCategory;
   });
-}
-
-/**
- * The number of copies of a document that a problem set contains.
- *
- * A description is not a scored item, so it is never repeated. Otherwise the
- * document is repeated `repeatInProblemSet` times, capped by the number of
- * variants it has: each copy uses a different variant, and `numVariants` can
- * drop below a previously saved `repeatInProblemSet` (by editing the source or
- * reverting the document to an earlier revision).
- */
-function repeatCountInProblemSet(doc: {
-  isDescription?: boolean;
-  repeatInProblemSet?: number;
-  numVariants?: number;
-}) {
-  if (doc.isDescription) {
-    return 1;
-  }
-  return Math.max(
-    1,
-    Math.min(doc.repeatInProblemSet ?? 1, doc.numVariants ?? 1),
-  );
 }
 
 /**

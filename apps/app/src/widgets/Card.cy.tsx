@@ -79,3 +79,58 @@ describe("Card description toggle", { tags: ["@group4"] }, () => {
     cy.checkAccessibility("body");
   });
 });
+
+describe("Card repeat control", { tags: ["@group4"] }, () => {
+  function mountRepeatCard(cardContent: Partial<CardContent>) {
+    cy.mount(
+      <Card
+        cardContent={
+          {
+            content: docContent({ numVariants: 5 }),
+            ...cardContent,
+          } as CardContent
+        }
+      />,
+      { outletContext },
+    );
+  }
+
+  it("is absent unless the document is inside a problem set", () => {
+    mountRepeatCard({});
+    cy.get('input[aria-label^="Number of times to repeat"]').should(
+      "not.exist",
+    );
+  });
+
+  it("is absent for a description, which is never repeated", () => {
+    mountRepeatCard({
+      repeatInProblemSet: 3,
+      isDescription: true,
+      updateRepeatInProblemSet: () => {},
+    });
+    cy.get('input[aria-label^="Number of times to repeat"]').should(
+      "not.exist",
+    );
+  });
+
+  // Assigned (and otherwise read-only) content supplies no updater: changing
+  // the repeat would renumber the items, so the server rejects it.
+  it("is disabled, but still shows its value, without an update callback", () => {
+    mountRepeatCard({ repeatInProblemSet: 3 });
+
+    cy.get('input[aria-label^="Number of times to repeat"]')
+      .should("have.value", "3")
+      .should("be.disabled");
+  });
+
+  it("reports a new value to the update callback", () => {
+    const updateRepeatInProblemSet = cy.stub().as("updateRepeat");
+    mountRepeatCard({ repeatInProblemSet: 3, updateRepeatInProblemSet });
+
+    cy.get('input[aria-label^="Number of times to repeat"]')
+      .should("be.enabled")
+      .clear()
+      .type("2{enter}");
+    cy.get("@updateRepeat").should("have.been.calledWith", 2);
+  });
+});

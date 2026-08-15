@@ -274,24 +274,27 @@ export function CompoundActivityEditor({
         indentLevel,
         // Repeating and describing are both settings of a document directly
         // inside a problem set; neither applies within a question bank.
+        // Both change the number of items, so the server rejects either one
+        // once the content is assigned; omitting the updater renders the
+        // control as disabled.
         repeatInProblemSet: inProblemSet
           ? content.repeatInProblemSet
           : undefined,
-        updateRepeatInProblemSet: (copies) => {
-          fetcher.submit(
-            {
-              path: "updateContent/updateContentSettings",
-              contentId: content.contentId,
-              repeatInProblemSet: copies,
+        updateRepeatInProblemSet: readOnly
+          ? undefined
+          : (copies) => {
+              fetcher.submit(
+                {
+                  path: "updateContent/updateContentSettings",
+                  contentId: content.contentId,
+                  repeatInProblemSet: copies,
+                },
+                { method: "post", encType: "application/json" },
+              );
             },
-            { method: "post", encType: "application/json" },
-          );
-        },
         isDescription: inProblemSet
           ? (content.isDescription ?? false)
           : undefined,
-        // Changing this renumbers the items, so the server rejects it once
-        // the content is assigned.
         updateIsDescription: readOnly
           ? undefined
           : (isDescription) => {

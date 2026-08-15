@@ -101,8 +101,9 @@ export type CardContent = {
   libraryEditorAvatarName?: string;
   repeatInProblemSet?: number;
   updateRepeatInProblemSet?: (copies: number) => void;
-  // Defined only for a document inside a problem set; `updateIsDescription` is
-  // omitted when the content cannot be changed (e.g. it is assigned).
+  // Defined only for a document inside a problem set; the matching updater is
+  // omitted when the content cannot be changed (e.g. it is assigned), which
+  // renders the control as disabled.
   isDescription?: boolean;
   updateIsDescription?: (isDescription: boolean) => void;
 };
@@ -447,18 +448,23 @@ export default function Card({
             min={1}
             max={numVariants}
             value={copyNum}
+            isDisabled={cardContent.updateRepeatInProblemSet === undefined}
             onChange={(valueString) => setCopyNum(parseInt(valueString))}
             onKeyDown={(e) => {
               if (e.key == "Enter") {
                 const target = e.target as HTMLInputElement;
                 if (parseInt(target.value) >= 1) {
-                  cardContent.updateRepeatInProblemSet!(parseInt(target.value));
+                  cardContent.updateRepeatInProblemSet?.(
+                    parseInt(target.value),
+                  );
                 }
               }
             }}
             onBlur={(e) => {
               if (parseInt(e.target.value) >= 1) {
-                cardContent.updateRepeatInProblemSet!(parseInt(e.target.value));
+                cardContent.updateRepeatInProblemSet?.(
+                  parseInt(e.target.value),
+                );
               }
             }}
           >

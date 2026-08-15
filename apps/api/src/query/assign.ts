@@ -13,12 +13,9 @@ import {
 import { getRandomValues } from "crypto";
 import { AssignmentMode, ContentType, Prisma } from "@prisma/client";
 import { Content, ItemScores, ScoreData, UserInfo } from "../types";
+import { repeatCountInProblemSet } from "@doenet-tools/shared";
 import { fromUUID, isEqualUUID } from "../utils/uuid";
-import {
-  processContent,
-  repeatCountInProblemSet,
-  returnContentSelect,
-} from "../utils/contentStructure";
+import { processContent, returnContentSelect } from "../utils/contentStructure";
 import { InvalidRequestError } from "../utils/error";
 import { getContent } from "./activity_edit_view";
 import {
