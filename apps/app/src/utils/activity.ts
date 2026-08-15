@@ -118,6 +118,29 @@ export function findClassificationDescriptionIndex({
 }
 
 /**
+ * The number of copies of a document that a problem set contains.
+ *
+ * A description is not a scored item, so it is never repeated. Otherwise the
+ * document is repeated `repeatInProblemSet` times, capped by the number of
+ * variants it has: each copy uses a different variant, and `numVariants` can
+ * drop below a previously saved `repeatInProblemSet` (by editing the source or
+ * reverting the document to an earlier revision).
+ */
+function repeatCountInProblemSet(doc: {
+  isDescription?: boolean;
+  repeatInProblemSet?: number;
+  numVariants?: number;
+}) {
+  if (doc.isDescription) {
+    return 1;
+  }
+  return Math.max(
+    1,
+    Math.min(doc.repeatInProblemSet ?? 1, doc.numVariants ?? 1),
+  );
+}
+
+/**
  * Compile an `activity` into the activity json used for viewing composite activities.
  *
  * `inProblemSet` says whether `activity` is a child of a problem set, which is
@@ -143,20 +166,17 @@ export function compileActivityFromContent(
         version: activity.doenetmlVersion.fullVersion,
         numVariants: activity.numVariants,
       };
-      // A description is not a scored item, so it is never repeated: the viewer
-      // does not support a select whose items include a description.
-      if (
-        !isDescription &&
-        activity.repeatInProblemSet &&
-        activity.repeatInProblemSet > 1
-      ) {
+      const repeatCount = inProblemSet
+        ? repeatCountInProblemSet({ ...activity, isDescription })
+        : 1;
+      if (repeatCount > 1) {
         // If the document repeats, wrap this document in
         // a `select` which can select that many variants.
         return {
           id: `select_for_${activity.contentId}`,
           type: "select",
-          title: `Repeat ${activity.repeatInProblemSet} times`,
-          numToSelect: activity.repeatInProblemSet,
+          title: `Repeat ${repeatCount} times`,
+          numToSelect: repeatCount,
           selectByVariant: true,
           items: [documentJson],
         };

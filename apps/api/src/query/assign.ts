@@ -14,7 +14,11 @@ import { getRandomValues } from "crypto";
 import { AssignmentMode, ContentType, Prisma } from "@prisma/client";
 import { Content, ItemScores, ScoreData, UserInfo } from "../types";
 import { fromUUID, isEqualUUID } from "../utils/uuid";
-import { processContent, returnContentSelect } from "../utils/contentStructure";
+import {
+  processContent,
+  repeatCountInProblemSet,
+  returnContentSelect,
+} from "../utils/contentStructure";
 import { InvalidRequestError } from "../utils/error";
 import { getContent } from "./activity_edit_view";
 import {
@@ -871,6 +875,7 @@ export async function getAssignmentResponseStudent({
           numToSelect: true,
           repeatInProblemSet: true,
           isDescription: true,
+          numVariants: true,
         },
       },
     },
@@ -1450,6 +1455,7 @@ function getItemNames(
           numToSelect: number;
           repeatInProblemSet?: number;
           isDescription?: boolean;
+          numVariants?: number;
         }[];
       },
 ) {
@@ -1464,7 +1470,7 @@ function getItemNames(
     if (child.type === "singleDoc") {
       return child.isDescription
         ? []
-        : repeatedItemNames(child.name, child.repeatInProblemSet ?? 1);
+        : repeatedItemNames(child.name, repeatCountInProblemSet(child));
     }
     if (child.type === "select") {
       return repeatedItemNames(child.name, child.numToSelect);

@@ -258,6 +258,9 @@ export function CompoundActivityEditor({
   ) {
     const cards: CardContent[] = [];
 
+    const inProblemSet =
+      content.type === "singleDoc" && content.parent?.type === "sequence";
+
     // skip the first activity, which doesn't have parent info
     if (parentInfo) {
       cards.push({
@@ -269,8 +272,11 @@ export function CompoundActivityEditor({
               : editorUrl(content.contentId, content.type)
             : undefined,
         indentLevel,
-        repeatInProblemSet:
-          content.type === "singleDoc" ? content.repeatInProblemSet : undefined,
+        // Repeating and describing are both settings of a document directly
+        // inside a problem set; neither applies within a question bank.
+        repeatInProblemSet: inProblemSet
+          ? content.repeatInProblemSet
+          : undefined,
         updateRepeatInProblemSet: (copies) => {
           fetcher.submit(
             {
@@ -281,11 +287,9 @@ export function CompoundActivityEditor({
             { method: "post", encType: "application/json" },
           );
         },
-        // Only documents directly inside a problem set can be descriptions.
-        isDescription:
-          content.type === "singleDoc" && content.parent?.type === "sequence"
-            ? (content.isDescription ?? false)
-            : undefined,
+        isDescription: inProblemSet
+          ? (content.isDescription ?? false)
+          : undefined,
         // Changing this renumbers the items, so the server rejects it once
         // the content is assigned.
         updateIsDescription: readOnly

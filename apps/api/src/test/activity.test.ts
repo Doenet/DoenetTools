@@ -3,7 +3,14 @@ import { describe, expect, test, vi } from "vitest";
 import { DateTime } from "luxon";
 
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { createTestUser, doc, fold, pset, setupTestContent } from "./utils";
+import {
+  createTestUser,
+  doc,
+  fold,
+  pset,
+  qbank,
+  setupTestContent,
+} from "./utils";
 import {
   createContent,
   deleteContent,
@@ -28,6 +35,7 @@ import { modifyContentSharedWith, setContentIsPublic } from "../query/share";
 import {
   closeAssignment,
   createAssignment,
+  getAssignmentResponseOverview,
   updateAssignmentClosedOn,
 } from "../query/assign";
 import { createNewAttempt, saveScoreAndState } from "../query/scores";
@@ -470,6 +478,96 @@ test("A description is not repeated", async () => {
   // description is not a scored item, so the repeat is ignored.
   // Mirrored by "does not repeat a description" in
   // `apps/app/src/utils/activity.cy.tsx`.
+  expect(source.items[0].type).eqls("singleDoc");
+});
+
+test("A document is repeated no more times than it has variants", async () => {
+  const { userId } = await createTestUser();
+  const [ps, psDoc] = await setupTestContent(userId, {
+    ps: pset({
+      psDoc: doc(`<selectFromSequence from="1" to="5"/>`),
+    }),
+  });
+  await updateContent({
+    contentId: psDoc,
+    loggedInUserId: userId,
+    numVariants: 5,
+  });
+  await updateContent({
+    contentId: psDoc,
+    loggedInUserId: userId,
+    repeatInProblemSet: 3,
+  });
+
+  // Editing the document down to fewer variants leaves the larger repeat in
+  // place, and the editor offers no way to lower it: the repeat control is
+  // shown only for a document with more than one variant.
+  await updateContent({
+    contentId: psDoc,
+    loggedInUserId: userId,
+    numVariants: 2,
+  });
+
+  const content = await getContent({ contentId: ps, loggedInUserId: userId });
+  const source = compileActivityFromContent(content);
+  if (source.type !== "sequence") {
+    throw Error("shouldn't happen");
+  }
+  const item = source.items[0];
+  if (item.type !== "select") {
+    throw Error("shouldn't happen");
+  }
+  expect(item.numToSelect).eqls(2);
+  expect(item.title).eqls("Repeat 2 times");
+
+  // The item names label the gradebook columns, so they follow the same cap.
+  const { assignmentId } = await createAssignment({
+    contentId: ps,
+    loggedInUserId: userId,
+    closedOn: DateTime.now().plus({ days: 1 }),
+    destinationParentId: null,
+  });
+  const { itemNames } = await getAssignmentResponseOverview({
+    contentId: assignmentId,
+    loggedInUserId: userId,
+  });
+  expect(itemNames).eqls(["psDoc (1)", "psDoc (2)"]);
+});
+
+test("A document in a question bank is not repeated", async () => {
+  const { userId } = await createTestUser();
+  const [_ps, psDoc, bank] = await setupTestContent(userId, {
+    ps: pset({
+      psDoc: doc(`<selectFromSequence from="1" to="5"/>`),
+    }),
+    bank: qbank({}),
+  });
+  await updateContent({
+    contentId: psDoc,
+    loggedInUserId: userId,
+    numVariants: 5,
+  });
+  await updateContent({
+    contentId: psDoc,
+    loggedInUserId: userId,
+    repeatInProblemSet: 3,
+  });
+
+  // The setting travels with the document when it moves, but a question bank
+  // already selects from its documents: a nested select would put more items
+  // in the activity than `numToSelect` accounts for.
+  await moveContent({
+    contentId: psDoc,
+    changeParentIdTo: bank,
+    desiredPosition: 0,
+    loggedInUserId: userId,
+  });
+
+  const content = await getContent({ contentId: bank, loggedInUserId: userId });
+  const source = compileActivityFromContent(content);
+  if (source.type !== "select") {
+    throw Error("shouldn't happen");
+  }
   expect(source.items[0].type).eqls("singleDoc");
 });
 

@@ -139,4 +139,57 @@ describe("compileActivityFromContent", { tags: ["@group4"] }, () => {
     // existing saved student state keeps its source hash.
     expect(source.items[0].type).to.equal("singleDoc");
   });
+
+  it("does not repeat a document inside a question bank", () => {
+    // The bank already selects `numToSelect` of its documents, and the item
+    // names count it as exactly that many items, so a nested select would put
+    // more items in the activity than the gradebook has columns for. The
+    // setting travels with a document copied out of a problem set, so the
+    // compiler cannot assume it is absent here.
+    const source = compileActivityFromContent({
+      contentId: "bank",
+      name: "My question bank",
+      type: "select",
+      numToSelect: 1,
+      selectByVariant: false,
+      children: [mkDoc("doc1", "Problem", { repeatInProblemSet: 3 })],
+    } as unknown as Content);
+
+    if (source.type !== "select") {
+      throw Error("expected a select");
+    }
+    expect(source.items[0].type).to.equal("singleDoc");
+  });
+
+  it("repeats no more copies than the document has variants", () => {
+    // Editing or reverting a document can lower `numVariants` below a repeat
+    // saved earlier, and the editor then hides the repeat control (it is shown
+    // only for multi-variant documents), so nothing else would correct it.
+    const source = compileActivityFromContent(
+      mkProblemSet([
+        mkDoc("doc1", "Problem", { repeatInProblemSet: 3, numVariants: 2 }),
+      ]),
+    );
+    if (source.type !== "sequence") {
+      throw Error("expected a sequence");
+    }
+    const item = source.items[0];
+    if (item.type !== "select") {
+      throw Error("expected a select");
+    }
+    expect(item.numToSelect).to.equal(2);
+    expect(item.title).to.equal("Repeat 2 times");
+  });
+
+  it("does not wrap a repeated document that has only one variant", () => {
+    const source = compileActivityFromContent(
+      mkProblemSet([
+        mkDoc("doc1", "Problem", { repeatInProblemSet: 3, numVariants: 1 }),
+      ]),
+    );
+    if (source.type !== "sequence") {
+      throw Error("expected a sequence");
+    }
+    expect(source.items[0].type).to.equal("singleDoc");
+  });
 });
