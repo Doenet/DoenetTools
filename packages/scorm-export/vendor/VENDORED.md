@@ -45,11 +45,31 @@ from `node_modules` at build time.
   fallback once the blob is dropped, and an LMS runs the SCO as a cross-site
   iframe where storage may be partitioned or over quota. It now warns once per
   divId (`_lsWarned`).
+  A third change removes the "Submit Assignment" button. A Doenet activity has
+  no single end-of-page submission: the viewer reports
+  `SPLICE.reportScoreAndState` after every answer carrying the whole document's
+  score, which `recordInteraction()` writes and commits, so the grade is already
+  correct at all times. The button only added `completion_status` and
+  `success_status` on top of a score that was already in the gradebook — and it
+  set `success_status` to `passed` unconditionally, recording a student who
+  scored 0 as having passed. `addSubmitButton()` is no longer called (the call
+  is commented out rather than the function deleted, to keep an upstream
+  re-copy a small diff), and `handlePageExit()` sets `completion_status` when at
+  least one score was reported, keeping `exit="suspend"` so the attempt stays
+  resumable. Nothing writes `success_status` any more; pass/fail is the LMS's
+  call from its mastery score, which is what the per-answer path already said.
+  This diverges from upstream on purpose — PreTeXt's multi-exercise pages, where
+  one page holds many independent exercises, are a case an explicit submit
+  genuinely fits — so it is the least likely of these mods to be wanted back
+  upstream. It also adds an element to the unload batch that Blackboard testing
+  validated, so it wants checking on a real Blackboard install.
   Touch points, all marked `VENDOR-MOD`: `_doenetStates` comment, `_lastGoodDz`
   and `_lsWarned` declarations, `SUSPEND_TOTAL_LIMIT` + `buildSuspendData()`,
   `saveDoenetState()`, `restoreDoenetStates()`, the two
-  restore paths (`initSession`, `loadRestoreData`), and the SPLICE
-  `reportScoreAndState` → `recordInteraction` call. This is a candidate to
+  restore paths (`initSession`, `loadRestoreData`), the SPLICE
+  `reportScoreAndState` → `recordInteraction` call, the commented-out
+  `addSubmitButton()` call, `handlePageExit()`, and `submitSession()`'s dropped
+  `success_status` write. This is a candidate to
   contribute upstream to PreTeXt (Oscar Levin); if accepted, drop the local mod
   and re-copy verbatim.
 - Requires the `lz-string` npm dependency (loaded as `window.LZString`) and the

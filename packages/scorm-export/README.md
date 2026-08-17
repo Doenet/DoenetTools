@@ -37,8 +37,8 @@ node build.mjs sample/sample.doenet --title "Sample Doenet Activity"
 This writes `dist/sample-scorm.zip`. Upload that zip to an LMS as a SCORM
 package (Canvas: Settings → Navigation → enable SCORM, then SCORM → Upload;
 Moodle: add a "SCORM package" activity; Brightspace/Blackboard: content
-upload menus). The page shows the activity plus a "Submit Assignment"
-button; scores flow to the LMS gradebook.
+upload menus). The page shows the activity; scores flow to the LMS gradebook
+as the student answers, with no submit step.
 
 ## What's in a package
 
@@ -49,7 +49,7 @@ A SCORM package here is just six static files in a flat zip:
 | `imsmanifest.xml`       | Minimal SCORM 2004 4th Ed. manifest: one item, one SCO, launch `index.html`     |
 | `index.html`            | Chrome-free shell: `div[data-component="doenet"]` wrapping the activity iframe  |
 | `activity.html`         | The iframe content: DoenetML source + `@doenet/standalone` viewer from CDN      |
-| `ptx_scorm_events.js`   | Vendored SCORM bridge (LMS API discovery, scoring, state save/restore, submit)  |
+| `ptx_scorm_events.js`   | Vendored SCORM bridge (LMS API discovery, scoring, state save/restore)          |
 | `lti_iframe_resizer.js` | Vendored SPLICE `lti.frameResize` handler so the iframe fits its content        |
 | `lz-string.min.js`      | `lz-string` npm dep, copied in at build time; compresses state for suspend_data |
 
@@ -77,9 +77,13 @@ vendored (see `vendor/VENDORED.md`); `lz-string.min.js` comes from the pinned
    snapshot that did fit rather than clearing the field, so an activity that
    outgrows the budget stops updating its saved state instead of losing it.
    Scores are unaffected: they live in `cmi.score.*`, not in `suspend_data`.
-4. "Submit Assignment" commits the final grade; the attempt is finalized
-   when the student leaves the page (this ordering is a hard-won Blackboard
-   requirement — see the comments in the vendored file).
+4. There is no submit button. A Doenet activity has no single end-of-page
+   submission — the score in step 3 is the whole document's, so the gradebook
+   is already correct after every answer. Leaving the page marks the SCO
+   completed (only if something was answered) and finalizes the attempt with
+   `exit="suspend"`, so it stays resumable. Terminating only on real page
+   unload is a hard-won Blackboard requirement — see the comments in the
+   vendored file.
 
 ## Debugging
 
@@ -138,6 +142,7 @@ not prove, and what still needs a real LMS.
 
 `ptx_scorm_events.js` expects: an element `div[data-component="doenet"]`
 with the activity id, containing the iframe whose `contentWindow` sends the
-SPLICE messages, all inside `<main>` (where the submit button is appended).
+SPLICE messages, all inside `<main>` (which upstream's now-unused
+submit button would append to).
 `index.html` provides exactly this; if you restructure it, keep those
 invariants.

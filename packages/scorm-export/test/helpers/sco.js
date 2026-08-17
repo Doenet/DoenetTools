@@ -116,6 +116,17 @@ export function launchSco({
       return responses.find((r) => r?.subject === "SPLICE.getState.response");
     },
 
+    /**
+     * The student closes the tab.  pagehide with persisted=false is the case
+     * the bridge treats as a real unload (persisted=true means bfcache, which
+     * it deliberately ignores).
+     */
+    leave({ persisted = false } = {}) {
+      const event = new window.Event("pagehide");
+      Object.defineProperty(event, "persisted", { value: persisted });
+      window.dispatchEvent(event);
+    },
+
     /** What the LMS currently holds, parsed. Throws if it is not valid JSON. */
     suspendData() {
       return JSON.parse(api.get("cmi.suspend_data"));

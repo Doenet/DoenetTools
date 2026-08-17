@@ -57,6 +57,13 @@ export function makeLms({ window, initial = {}, truncateAt = null } = {}) {
   }
 
   const calls = [];
+  // The SCORM data model is unreadable once the session is terminated (the API
+  // returns "" with a "retrieve after termination" error), which is correct but
+  // unhelpful for a test asserting on what the page left behind.  Mirror every
+  // accepted write so assertions still work after a page-exit.
+  const written = new Map(Object.entries(initial));
+  let terminated = false;
+
   const wrap = (name) => {
     const original = api[name].bind(api);
     api[name] = (...args) => {
@@ -88,6 +95,7 @@ export function makeLms({ window, initial = {}, truncateAt = null } = {}) {
       stored = stored.slice(0, truncateAt);
     }
     const result = realSetValue(key, stored);
+    if (result === "true") written.set(key, stored);
     calls.push({
       fn: "SetValue",
       key,
@@ -99,14 +107,24 @@ export function makeLms({ window, initial = {}, truncateAt = null } = {}) {
     return result;
   };
 
+  const wrappedTerminate = api.Terminate.bind(api);
+  api.Terminate = (...args) => {
+    const result = wrappedTerminate(...args);
+    terminated = true;
+    return result;
+  };
+
   api.calls = calls;
   /** Every value the content offered for a key, oldest first. */
   api.writesTo = (key) =>
     calls
       .filter((c) => c.fn === "SetValue" && c.key === key)
       .map((c) => c.value);
-  /** What the data model currently holds. */
+  /** Whether the content closed the session. */
+  Object.defineProperty(api, "terminated", { get: () => terminated });
+  /** What the data model holds — or last held, if the session is closed. */
   api.get = (key) => {
+    if (terminated) return written.get(key) ?? "";
     const value = api.GetValue(key);
     calls.pop(); // a test's own read is not part of what the content said
     return value;

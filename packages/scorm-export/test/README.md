@@ -121,7 +121,12 @@ state. Treat the limit as reachable in normal use, not a pathological corner.
 2. Answer, close the tab, relaunch: state and score both come back.
 3. Repeat in a different browser (proves the LMS copy, not localStorage).
 4. Open the console — no `[PTX-SCORM]` warnings during a normal session.
-5. For the size path, build with `--debug` and watch `[DOENET-SIZE-PROBE]` for
+5. **On Blackboard specifically**: answer, close the tab, and check the attempt
+   is not stuck at "draft saved" and shows a grade. Page exit now writes
+   `completion_status` alongside `exit="suspend"`, which adds an element to the
+   unload batch that Blackboard testing validated before the submit button was
+   removed. Nothing automated covers this.
+6. For the size path, build with `--debug` and watch `[DOENET-SIZE-PROBE]` for
    what the LMS actually returns.
 
 Heavier options, in increasing order of fidelity and cost, if this ever ships

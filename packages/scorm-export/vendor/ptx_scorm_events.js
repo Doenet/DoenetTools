@@ -1182,7 +1182,20 @@
         requestParentResize();
         installWeBWorKSrcdocIntercept();
         installWeBWorKAjaxIntercept();
-        addSubmitButton();
+        // VENDOR-MOD (doenet-scorm-export): no "Submit Assignment" button.
+        //
+        // A Doenet activity has no single end-of-page submission: the viewer
+        // reports SPLICE.reportScoreAndState after every answer, carrying the
+        // whole document's score, and recordInteraction() writes and commits it
+        // immediately.  The grade is therefore already correct at all times; the
+        // button only ever added completion_status and success_status on top of
+        // a score that was already in the gradebook.
+        //
+        // addSubmitButton() and submitSession() are left in place, unused, so
+        // that re-copying this file from upstream stays a small, obvious diff.
+        // completion_status is set by handlePageExit() instead.
+        //
+        // addSubmitButton();
 
         // Add status badges to WeBWorK problems that the student has already answered.
         // WeBWorK is not a RunestoneBase component so the restore hook's decorateStatus
@@ -2348,7 +2361,12 @@
             Set('cmi.score.raw',    (scaled * 100).toFixed(1));
             Set('cmi.score.min',    '0');
             Set('cmi.score.max',    '100');
-            Set('cmi.success_status', 'passed');
+            // VENDOR-MOD (doenet-scorm-export): was Set('cmi.success_status',
+            // 'passed') unconditionally, which recorded a student who scored 0
+            // as having passed.  Pass/fail is the LMS's call from its mastery
+            // score — the per-answer path says so explicitly and writes nothing.
+            // This function is currently unreachable (no submit button), but the
+            // write would be wrong if it were ever re-enabled.
         } else {
             Set('cmi.core.score.raw', (scaled * 100).toFixed(1));
             Set('cmi.core.score.min', '0');
@@ -2519,10 +2537,32 @@
         // Re-save the current state in case anything changed since the last Commit.
         Set('cmi.suspend_data', buildSuspendData());
 
+        // VENDOR-MOD (doenet-scorm-export): mark the SCO completed here, since
+        // there is no "Submit Assignment" button to do it.
+        //
+        // Gated on having received at least one score: opening an activity and
+        // closing it without answering is not completing it, and would otherwise
+        // mark every accidental click complete.
+        //
+        // This deliberately does NOT mirror the button's behaviour of also
+        // setting success_status.  The button set it to "passed" unconditionally
+        // — a student scoring 0 was recorded as passed — which contradicts the
+        // per-answer path's own reasoning: pass/fail belongs to the LMS and its
+        // mastery score, not to this script.
+        //
+        // Completion and exit are orthogonal in SCORM 2004, so "completed" with
+        // exit="suspend" below is legal and keeps the attempt resumable.  Note
+        // this adds an element to the unload batch that Blackboard testing
+        // validated, so it wants checking on a real Blackboard install.
+        if (_state.graded > 0 && !_statusCompleted) {
+            var doneKey = (_ver === '2004') ? 'cmi.completion_status' : 'cmi.core.lesson_status';
+            Set(doneKey, 'completed');
+            _statusCompleted = true;
+        }
+
         // exit="suspend" tells the LMS to preserve this attempt as "In Progress"
         // so the student can resume where they left off.  The grade is already
-        // recorded from each question submission; "In Progress" is the correct
-        // display state until the student explicitly clicks "Submit Assignment".
+        // recorded from each question submission.
         //
         // SCORM 2004: cmi.exit       (valid values: suspend, logout, time-out, "")
         // SCORM 1.2:  cmi.core.exit  (valid values: suspend, logout, time-out, "")
