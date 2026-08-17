@@ -10,11 +10,7 @@ import { describe, it, expect } from "vitest";
 import LZString from "lz-string";
 
 import { launchSco, stateOfSize, tick, ACTIVITY_ID } from "./helpers/sco.js";
-import {
-  makeFakeLms,
-  SUSPEND_DATA_SPM_2004,
-  SUSPEND_DATA_SPM_12,
-} from "./helpers/fake-lms.js";
+import { SUSPEND_DATA_SPM_2004, SUSPEND_DATA_SPM_12 } from "./helpers/lms.js";
 
 describe("a normal session", () => {
   it("opens a SCORM session and marks the SCO incomplete", async () => {
@@ -51,13 +47,93 @@ describe("a normal session", () => {
     // A new launch sees only what the LMS persisted — localStorage in a real
     // LMS belongs to a different browser or was cleared between attempts.
     const second = launchSco({
-      lms: makeFakeLms({ initial: { "cmi.suspend_data": carried } }),
+      lmsOptions: { initial: { "cmi.suspend_data": carried } },
     });
     await tick();
 
     const response = await second.requestState();
     expect(response.state).toEqual(state);
     second.close();
+  });
+});
+
+describe("conformance with the SCORM data model", () => {
+  // scorm-again enforces the real data model, so this catches anything the
+  // bridge writes that an LMS is entitled to refuse: a value outside an
+  // element's vocabulary, a score out of range, a write to a read-only or
+  // undefined element.  A hand-written mock cannot check this — it would only
+  // know the rules whoever wrote it remembered.
+  it.each([2_000, 400_000])(
+    "makes no refused write outside the interactions collection, with a %i-char state",
+    async (size) => {
+      const sco = launchSco();
+      await tick();
+      sco.report({ score: 0.5, state: stateOfSize(size, 1) });
+      await tick();
+      sco.report({ score: 1, state: stateOfSize(size, 2) });
+      await tick();
+
+      const refused = sco.api
+        .rejectedWrites()
+        .filter((c) => !c.key.startsWith("cmi.interactions."))
+        .map((c) => `${c.key} -> error ${c.error}`);
+      expect(refused, "writes the LMS refused").toEqual([]);
+      sco.close();
+    },
+  );
+
+  // Found by running against a real data model rather than a mock.
+  //
+  // The bridge keys each interaction record by the exercise's div id, and a
+  // single-document package has exactly one — so the second answer writes an id
+  // already used at index 0.  scorm-again refuses that (error 351: an id is
+  // immutable once set and may not repeat across the collection), and the
+  // dependent fields then fail with 408.
+  //
+  // The gradebook is unaffected: the score lives in cmi.score.*, which the
+  // tests above show still gets through.  What is lost on a strict player is
+  // the per-attempt interaction detail after the first answer.
+  //
+  // Left as-is deliberately — changing the id scheme changes what the
+  // interaction records mean, and it is a question for upstream PreTeXt, whose
+  // multi-exercise pages do not hit this.  The test pins the current behaviour
+  // so a fix is a deliberate, visible change rather than a silent one.
+  it("reuses the interaction id on repeat answers, which a strict player refuses", async () => {
+    const sco = launchSco();
+    await tick();
+    sco.report({ score: 0.5, state: stateOfSize(1000, 1) });
+    await tick();
+    sco.report({ score: 1, state: stateOfSize(1000, 2) });
+    await tick();
+
+    const refused = sco.api.rejectedWrites().map((c) => c.key);
+    expect(refused).toContain("cmi.interactions.1.id");
+    expect(refused.every((k) => /^cmi\.interactions\.[1-9]/.test(k))).toBe(
+      true,
+    );
+
+    // The first interaction, and the score, still land.
+    expect(sco.api.get("cmi.interactions.0.id")).toBe(ACTIVITY_ID);
+    expect(Number(sco.api.get("cmi.score.scaled"))).toBe(1);
+    sco.close();
+  });
+
+  it("would be refused if it ever exceeded the SPM", async () => {
+    // Establishes the stakes of the invariant below: an over-budget write is
+    // not quietly tolerated, it fails with 406 and the previous value stands.
+    const sco = launchSco();
+    await tick();
+    const before = sco.api.get("cmi.suspend_data");
+
+    const result = sco.api.SetValue(
+      "cmi.suspend_data",
+      "x".repeat(SUSPEND_DATA_SPM_2004 + 1),
+    );
+
+    expect(result).toBe("false");
+    expect(sco.api.GetLastError()).toBe("406");
+    expect(sco.api.get("cmi.suspend_data")).toBe(before);
+    sco.close();
   });
 });
 
@@ -134,7 +210,7 @@ describe("a player that truncates suspend_data", () => {
   // score over the grade the student already earned.
   it("starts cleanly and does not overwrite the earned score", async () => {
     const first = launchSco({
-      lms: makeFakeLms({ suspendDataSpm: SUSPEND_DATA_SPM_12 }),
+      lmsOptions: { truncateAt: SUSPEND_DATA_SPM_12 },
     });
     await tick();
     first.report({ score: 1, state: stateOfSize(20_000) });
@@ -146,10 +222,10 @@ describe("a player that truncates suspend_data", () => {
     first.close();
 
     const second = launchSco({
-      lms: makeFakeLms({
-        suspendDataSpm: SUSPEND_DATA_SPM_12,
+      lmsOptions: {
+        truncateAt: SUSPEND_DATA_SPM_12,
         initial: { "cmi.suspend_data": mangled, "cmi.score.scaled": "1" },
-      }),
+      },
     });
     await tick();
 

@@ -24,6 +24,7 @@
     "lz-string": "1.5.0"
   },
   "devDependencies": {
-    "jsdom": "^30.0.1"
+    "jsdom": "^30.0.1",
+    "scorm-again": "^3.3.0"
   }
 }

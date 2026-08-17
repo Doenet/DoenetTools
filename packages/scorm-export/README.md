@@ -98,10 +98,11 @@ npm test --workspace @doenet-tools/scorm-export
 ```
 
 No server, network, or LMS: the builder is checked directly, and the runtime is
-driven through the real vendored bridge in JSDOM against a fake SCORM API and
-fake SPLICE messages — which makes the `suspend_data` size edge cases ordinary
-deterministic tests. `test/README.md` records what that does and does not
-prove, and what still needs a real LMS.
+driven through the real vendored bridge in JSDOM, against a real SCORM 2004
+runtime (`scorm-again`) and synthesized SPLICE messages — which makes the
+`suspend_data` size edge cases ordinary deterministic tests and checks every
+write against the actual data model. `test/README.md` records what that does
+and does not prove, and what still needs a real LMS.
 
 ## Notes and remaining limits
 

@@ -16,12 +16,23 @@ to two interfaces:
 1. the SCORM API object (`window.API_1484_11`), and
 2. SPLICE `postMessage`s from the activity iframe.
 
-Fake both and the runtime becomes an ordinary logic test. That matters most for
-the state-size edge cases: rather than hoping a real activity happens to emit a
-73 KB state blob, `helpers/sco.js` sends exactly the size we want.
-`helpers/fake-lms.js` implements enough of the SCORM 2004 data model to answer
-back, and records every call so a test can assert on what the package _said_ to
-the LMS, not just where it ended up.
+Drive both and the runtime becomes an ordinary logic test. That matters most
+for the state-size edge cases: rather than hoping a real activity happens to
+emit a 73 KB state blob, `helpers/sco.js` sends exactly the size we want.
+
+The LMS side is **not** a mock of the protocol. `helpers/lms.js` wraps
+[`scorm-again`](https://github.com/jcputney/scorm-again) (MIT), a real SCORM
+2004 runtime — the same kind of adapter LMSes and course authors ship — and adds
+only a call recorder and a variant that truncates `suspend_data` instead of
+rejecting it. A mock would test the parts of the spec whoever wrote it happened
+to remember, and would agree with the content under test by construction.
+scorm-again enforces the actual data model: vocabularies, read-only and
+undefined elements, value ranges, and the string SPMs, with the spec's error
+codes. `cmi.suspend_data` over 64,000 chars is **refused** with error 406 and
+the previous value stands; some real players truncate instead, hence the
+`truncateAt` option.
+
+This paid for itself immediately — see "A real deviation it found" below.
 
 Each case builds a real package and boots it in a fresh JSDOM, so the templates
 and the vendored bridge under test are the ones that ship.
@@ -32,8 +43,26 @@ and the vendored bridge under test are the ones that ship.
 | ----------------- | ---------------- | ------------------------------------------------------------------------------------------------------------ |
 | Builder           | `build.test.js`  | placeholder substitution, title escaping, `</script>` and U+2028 in the source, zip layout, determinism      |
 | Package coherence | `build.test.js`  | manifest declares 2004 4th Ed; every referenced file is in the zip; flat structure                           |
+| Data model        | `bridge.test.js` | no write a conformant LMS would refuse; the SPM is genuinely enforced                                        |
 | Runtime behaviour | `bridge.test.js` | session start, score + state writes, cross-launch restore                                                    |
 | State-size edges  | `bridge.test.js` | the SPM invariant, growth past the budget, nothing-ever-fit, truncating player, localStorage refusing writes |
+
+## A real deviation it found
+
+The bridge keys each interaction record by the exercise's div id, and a
+single-document package has exactly one. So the second answer writes an id
+already used at index 0, which a strict player refuses (error 351 — an id is
+immutable once set and may not repeat across the collection); the dependent
+fields then fail with 408.
+
+The gradebook is unaffected — the score lives in `cmi.score.*` and still gets
+through — but per-attempt interaction detail after the first answer is lost on
+a strict player. Left as-is deliberately: changing the id scheme changes what
+the records mean, and it is a question for upstream PreTeXt, whose
+multi-exercise pages do not hit it. A test pins the current behaviour so that
+fixing it is a visible decision rather than a silent change.
+
+No mock we wrote ourselves would have caught this.
 
 ## The invariant worth keeping
 
@@ -55,11 +84,11 @@ state. Treat the limit as reachable in normal use, not a pathological corner.
 
 ## What is still unverified
 
-- **Real LMS behaviour.** The fake follows the call contract; Canvas, Moodle and
-  Blackboard each have quirks the fake does not reproduce (Canvas resetting
-  `suspend_data` between attempts, Blackboard's finalization ordering). The
-  vendored bridge carries hard-won workarounds for these — nothing here
-  exercises them.
+- **Real LMS behaviour.** scorm-again implements the spec; real players deviate
+  from it in both directions. Canvas resets `suspend_data` between attempts,
+  Blackboard has its own finalization ordering, and players differ on whether an
+  over-SPM write truncates or fails. The vendored bridge carries hard-won
+  workarounds for these — nothing here exercises them.
 - **Whether real activities reach these sizes.** The generator is a stand-in.
   Worth sampling actual state blobs from real activities.
 - **The real viewer.** `@doenet/standalone` is loaded from a CDN at runtime and
@@ -77,5 +106,16 @@ state. Treat the limit as reachable in normal use, not a pathological corner.
 5. For the size path, build with `--debug` and watch `[DOENET-SIZE-PROBE]` for
    what the LMS actually returns.
 
-A fuller option, if this ever ships widely: run a package through the ADL SCORM
-2004 4th Edition Conformance Test Suite once per release.
+Heavier options, in increasing order of fidelity and cost, if this ever ships
+widely:
+
+- **ADL SCORM 2004 4th Ed Conformance Test Suite** — the official certification
+  suite from ADL. Authoritative for "is this a conformant package", but it is an
+  interactive Java application: a per-release manual gate, not a CI step.
+- **SCORM Cloud** (Rustici) — a real commercial player with a REST API, so a
+  package can be uploaded, launched and its registration results fetched from a
+  script. Needs an account and credentials, so it belongs in a nightly job
+  rather than PR CI.
+- **A real LMS in Docker** (Moodle has official images) driven by Cypress. The
+  most faithful thing that can be automated, and the most expensive to keep
+  working.

@@ -16,7 +16,7 @@ import LZString from "lz-string";
 
 import { buildScormFiles } from "../../src/index.js";
 import { loadAssets } from "./assets.js";
-import { makeFakeLms } from "./fake-lms.js";
+import { makeLms } from "./lms.js";
 
 const assets = loadAssets();
 
@@ -28,11 +28,11 @@ export const ACTIVITY_ID = "test-activity";
  * discovers the API at load time, so it has to be there before parsing.
  */
 export function launchSco({
-  lms,
+  lmsOptions = {},
   doenetML = "<p>hi</p>",
   breakLocalStorage = false,
 } = {}) {
-  const api = lms ?? makeFakeLms();
+  let api;
   const files = buildScormFiles(assets, {
     doenetML,
     title: "Test Activity",
@@ -48,6 +48,10 @@ export function launchSco({
     runScripts: "dangerously",
     url: "https://lms.example/courses/1/sco/index.html",
     beforeParse(window) {
+      // The API has to exist before parsing: the bridge discovers it at load
+      // time.  It is also built against this window, since scorm-again reads
+      // browser globals as it initializes.
+      api = makeLms({ window, ...lmsOptions });
       window.API_1484_11 = api;
       if (breakLocalStorage) {
         Object.defineProperty(window, "localStorage", {
