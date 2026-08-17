@@ -24,6 +24,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { basename, join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { parseArgs } from "node:util";
 
 import {
   buildScormPackage,
@@ -34,22 +35,32 @@ import {
 const here = dirname(fileURLToPath(import.meta.url));
 
 // ── argument parsing ────────────────────────────────────────────────────────
-const args = process.argv.slice(2);
-const positional = [];
-const opts = { "doenet-version": "latest", out: join(here, "dist") };
-const booleanFlags = new Set(["debug"]);
-for (let i = 0; i < args.length; i++) {
-  if (args[i].startsWith("--")) {
-    const key = args[i].slice(2);
-    opts[key] = booleanFlags.has(key) ? true : args[++i];
-  } else {
-    positional.push(args[i]);
-  }
+const USAGE =
+  "Usage: node build.mjs <activity.doenet> [--title t] [--id slug] " +
+  "[--doenet-version v] [--out dir] [--debug]";
+
+let opts, positional;
+try {
+  ({ values: opts, positionals: positional } = parseArgs({
+    options: {
+      title: { type: "string" },
+      id: { type: "string" },
+      "doenet-version": { type: "string", default: "latest" },
+      out: { type: "string", default: join(here, "dist") },
+      debug: { type: "boolean", default: false },
+    },
+    allowPositionals: true,
+  }));
+} catch (error) {
+  // parseArgs rejects unknown flags and flags missing their value, which the
+  // hand-rolled loop this replaced accepted silently — `--title` in last
+  // position used to set the title to undefined.
+  console.error(error.message);
+  console.error(USAGE);
+  process.exit(1);
 }
 if (positional.length !== 1) {
-  console.error(
-    "Usage: node build.mjs <activity.doenet> [--title t] [--id slug] [--doenet-version v] [--out dir] [--debug]",
-  );
+  console.error(USAGE);
   process.exit(1);
 }
 
