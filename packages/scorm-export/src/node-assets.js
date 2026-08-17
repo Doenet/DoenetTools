@@ -12,7 +12,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 
-import { TEMPLATE_FILES, STATIC_FILES } from "./index.js";
+import { TEMPLATE_FILES, STATIC_FILES, SCHEMA_FILES } from "./index.js";
 
 const pkgRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -50,6 +50,11 @@ export function loadNodeAssets({ debug = false } = {}) {
     "utf8",
   );
 
+  // The SCORM control documents the manifest points at (schemas/VENDORED.md).
+  for (const name of SCHEMA_FILES) {
+    assets[name] = readFileSync(join(pkgRoot, "schemas", name), "utf8");
+  }
+
   if (debug) {
     assets.debugProbe = readFileSync(
       join(pkgRoot, "debug", "size-probe.html"),
@@ -57,7 +62,9 @@ export function loadNodeAssets({ debug = false } = {}) {
     );
   }
 
-  const missing = STATIC_FILES.filter((name) => !assets[name]);
+  const missing = [...STATIC_FILES, ...SCHEMA_FILES].filter(
+    (name) => !assets[name],
+  );
   if (missing.length) {
     throw new Error("loadNodeAssets: could not load " + missing.join(", "));
   }

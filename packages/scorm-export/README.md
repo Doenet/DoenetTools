@@ -42,7 +42,8 @@ as the student answers, with no submit step.
 
 ## What's in a package
 
-A SCORM package here is just six static files in a flat zip:
+A SCORM package here is 21 static files in a flat zip — six that do the work,
+plus the 15 SCORM control documents:
 
 | File                    | Role                                                                            |
 | ----------------------- | ------------------------------------------------------------------------------- |
@@ -52,11 +53,15 @@ A SCORM package here is just six static files in a flat zip:
 | `ptx_scorm_events.js`   | Vendored SCORM bridge (LMS API discovery, scoring, state save/restore)          |
 | `lti_iframe_resizer.js` | Vendored SPLICE `lti.frameResize` handler so the iframe fits its content        |
 | `lz-string.min.js`      | `lz-string` npm dep, copied in at build time; compresses state for suspend_data |
+| `*.xsd` (15 files)      | SCORM 2004 4th Ed. schemas the manifest's `schemaLocation` names (`schemas/`)   |
 
 Only `activity.html` (DoenetML) and the title/id substitutions vary per
 activity; everything else is constant. The two `ptx_*`/`lti_*` files are
 vendored (see `vendor/VENDORED.md`); `lz-string.min.js` comes from the pinned
-`lz-string` npm dependency, not from `vendor/`.
+`lz-string` npm dependency, not from `vendor/`. The schemas are vendored too
+(see `schemas/VENDORED.md`) and ship at the zip root, which is where a content
+package traditionally carries its control documents — so a strict validator can
+resolve `xsi:schemaLocation` without network access. They add ~88 KB.
 
 ## How scoring works at runtime
 

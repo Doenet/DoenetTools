@@ -157,6 +157,25 @@ describe("the zip", () => {
     }
   });
 
+  it("ships every schema the manifest's schemaLocation names", () => {
+    // xsi:schemaLocation is a list of alternating namespace/location pairs, and
+    // the locations are relative — they only resolve if the files are in the
+    // package.  A validator that cannot fetch them offline would otherwise be
+    // reading a promise the zip does not keep.
+    const location = /xsi:schemaLocation="([^"]+)"/.exec(
+      entries["imsmanifest.xml"],
+    )?.[1];
+    expect(location).toBeTruthy();
+
+    const locations = location.split(/\s+/).filter((_, i) => i % 2 === 1);
+    expect(locations.length).toBeGreaterThan(0);
+    for (const target of locations) {
+      expect(Object.keys(entries), `schemaLocation: ${target}`).toContain(
+        target,
+      );
+    }
+  });
+
   it("is byte-identical when built twice", () => {
     // Re-exporting an unchanged activity should not produce a different file;
     // the zip carries a fixed timestamp rather than the build time.

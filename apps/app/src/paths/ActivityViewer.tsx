@@ -90,7 +90,6 @@ import { IFRAME_MENU_IDS } from "../utils/iframeMenuIds";
 import { useControlledMenu } from "../utils/useControlledMenu";
 import { MenuDismissOverlay } from "../components/MenuDismissOverlay";
 import { editorUrl } from "../utils/url";
-import { downloadScormPackage } from "../utils/scorm";
 
 export async function loader({ params }: { params: any }) {
   const {
@@ -482,8 +481,12 @@ export function ActivityViewer() {
           pr={{ base: "0px", md: "10px" }}
           colorScheme="blue"
           leftIcon={<MdOutlineFileDownload size={20} />}
-          onClick={() => {
+          onClick={async () => {
             try {
+              // Loaded on demand: the exporter inlines the SCORM bridge and the
+              // 4th Edition schemas as strings, which nobody who only views the
+              // activity should have to download.
+              const { downloadScormPackage } = await import("../utils/scorm");
               downloadScormPackage({
                 doenetML: data.doenetML,
                 title: activityData.name,

@@ -27,8 +27,39 @@ export const STATIC_FILES = [
   "lz-string.min.js",
 ];
 
+/**
+ * The SCORM 2004 4th Edition control documents, copied in verbatim.
+ *
+ * imsmanifest.xml names the first five in its xsi:schemaLocation, and a content
+ * package traditionally carries its control documents at the root so a strict
+ * validator can resolve them without network access.  The rest are reached
+ * through those five's imports, so all of them have to be present or none are
+ * useful.  See ../schemas/VENDORED.md.
+ */
+export const SCHEMA_FILES = [
+  "imscp_v1p1.xsd",
+  "adlcp_v1p3.xsd",
+  "adlseq_v1p3.xsd",
+  "adlnav_v1p3.xsd",
+  "imsss_v1p0.xsd",
+  "imsss_v1p0auxresource.xsd",
+  "imsss_v1p0control.xsd",
+  "imsss_v1p0delivery.xsd",
+  "imsss_v1p0limit.xsd",
+  "imsss_v1p0objective.xsd",
+  "imsss_v1p0random.xsd",
+  "imsss_v1p0rollup.xsd",
+  "imsss_v1p0seqrule.xsd",
+  "imsss_v1p0util.xsd",
+  "xml.xsd",
+];
+
 /** Every asset a caller must supply (`debugProbe` is optional). */
-export const REQUIRED_ASSETS = [...TEMPLATE_FILES, ...STATIC_FILES];
+export const REQUIRED_ASSETS = [
+  ...TEMPLATE_FILES,
+  ...STATIC_FILES,
+  ...SCHEMA_FILES,
+];
 
 /**
  * Normalize an activity id into something safe for a filename and for the
@@ -118,7 +149,9 @@ export function buildScormFiles(assets, options) {
 
   const files = {};
   for (const name of TEMPLATE_FILES) files[name] = fill(assets[name]);
-  for (const name of STATIC_FILES) files[name] = assets[name];
+  for (const name of [...STATIC_FILES, ...SCHEMA_FILES]) {
+    files[name] = assets[name];
+  }
   return files;
 }
 

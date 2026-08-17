@@ -1,8 +1,10 @@
 # Vendored SCORM 2004 4th Edition schemas
 
 The official XML Schemas that `imsmanifest.xml` declares in its
-`xsi:schemaLocation`. They exist here so `test/manifest.test.js` can validate a
-built manifest against the real schemas offline — see `../test/README.md`.
+`xsi:schemaLocation`. They are copied into every built package (see `../README.md`) and
+`test/manifest.test.js` validates a built manifest against them — reading the
+copies out of the built package rather than this directory, so the test covers
+what actually ships. See `../test/README.md`.
 
 **These are reference data, not code. Do not edit them.** If a manifest fails
 validation, the manifest is wrong.
@@ -20,12 +22,12 @@ validation, the manifest is wrong.
   SCORM package may ship them at its root, and every SCORM tool redistributes
   them — so this is ordinary use rather than a grey area, but it is worth
   knowing that the grant is by convention and not by an explicit licence file.
-- Not shipped in built packages, even though `imsmanifest.xml` names them in
-  its `xsi:schemaLocation`. Players resolve the namespaces themselves rather
-  than fetching that path, so this has not caused a problem — but a SCORM
-  content package traditionally does carry its control documents at the root,
-  and a strict validator may expect them. Adding all 15 files would cost ~88 KB
-  per package. Open question, not a settled decision.
+- Shipped at the root of every built package, which is where a SCORM content
+  package traditionally carries its control documents. `imsmanifest.xml` names
+  five of them in its `xsi:schemaLocation` by relative path, so without them
+  that attribute points at nothing and a validator with no network access
+  cannot check the manifest. Costs ~88 KB per package. Players that resolve the
+  namespaces themselves are unaffected.
 
 `imscp_v1p1.xsd` is the entry point; the rest are reached through its imports
 and through the ADL extension namespaces, so all of them have to be present for

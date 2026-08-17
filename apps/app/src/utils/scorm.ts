@@ -22,6 +22,8 @@ import ltiIframeResizerJs from "@doenet-tools/scorm-export/vendor/lti_iframe_res
 // it under this filename to compress activity state into cmi.suspend_data.
 import lzStringJs from "lz-string/libs/lz-string.min.js?raw";
 
+import { schemaAssets } from "./scormSchemas";
+
 const assets: ScormAssets = {
   "imsmanifest.xml": imsmanifestXml,
   "index.html": indexHtml,
@@ -29,6 +31,9 @@ const assets: ScormAssets = {
   "ptx_scorm_events.js": ptxScormEventsJs,
   "lti_iframe_resizer.js": ltiIframeResizerJs,
   "lz-string.min.js": lzStringJs,
+  // The SCORM control documents imsmanifest.xml points at, shipped at the zip
+  // root so a strict validator can resolve them offline.
+  ...schemaAssets,
 };
 
 export function downloadScormPackage({

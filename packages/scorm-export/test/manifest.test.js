@@ -12,34 +12,28 @@
 // document that is not even well-formed if the escaping is wrong.
 
 import { describe, it, expect } from "vitest";
-import { readFileSync, readdirSync } from "node:fs";
-import { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 
-import { buildScormFiles } from "../src/index.js";
+import { buildScormFiles, SCHEMA_FILES } from "../src/index.js";
 import { loadAssets } from "./helpers/assets.js";
 
 const { validateXML } = createRequire(import.meta.url)("xmllint-wasm");
 
-const SCHEMA_DIR = join(
-  dirname(fileURLToPath(import.meta.url)),
-  "..",
-  "schemas",
-);
 const ENTRY = "imscp_v1p1.xsd";
+const assets = loadAssets();
 
-const schemaFile = (name) => ({
-  fileName: name,
-  contents: readFileSync(join(SCHEMA_DIR, name), "utf8"),
+// Validate against the schemas as the package ships them, not as they sit in
+// schemas/ — that way this proves the copies a strict validator would actually
+// find inside the zip are the ones that work.
+const shipped = buildScormFiles(assets, {
+  doenetML: "<p>hi</p>",
+  title: "My Activity",
+  id: "abc123",
 });
+const schemaFile = (name) => ({ fileName: name, contents: shipped[name] });
 // Everything else has to be preloaded: imscp imports xml.xsd, and the ADL and
 // IMS Simple Sequencing extensions are reached through their own namespaces.
-const imports = readdirSync(SCHEMA_DIR)
-  .filter((f) => f.endsWith(".xsd") && f !== ENTRY)
-  .map(schemaFile);
-
-const assets = loadAssets();
+const imports = SCHEMA_FILES.filter((f) => f !== ENTRY).map(schemaFile);
 
 async function validateManifest(xml) {
   return validateXML({
