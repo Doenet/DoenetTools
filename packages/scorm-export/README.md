@@ -101,8 +101,10 @@ No server, network, or LMS: the builder is checked directly, and the runtime is
 driven through the real vendored bridge in JSDOM, against a real SCORM 2004
 runtime (`scorm-again`) and synthesized SPLICE messages — which makes the
 `suspend_data` size edge cases ordinary deterministic tests and checks every
-write against the actual data model. `test/README.md` records what that does
-and does not prove, and what still needs a real LMS.
+write against the actual data model. The generated `imsmanifest.xml` is
+validated against ADL's own 4th Edition schemas (vendored in `schemas/`, see the
+`VENDORED.md` there). `test/README.md` records what all of that does and does
+not prove, and what still needs a real LMS.
 
 ## Notes and remaining limits
 

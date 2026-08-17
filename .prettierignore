@@ -5,5 +5,6 @@ runner-results/
 package-lock.json
 
 # Vendored third-party files — kept verbatim for provenance; never reformat.
-# See packages/scorm-export/vendor/VENDORED.md.
+# See packages/scorm-export/vendor/VENDORED.md and schemas/VENDORED.md.
 packages/scorm-export/vendor/
+packages/scorm-export/schemas/*.xsd

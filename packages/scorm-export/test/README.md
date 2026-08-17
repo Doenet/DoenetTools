@@ -39,13 +39,31 @@ and the vendored bridge under test are the ones that ship.
 
 ## Layers
 
-| Layer             | File             | Covers                                                                                                       |
-| ----------------- | ---------------- | ------------------------------------------------------------------------------------------------------------ |
-| Builder           | `build.test.js`  | placeholder substitution, title escaping, `</script>` and U+2028 in the source, zip layout, determinism      |
-| Package coherence | `build.test.js`  | manifest declares 2004 4th Ed; every referenced file is in the zip; flat structure                           |
-| Data model        | `bridge.test.js` | no write a conformant LMS would refuse; the SPM is genuinely enforced                                        |
-| Runtime behaviour | `bridge.test.js` | session start, score + state writes, cross-launch restore                                                    |
-| State-size edges  | `bridge.test.js` | the SPM invariant, growth past the budget, nothing-ever-fit, truncating player, localStorage refusing writes |
+| Layer             | File               | Covers                                                                                                       |
+| ----------------- | ------------------ | ------------------------------------------------------------------------------------------------------------ |
+| Builder           | `build.test.js`    | placeholder substitution, title escaping, `</script>` and U+2028 in the source, zip layout, determinism      |
+| Package coherence | `build.test.js`    | manifest declares 2004 4th Ed; every referenced file is in the zip; flat structure                           |
+| Manifest schema   | `manifest.test.js` | the generated `imsmanifest.xml` validates against the official SCORM 2004 4th Ed XSDs, titles included       |
+| Data model        | `bridge.test.js`   | no write a conformant LMS would refuse; the SPM is genuinely enforced                                        |
+| Runtime behaviour | `bridge.test.js`   | session start, score + state writes, cross-launch restore                                                    |
+| State-size edges  | `bridge.test.js`   | the SPM invariant, growth past the budget, nothing-ever-fit, truncating player, localStorage refusing writes |
+
+## The manifest is checked against the spec, not against our expectations
+
+`manifest.test.js` validates the generated `imsmanifest.xml` with libxml2
+(`xmllint-wasm` — WASM, so no native build, no Java, no binary on PATH) against
+ADL's own SCORM 2004 4th Edition schemas, vendored in `../schemas`. That catches
+structural mistakes nobody thought to assert: element order, missing required
+attributes, identifiers that do not match their declared type.
+
+It doubles as an end-to-end check of XML escaping, since the activity title is
+interpolated into the document — a title containing `&`, `<`, `]]>` or an XML
+declaration produces something that is not even well-formed if the escaping is
+wrong.
+
+Three deliberately broken manifests are asserted to _fail_. Without them, a
+validator that silently could not resolve its schemas would pass everything and
+the rest of the file would be worthless.
 
 ## A real deviation it found
 
