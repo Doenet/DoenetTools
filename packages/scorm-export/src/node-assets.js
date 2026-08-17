@@ -34,15 +34,16 @@ export function loadNodeAssets({ debug = false } = {}) {
   }
 
   // PreTeXt's SCORM bridge and SPLICE resize handler are vendored (locally
-  // modified; see vendor/VENDORED.md), so they come from vendor/.  lz-string is
+  // modified; see vendor/VENDORED.md), so they come from vendor/pretext/.
+  // lz-string is
   // an unmodified npm dependency (pinned in package.json), resolved out of
   // node_modules under the filename index.html references.
   assets["ptx_scorm_events.js"] = readFileSync(
-    join(pkgRoot, "vendor", "ptx_scorm_events.js"),
+    join(pkgRoot, "vendor", "pretext", "ptx_scorm_events.js"),
     "utf8",
   );
   assets["lti_iframe_resizer.js"] = readFileSync(
-    join(pkgRoot, "vendor", "lti_iframe_resizer.js"),
+    join(pkgRoot, "vendor", "pretext", "lti_iframe_resizer.js"),
     "utf8",
   );
   assets["lz-string.min.js"] = readFileSync(
@@ -50,9 +51,9 @@ export function loadNodeAssets({ debug = false } = {}) {
     "utf8",
   );
 
-  // The SCORM control documents the manifest points at (schemas/VENDORED.md).
+  // The SCORM control documents the manifest points at (vendor/VENDORED.md).
   for (const name of SCHEMA_FILES) {
-    assets[name] = readFileSync(join(pkgRoot, "schemas", name), "utf8");
+    assets[name] = readFileSync(join(pkgRoot, "vendor", "scorm", name), "utf8");
   }
 
   if (debug) {

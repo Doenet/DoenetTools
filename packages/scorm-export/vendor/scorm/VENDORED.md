@@ -1,10 +1,10 @@
 # Vendored SCORM 2004 4th Edition schemas
 
 The official XML Schemas that `imsmanifest.xml` declares in its
-`xsi:schemaLocation`. They are copied into every built package (see `../README.md`) and
+`xsi:schemaLocation`. They are copied into every built package (see `../../README.md`) and
 `test/manifest.test.js` validates a built manifest against them — reading the
 copies out of the built package rather than this directory, so the test covers
-what actually ships. See `../test/README.md`.
+what actually ships. See `../../test/README.md`.
 
 **These are reference data, not code. Do not edit them.** If a manifest fails
 validation, the manifest is wrong.

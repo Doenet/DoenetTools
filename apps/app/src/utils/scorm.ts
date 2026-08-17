@@ -16,8 +16,8 @@ import {
 import imsmanifestXml from "@doenet-tools/scorm-export/templates/imsmanifest.xml?raw";
 import indexHtml from "@doenet-tools/scorm-export/templates/index.html?raw";
 import activityHtml from "@doenet-tools/scorm-export/templates/activity.html?raw";
-import ptxScormEventsJs from "@doenet-tools/scorm-export/vendor/ptx_scorm_events.js?raw";
-import ltiIframeResizerJs from "@doenet-tools/scorm-export/vendor/lti_iframe_resizer.js?raw";
+import ptxScormEventsJs from "@doenet-tools/scorm-export/vendor/pretext/ptx_scorm_events.js?raw";
+import ltiIframeResizerJs from "@doenet-tools/scorm-export/vendor/pretext/lti_iframe_resizer.js?raw";
 // Pinned to the same version the scorm-export package pins; index.html loads
 // it under this filename to compress activity state into cmi.suspend_data.
 import lzStringJs from "lz-string/libs/lz-string.min.js?raw";

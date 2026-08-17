@@ -13,7 +13,6 @@
     },
     "./templates/*": "./templates/*",
     "./vendor/*": "./vendor/*",
-    "./schemas/*": "./schemas/*",
     "./debug/*": "./debug/*"
   },
   "scripts": {

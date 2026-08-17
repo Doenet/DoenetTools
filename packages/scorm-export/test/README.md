@@ -53,7 +53,7 @@ and the vendored bridge under test are the ones that ship.
 `manifest.test.js` validates the generated `imsmanifest.xml` with libxml2
 (`xmllint-wasm` — WASM, so no native build, no Java, no binary on PATH) against
 ADL's own SCORM 2004 4th Edition schemas — read out of the built package rather
-than out of `../schemas`, so what is checked is the copy that actually ships
+than out of `../vendor/scorm`, so what is checked is the copy that actually ships
 inside the zip alongside the manifest. That catches
 structural mistakes nobody thought to assert: element order, missing required
 attributes, identifiers that do not match their declared type.

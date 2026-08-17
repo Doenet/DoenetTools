@@ -45,21 +45,21 @@ as the student answers, with no submit step.
 A SCORM package here is 21 static files in a flat zip — six that do the work,
 plus the 15 SCORM control documents:
 
-| File                    | Role                                                                            |
-| ----------------------- | ------------------------------------------------------------------------------- |
-| `imsmanifest.xml`       | Minimal SCORM 2004 4th Ed. manifest: one item, one SCO, launch `index.html`     |
-| `index.html`            | Chrome-free shell: `div[data-component="doenet"]` wrapping the activity iframe  |
-| `activity.html`         | The iframe content: DoenetML source + `@doenet/standalone` viewer from CDN      |
-| `ptx_scorm_events.js`   | Vendored SCORM bridge (LMS API discovery, scoring, state save/restore)          |
-| `lti_iframe_resizer.js` | Vendored SPLICE `lti.frameResize` handler so the iframe fits its content        |
-| `lz-string.min.js`      | `lz-string` npm dep, copied in at build time; compresses state for suspend_data |
-| `*.xsd` (15 files)      | SCORM 2004 4th Ed. schemas the manifest's `schemaLocation` names (`schemas/`)   |
+| File                    | Role                                                                               |
+| ----------------------- | ---------------------------------------------------------------------------------- |
+| `imsmanifest.xml`       | Minimal SCORM 2004 4th Ed. manifest: one item, one SCO, launch `index.html`        |
+| `index.html`            | Chrome-free shell: `div[data-component="doenet"]` wrapping the activity iframe     |
+| `activity.html`         | The iframe content: DoenetML source + `@doenet/standalone` viewer from CDN         |
+| `ptx_scorm_events.js`   | Vendored SCORM bridge (LMS API discovery, scoring, state save/restore)             |
+| `lti_iframe_resizer.js` | Vendored SPLICE `lti.frameResize` handler so the iframe fits its content           |
+| `lz-string.min.js`      | `lz-string` npm dep, copied in at build time; compresses state for suspend_data    |
+| `*.xsd` (15 files)      | SCORM 2004 4th Ed. schemas the manifest's `schemaLocation` names (`vendor/scorm/`) |
 
 Only `activity.html` (DoenetML) and the title/id substitutions vary per
 activity; everything else is constant. The two `ptx_*`/`lti_*` files are
 vendored (see `vendor/VENDORED.md`); `lz-string.min.js` comes from the pinned
 `lz-string` npm dependency, not from `vendor/`. The schemas are vendored too
-(see `schemas/VENDORED.md`) and ship at the zip root, which is where a content
+(see `vendor/VENDORED.md`) and ship at the zip root, which is where a content
 package traditionally carries its control documents — so a strict validator can
 resolve `xsi:schemaLocation` without network access. They add ~88 KB.
 

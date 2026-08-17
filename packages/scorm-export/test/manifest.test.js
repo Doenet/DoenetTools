@@ -1,5 +1,5 @@
 // Validate the generated imsmanifest.xml against the official SCORM 2004 4th
-// Edition schemas (../schemas, see the VENDORED.md there).
+// Edition schemas (../vendor/scorm, see the VENDORED.md there).
 //
 // The other tests assert things we thought to check — that the edition string
 // is right, that referenced files exist.  This checks the manifest against the

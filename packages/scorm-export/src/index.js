@@ -8,7 +8,7 @@
 // Callers supply the package's constant files as strings via `assets`, because
 // the two environments load them differently: Node reads them off disk, Vite
 // pulls them in with `?raw`.  Keeping them out of here also keeps the vendored
-// GPL files in vendor/ as the single verbatim copy (see vendor/VENDORED.md)
+// GPL files in vendor/pretext/ as the single verbatim copy (vendor/VENDORED.md)
 // rather than duplicating them into a generated module that could drift.
 
 import { zipSync } from "fflate";
@@ -34,7 +34,7 @@ export const STATIC_FILES = [
  * package traditionally carries its control documents at the root so a strict
  * validator can resolve them without network access.  The rest are reached
  * through those five's imports, so all of them have to be present or none are
- * useful.  See ../schemas/VENDORED.md.
+ * useful.  See ../vendor/scorm/VENDORED.md.
  */
 export const SCHEMA_FILES = [
   "imscp_v1p1.xsd",
