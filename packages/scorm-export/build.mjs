@@ -26,11 +26,8 @@ import { basename, join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 
-import {
-  buildScormPackage,
-  TEMPLATE_FILES,
-  STATIC_FILES,
-} from "./src/index.js";
+import { buildScormPackage } from "./src/index.js";
+import { loadNodeAssets } from "./src/node-assets.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 
@@ -68,38 +65,7 @@ const sourceFile = positional[0];
 const doenetML = readFileSync(sourceFile, "utf8");
 
 // ── load the constant package files ─────────────────────────────────────────
-const assets = {};
-for (const name of TEMPLATE_FILES) {
-  assets[name] = readFileSync(join(here, "templates", name), "utf8");
-}
-// PreTeXt's SCORM bridge and SPLICE resize handler are vendored (locally
-// modified; see vendor/VENDORED.md), so they come from vendor/.  lz-string is
-// an unmodified npm dependency (pinned in package.json), resolved out of
-// node_modules under the filename index.html references.
-assets["ptx_scorm_events.js"] = readFileSync(
-  join(here, "vendor", "ptx_scorm_events.js"),
-  "utf8",
-);
-assets["lti_iframe_resizer.js"] = readFileSync(
-  join(here, "vendor", "lti_iframe_resizer.js"),
-  "utf8",
-);
-assets["lz-string.min.js"] = readFileSync(
-  fileURLToPath(import.meta.resolve("lz-string/libs/lz-string.min.js")),
-  "utf8",
-);
-if (opts.debug) {
-  assets.debugProbe = readFileSync(
-    join(here, "debug", "size-probe.html"),
-    "utf8",
-  );
-}
-
-const missingStatic = STATIC_FILES.filter((name) => !assets[name]);
-if (missingStatic.length) {
-  console.error("Internal error: unloaded assets " + missingStatic.join(", "));
-  process.exit(1);
-}
+const assets = loadNodeAssets({ debug: opts.debug });
 
 // ── build and write ─────────────────────────────────────────────────────────
 const fallbackId = basename(sourceFile).replace(/\.[^.]*$/, "");

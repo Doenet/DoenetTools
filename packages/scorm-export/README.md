@@ -1,8 +1,7 @@
 # doenet-scorm-export
 
 Backs the "Download SCORM" button on doenet.org: wraps a single DoenetML
-activity in an LMS-ready SCORM 2004 package, **without** the PreTeXt
-toolchain. The SCORM runtime intelligence is reused from PreTeXt as two
+activity in an LMS-ready SCORM 2004 package. The SCORM runtime intelligence is reused from PreTeXt as two
 verbatim-vendored JavaScript files (see `vendor/VENDORED.md`).
 
 ## Layout
@@ -11,14 +10,23 @@ Building a package is pure string substitution plus a zip, so that work lives
 in `src/index.js` with no `fs`, no `child_process`, and no DOM — it runs
 unchanged in Node and in the browser. Two thin adapters call it:
 
-| Caller                                     | Loads the constant files with |
-| ------------------------------------------ | ----------------------------- |
-| `build.mjs` (this package's CLI)           | `readFileSync`                |
-| `apps/app/src/utils/scorm.ts` (the button) | Vite's `?raw` imports         |
+| Caller                                     | Loads the constant files with         |
+| ------------------------------------------ | ------------------------------------- |
+| `build.mjs` (this package's CLI)           | `src/node-assets.js` (`readFileSync`) |
+| `test/` (the suite)                        | the same `src/node-assets.js`         |
+| `apps/app/src/utils/scorm.ts` (the button) | Vite's `?raw` imports                 |
 
-Both hand those files to `buildScormPackage(assets, options)` as strings, which
-is why `vendor/` stays the single verbatim copy of the GPL sources rather than
-being duplicated into a generated module.
+All of them hand those files to `buildScormPackage(assets, options)` as
+strings, which is why `vendor/` stays the single verbatim copy of the GPL
+sources rather than being duplicated into a generated module. `node-assets.js`
+is deliberately separate from `index.js`: the browser bundles `index.js`, so it
+must stay free of `fs`.
+
+The CLI is not a second implementation — it is argument parsing plus
+`writeFileSync` around the same builder the button calls. It earns its keep as
+the only way to produce a `--debug` package (see Debugging below) and the only
+way to build one without running the whole dev stack, which is what you want
+when the next step is uploading to a real LMS.
 
 ## Try it
 
