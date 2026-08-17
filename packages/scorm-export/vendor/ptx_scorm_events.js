@@ -303,6 +303,20 @@
     // does not; restoreDoenetStates() rehydrates this map on session start.
     var _doenetStates = {};
 
+    // VENDOR-MOD (doenet-scorm-export): the last compressed Doenet state blob
+    // known to fit in suspend_data — either restored from the LMS at session
+    // start or written by buildSuspendData().  Doenet state grows monotonically
+    // as a student works, so once it crosses the budget every later write would
+    // otherwise clobber the server-side copy with nothing, erasing work that had
+    // already been saved.  Keeping the last good blob makes the failure mode
+    // "state stops updating" rather than "state is destroyed".
+    var _lastGoodDz = null;
+
+    // VENDOR-MOD (doenet-scorm-export): divIds whose localStorage save has
+    // already been reported as failing, so saveDoenetState() warns once rather
+    // than on every answer.
+    var _lsWarned = {};
+
     // Queue for SPLICE.getState requests that arrive before loadRestoreData() has run
     // (i.e., before _learnerId is set and localStorage can be read correctly).
     // In practice this never fires — external iframes have network latency — but the
@@ -457,7 +471,28 @@
                 '; cross-device restore disabled for this session (localStorage only).');
             delete slim.dz;
             json = JSON.stringify(slim);
+
+            // VENDOR-MOD (doenet-scorm-export): writing this json would overwrite
+            // whatever is already in cmi.suspend_data, so a session that grows past
+            // the budget would not merely fail to save new work — it would erase the
+            // last snapshot that DID fit.  Re-attach that snapshot instead if it
+            // still fits.  Its grading fields are stale, but they are not read from
+            // here: correct/graded/answers above are current, and the gradebook
+            // value lives in cmi.score.*.  Only the (stale) UI state comes from dz.
+            if (_lastGoodDz) {
+                slim.dz = _lastGoodDz;
+                var jsonWithPrev = JSON.stringify(slim);
+                if (jsonWithPrev.length <= SUSPEND_TOTAL_LIMIT) {
+                    console.warn('[PTX-SCORM] Keeping the previous Doenet state ' +
+                        'snapshot in suspend_data rather than clearing it; ' +
+                        'cross-device restore will return work as of that save.');
+                    json = jsonWithPrev;
+                } else {
+                    delete slim.dz;
+                }
+            }
         }
+        if (slim.dz) _lastGoodDz = slim.dz;  // VENDOR-MOD (doenet-scorm-export)
         dbg('suspend_data: ' + json.length + ' chars' +
             (slim.dz ? '  (incl. Doenet state, ' + slim.dz.length + ' compressed)' : '') +
             (json.length > SUSPEND_TOTAL_LIMIT ? '  (STILL OVER ' + SUSPEND_TOTAL_LIMIT + ')' : ''));
@@ -488,7 +523,19 @@
         try {
             var str = typeof state === 'string' ? state : JSON.stringify(state);
             localStorage.setItem(lsKey() + '|doenet|' + divId, str);
-        } catch (e) {}
+        } catch (e) {
+            // VENDOR-MOD (doenet-scorm-export): upstream swallows this silently.
+            // localStorage is the documented fallback once the state blob is too
+            // big for suspend_data, and inside an LMS the SCO is a cross-site
+            // iframe — storage may be partitioned away or over quota.  If both
+            // stores fail the student's work is gone, so say so at least once
+            // (once per divId: this runs on every answer).
+            if (!_lsWarned[divId]) {
+                _lsWarned[divId] = true;
+                console.warn('[PTX-SCORM] Could not save Doenet state to ' +
+                    'localStorage for "' + divId + '":', e);
+            }
+        }
     }
 
     // Returns the state as a JS object (Doenet needs state.cid for identity check).
@@ -521,6 +568,10 @@
             Object.keys(map).forEach(function (divId) {
                 if (!(divId in _doenetStates)) _doenetStates[divId] = map[divId];
             });
+            // This blob was small enough to be stored, and it just round-tripped,
+            // so it is a valid fallback for buildSuspendData() to keep if this
+            // session's own state grows past the budget.
+            _lastGoodDz = savedObj.dz;
             dbg('Restored Doenet state from suspend_data: ' +
                 Object.keys(map).length + ' activity blob(s).');
         } catch (e) {

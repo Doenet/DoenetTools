@@ -65,7 +65,10 @@ vendored (see `vendor/VENDORED.md`); `lz-string.min.js` comes from the pinned
    64,000-char `suspend_data` limit — so both score and state persist
    server-side and restore on a fresh LMS launch (localStorage is kept only
    as a same-device cache). A size guard drops the state blob, falling back to
-   localStorage, if it would ever overflow the budget.
+   localStorage, if it would ever overflow the budget — keeping the last
+   snapshot that did fit rather than clearing the field, so an activity that
+   outgrows the budget stops updating its saved state instead of losing it.
+   Scores are unaffected: they live in `cmi.score.*`, not in `suspend_data`.
 4. "Submit Assignment" commits the final grade; the attempt is finalized
    when the student leaves the page (this ordering is a hard-won Blackboard
    requirement — see the comments in the vendored file).

@@ -31,8 +31,23 @@ from `node_modules` at build time.
   `RunestoneBase.__ptxScormHooked`), so in a Runestone-free standalone package
   the state was never captured at all; the SPLICE `message` handler now forwards
   `state` (and the real subject, so the init-guard runs) into `recordInteraction`.
-  Touch points, all marked `VENDOR-MOD`: `_doenetStates` comment,
-  `SUSPEND_TOTAL_LIMIT` + `buildSuspendData()`, `restoreDoenetStates()`, the two
+  Two further fixes guard the failure path when state outgrows the budget.
+  (1) Dropping the blob used to overwrite `cmi.suspend_data` with a blob-less
+  payload, so a session that crossed the budget did not merely fail to save new
+  work — it erased the last snapshot that had fit, and since Doenet state grows
+  monotonically it never recovered. `_lastGoodDz` remembers the last blob known
+  to fit (seeded on restore, updated on each successful write) and is
+  re-attached instead of clearing, so the failure mode is "state stops updating"
+  rather than "state is destroyed"; grading fields stay current and the
+  gradebook value is unaffected either way, since it lives in `cmi.score.*`.
+  (2) `saveDoenetState()`'s localStorage write was in an empty `catch`, which
+  hid the second half of a total-loss case — localStorage is the documented
+  fallback once the blob is dropped, and an LMS runs the SCO as a cross-site
+  iframe where storage may be partitioned or over quota. It now warns once per
+  divId (`_lsWarned`).
+  Touch points, all marked `VENDOR-MOD`: `_doenetStates` comment, `_lastGoodDz`
+  and `_lsWarned` declarations, `SUSPEND_TOTAL_LIMIT` + `buildSuspendData()`,
+  `saveDoenetState()`, `restoreDoenetStates()`, the two
   restore paths (`initSession`, `loadRestoreData`), and the SPLICE
   `reportScoreAndState` → `recordInteraction` call. This is a candidate to
   contribute upstream to PreTeXt (Oscar Levin); if accepted, drop the local mod
