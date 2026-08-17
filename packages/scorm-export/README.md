@@ -8,7 +8,7 @@ verbatim-vendored JavaScript files (see `vendor/VENDORED.md`).
 
 Building a package is pure string substitution plus a zip, so that work lives
 in `src/index.js` with no `fs`, no `child_process`, and no DOM — it runs
-unchanged in Node and in the browser. Two thin adapters call it:
+unchanged in Node and in the browser. Three thin callers wrap it:
 
 | Caller                                     | Loads the constant files with         |
 | ------------------------------------------ | ------------------------------------- |
