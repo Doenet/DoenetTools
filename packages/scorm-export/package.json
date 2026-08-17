@@ -16,10 +16,14 @@
     "./debug/*": "./debug/*"
   },
   "scripts": {
-    "build:sample": "node build.mjs sample/sample.doenet --title \"Sample Doenet Activity\""
+    "build:sample": "node build.mjs sample/sample.doenet --title \"Sample Doenet Activity\"",
+    "test": "vitest run"
   },
   "dependencies": {
     "fflate": "^0.8.3",
     "lz-string": "1.5.0"
+  },
+  "devDependencies": {
+    "jsdom": "^30.0.1"
   }
 }

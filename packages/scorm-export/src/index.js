@@ -52,7 +52,14 @@ const escapeMarkup = (s) =>
 // injected into a <script type="text/doenetml"> at runtime.  Rewriting every
 // "<" as a unicode escape means a source containing "</script>" cannot
 // terminate the enclosing script element, so no DoenetML has to be rejected.
-const escapeScriptString = (s) => JSON.stringify(s).replace(/</g, "\\u003c");
+// U+2028/U+2029 are escaped for the same reason: JSON.stringify emits them
+// raw, but JavaScript counts them as line terminators, so a source containing
+// one would break the literal across lines in any parser older than ES2019.
+const escapeScriptString = (s) =>
+  JSON.stringify(s)
+    .replace(/</g, "\\u003c")
+    .replace(/\u2028/g, "\\u2028")
+    .replace(/\u2029/g, "\\u2029");
 
 /**
  * Build the package's files as a map of `filename -> contents`.

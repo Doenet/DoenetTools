@@ -91,6 +91,18 @@ node build.mjs sample/sample.doenet --debug
 The file count is unchanged (it is inlined, not added as a separate file);
 without `--debug` the package contains no trace of it.
 
+## Testing
+
+```sh
+npm test --workspace @doenet-tools/scorm-export
+```
+
+No server, network, or LMS: the builder is checked directly, and the runtime is
+driven through the real vendored bridge in JSDOM against a fake SCORM API and
+fake SPLICE messages — which makes the `suspend_data` size edge cases ordinary
+deterministic tests. `test/README.md` records what that does and does not
+prove, and what still needs a real LMS.
+
 ## Notes and remaining limits
 
 - Only single documents can be exported. A package is one SCO wrapping one
