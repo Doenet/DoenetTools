@@ -3,7 +3,14 @@ import { describe, expect, test, vi } from "vitest";
 import { DateTime } from "luxon";
 
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { createTestUser, doc, fold, pset, setupTestContent } from "./utils";
+import {
+  createTestUser,
+  doc,
+  fold,
+  pset,
+  qbank,
+  setupTestContent,
+} from "./utils";
 import {
   createContent,
   deleteContent,
@@ -28,6 +35,7 @@ import { modifyContentSharedWith, setContentIsPublic } from "../query/share";
 import {
   closeAssignment,
   createAssignment,
+  getAssignmentResponseOverview,
   updateAssignmentClosedOn,
 } from "../query/assign";
 import { createNewAttempt, saveScoreAndState } from "../query/scores";
@@ -43,6 +51,7 @@ import { setContentLicense } from "../query/license";
 import { updateVisibility } from "../access";
 import { fromUUID, isEqualUUID } from "../utils/uuid";
 import { Doc } from "../types";
+import { compileActivityFromContent } from "../utils/contentStructure";
 import {
   InvalidRequestError,
   PermissionDeniedRedirectError,
@@ -275,7 +284,6 @@ test("Test updating repeatInProblemSet", async () => {
     const result = (await getContent({
       contentId: psDoc,
       loggedInUserId: userId,
-      includeRepeatInProblemSet: true,
     })) as Doc;
     return result.repeatInProblemSet;
   }
@@ -306,6 +314,147 @@ test("Test updating repeatInProblemSet", async () => {
     repeatInProblemSet: 24,
   });
   expect(await repeatVal()).eqls(23);
+});
+
+test("repeatInProblemSet survives into the compiled activity", async () => {
+  const { userId } = await createTestUser();
+  const [ps, psDoc] = await setupTestContent(userId, {
+    ps: pset({
+      psDoc: doc(`<selectFromSequence from="1" to="5"/>`),
+    }),
+  });
+  await updateContent({
+    contentId: psDoc,
+    loggedInUserId: userId,
+    numVariants: 5,
+  });
+  await updateContent({
+    contentId: psDoc,
+    loggedInUserId: userId,
+    repeatInProblemSet: 3,
+  });
+
+  // A plain `getContent` must carry the setting, since it is what every
+  // activity-compiling caller (revisions, cids, assignments) uses.
+  const content = await getContent({ contentId: ps, loggedInUserId: userId });
+  const source = compileActivityFromContent(content);
+
+  if (source.type !== "sequence") {
+    throw Error("shouldn't happen");
+  }
+
+  // the repeated document is wrapped in a select that picks 3 variants.
+  // Mirrored by "wraps a repeated document in a select, as the server does"
+  // in `apps/app/src/utils/activity.cy.tsx` — the client compiler produces the
+  // source for every viewer path, so the two must stay in agreement.
+  const item = source.items[0];
+  expect(item.type).eqls("select");
+  if (item.type !== "select") {
+    throw Error("shouldn't happen");
+  }
+  expect(item.id).eqls(`select_for_${fromUUID(psDoc)}`);
+  expect(item.title).eqls("Repeat 3 times");
+  expect(item.numToSelect).eqls(3);
+  expect(item.selectByVariant).eqls(true);
+  expect(item.items.length).eqls(1);
+
+  const inner = item.items[0];
+  if (inner.type !== "singleDoc") {
+    throw Error("shouldn't happen");
+  }
+  expect(inner.id).eqls(fromUUID(psDoc));
+  // the document carries its title, as it does on the client
+  expect(inner.title).eqls("psDoc");
+});
+
+test("A document is repeated no more times than it has variants", async () => {
+  const { userId } = await createTestUser();
+  const [ps, psDoc] = await setupTestContent(userId, {
+    ps: pset({
+      psDoc: doc(`<selectFromSequence from="1" to="5"/>`),
+    }),
+  });
+  await updateContent({
+    contentId: psDoc,
+    loggedInUserId: userId,
+    numVariants: 5,
+  });
+  await updateContent({
+    contentId: psDoc,
+    loggedInUserId: userId,
+    repeatInProblemSet: 3,
+  });
+
+  // Editing the document down to fewer variants leaves the larger repeat in
+  // place, and the editor offers no way to lower it: the repeat control is
+  // shown only for a document with more than one variant.
+  await updateContent({
+    contentId: psDoc,
+    loggedInUserId: userId,
+    numVariants: 2,
+  });
+
+  const content = await getContent({ contentId: ps, loggedInUserId: userId });
+  const source = compileActivityFromContent(content);
+  if (source.type !== "sequence") {
+    throw Error("shouldn't happen");
+  }
+  const item = source.items[0];
+  if (item.type !== "select") {
+    throw Error("shouldn't happen");
+  }
+  expect(item.numToSelect).eqls(2);
+  expect(item.title).eqls("Repeat 2 times");
+
+  // The item names label the gradebook columns, so they follow the same cap.
+  const { assignmentId } = await createAssignment({
+    contentId: ps,
+    loggedInUserId: userId,
+    closedOn: DateTime.now().plus({ days: 1 }),
+    destinationParentId: null,
+  });
+  const { itemNames } = await getAssignmentResponseOverview({
+    contentId: assignmentId,
+    loggedInUserId: userId,
+  });
+  expect(itemNames).eqls(["psDoc (1)", "psDoc (2)"]);
+});
+
+test("A document in a question bank is not repeated", async () => {
+  const { userId } = await createTestUser();
+  const [_ps, psDoc, bank] = await setupTestContent(userId, {
+    ps: pset({
+      psDoc: doc(`<selectFromSequence from="1" to="5"/>`),
+    }),
+    bank: qbank({}),
+  });
+  await updateContent({
+    contentId: psDoc,
+    loggedInUserId: userId,
+    numVariants: 5,
+  });
+  await updateContent({
+    contentId: psDoc,
+    loggedInUserId: userId,
+    repeatInProblemSet: 3,
+  });
+
+  // The setting travels with the document when it moves, but a question bank
+  // already selects from its documents: a nested select would put more items
+  // in the activity than `numToSelect` accounts for.
+  await moveContent({
+    contentId: psDoc,
+    changeParentIdTo: bank,
+    desiredPosition: 0,
+    loggedInUserId: userId,
+  });
+
+  const content = await getContent({ contentId: bank, loggedInUserId: userId });
+  const source = compileActivityFromContent(content);
+  if (source.type !== "select") {
+    throw Error("shouldn't happen");
+  }
+  expect(source.items[0].type).eqls("singleDoc");
 });
 
 test("deleteContent marks a activity and document as deleted and prevents its retrieval", async () => {
