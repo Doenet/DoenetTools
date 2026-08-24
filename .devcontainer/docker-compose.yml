@@ -53,8 +53,12 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+      # Only "started": s3mock is a JVM service that can take a couple of
+      # minutes to answer on a small machine, and nothing needs it until the
+      # first image upload. Gating container creation on its health once cost
+      # us a failed Codespaces build.
       s3mock:
-        condition: service_healthy
+        condition: service_started
     # Keeps the container alive; VS Code attaches to it.
     command: sleep infinity
 
@@ -79,7 +83,8 @@ services:
         ]
       interval: 5s
       timeout: 5s
-      retries: 20
+      start_period: 30s
+      retries: 30
 
   s3mock:
     image: adobe/s3mock:latest
@@ -94,7 +99,10 @@ services:
       test: ["CMD", "wget", "-qO-", "http://localhost:9090/"]
       interval: 5s
       timeout: 5s
-      retries: 20
+      # Generous: the JVM start is slow on a 2-core machine, and failures
+      # during start_period do not count against retries.
+      start_period: 60s
+      retries: 30
 
 volumes:
   root_node_modules:
