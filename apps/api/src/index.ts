@@ -51,7 +51,7 @@ import { codeRouter } from "./routes/code";
 import { metricsRouter } from "./routes/metricsRoutes";
 import { contentRouter } from "./routes/content.route";
 import { loadMediaConfig, mediaRouter } from "./media";
-import { getEnvVar } from "./utils/env";
+import { getEnvVar, isTestAuthBypassEnabled } from "./utils/env";
 import { asyncPassport, toGoogleAccount } from "./auth";
 import type { DoneCallback, SessionUser } from "./auth";
 import { installProcessErrorHandlers } from "./errors/processErrorHandlers";
@@ -362,10 +362,7 @@ passport.serializeUser(
         let isAuthor = false;
         let canUploadImages = false;
 
-        if (
-          process.env.ENABLE_TEST_AUTH_BYPASS &&
-          process.env.ENABLE_TEST_AUTH_BYPASS.toLocaleLowerCase() !== "false"
-        ) {
+        if (isTestAuthBypassEnabled()) {
           if (req.body.email && !req.body.isAnonymous) {
             email = req.body.email;
             if (req.body.firstNames) {
