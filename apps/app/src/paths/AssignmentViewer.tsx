@@ -721,7 +721,7 @@ export function AssignmentViewer() {
           zIndex="500"
           data-test="Anonymous User Banner"
         >
-          <Alert status="warning" height={anonymousBannerHeight}>
+          <Alert status="info" height={anonymousBannerHeight}>
             <AlertIcon />
             <AlertDescription>
               You are working on this assignment as an anonymous user.
