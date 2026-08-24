@@ -66,9 +66,11 @@ import {
   getIconInfo,
   menuIcons,
 } from "../utils/activity";
-import { ActivitySource, isActivitySource } from "@doenet-tools/shared";
+import { ActivitySource } from "@doenet-tools/shared";
 import { DoenetEditor, DoenetViewer } from "@doenet/doenetml-iframe";
+import { doenetImagesUrl } from "../utils/media";
 import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";
+import { effectiveDarkMode, useThemeSettingContext } from "../utils/theme";
 import { processRemixes } from "../utils/processRemixes";
 import ContributorsMenu from "../dropdowns/ContributorsMenu";
 import { ContentInfoDrawer } from "../drawers/ContentInfoDrawer";
@@ -85,6 +87,7 @@ import { useIframeMenuDismissOverlay } from "../utils/useIframeMenuDismissOverla
 import { IFRAME_MENU_IDS } from "../utils/iframeMenuIds";
 import { useControlledMenu } from "../utils/useControlledMenu";
 import { MenuDismissOverlay } from "../components/MenuDismissOverlay";
+import { editorUrl } from "../utils/url";
 
 export async function loader({ params }: { params: any }) {
   const {
@@ -111,13 +114,7 @@ export async function loader({ params }: { params: any }) {
       libraryRelations,
     };
   } else {
-    const activityJsonFromRevision = activityData.activityJson
-      ? JSON.parse(activityData.activityJson)
-      : null;
-
-    const activityJson = isActivitySource(activityJsonFromRevision)
-      ? activityJsonFromRevision
-      : compileActivityFromContent(activityData);
+    const activityJson = compileActivityFromContent(activityData);
 
     return {
       type: activityData.type,
@@ -153,6 +150,8 @@ export function ActivityViewer() {
 
   const { user, addTo, setAddTo, allLicenses } =
     useOutletContext<SiteContext>();
+  const { themeSetting } = useThemeSettingContext();
+  const canManageVisibility = user?.userId === activityData.ownerId;
 
   const license =
     allLicenses.find((l) => l.code === activityData.licenseCode) ?? null;
@@ -207,7 +206,7 @@ export function ActivityViewer() {
     if (content.contentId === settingsContentId) {
       return content;
     }
-    if (content.type !== "singleDoc") {
+    if (content.type !== "singleDoc" && content.type !== "image") {
       for (const child of content.children) {
         const res = matchSettingsContentId(child);
         if (res) {
@@ -291,6 +290,44 @@ export function ActivityViewer() {
 
   let mainContent: ReactElement<any> = <></>;
 
+  const unlistedBanner =
+    activityData.visibility === "unlisted" ? (
+      <Flex
+        width="100%"
+        backgroundColor="orange.100"
+        borderTop="1px solid"
+        borderBottom="1px solid"
+        borderColor="orange.300"
+        _dark={{ backgroundColor: "orange.900", borderColor: "orange.700" }}
+        justifyContent="center"
+      >
+        <HStack
+          width="100%"
+          maxWidth="850px"
+          justifyContent="space-between"
+          px="1rem"
+          py="0.75rem"
+          spacing="1rem"
+        >
+          <Text fontWeight="semibold">
+            Content is unlisted. Anyone with the link can view it, but it will
+            not appear in search.
+          </Text>
+          {canManageVisibility ? (
+            <Button
+              as={ReactRouterLink}
+              to={editorUrl(activityData.contentId, activityData.type, "edit")}
+              size="sm"
+              colorScheme="orange"
+              flexShrink={0}
+            >
+              Open share settings
+            </Button>
+          ) : null}
+        </HStack>
+      </Flex>
+    ) : null;
+
   const baseUrl = window.location.protocol + "//" + window.location.host;
   const doenetViewerUrl = `${baseUrl}/activityViewer`;
 
@@ -316,77 +353,102 @@ export function ActivityViewer() {
         data.doenetmlVersion,
       );
       mainContent = (
-        <DoenetEditor
-          height={`calc(100vh - ${headerHeight})`}
-          width="100%"
-          doenetML={data.doenetML}
-          doenetmlVersion={data.doenetmlVersion.fullVersion}
-          initialWarnings={initialWarnings}
-          border="none"
-          readOnly={true}
-          doenetViewerUrl={doenetViewerUrl}
-        />
+        <>
+          {unlistedBanner}
+          <DoenetEditor
+            height={`calc(100vh - ${headerHeight})`}
+            width="100%"
+            doenetML={data.doenetML}
+            doenetmlVersion={data.doenetmlVersion.fullVersion}
+            darkMode={effectiveDarkMode(
+              themeSetting,
+              data.doenetmlVersion.fullVersion,
+            )}
+            initialWarnings={initialWarnings}
+            border="none"
+            readOnly={true}
+            doenetViewerUrl={doenetViewerUrl}
+            doenetImagesUrl={doenetImagesUrl}
+          />
+        </>
       );
     } else {
       mainContent = (
-        <Box ref={doenetViewerContainer}>
-          <BlueBanner headerHeight={headerHeight}>
-            <DoenetViewer
-              doenetML={data.doenetML}
-              doenetmlVersion={data.doenetmlVersion.fullVersion}
-              flags={{
-                showCorrectness: true,
-                solutionDisplayMode: "button",
-                showFeedback: true,
-                showHints: true,
-                autoSubmit: false,
-                allowLoadState: false,
-                allowSaveState: false,
-                allowLocalState: false,
-                allowSaveEvents: false,
-              }}
-              attemptNumber={1}
-              doenetViewerUrl={doenetViewerUrl}
-              includeVariantSelector={true}
-              requestScrollTo={requestScrollTo}
-            />
-          </BlueBanner>
-        </Box>
+        <>
+          {unlistedBanner}
+          <Box ref={doenetViewerContainer}>
+            <BlueBanner headerHeight={headerHeight}>
+              <DoenetViewer
+                doenetML={data.doenetML}
+                doenetmlVersion={data.doenetmlVersion.fullVersion}
+                darkMode={effectiveDarkMode(
+                  themeSetting,
+                  data.doenetmlVersion.fullVersion,
+                )}
+                flags={{
+                  showCorrectness: true,
+                  solutionDisplayMode: "button",
+                  showFeedback: true,
+                  showHints: true,
+                  autoSubmit: false,
+                  allowLoadState: false,
+                  allowSaveState: false,
+                  allowLocalState: false,
+                  allowSaveEvents: false,
+                }}
+                attemptNumber={1}
+                doenetViewerUrl={doenetViewerUrl}
+                doenetImagesUrl={doenetImagesUrl}
+                includeVariantSelector={true}
+                requestScrollTo={requestScrollTo}
+              />
+            </BlueBanner>
+          </Box>
+        </>
       );
     }
   } else {
     if (mode === "Edit") {
       mainContent = (
-        <CompoundActivityEditor
-          activity={activityData}
-          asViewer={true}
-          fetcher={fetcher}
-          createContentMenuCreateFetcher={createContentMenuCreateFetcher}
-          createContentMenuSaveNameFetcher={createContentMenuSaveNameFetcher}
-          deleteContentFetcher={deleteContentFetcher}
-        />
+        <>
+          {unlistedBanner}
+          <CompoundActivityEditor
+            activity={activityData}
+            asViewer={true}
+            fetcher={fetcher}
+            createContentMenuCreateFetcher={createContentMenuCreateFetcher}
+            createContentMenuSaveNameFetcher={createContentMenuSaveNameFetcher}
+            deleteContentFetcher={deleteContentFetcher}
+          />
+        </>
       );
     } else {
       mainContent = (
-        <BlueBanner headerHeight={headerHeight}>
-          <DoenetActivityViewer
-            source={data.activityJson}
-            requestedVariantIndex={1}
-            userId={"hi"}
-            paginate={
-              activityData.type === "sequence" ? activityData.paginate : false
-            }
-            activityLevelAttempts={
-              activityData.assignmentInfo?.mode === "summative"
-            }
-            itemLevelAttempts={
-              activityData.assignmentInfo?.mode === "formative"
-            }
-            maxAttemptsAllowed={activityData.assignmentInfo?.maxAttempts}
-            showTitle={false}
-            doenetViewerUrl={doenetViewerUrl}
-          />
-        </BlueBanner>
+        <>
+          {unlistedBanner}
+          <BlueBanner headerHeight={headerHeight}>
+            <DoenetActivityViewer
+              source={data.activityJson}
+              // Compound activity: per-leaf version, so pass the raw setting.
+              darkMode={effectiveDarkMode(themeSetting)}
+              requestedVariantIndex={1}
+              userId={"hi"}
+              paginate={
+                activityData.type === "sequence" ? activityData.paginate : false
+              }
+              activityLevelAttempts={
+                activityData.assignmentInfo?.mode === "summative"
+              }
+              itemLevelAttempts={
+                activityData.assignmentInfo?.mode === "formative"
+              }
+              maxAttemptsAllowed={activityData.assignmentInfo?.maxAttempts}
+              showTitle={false}
+              doenetViewerUrl={doenetViewerUrl}
+              doenetImagesUrl={doenetImagesUrl}
+            />
+          </BlueBanner>
+        </>
       );
     }
   }
@@ -494,7 +556,7 @@ export function ActivityViewer() {
       {infoDrawer}
       {copyContentModal}
       <Grid
-        background="doenet.lightBlue"
+        background="viewerFrame"
         height="calc(100vh - 40px)" //40px header height
         templateAreas={`"header"
       "centerContent"
@@ -750,7 +812,9 @@ export function ActivityViewer() {
             />
             <Flex
               hidden={mode === "Edit"}
-              background="gray.600"
+              // Inverted info panel: textMuted flips opposite to the --canvas
+              // text, keeping contrast readable in both light and dark modes.
+              background="textMuted"
               maxWidth="850px"
               width="100%"
               color="var(--canvas)"

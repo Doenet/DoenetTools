@@ -23,35 +23,67 @@ describe("Share Activities Tests", function () {
       `My new activity${code}{enter}`,
     );
 
-    // Edit content - wait for editor to be ready before typing
-    cy.getIframeBody("iframe", ".cm-activeLine").within(() => {
-      cy.get(".cm-activeLine").type("Hello there! <m>x</m>");
-      cy.wait(500); // Wait for text to be set
-      cy.get(".cm-editor").click(); // Click to ensure focus
-      cy.wait(300);
-      cy.get(".cm-activeLine").type("{enter}");
-      cy.wait(300);
-      cy.get(".cm-activeLine").type("{ctrl+S}");
-    });
+    // Wait for the editor to be ready (core worker booted) before typing, so a
+    // reload-on-stall can't discard typed text. Handles the #2957 boot stall.
+    cy.ensureDoenetEditorReady();
+
+    // Edit content via cy.iframe() (same access path as the passing
+    // createFolders/assignmentWorkflow specs — typing through
+    // getIframeBody().within() did not reliably commit to the editor model
+    // under CI). Type the math but let CodeMirror auto-close the <m> tag: typing
+    // a literal </m> on top of the auto-closed one races under CI load and
+    // yields malformed `<m>x</m></m>`, which won't render. {end} steps past the
+    // auto-closed tag before the newline. See issue #2957.
+    cy.iframe().find(".cm-activeLine").type("Hello there! <m>x{end}{enter}");
+
+    // Render the editor's viewer pane. The {ctrl+S} "Update Viewer" keystroke
+    // isn't delivered reliably to the in-iframe CodeMirror under CI, and even a
+    // single Update click can be a no-op while the CDN editor is still becoming
+    // interactive — so retry Update until the viewer renders. The doenetML
+    // auto-saves, so the later share/copy steps still see the content. #2957.
+    cy.renderDoenetEditorViewer();
 
     // Verify viewer shows content
-    cy.getIframeBody("iframe", ".doenet-viewer").within(() => {
+    cy.getIframeBody("iframe", ".doenet-viewer", {
+      label: "editor: viewer after update",
+    }).within(() => {
       cy.get(".doenet-viewer").should(
         "contain.text",
         `Hello there! ${toMathJaxString("x")}`,
       );
     });
 
+    // Public listing now requires every required category group (Scope, Mode,
+    // Setting, Duration) to be filled in; until they are, the share modal's
+    // "Save access" button stays disabled. Fill one category per required group
+    // via the API — the same precondition pattern share.cy.ts uses — so this
+    // spec stays focused on the share/copy UI rather than the category editor.
+    cy.url().then((url) => {
+      const activityId = url.match(/documentEditor\/([^/?]+)/)![1];
+      cy.request({
+        method: "POST",
+        url: "/api/updateContent/updateCategories",
+        body: {
+          contentId: activityId,
+          categories: {
+            isQuestion: true, // Scope
+            isPractice: true, // Mode
+            isIndependent: true, // Setting
+            takesLessThanFiveMinutes: true, // Duration
+          },
+        },
+      });
+    });
+
     cy.get('[data-test="Share Button"]').click();
-    cy.get('[data-test="Public Status"]').should(
-      "contain.text",
-      "Content is not public",
-    );
+    cy.contains("Current access: Private.").should("be.visible");
     cy.get('[data-test="Share Publicly Button"]').click();
-    cy.get('[data-test="Public Status"]').should(
+    cy.get('[data-test="Share Submit Button"]').should(
       "contain.text",
-      "Content is public",
+      "Save access",
     );
+    cy.get('[data-test="Share Submit Button"]').click();
+    cy.contains("Current access: Public.").should("be.visible");
 
     cy.get('[data-test="Share Close Button"]').click();
 
@@ -76,7 +108,9 @@ describe("Share Activities Tests", function () {
       .click();
 
     // Verify viewer shows content (and wait for MathJax to load)
-    cy.getIframeBody("iframe", ".doenet-viewer").within(() => {
+    cy.getIframeBody("iframe", ".doenet-viewer", {
+      label: "community tab: opened public activity",
+    }).within(() => {
       cy.get(".doenet-viewer").should(
         "contain.text",
         `Hello there! ${toMathJaxString("x")}`,
@@ -91,7 +125,9 @@ describe("Share Activities Tests", function () {
     // Click the first content card - use eq() on a fresh query
     cy.get(`[data-test="Content Card"]`).eq(0).click();
 
-    cy.getIframeBody("iframe", ".doenet-viewer").within(() => {
+    cy.getIframeBody("iframe", ".doenet-viewer", {
+      label: "my activities: opened copied activity",
+    }).within(() => {
       cy.get(".doenet-viewer").should(
         "contain.text",
         `Hello there! ${toMathJaxString("x")}`,

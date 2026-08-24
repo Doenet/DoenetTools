@@ -7,6 +7,7 @@ import {
 } from "react-router";
 
 import { DoenetViewer } from "@doenet/doenetml-iframe";
+import { doenetImagesUrl } from "../utils/media";
 
 import { Box, Button, Grid, GridItem, Text, Tooltip } from "@chakra-ui/react";
 import axios, { AxiosError } from "axios";
@@ -16,13 +17,10 @@ import {
 } from "./EnterClassCode";
 import { SiteContext } from "./SiteHeader";
 import { Content, DoenetmlVersion } from "../types";
-import {
-  ActivitySource,
-  isActivitySource,
-  isReportStateMessage,
-} from "@doenet-tools/shared";
+import { ActivitySource, isReportStateMessage } from "@doenet-tools/shared";
 import { compileActivityFromContent } from "../utils/activity";
 import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";
+import { effectiveDarkMode, useThemeSettingContext } from "../utils/theme";
 import { BlueBanner } from "../widgets/BlueBanner";
 
 type ItemScore = {
@@ -186,13 +184,7 @@ export async function loader({ params }: { params: any }) {
       loadedScore,
     };
   } else {
-    const activityJsonPrelim = data.assignment.activityJson
-      ? JSON.parse(data.assignment.activityJson)
-      : null;
-
-    const activityJson = isActivitySource(activityJsonPrelim)
-      ? activityJsonPrelim
-      : compileActivityFromContent(data.assignment);
+    const activityJson = compileActivityFromContent(data.assignment);
 
     return {
       assignmentFound: true,
@@ -252,6 +244,7 @@ export function AssignmentViewer() {
   const scrollingContainer = useRef<HTMLDivElement>(null);
 
   const { user } = useOutletContext<SiteContext>();
+  const { themeSetting } = useThemeSettingContext();
   if (!user) {
     throw Error("User should have been defined");
   }
@@ -593,6 +586,10 @@ export function AssignmentViewer() {
         <DoenetViewer
           doenetML={loaderData.doenetML}
           doenetmlVersion={loaderData.doenetmlVersion.fullVersion}
+          darkMode={effectiveDarkMode(
+            themeSetting,
+            loaderData.doenetmlVersion.fullVersion,
+          )}
           // Since DoenetViewer does not adjust variant by attemptNumber, add attemptNumber to the initial variant
           requestedVariantIndex={initialVariant + attemptNumber}
           docId={assignment.contentId}
@@ -610,6 +607,7 @@ export function AssignmentViewer() {
           }}
           attemptNumber={attemptNumber}
           doenetViewerUrl={doenetViewerUrl}
+          doenetImagesUrl={doenetImagesUrl}
           requestScrollTo={requestScrollTo}
         />
       </Box>
@@ -620,10 +618,14 @@ export function AssignmentViewer() {
         <DoenetActivityViewer
           source={loaderData.activityJson}
           activityId={assignment.contentId}
+          // Compound activity: version is per-leaf, so we can't gate here — pass
+          // the raw setting. (Per-leaf gating belongs inside DoenetActivityViewer.)
+          darkMode={effectiveDarkMode(themeSetting)}
           // DoenetActivityViewer adjusts variant based on attempt number, so we don't need to add it to initial variant
           requestedVariantIndex={initialVariant}
           userId={user.userId}
           doenetViewerUrl={doenetViewerUrl}
+          doenetImagesUrl={doenetImagesUrl}
           paginate={
             assignment.type === "sequence" ? assignment.paginate : false
           }
@@ -652,7 +654,7 @@ export function AssignmentViewer() {
 
   return (
     <Grid
-      background="doenet.lightBlue"
+      background="viewerFrame"
       minHeight="calc(100vh - 40px)" //40px header height
       templateAreas={`"header"
       "centerContent"

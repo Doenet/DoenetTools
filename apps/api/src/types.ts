@@ -101,19 +101,8 @@ export type UserInfoWithEmail = UserInfo & {
   email: string | null;
   isAuthor?: boolean;
   isEditor?: boolean;
-};
-
-export type CategoryGroup = {
-  name: string;
-  isRequired: boolean;
-  isExclusive: boolean;
-  categories: Category[];
-};
-
-export type Category = {
-  code: string;
-  description: string;
-  term: string;
+  canUploadImages?: boolean;
+  theme?: Theme;
 };
 
 export type ContentClassification = {
@@ -173,17 +162,25 @@ export type PartialContentClassification = {
   numCommunity?: number;
 };
 
-export type ContentType = "singleDoc" | "select" | "sequence" | "folder";
+export type ContentType =
+  | "singleDoc"
+  | "select"
+  | "sequence"
+  | "folder"
+  | "image";
 export function isContentType(type: unknown): type is ContentType {
   return (
     typeof type === "string" &&
-    ["singleDoc", "select", "sequence", "folder"].includes(type)
+    ["singleDoc", "select", "sequence", "folder", "image"].includes(type)
   );
 }
 
 export type AssignmentMode = "formative" | "summative";
 
 export type Visibility = "private" | "unlisted" | "public";
+
+/** This type must match the Prisma-defined enum `Theme` */
+export type Theme = "system" | "light" | "dark";
 
 export type ContentBase = {
   contentId: Uuid;
@@ -228,7 +225,6 @@ export type Doc = ContentBase & {
 
 export type QuestionBank = ContentBase & {
   type: "select";
-  activityJson?: string;
   revisionNum?: number;
   numToSelect: number;
   selectByVariant: boolean;
@@ -237,7 +233,6 @@ export type QuestionBank = ContentBase & {
 
 export type ProblemSet = ContentBase & {
   type: "sequence";
-  activityJson?: string;
   revisionNum?: number;
   shuffle: boolean;
   paginate: boolean;
@@ -250,9 +245,27 @@ export type Folder = ContentBase & {
   children: Content[];
 };
 
+export type ImageItem = ContentBase & {
+  type: "image";
+  // Domain-independent reference to the image bytes: `doenet:<short-uuid>`.
+  // The DoenetML viewer resolves it against `doenetImagesUrl` at render time.
+  // Null before the S3 PUT completes; otherwise populated by `processContent`.
+  imageSource?: string | null;
+  // DoenetML `<image>` attribution/licensing. Uploaded images carry their own
+  // author/title/source/license here instead of the activity-level
+  // `licenseCode`. `imageLicenseCodes` is one or two space-separated DoenetML
+  // media-license codes (e.g. `CC-BY-SA` or `CC-BY-SA GFDL`).
+  imageAuthorName?: string | null;
+  imageAuthorUrl?: string | null;
+  imageTitle?: string | null;
+  imageOriginalUrl?: string | null;
+  imageLicenseCodes?: string | null;
+  imageLicenseVersion?: string | null;
+};
+
 export type Activity = Doc | QuestionBank | ProblemSet;
 
-export type Content = Doc | QuestionBank | ProblemSet | Folder;
+export type Content = Doc | QuestionBank | ProblemSet | Folder | ImageItem;
 
 export type AssignmentInfo = {
   assignmentStatus: AssignmentStatus;
