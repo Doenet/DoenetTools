@@ -724,8 +724,9 @@ export function AssignmentViewer() {
           <Alert status="warning" height={anonymousBannerHeight}>
             <AlertIcon />
             <AlertDescription>
-              You are logged in as an anonymous user. Your work is saved in this
-              browser only and may be lost if you clear your browser data.
+              You are logged in as an anonymous user. Your work is saved, but
+              this account is tied to this browser, so you will lose access to
+              it if you clear your browser data or switch devices.
             </AlertDescription>
           </Alert>
         </Box>
