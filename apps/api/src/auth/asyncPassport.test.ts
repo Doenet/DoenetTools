@@ -14,7 +14,6 @@ const Authenticator = (
     };
   }
 ).Authenticator;
-type GoogleProfile = { name?: { givenName: string } };
 
 describe("asyncPassport", () => {
   beforeEach(() => {
@@ -47,19 +46,20 @@ describe("asyncPassport", () => {
     expect(done.mock.calls[0][0]).toBe(boom);
   });
 
-  it("catches the exact production failure: reading a field off an absent profile", async () => {
-    // Google omits `name` entirely when the account has neither given nor
-    // family name, which crashed the server on 2026-08-23.
+  it("catches a handler dereferencing an absent nested field", async () => {
+    // The shape of the 2026-08-23 outage: a handler read a field off an object
+    // the provider had not sent. What Google actually sends, and how it is
+    // validated, is covered in `googleProfile.test.ts`; this test is only about
+    // the resulting TypeError reaching `done` instead of the process.
     const done = vi.fn();
-    const profile: GoogleProfile = {};
     const wrapped = asyncPassport(
-      "google",
-      async (user: GoogleProfile, _cb: Done) => {
+      "deref",
+      async (user: { name?: { givenName: string } }, _cb: Done) => {
         return user.name!.givenName;
       },
     );
 
-    wrapped(profile as never, done as never);
+    wrapped({} as never, done as never);
     await vi.waitFor(() => {
       expect(done).toHaveBeenCalledTimes(1);
       expect(done.mock.calls[0][0]).toBeInstanceOf(TypeError);

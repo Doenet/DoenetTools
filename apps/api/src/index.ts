@@ -52,7 +52,8 @@ import { metricsRouter } from "./routes/metricsRoutes";
 import { contentRouter } from "./routes/content.route";
 import { loadMediaConfig, mediaRouter } from "./media";
 import { getEnvVar, isTestAuthBypassEnabled } from "./utils/env";
-import { asyncPassport } from "./auth";
+import { asyncPassport, toGoogleAccount } from "./auth";
+import type { DoneCallback, SessionUser } from "./auth";
 import { installProcessErrorHandlers } from "./errors/processErrorHandlers";
 
 // Type assertion to work around passport type declaration issues
@@ -280,8 +281,7 @@ passport.use(new AnonymIdStrategy());
 passport.serializeUser(
   asyncPassport(
     "serializeUser",
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async (req: any, user: any, done: any) => {
+    async (req: Request, user: SessionUser, done: DoneCallback) => {
       if (user.provider === "magiclink") {
         const email: string = user.email;
         const fromAnonymous: string = user.fromAnonymous;
@@ -310,11 +310,11 @@ passport.serializeUser(
 
         return done(undefined, fromUUID(u.userId));
       } else if (user.provider === "google") {
-        let email = user.id + "@google.com";
-        if (user.emails[0].verified) {
-          email = user.emails[0].value;
-        }
-        const fromAnonymous: string = user.fromAnonymous;
+        // Validated here rather than read off `profile.name`, which is
+        // passport's reshape of Google's payload and is where two production
+        // crashes came from. See `auth/googleProfile.ts`.
+        const { email, firstNames, lastNames } = toGoogleAccount(user._json);
+        const fromAnonymous = user.fromAnonymous;
 
         let u;
 
@@ -328,8 +328,8 @@ passport.serializeUser(
             // Use name from google account
             await updateUser({
               loggedInUserId: u.userId,
-              firstNames: user.name.givenName,
-              lastNames: user.name.familyName,
+              firstNames: firstNames ?? undefined,
+              lastNames,
             });
           } catch (_e) {
             console.log("Error upgrading anonymous user", _e);
@@ -338,11 +338,7 @@ passport.serializeUser(
         }
 
         if (!u) {
-          u = await findOrCreateUser({
-            email,
-            firstNames: user.name.givenName,
-            lastNames: user.name.familyName,
-          });
+          u = await findOrCreateUser({ email, firstNames, lastNames });
         }
 
         return done(undefined, fromUUID(u.userId));
@@ -401,8 +397,7 @@ passport.serializeUser(
 passport.deserializeUser(
   asyncPassport(
     "deserializeUser",
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async (userId: string, done: any) => {
+    async (userId: string, done: DoneCallback) => {
       const { user } = await getMyUserInfo({
         loggedInUserId: toUUID(userId),
       });
