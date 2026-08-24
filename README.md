@@ -12,6 +12,10 @@ We would love to hear from you! Join our [Discord](https://discord.gg/PUduwtKJ5h
 
 ## Dev Environment Setup
 
+There are two ways to get set up: install the toolchain on your machine
+(below), or open the repository in the [dev container](./.devcontainer/), which
+brings its own Node, MySQL, S3 mock, and Chrome for the Cypress suites.
+
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/) 24+

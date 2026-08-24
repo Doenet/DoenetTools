@@ -49,5 +49,12 @@ export const apiPort = Number(env.PORT) || BASE.api;
 export const offset = apiPort - BASE.api;
 export const appPort = BASE.app + offset;
 export const webPort = BASE.web + offset;
-export const dbPort = Number(env.DATABASE_PORT) || 3306;
+// The database address comes from the real environment first, then the env
+// file. Both dotenv and the Prisma CLI resolve it the same way, so this stays
+// in step with what the API actually connects to — which matters in the dev
+// container, where docker-compose.yml points these at the `mysql` service.
+export const dbHost =
+  process.env.DATABASE_HOST || env.DATABASE_HOST || "127.0.0.1";
+export const dbPort =
+  Number(process.env.DATABASE_PORT) || Number(env.DATABASE_PORT) || 3306;
 export { BASE };
