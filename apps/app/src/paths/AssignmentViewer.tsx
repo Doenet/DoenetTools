@@ -17,11 +17,7 @@ import {
 } from "./EnterClassCode";
 import { SiteContext } from "./SiteHeader";
 import { Content, DoenetmlVersion } from "../types";
-import {
-  ActivitySource,
-  isActivitySource,
-  isReportStateMessage,
-} from "@doenet-tools/shared";
+import { ActivitySource, isReportStateMessage } from "@doenet-tools/shared";
 import { compileActivityFromContent } from "../utils/activity";
 import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";
 import { effectiveDarkMode, useThemeSettingContext } from "../utils/theme";
@@ -188,13 +184,7 @@ export async function loader({ params }: { params: any }) {
       loadedScore,
     };
   } else {
-    const activityJsonPrelim = data.assignment.activityJson
-      ? JSON.parse(data.assignment.activityJson)
-      : null;
-
-    const activityJson = isActivitySource(activityJsonPrelim)
-      ? activityJsonPrelim
-      : compileActivityFromContent(data.assignment);
+    const activityJson = compileActivityFromContent(data.assignment);
 
     return {
       assignmentFound: true,

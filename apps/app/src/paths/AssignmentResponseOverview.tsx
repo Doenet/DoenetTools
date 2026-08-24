@@ -45,7 +45,6 @@ import {
   DoenetmlVersion,
   UserInfoWithEmail,
 } from "../types";
-import { isActivitySource } from "@doenet/assignment-viewer";
 import {
   compileActivityFromContent,
   contentTypeToName,
@@ -173,13 +172,7 @@ export async function loader({ params, request }: ActionFunctionArgs) {
       doenetmlVersion,
     };
   } else if (assignment.type !== "folder" && assignment.type !== "image") {
-    const activityJsonPrelim = assignment.activityJson
-      ? JSON.parse(assignment.activityJson)
-      : null;
-
-    const activityJson = isActivitySource(activityJsonPrelim)
-      ? activityJsonPrelim
-      : compileActivityFromContent(assignment);
+    const activityJson = compileActivityFromContent(assignment);
 
     const itemNames = data.itemNames;
 

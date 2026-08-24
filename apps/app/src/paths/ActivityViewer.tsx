@@ -66,7 +66,7 @@ import {
   getIconInfo,
   menuIcons,
 } from "../utils/activity";
-import { ActivitySource, isActivitySource } from "@doenet-tools/shared";
+import { ActivitySource } from "@doenet-tools/shared";
 import { DoenetEditor, DoenetViewer } from "@doenet/doenetml-iframe";
 import { doenetImagesUrl } from "../utils/media";
 import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";
@@ -114,13 +114,7 @@ export async function loader({ params }: { params: any }) {
       libraryRelations,
     };
   } else {
-    const activityJsonFromRevision = activityData.activityJson
-      ? JSON.parse(activityData.activityJson)
-      : null;
-
-    const activityJson = isActivitySource(activityJsonFromRevision)
-      ? activityJsonFromRevision
-      : compileActivityFromContent(activityData);
+    const activityJson = compileActivityFromContent(activityData);
 
     return {
       type: activityData.type,
