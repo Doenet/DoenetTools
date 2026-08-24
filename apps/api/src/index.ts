@@ -52,10 +52,15 @@ import { metricsRouter } from "./routes/metricsRoutes";
 import { contentRouter } from "./routes/content.route";
 import { loadMediaConfig, mediaRouter } from "./media";
 import { getEnvVar } from "./utils/env";
+import { asyncPassport } from "./auth";
+import { installProcessErrorHandlers } from "./errors/processErrorHandlers";
 
 // Type assertion to work around passport type declaration issues
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const passport = passportLib as any;
+
+// Registered before anything else so a failure during startup is logged too.
+installProcessErrorHandlers();
 
 dotenv.config();
 
@@ -272,130 +277,142 @@ passport.use(
 
 passport.use(new AnonymIdStrategy());
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-passport.serializeUser(async (req: any, user: any, done: any) => {
-  if (user.provider === "magiclink") {
-    const email: string = user.email;
-    const fromAnonymous: string = user.fromAnonymous;
+passport.serializeUser(
+  asyncPassport(
+    "serializeUser",
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async (req: any, user: any, done: any) => {
+      if (user.provider === "magiclink") {
+        const email: string = user.email;
+        const fromAnonymous: string = user.fromAnonymous;
 
-    let u;
+        let u;
 
-    if (fromAnonymous !== " ") {
-      try {
-        u = await upgradeAnonymousUser({
-          userId: toUUID(fromAnonymous),
-          email,
-        });
-      } catch (_e) {
-        console.log("Error upgrading anonymous user", _e);
-        /// ignore any error
-      }
-    }
-
-    if (!u) {
-      u = await findOrCreateUser({
-        email,
-        firstNames: null,
-        lastNames: "",
-      });
-    }
-
-    return done(undefined, fromUUID(u.userId));
-  } else if (user.provider === "google") {
-    let email = user.id + "@google.com";
-    if (user.emails[0].verified) {
-      email = user.emails[0].value;
-    }
-    const fromAnonymous: string = user.fromAnonymous;
-
-    let u;
-
-    if (fromAnonymous) {
-      try {
-        u = await upgradeAnonymousUser({
-          userId: toUUID(fromAnonymous),
-          email,
-        });
-
-        // Use name from google account
-        await updateUser({
-          loggedInUserId: u.userId,
-          firstNames: user.name.givenName,
-          lastNames: user.name.familyName,
-        });
-      } catch (_e) {
-        console.log("Error upgrading anonymous user", _e);
-        /// ignore any error
-      }
-    }
-
-    if (!u) {
-      u = await findOrCreateUser({
-        email,
-        firstNames: user.name.givenName,
-        lastNames: user.name.familyName,
-      });
-    }
-
-    return done(undefined, fromUUID(u.userId));
-    // TODO: upgrade from anonymous user?
-  } else if (user.provider === "local") {
-    const pause1000 = function () {
-      return new Promise((resolve, _reject) => {
-        setTimeout(resolve, 1000);
-      });
-    };
-    await pause1000();
-
-    return done(undefined, fromUUID(user.userId));
-  } else if (user.anonymous) {
-    let email = nanoid() + "@anonymous.doenet.org";
-
-    let firstNames = "";
-    let lastNames = generateHandle({});
-    let isAnonymous = true;
-    let isEditor = false;
-    let isAuthor = false;
-    let canUploadImages = false;
-
-    if (
-      process.env.ENABLE_TEST_AUTH_BYPASS &&
-      process.env.ENABLE_TEST_AUTH_BYPASS.toLocaleLowerCase() !== "false"
-    ) {
-      if (req.body.email && !req.body.isAnonymous) {
-        email = req.body.email;
-        if (req.body.firstNames) {
-          firstNames = req.body.firstNames;
-        }
-        if (req.body.lastNames) {
-          lastNames = req.body.lastNames;
+        if (fromAnonymous !== " ") {
+          try {
+            u = await upgradeAnonymousUser({
+              userId: toUUID(fromAnonymous),
+              email,
+            });
+          } catch (_e) {
+            console.log("Error upgrading anonymous user", _e);
+            /// ignore any error
+          }
         }
 
-        isEditor = Boolean(req.body.isEditor);
-        isAuthor = Boolean(req.body.isAuthor);
-        canUploadImages = Boolean(req.body.canUploadImages);
-        isAnonymous = false;
+        if (!u) {
+          u = await findOrCreateUser({
+            email,
+            firstNames: null,
+            lastNames: "",
+          });
+        }
+
+        return done(undefined, fromUUID(u.userId));
+      } else if (user.provider === "google") {
+        let email = user.id + "@google.com";
+        if (user.emails[0].verified) {
+          email = user.emails[0].value;
+        }
+        const fromAnonymous: string = user.fromAnonymous;
+
+        let u;
+
+        if (fromAnonymous) {
+          try {
+            u = await upgradeAnonymousUser({
+              userId: toUUID(fromAnonymous),
+              email,
+            });
+
+            // Use name from google account
+            await updateUser({
+              loggedInUserId: u.userId,
+              firstNames: user.name.givenName,
+              lastNames: user.name.familyName,
+            });
+          } catch (_e) {
+            console.log("Error upgrading anonymous user", _e);
+            /// ignore any error
+          }
+        }
+
+        if (!u) {
+          u = await findOrCreateUser({
+            email,
+            firstNames: user.name.givenName,
+            lastNames: user.name.familyName,
+          });
+        }
+
+        return done(undefined, fromUUID(u.userId));
+        // TODO: upgrade from anonymous user?
+      } else if (user.provider === "local") {
+        const pause1000 = function () {
+          return new Promise((resolve, _reject) => {
+            setTimeout(resolve, 1000);
+          });
+        };
+        await pause1000();
+
+        return done(undefined, fromUUID(user.userId));
+      } else if (user.anonymous) {
+        let email = nanoid() + "@anonymous.doenet.org";
+
+        let firstNames = "";
+        let lastNames = generateHandle({});
+        let isAnonymous = true;
+        let isEditor = false;
+        let isAuthor = false;
+        let canUploadImages = false;
+
+        if (
+          process.env.ENABLE_TEST_AUTH_BYPASS &&
+          process.env.ENABLE_TEST_AUTH_BYPASS.toLocaleLowerCase() !== "false"
+        ) {
+          if (req.body.email && !req.body.isAnonymous) {
+            email = req.body.email;
+            if (req.body.firstNames) {
+              firstNames = req.body.firstNames;
+            }
+            if (req.body.lastNames) {
+              lastNames = req.body.lastNames;
+            }
+
+            isEditor = Boolean(req.body.isEditor);
+            isAuthor = Boolean(req.body.isAuthor);
+            canUploadImages = Boolean(req.body.canUploadImages);
+            isAnonymous = false;
+          }
+        }
+
+        const u = await findOrCreateUser({
+          email,
+          lastNames,
+          firstNames,
+          isAnonymous,
+          isEditor,
+          isAuthor,
+          canUploadImages,
+        });
+        return done(undefined, fromUUID(u.userId));
       }
-    }
+    },
+  ),
+);
 
-    const u = await findOrCreateUser({
-      email,
-      lastNames,
-      firstNames,
-      isAnonymous,
-      isEditor,
-      isAuthor,
-      canUploadImages,
-    });
-    return done(undefined, fromUUID(u.userId));
-  }
-});
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-passport.deserializeUser(async (userId: string, done: any) => {
-  const { user } = await getMyUserInfo({ loggedInUserId: toUUID(userId) });
-  done(null, user);
-});
+passport.deserializeUser(
+  asyncPassport(
+    "deserializeUser",
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async (userId: string, done: any) => {
+      const { user } = await getMyUserInfo({
+        loggedInUserId: toUUID(userId),
+      });
+      done(null, user);
+    },
+  ),
+);
 
 app.use(
   session({
