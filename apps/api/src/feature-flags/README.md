@@ -87,6 +87,16 @@ read of the flag, delete its registry entry, then run
 `feature-flag prune` to drop the leftover database rows. Rows for unknown flags
 are ignored in the meantime, so the order is safe either way.
 
+If the feature has shipped but you aren't ready to pull the flag out yet, set
+`defaultEnabled: true` and prune. **`defaultEnabled: true` means "this has
+shipped — delete me"**, not "this is on by default": it makes the released
+behavior the baseline in every environment (fresh dev databases, CI, Cypress),
+which otherwise keeps running the retired path until someone writes a row there.
+Don't reach for it to ship a feature on-by-default with a kill switch — the
+defaults are what a cold API task and a client with a failed flag fetch fall back
+to, so a flag you just turned off comes back **on** for them. Use a
+`FEATURE_FLAG_OVERRIDES` pin for break-glass instead.
+
 ## Configuration
 
 | Env var                      | Required | Default | Notes                                                        |
