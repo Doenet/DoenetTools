@@ -669,9 +669,10 @@ export function AssignmentViewer() {
       background="viewerFrame"
       minHeight="calc(100vh - 40px)" //40px header height
       templateAreas={`"header"
+      ${isAnonymous ? `"banner"` : ``}
       "centerContent"
       `}
-      templateRows="40px auto"
+      templateRows={isAnonymous ? "40px 40px auto" : "40px auto"}
       position="relative"
     >
       <GridItem
@@ -713,12 +714,10 @@ export function AssignmentViewer() {
       </GridItem>
 
       {isAnonymous && (
-        <Box
-          position="fixed"
-          top="80px"
+        <GridItem
+          area="banner"
           height={anonymousBannerHeight}
           width="100%"
-          zIndex="500"
           data-test="Anonymous User Banner"
         >
           <Alert status="info" height={anonymousBannerHeight}>
@@ -727,7 +726,7 @@ export function AssignmentViewer() {
               You are working on this assignment as an anonymous user.
             </AlertDescription>
           </Alert>
-        </Box>
+        </GridItem>
       )}
 
       <GridItem
