@@ -1024,6 +1024,52 @@ test("cannot copy an assignment (singleDoc)", async () => {
   ).rejects.toThrow("Cannot copy an assignment");
 });
 
+// A folder is not itself an assignment, so copying it is allowed. Its
+// assignment descendants are copied as plain (unassigned) activities, since
+// `copySingleContent` omits the assignment fields.
+test("copying a folder containing an assignment drops the assignment data", async () => {
+  const { userId: ownerId } = await createTestUser();
+  const [folderId] = await setupTestContent(ownerId, {
+    "folder 1": fold({}),
+  });
+  const [problemSetId] = await setupTestContent(ownerId, {
+    "problem set 1": pset({
+      "doc 1": doc(""),
+    }),
+  });
+  const { assignmentId } = await createAssignment({
+    contentId: problemSetId,
+    loggedInUserId: ownerId,
+    destinationParentId: folderId,
+    closedOn: DateTime.now(),
+  });
+
+  const { newContentIds } = await copyContent({
+    contentIds: [folderId],
+    loggedInUserId: ownerId,
+    parentId: null,
+  });
+
+  const newFolder = await getContent({
+    contentId: newContentIds[0],
+    loggedInUserId: ownerId,
+  });
+  if (newFolder.type !== "folder") {
+    throw Error("shouldn't happen");
+  }
+  expect(newFolder.children.length).eq(1);
+  const copiedAssignment = newFolder.children[0];
+  expect(copiedAssignment.name).eq("problem set 1");
+  expect(copiedAssignment.assignmentInfo).eq(undefined);
+
+  // the original assignment is untouched
+  const originalAssignment = await getContent({
+    contentId: assignmentId,
+    loggedInUserId: ownerId,
+  });
+  expect(originalAssignment.assignmentInfo).not.eq(undefined);
+});
+
 test("MoveCopyContent does not allow singleDoc` as parent type", async () => {
   const { userId: loggedInUserId } = await createTestUser();
 
