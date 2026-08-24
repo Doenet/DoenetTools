@@ -15,12 +15,18 @@ type DoneCallback = (err: unknown, result?: unknown) => void;
  *
  * Errors are reported through `done(err)`, which is what Passport expects and
  * what routes the failure into normal Express error handling.
+ *
+ * The returned function reports the same `.length` as the handler it wraps.
+ * Passport dispatches on arity -- see `authenticator.js`, which calls
+ * `layer(req, user, done)` only when `layer.length === 3` and otherwise calls
+ * `layer(user, done)` -- so a wrapper using rest parameters (`.length === 0`)
+ * would silently shift every argument by one.
  */
 export function asyncPassport<F extends (...args: never[]) => Promise<unknown>>(
   label: string,
   handler: F,
 ): (...args: Parameters<F>) => void {
-  return (...args: Parameters<F>) => {
+  const wrapper = (...args: Parameters<F>) => {
     const done = args[args.length - 1] as DoneCallback;
 
     if (typeof done !== "function") {
@@ -54,4 +60,10 @@ export function asyncPassport<F extends (...args: never[]) => Promise<unknown>>(
         guardedDone(e);
       });
   };
+
+  // `Function.prototype.length` is configurable, so this is the least invasive
+  // way to keep Passport's arity dispatch working through the wrapper.
+  Object.defineProperty(wrapper, "length", { value: handler.length });
+
+  return wrapper;
 }

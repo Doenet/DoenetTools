@@ -1,7 +1,19 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
+import passportLib from "passport";
 import { asyncPassport } from "./asyncPassport";
 
 type Done = (err: unknown, result?: unknown) => void;
+
+// `Authenticator` is a runtime export of `passport` but only an interface in
+// `@types/passport`, so the constructor has to be reached through the default
+// export. Only `serializeUser` is needed here.
+const Authenticator = (
+  passportLib as unknown as {
+    Authenticator: new () => {
+      serializeUser: (...args: unknown[]) => void;
+    };
+  }
+).Authenticator;
 type GoogleProfile = { name?: { givenName: string } };
 
 describe("asyncPassport", () => {
@@ -75,6 +87,46 @@ describe("asyncPassport", () => {
     wrapped(done as never);
     await vi.waitFor(() => expect(done).toHaveBeenCalledTimes(1));
     expect(done).toHaveBeenCalledWith(null, "first");
+  });
+
+  it("preserves arity, which is how Passport decides what to pass", () => {
+    const three = asyncPassport(
+      "three",
+      async (_req: unknown, _user: unknown, _cb: Done) => {},
+    );
+    const two = asyncPassport("two", async (_user: unknown, _cb: Done) => {});
+
+    // Passport calls `layer(req, user, done)` only when `layer.length === 3`.
+    expect(three.length).toBe(3);
+    expect(two.length).toBe(2);
+  });
+
+  it("receives (req, user, done) in the right order through real Passport", async () => {
+    // Regression test for the wrapper reporting `.length === 0`, which made
+    // Passport call it as `layer(user, done)` and shift every argument by one.
+    const passport = new Authenticator();
+    const seen: { req: unknown; user: unknown }[] = [];
+
+    passport.serializeUser(
+      asyncPassport(
+        "serialize",
+        async (req: { marker: string }, user: { id: string }, cb: Done) => {
+          seen.push({ req: req.marker, user: user.id });
+          cb(null, user.id);
+        },
+      ),
+    );
+
+    const serialized = await new Promise((resolve, reject) => {
+      passport.serializeUser(
+        { id: "user-1" },
+        { marker: "the-request" },
+        (err: unknown, obj?: unknown) => (err ? reject(err) : resolve(obj)),
+      );
+    });
+
+    expect(seen).toEqual([{ req: "the-request", user: "user-1" }]);
+    expect(serialized).toBe("user-1");
   });
 
   it("throws immediately if the last argument is not a callback", () => {
