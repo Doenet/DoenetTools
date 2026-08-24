@@ -12,6 +12,7 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as MagicLinkStrategy } from "passport-magic-link";
 import { Strategy as AnonymIdStrategy } from "../passport-anonymous/lib/strategy";
 import { Strategy as LocalStrategy } from "passport-local";
+import jwt from "jsonwebtoken";
 
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 
@@ -49,12 +50,24 @@ import { generateHandle } from "./utils/names";
 import { codeRouter } from "./routes/code";
 import { metricsRouter } from "./routes/metricsRoutes";
 import { contentRouter } from "./routes/content.route";
+import { loadMediaConfig, mediaRouter } from "./media";
+import { getEnvVar, isTestAuthBypassEnabled } from "./utils/env";
+import { asyncPassport, toGoogleAccount } from "./auth";
+import type { DoneCallback, SessionUser } from "./auth";
+import { installProcessErrorHandlers } from "./errors/processErrorHandlers";
 
 // Type assertion to work around passport type declaration issues
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const passport = passportLib as any;
 
+// Registered before anything else so a failure during startup is logged too.
+installProcessErrorHandlers();
+
 dotenv.config();
+
+// Validate media-storage env vars at startup so a misconfigured deployment
+// crashes here rather than on the first upload/serve request.
+loadMediaConfig();
 
 declare module "express-serve-static-core" {
   interface Request {
@@ -74,19 +87,6 @@ app.use(function (req, res, next) {
   }
   next();
 });
-
-function getEnvVar(name: string, required: true): string;
-function getEnvVar(name: string, required?: boolean): string | undefined;
-function getEnvVar(name: string, required = false): string | undefined {
-  const value = process.env[name]?.trim();
-  if (value) {
-    return value;
-  }
-  if (required) {
-    throw new Error(`Missing required environment variable: ${name}`);
-  }
-  return undefined;
-}
 
 const mockSigninEmail =
   process.env.MOCK_SIGNIN_EMAIL?.trim().toLowerCase() === "true";
@@ -135,11 +135,40 @@ passport.use(
   new MagicLinkStrategy(
     {
       secret: process.env.MAGIC_LINK_SECRET || "",
+      // TODO: Is this allowReuse doing anything?
       allowReuse: true,
       userFields: ["email", "fromAnonymous"],
       tokenField: "token",
+      ttl: 60 * 60,
     },
     async (user, token) => {
+      const decoded = jwt.decode(token) as {
+        iat?: number;
+        exp?: number;
+      } | null;
+      const issuedAtIso = decoded?.iat
+        ? new Date(decoded.iat * 1000).toISOString()
+        : undefined;
+      const expiresAtIso = decoded?.exp
+        ? new Date(decoded.exp * 1000).toISOString()
+        : undefined;
+      const issuedAtHuman = decoded?.iat
+        ? new Date(decoded.iat * 1000).toUTCString()
+        : "unknown";
+      const expiresAtHuman = decoded?.exp
+        ? new Date(decoded.exp * 1000).toUTCString()
+        : "unknown";
+
+      console.log(`[Auth] Sending magic link email.`, {
+        tokenPrefix: `${token.slice(0, 12)}…`,
+        email: user.email,
+        issuedAt: issuedAtIso,
+        expiresAt: expiresAtIso,
+        fromAnonymous: user.fromAnonymous?.trim()
+          ? user.fromAnonymous
+          : undefined,
+      });
+
       const confirmURL = `${appUrl}/confirmSignIn?token=${token}`;
 
       if (mockSigninEmail) {
@@ -158,7 +187,10 @@ passport.use(
         throw Error("Could not send email");
       }
 
-      email_html = email_html.replace(/CONFIRM_LINK/g, confirmURL);
+      email_html = email_html
+        .replace(/CONFIRM_LINK/g, confirmURL)
+        .replace(/TOKEN_ISSUED_AT/g, issuedAtHuman)
+        .replace(/TOKEN_EXPIRES_AT/g, expiresAtHuman);
 
       const params = {
         Source: sendingEmailAddress,
@@ -172,7 +204,7 @@ passport.use(
           },
           Body: {
             Text: {
-              Data: `To finish your login into Doenet, go to the URL: ${confirmURL}`,
+              Data: `To finish your login into Doenet, go to the URL: ${confirmURL}\n\nLink generated at ${issuedAtHuman} and expires at ${expiresAtHuman}.`,
             },
             Html: {
               Data: email_html,
@@ -246,127 +278,133 @@ passport.use(
 
 passport.use(new AnonymIdStrategy());
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-passport.serializeUser(async (req: any, user: any, done: any) => {
-  if (user.provider === "magiclink") {
-    const email: string = user.email;
-    const fromAnonymous: string = user.fromAnonymous;
+passport.serializeUser(
+  asyncPassport(
+    "serializeUser",
+    async (req: Request, user: SessionUser, done: DoneCallback) => {
+      if (user.provider === "magiclink") {
+        const email: string = user.email;
+        const fromAnonymous: string = user.fromAnonymous;
 
-    let u;
+        let u;
 
-    if (fromAnonymous !== " ") {
-      try {
-        u = await upgradeAnonymousUser({
-          userId: toUUID(fromAnonymous),
-          email,
-        });
-      } catch (_e) {
-        console.log("Error upgrading anonymous user", _e);
-        /// ignore any error
-      }
-    }
-
-    if (!u) {
-      u = await findOrCreateUser({
-        email,
-        firstNames: null,
-        lastNames: "",
-      });
-    }
-
-    return done(undefined, fromUUID(u.userId));
-  } else if (user.provider === "google") {
-    let email = user.id + "@google.com";
-    if (user.emails[0].verified) {
-      email = user.emails[0].value;
-    }
-    const fromAnonymous: string = user.fromAnonymous;
-
-    let u;
-
-    if (fromAnonymous) {
-      try {
-        u = await upgradeAnonymousUser({
-          userId: toUUID(fromAnonymous),
-          email,
-        });
-
-        // Use name from google account
-        await updateUser({
-          loggedInUserId: u.userId,
-          firstNames: user.name.givenName,
-          lastNames: user.name.familyName,
-        });
-      } catch (_e) {
-        console.log("Error upgrading anonymous user", _e);
-        /// ignore any error
-      }
-    }
-
-    if (!u) {
-      u = await findOrCreateUser({
-        email,
-        firstNames: user.name.givenName,
-        lastNames: user.name.familyName,
-      });
-    }
-
-    return done(undefined, fromUUID(u.userId));
-    // TODO: upgrade from anonymous user?
-  } else if (user.provider === "local") {
-    const pause1000 = function () {
-      return new Promise((resolve, _reject) => {
-        setTimeout(resolve, 1000);
-      });
-    };
-    await pause1000();
-
-    return done(undefined, fromUUID(user.userId));
-  } else if (user.anonymous) {
-    let email = nanoid() + "@anonymous.doenet.org";
-
-    let firstNames = "";
-    let lastNames = generateHandle({});
-    let isAnonymous = true;
-    let isEditor = false;
-    let isAuthor = false;
-
-    if (
-      process.env.ENABLE_TEST_AUTH_BYPASS &&
-      process.env.ENABLE_TEST_AUTH_BYPASS.toLocaleLowerCase() !== "false"
-    ) {
-      if (req.body.email && !req.body.isAnonymous) {
-        email = req.body.email;
-        if (req.body.firstNames) {
-          firstNames = req.body.firstNames;
-        }
-        if (req.body.lastNames) {
-          lastNames = req.body.lastNames;
+        if (fromAnonymous !== " ") {
+          try {
+            u = await upgradeAnonymousUser({
+              userId: toUUID(fromAnonymous),
+              email,
+            });
+          } catch (_e) {
+            console.log("Error upgrading anonymous user", _e);
+            /// ignore any error
+          }
         }
 
-        isEditor = Boolean(req.body.isEditor);
-        isAuthor = Boolean(req.body.isAuthor);
-        isAnonymous = false;
+        if (!u) {
+          u = await findOrCreateUser({
+            email,
+            firstNames: null,
+            lastNames: "",
+          });
+        }
+
+        return done(undefined, fromUUID(u.userId));
+      } else if (user.provider === "google") {
+        // Validated here rather than read off `profile.name`, which is
+        // passport's reshape of Google's payload and is where two production
+        // crashes came from. See `auth/googleProfile.ts`.
+        const { email, firstNames, lastNames } = toGoogleAccount(user._json);
+        const fromAnonymous = user.fromAnonymous;
+
+        let u;
+
+        if (fromAnonymous) {
+          try {
+            u = await upgradeAnonymousUser({
+              userId: toUUID(fromAnonymous),
+              email,
+            });
+
+            // Use name from google account
+            await updateUser({
+              loggedInUserId: u.userId,
+              firstNames: firstNames ?? undefined,
+              lastNames,
+            });
+          } catch (_e) {
+            console.log("Error upgrading anonymous user", _e);
+            /// ignore any error
+          }
+        }
+
+        if (!u) {
+          u = await findOrCreateUser({ email, firstNames, lastNames });
+        }
+
+        return done(undefined, fromUUID(u.userId));
+        // TODO: upgrade from anonymous user?
+      } else if (user.provider === "local") {
+        const pause1000 = function () {
+          return new Promise((resolve, _reject) => {
+            setTimeout(resolve, 1000);
+          });
+        };
+        await pause1000();
+
+        return done(undefined, fromUUID(user.userId));
+      } else if (user.anonymous) {
+        let email = nanoid() + "@anonymous.doenet.org";
+
+        let firstNames = "";
+        let lastNames = generateHandle({});
+        let isAnonymous = true;
+        let isEditor = false;
+        let isAuthor = false;
+        let canUploadImages = false;
+
+        if (isTestAuthBypassEnabled()) {
+          if (req.body.email && !req.body.isAnonymous) {
+            email = req.body.email;
+            if (req.body.firstNames) {
+              firstNames = req.body.firstNames;
+            }
+            if (req.body.lastNames) {
+              lastNames = req.body.lastNames;
+            }
+
+            isEditor = Boolean(req.body.isEditor);
+            isAuthor = Boolean(req.body.isAuthor);
+            canUploadImages = Boolean(req.body.canUploadImages);
+            isAnonymous = false;
+          }
+        }
+
+        const u = await findOrCreateUser({
+          email,
+          lastNames,
+          firstNames,
+          isAnonymous,
+          isEditor,
+          isAuthor,
+          canUploadImages,
+        });
+        return done(undefined, fromUUID(u.userId));
       }
-    }
+    },
+  ),
+);
 
-    const u = await findOrCreateUser({
-      email,
-      lastNames,
-      firstNames,
-      isAnonymous,
-      isEditor,
-      isAuthor,
-    });
-    return done(undefined, fromUUID(u.userId));
-  }
-});
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-passport.deserializeUser(async (userId: string, done: any) => {
-  const { user } = await getMyUserInfo({ loggedInUserId: toUUID(userId) });
-  done(null, user);
-});
+passport.deserializeUser(
+  asyncPassport(
+    "deserializeUser",
+    async (userId: string, done: DoneCallback) => {
+      const { user } = await getMyUserInfo({
+        loggedInUserId: toUUID(userId),
+      });
+      done(null, user);
+    },
+  ),
+);
 
 app.use(
   session({
@@ -374,8 +412,8 @@ app.use(
       maxAge: 365 * 24 * 60 * 60 * 1000, // 1 year, in ms
     },
     secret: process.env.SESSION_SECRET || "",
-    resave: true,
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
     store: new PrismaSessionStore(prisma, {
       checkPeriod: 2 * 60 * 1000, //ms
       dbRecordIdIsSessionId: true,
@@ -418,6 +456,7 @@ app.use("/api/editor", editorRouter);
 app.use("/api/code", codeRouter);
 app.use("/api/metrics", metricsRouter);
 app.use("/api/content", contentRouter);
+app.use("/api/media", mediaRouter);
 
 // Discourse uses this endpoint to sign on
 app.use("/api/discourse", discourseRouter);
@@ -429,7 +468,18 @@ if (
   app.use("/api/test", testRouter);
 }
 app.get("/api/health", (_req: Request, res: Response) => {
-  res.json({ status: "ok" });
+  // `version` is stamped into the image at deploy time (see apps/api/Dockerfile
+  // and the deploy workflows). It's the ground truth for what is actually
+  // running, independent of GitHub's deployment records. Fields are null in
+  // local dev where the build args aren't set.
+  res.json({
+    status: "ok",
+    version: {
+      ref: process.env.DEPLOY_REF || null,
+      sha: process.env.GIT_SHA || null,
+      builtAt: process.env.BUILD_TIME || null,
+    },
+  });
 });
 
 app.get("/", (req: Request, res: Response) => {
@@ -454,8 +504,32 @@ app.post(
     }
     next();
   },
-  // 2) hand off to passport‑magic‑link
-  passport.authenticate("magiclink", { action: "requestToken" }),
+  // 2) hand off to passport‑magic‑link, with failure logging
+  (req, res, next) => {
+    const email =
+      typeof req.body?.email === "string" ? req.body.email : "<missing>";
+    passport.authenticate(
+      "magiclink",
+      { action: "requestToken" },
+      // Strategy's requestToken ends with pass() on success, so this callback
+      // is only invoked for fail() / error().
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (err: any, _user: any, info: any) => {
+        if (err) {
+          console.error(`[Auth Error] Magic link email send failed.`, {
+            email,
+            err,
+          });
+          return next(err);
+        }
+        console.warn(`[Auth Failed] Magic link email send rejected.`, {
+          email,
+          reason: info?.message ?? "Unknown reason",
+        });
+        return res.status(401).send({ error: "Unable to send magic link." });
+      },
+    )(req, res, next);
+  },
 );
 
 // app.get(
@@ -472,6 +546,12 @@ app.post(
 //   },
 // );
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);
 });
+
+// Must exceed the ALB's idle_timeout (30s, set in infra/cloudformation/service-common.yml)
+// so the ALB always closes idle sockets first. Otherwise Node tears down a pooled
+// connection just as the ALB reuses it, and the client gets a 502.
+server.keepAliveTimeout = 65_000;
+server.headersTimeout = 66_000;

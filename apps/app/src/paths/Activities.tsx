@@ -4,6 +4,7 @@ import {
   Text,
   Flex,
   useDisclosure,
+  useToast,
   MenuItem,
   Tooltip,
   Menu,
@@ -15,6 +16,13 @@ import {
   Show,
   Spinner,
   Icon,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -25,9 +33,10 @@ import {
   useFetcher,
   useOutletContext,
   useNavigate,
+  useRevalidator,
 } from "react-router";
 import axios from "axios";
-import { MdClose, MdOutlineSearch } from "react-icons/md";
+import { MdClose, MdContentCopy, MdOutlineSearch } from "react-icons/md";
 import { FaPlus } from "react-icons/fa";
 import { LuDessert } from "react-icons/lu";
 
@@ -35,6 +44,13 @@ import { CardContent } from "../widgets/Card";
 import CardList from "../widgets/CardList";
 import { MoveCopyContent } from "../popups/MoveCopyContent";
 import { Content, ContentType, LicenseCode, UserInfo } from "../types";
+import {
+  EditImageAttribution,
+  emptyImageAttribution,
+  type ImageAttributionFormValues,
+} from "../popups/EditImageAttribution";
+import { buildImageTag } from "../utils/imageTag";
+import { createNameNoTag } from "../utils/names";
 
 import { getAllowedParentTypes, getIconInfo } from "../utils/activity";
 import { CreateLocalContent } from "../popups/CreateLocalContent";
@@ -44,7 +60,7 @@ import { SiteContext } from "../paths/SiteHeader";
 import { ActivateAuthorMode } from "../popups/ActivateAuthorMode";
 import { formatAssignmentBlurb } from "../utils/assignment";
 import { editorUrl } from "../utils/url";
-import { ShareMyContentModal } from "../popups/ShareMyContentModal";
+import { ShareModal } from "../features/sharing";
 import { NameBar } from "../widgets/NameBar";
 import {
   ActionBar,
@@ -122,6 +138,14 @@ export function Activities() {
     onOpen: shareFolderOnOpen,
     onClose: shareFolderOnClose,
   } = useDisclosure();
+
+  // The image-attribution modal is shown either to collect a license for a
+  // freshly picked file before uploading it (`create`), or to edit an existing
+  // image's attribution (`edit`). A license is mandatory in both, so an
+  // unlicensed image is never created.
+  // The image file awaiting a license before its upload completes. Editing the
+  // attribution of an already-uploaded image now lives on the image viewer page.
+  const [uploadTarget, setUploadTarget] = useState<{ file: File } | null>(null);
 
   const { addTo, setAddTo, user } = useOutletContext<SiteContext>();
 
@@ -223,7 +247,9 @@ export function Activities() {
       <Box>
         <Icon
           as={parent ? folderIcon : LuDessert}
-          color={parent ? folderColor : "black"}
+          // "black" is invisible in dark mode; use the flipping text token for
+          // the root (My Activities) icon.
+          color={parent ? folderColor : "text"}
           boxSizing="content-box"
           width="24px"
           height="24px"
@@ -260,6 +286,85 @@ export function Activities() {
       { method: "post", encType: "application/json" },
     );
   }
+
+  const toast = useToast();
+  const revalidator = useRevalidator();
+  const imageInputRef = useRef<HTMLInputElement>(null);
+
+  // Picking a file doesn't upload it yet: we first open the attribution modal to
+  // require a license, then upload once the user confirms (see
+  // `uploadImageWithAttribution`). This guarantees no unlicensed image is
+  // created.
+  function handleImageFile(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    // No card anchor for the upload flow; clear any stale one so focus restores
+    // to the element that had it (rather than an unrelated card's menu button).
+    finalFocusRef.current = null;
+    setUploadTarget({ file });
+  }
+
+  // Runs the two-step upload with the license/attribution the user supplied.
+  // Errors propagate so the modal keeps itself open and shows the message.
+  async function uploadImageWithAttribution(
+    file: File,
+    values: ImageAttributionFormValues,
+  ) {
+    setHaveContentSpinner(true);
+    try {
+      const initRes = await axios.post<{
+        uploadKey: string;
+        uploadUrl: string;
+      }>("/api/media/image/init", {
+        mimeType: file.type,
+        sizeBytes: file.size,
+      });
+      const { uploadKey, uploadUrl } = initRes.data;
+
+      await axios.put(uploadUrl, file, {
+        headers: { "Content-Type": file.type },
+      });
+
+      await axios.post("/api/media/image/complete", {
+        uploadKey,
+        parentId: parentId ?? null,
+        name: file.name,
+        mimeType: file.type,
+        sizeBytes: file.size,
+        ...values,
+      });
+
+      revalidator.revalidate();
+      toast({
+        title: "Image uploaded",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setHaveContentSpinner(false);
+    }
+  }
+
+  // Shown when the user picks an image to upload: they must license it before
+  // the upload completes. Editing an existing image's attribution happens on the
+  // image viewer page instead.
+  const attributionModal = uploadTarget ? (
+    <EditImageAttribution
+      isOpen={true}
+      onClose={() => setUploadTarget(null)}
+      initial={emptyImageAttribution}
+      imageSource={null}
+      headerLabel="License this image"
+      submitLabel="Upload"
+      defaultAuthorName={user ? createNameNoTag(user) : undefined}
+      finalFocusRef={finalFocusRef}
+      onSubmit={(values) =>
+        uploadImageWithAttribution(uploadTarget.file, values)
+      }
+    />
+  ) : null;
 
   const moveCopyContentModal = (
     <MoveCopyContent
@@ -325,6 +430,32 @@ export function Activities() {
     onClose: authorModePromptOnClose,
   } = useDisclosure();
 
+  const {
+    isOpen: imageAccessPromptIsOpen,
+    onOpen: imageAccessPromptOnOpen,
+    onClose: imageAccessPromptOnClose,
+  } = useDisclosure();
+
+  const imageAccessModal = (
+    <Modal isOpen={imageAccessPromptIsOpen} onClose={imageAccessPromptOnClose}>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Image uploads are in early access</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <Text>
+            Image uploads are an experimental feature and not yet available on
+            every account. If you'd like to try it, ask a Doenet admin at
+            info@doenet.org to enable image uploads for your account.
+          </Text>
+        </ModalBody>
+        <ModalFooter>
+          <Button onClick={imageAccessPromptOnClose}>Close</Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+
   const authorModeModal = (
     <ActivateAuthorMode
       isOpen={authorModePromptIsOpen}
@@ -337,11 +468,11 @@ export function Activities() {
   );
 
   const shareFolderModal = parent && (
-    <ShareMyContentModal
+    <ShareModal
       contentId={parent.contentId}
       contentType={parent.type}
-      isOpen={shareFolderIsOpen}
-      onClose={shareFolderOnClose}
+      modalIsOpen={shareFolderIsOpen}
+      closeModal={shareFolderOnClose}
     />
   );
 
@@ -400,8 +531,31 @@ export function Activities() {
         >
           Folder
         </MenuItem>
+        <MenuItem
+          data-test="Add Image Button"
+          onClick={() => {
+            if (user?.canUploadImages) {
+              imageInputRef.current?.click();
+            } else {
+              imageAccessPromptOnOpen();
+            }
+          }}
+        >
+          Image
+        </MenuItem>
       </MenuList>
     </Menu>
+  );
+
+  const hiddenImageInput = (
+    <input
+      ref={imageInputRef}
+      type="file"
+      accept="image/jpeg,image/png,image/webp,image/gif"
+      style={{ display: "none" }}
+      onChange={handleImageFile}
+      data-test="Hidden Image Upload Input"
+    />
   );
 
   /**
@@ -566,6 +720,7 @@ export function Activities() {
 
         <HStack gap="7px">
           {createNewButton}
+          {hiddenImageInput}
           {parent && (
             <>
               <Button
@@ -596,7 +751,7 @@ export function Activities() {
   const searchResultsHeading = haveQuery ? (
     <Flex
       width="100%"
-      background="lightgray"
+      background="surfaceMuted"
       fontSize="large"
       alignItems="center"
       padding="5px"
@@ -611,7 +766,7 @@ export function Activities() {
         <Tooltip label="Close search results" placement="bottom-end">
           <IconButton
             icon={<MdClose />}
-            background="lightgray"
+            background="surfaceMuted"
             aria-label="Close search results"
             type="submit"
             onClick={() => {
@@ -632,8 +787,10 @@ export function Activities() {
       cardMenuRefs.current[position] = element;
     };
 
-    let cardLink: string;
-    if (activity.type === "folder") {
+    let cardLink: string | undefined;
+    if (activity.type === "image") {
+      cardLink = `/imageDetails/${activity.contentId}`;
+    } else if (activity.type === "folder") {
       cardLink = `/activities/${activity.ownerId}/${activity.contentId}`;
     } else if (activity.assignmentInfo) {
       cardLink = `/assignmentData/${activity.contentId}`;
@@ -641,11 +798,48 @@ export function Activities() {
       cardLink = editorUrl(activity.contentId, activity.type);
     }
 
+    const inlineActions =
+      activity.type === "image" ? (
+        <HStack spacing="4px">
+          <Button
+            ref={getCardMenuRef}
+            size="xs"
+            variant="outline"
+            colorScheme="blue"
+            leftIcon={<MdContentCopy />}
+            data-test="Copy Image Tag"
+            onClick={async () => {
+              const tag = buildImageTag(activity);
+              try {
+                await navigator.clipboard.writeText(tag);
+                toast({
+                  title: "Image tag copied",
+                  status: "success",
+                  duration: 3000,
+                  isClosable: true,
+                });
+              } catch {
+                toast({
+                  title: "Could not copy to clipboard",
+                  description: tag,
+                  status: "error",
+                  duration: 5000,
+                  isClosable: true,
+                });
+              }
+            }}
+          >
+            Copy tag
+          </Button>
+        </HStack>
+      ) : undefined;
+
     return {
       menuRef: getCardMenuRef,
       content: activity,
       blurb: formatAssignmentBlurb(activity),
       cardLink,
+      inlineActions,
     };
   });
 
@@ -668,7 +862,7 @@ export function Activities() {
   return (
     <Flex
       data-test="Activities"
-      background={"white"}
+      background="surface"
       align="flex-start"
       overflowY="hidden"
       height="100%"
@@ -701,7 +895,9 @@ export function Activities() {
         {deleteModal}
         {copyContentModal}
         {authorModeModal}
+        {imageAccessModal}
         {shareFolderModal}
+        {attributionModal}
 
         {searchResultsHeading}
         {addToActionBar}

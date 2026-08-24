@@ -52,10 +52,7 @@ describe("Create Folders Tests", { tags: ["@group3"] }, function () {
 
     cy.get('[data-test="Share Folder Button"]').click();
     cy.get('[data-test="Email address"]').type(`${scrappyEmail}{enter}`);
-    cy.get('[data-test="Share Table"] tbody tr').should(
-      "contain.text",
-      scrappyEmail,
-    );
+    cy.get('[data-test="Share Table"]').should("contain.text", scrappyEmail);
 
     cy.get('[data-test="Email address"]').should("have.value", "");
 
@@ -68,13 +65,15 @@ describe("Create Folders Tests", { tags: ["@group3"] }, function () {
       "Shared activity{enter}",
     );
 
-    cy.wait(200);
+    // Wait for the editor to be ready (core worker booted) before typing, so a
+    // reload-on-stall can't discard typed text. Handles the #2957 boot stall.
+    cy.ensureDoenetEditorReady();
 
     cy.iframe().find(".cm-activeLine").type(`Hello${code}!{enter}`);
-    cy.wait(200);
 
-    cy.iframe().find('[data-test="Viewer Update Button"]').click();
-    cy.wait(200);
+    // Retry the editor's Update click until the viewer renders — a single click
+    // can be a no-op under CI load and leave the viewer blank. See issue #2957.
+    cy.renderDoenetEditorViewer();
     cy.iframe().find(".doenet-viewer").should("contain.text", `Hello${code}!`);
 
     cy.loginAsTestUser({
