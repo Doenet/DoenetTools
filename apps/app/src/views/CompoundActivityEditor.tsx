@@ -48,6 +48,19 @@ import {
 } from "../utils/actionBarConfig";
 import { CreateContentMenu } from "../dropdowns/CreateContentMenu";
 
+/**
+ * Background token for the compound-activity editor body.
+ *
+ * An empty activity uses the mode-flipping `viewerFrame` token (light blue in
+ * light mode, dark blue-gray in dark mode) rather than a fixed brand color: the
+ * previous `var(--lightBlue)` did not flip and painted a light-blue panel with
+ * light text on the dark page. A non-empty body uses the page `background`.
+ * (That `viewerFrame` flips per color mode is covered by WelcomeBanner.cy.tsx.)
+ */
+export function compoundEditorBodyBackground(numCards: number) {
+  return numCards > 0 ? "background" : "viewerFrame";
+}
+
 export function CompoundActivityEditor({
   activity,
   asViewer = false,
@@ -209,9 +222,12 @@ export function CompoundActivityEditor({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   function countCards(content: Content, init = true): number {
     const childCounts =
-      content.type === "singleDoc"
+      content.type === "singleDoc" || content.type === "image"
         ? 1
-        : content.children.reduce((a, c) => a + countCards(c, false), 0);
+        : content.children.reduce(
+            (a: number, c: Content) => a + countCards(c, false),
+            0,
+          );
 
     if (init) {
       // don't count the initial activity
@@ -268,9 +284,9 @@ export function CompoundActivityEditor({
       });
     }
 
-    if (content.type !== "singleDoc") {
+    if (content.type !== "singleDoc" && content.type !== "image") {
       cards.push(
-        ...content.children.flatMap((c, i) =>
+        ...content.children.flatMap((c: Content, i: number) =>
           createCardContent(c, indentLevel + 1, i, {
             contentId: content.contentId,
             parent: content.parent?.contentId,
@@ -310,7 +326,10 @@ export function CompoundActivityEditor({
     <CardList
       showOwnerName={false}
       showBlurb={false}
-      showPublicStatus={true}
+      // A problem set defines the access of its documents, so per-document
+      // visibility pills would be misleading here. Question banks still show
+      // them.
+      showPublicStatus={activity.type !== "sequence"}
       showActivityCategories={true}
       showAddButton={!readOnlyStructure}
       emptyMessage={`${contentTypeName} is empty. Add documents here to begin.`}
@@ -463,8 +482,8 @@ export function CompoundActivityEditor({
 
   const heading = (
     <Flex
-      backgroundColor="#fff"
-      color="#000"
+      backgroundColor="surface"
+      color="text"
       height={cardListHeaderHieght}
       width="100%"
       textAlign="center"
@@ -538,7 +557,7 @@ export function CompoundActivityEditor({
         margin="0px"
         width="100%"
         minHeight={`calc(100vh - ${headerHeight} - ${cardListHeaderHieght})`}
-        background={numCards > 0 ? "white" : "var(--lightBlue)"}
+        background={compoundEditorBodyBackground(numCards)}
         direction="column"
       >
         {cardList}

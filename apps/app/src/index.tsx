@@ -12,6 +12,7 @@ import "./styles/mathjax-menu.css";
 
 import { MathJaxContext } from "better-react-mathjax";
 import { theme } from "./theme";
+import { doenetColorModeManager } from "./utils/theme";
 import { loader as exploreLoader, Explore } from "./paths/Explore";
 
 import { loader as curateLoader, Curate } from "./paths/Curate";
@@ -104,7 +105,7 @@ import {
   loader as docEditorSettingsModeLoader,
 } from "./paths/editor/EditorSettingsMode";
 import axios, { AxiosError } from "axios";
-import { loadShareStatus } from "./popups/ShareMyContentModal";
+import { loadShareStatus } from "./features/sharing";
 import {
   DocEditorHistoryMode,
   loader as docEditorHistoryModeLoader,
@@ -125,6 +126,10 @@ import { editorUrl } from "./utils/url";
 import { ScratchPad, loader as scratchPadLoader } from "./paths/ScratchPad";
 import { About } from "./paths/About";
 import { RawViewer, loader as rawViewerLoader } from "./paths/RawViewer";
+import {
+  ImageDetails,
+  loader as imageDetailsLoader,
+} from "./paths/ImageDetails";
 import { GetInvolved } from "./paths/GetInvolved";
 import { Events } from "./paths/Events";
 import { QuickLinks } from "./paths/QuickLinks";
@@ -135,7 +140,7 @@ const router = createBrowserRouter([
     loader: siteLoader,
     element: (
       <>
-        <ChakraProvider theme={theme}>
+        <ChakraProvider theme={theme} colorModeManager={doenetColorModeManager}>
           <MathJaxContext
             version={4}
             config={mathjaxConfig}
@@ -147,7 +152,7 @@ const router = createBrowserRouter([
       </>
     ),
     errorElement: (
-      <ChakraProvider theme={theme}>
+      <ChakraProvider theme={theme} colorModeManager={doenetColorModeManager}>
         <ErrorPage />
       </ChakraProvider>
     ),
@@ -247,6 +252,12 @@ const router = createBrowserRouter([
         action: genericAction,
         errorElement: <ErrorPage />,
         element: <ActivityViewer />,
+      },
+      {
+        path: "imageDetails/:contentId",
+        loader: imageDetailsLoader,
+        errorElement: <ErrorPage />,
+        element: <ImageDetails />,
       },
       {
         path: "documentEditor/:contentId",
@@ -429,10 +440,21 @@ const router = createBrowserRouter([
     element: <RawViewer />,
     loader: rawViewerLoader,
     errorElement: (
-      <ChakraProvider theme={theme}>
+      <ChakraProvider theme={theme} colorModeManager={doenetColorModeManager}>
         <ErrorPage />
       </ChakraProvider>
     ),
+  },
+  // These paths no longer exist on the new site but were used by the old
+  // site (now at legacy.doenet.org), so send visitors there instead of
+  // showing a 404. Forwards the full path and query string as-is.
+  {
+    path: "/portfolioviewer/:contentId",
+    loader: legacySiteRedirectLoader,
+  },
+  {
+    path: "/publiceditor/:contentId1/:contentId2",
+    loader: legacySiteRedirectLoader,
   },
 ]);
 
@@ -440,9 +462,19 @@ const root = createRoot(document.getElementById("root")!);
 root.render(<RouterProvider router={router} />);
 
 /**
+ * Redirects a request to the same path (and query string) on legacy.doenet.org.
+ * Used for old-site paths that no longer exist on the new site.
+ */
+function legacySiteRedirectLoader({ request }: { request: Request }) {
+  const { pathname, search } = new URL(request.url);
+  return redirect(`https://legacy.doenet.org${pathname}${search}`);
+}
+
+/**
  * A generic action handler for React Router pages
  * 1. Takes in an action of type `application/json` (not the default `multipart/form-data`)
- * 2. Calls the endpoint specified by `path` field, passing the others field as the POST body
+ * 2. Calls the endpoint specified by `path` field, using the incoming request method and
+ *    passing the other fields as the request body
  * 3. Returns the results
  *
  * Special case: redirect to new page. Triggered if `redirectOnSuccess`, `replaceOnSuccess`, or `redirectNewContentId` is included.
@@ -454,6 +486,7 @@ async function genericAction({ request }: ActionFunctionArgs) {
   // TODO: DESIGN: Should this function only return the data portion of the response?
   // Currently this function returns entire http response. It comes down to a question
   // of whether pages/fetchers should have access to status information.
+  const method = request.method.toLowerCase();
   const {
     path,
     redirectOnSuccess,
@@ -463,7 +496,11 @@ async function genericAction({ request }: ActionFunctionArgs) {
   } = await request.json();
 
   try {
-    const results = await axios.post(`/api/${path}`, body);
+    const results = await axios({
+      method,
+      url: `/api/${path}`,
+      data: body,
+    });
 
     if (redirectNewContentId) {
       const newContentId: string = results.data.contentId;

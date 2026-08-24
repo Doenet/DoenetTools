@@ -2,7 +2,7 @@ Environment:
   - Name: PORT
     Value: 3000
   - Name: APP_URL
-    Value: "https://beta.doenet.org"
+    Value: "https://doenet.org"
   - Name: DATABASE_PORT
     Value: 3306
   - Name: DATABASE_NAME
@@ -21,6 +21,14 @@ Environment:
     Value: "false"
   - Name: NODE_OPTIONS
     Value: "--max-old-space-size=1950"
+  - Name: MEDIA_S3_MODE
+    Value: "aws"
+  - Name: MEDIA_S3_REGION
+    Value:
+      Fn::Sub: "${AWS::Region}"
+  - Name: MEDIA_S3_BUCKET
+    Value:
+      Fn::Sub: "${S3MediaBucket}"
   - Name: DISCOURSE_API_USERNAME
     Value: "system"
   - Name: DISCOURSE_URL

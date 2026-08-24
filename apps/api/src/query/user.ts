@@ -1,5 +1,5 @@
 import { prisma } from "../model";
-import { Prisma } from "@prisma/client";
+import { Prisma, Theme } from "@prisma/client";
 import { UserInfo, UserInfoWithEmail } from "../types";
 import { generateHandle, generateUnusedHandle } from "../utils/names";
 import { filterEditableContent } from "../utils/permissions";
@@ -14,6 +14,7 @@ export async function findOrCreateUser({
   isAuthor = false,
   isAnonymous = false,
   isPremium,
+  canUploadImages = false,
 }: {
   email: string;
   firstNames: string | null;
@@ -22,6 +23,7 @@ export async function findOrCreateUser({
   isAuthor?: boolean;
   isAnonymous?: boolean;
   isPremium?: boolean;
+  canUploadImages?: boolean;
 }): Promise<UserInfoWithEmail> {
   // For now, make any non-anonymous user a premium user
   // We'll change this once we have the UI for non-premium users working
@@ -42,6 +44,7 @@ export async function findOrCreateUser({
       isAnonymous,
       isPremium,
       isAuthor,
+      canUploadImages,
     },
   });
 
@@ -84,11 +87,14 @@ export async function getMyUserInfo({
     where: { userId: loggedInUserId },
     select: {
       userId: true,
+      email: true,
       firstNames: true,
       lastNames: true,
       isAnonymous: true,
       isEditor: true,
       isAuthor: true,
+      canUploadImages: true,
+      theme: true,
     },
   });
   return { user };
@@ -183,6 +189,19 @@ export async function setIsAuthor({
   await prisma.users.update({
     where: { userId: loggedInUserId },
     data: { isAuthor },
+  });
+}
+
+export async function setTheme({
+  loggedInUserId,
+  theme,
+}: {
+  loggedInUserId: Uint8Array;
+  theme: Theme;
+}) {
+  await prisma.users.update({
+    where: { userId: loggedInUserId },
+    data: { theme },
   });
 }
 

@@ -132,11 +132,16 @@ export function NameBar({
           as={EditablePreview}
           className="editable-name"
           data-test="Editable Title"
-          noOfLines={1}
+          display="block"
+          width="100%"
+          whiteSpace="nowrap"
+          overflow="hidden"
+          textOverflow="ellipsis"
           lineHeight="1.2"
           pl={{ base: "0rem", md: "1.8rem" }}
           rounded="none"
-          outline="1px solid gray"
+          outline="1px solid"
+          outlineColor="border"
         />
         <Box
           as={EditableInput}
@@ -146,7 +151,8 @@ export function NameBar({
           lineHeight="1.2"
           pl={{ base: "0rem", md: "1.8rem" }}
           rounded="none"
-          outline="1px solid gray"
+          outline="1px solid"
+          outlineColor="border"
         />
       </Editable>
     </Box>

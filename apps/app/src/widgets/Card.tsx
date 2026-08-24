@@ -26,7 +26,7 @@ import {
 import { Link as ReactRouterLink, useOutletContext } from "react-router";
 import { Content } from "../types";
 import { FaEllipsisVertical } from "react-icons/fa6";
-import { BsPeople } from "react-icons/bs";
+import { VisibilityPill } from "./VisibilityPill";
 import {
   activityCategoryIcons,
   contentTypeToName,
@@ -45,6 +45,8 @@ export type CardContent = {
   // This will replace `ownerName` in the avatar
   ownerAvatarName?: string;
   menuItems?: ReactElement<any>;
+  // If provided, rendered on the right of the card in place of the menu
+  inlineActions?: ReactElement<any>;
   blurb?: string;
   indentLevel?: number;
   libraryEditorName?: string;
@@ -98,6 +100,7 @@ export default function Card({
     name: title,
     isPublic,
     isShared,
+    visibility,
     licenseCode,
     categories,
     type: contentType,
@@ -124,7 +127,6 @@ export default function Card({
 
   const contentTypeIconSize = "1.6rem";
   const categoryIconSize = "1.2rem";
-  const sharedIconSize = "1.2rem";
   const variantsIconHeight = "1.6rem";
   const variantsBadgeWidth = "3.5rem";
 
@@ -199,7 +201,7 @@ export default function Card({
             <Flex alignItems="center">
               <Icon
                 as={categoryIcon}
-                color="#666699"
+                color="iconAccent"
                 width={categoryIconSize}
                 height={categoryIconSize}
               />
@@ -210,35 +212,18 @@ export default function Card({
     }
   }
 
-  // Shared icon
-  const sharedIconMarginLeft = "0.2rem";
-  const sharedIcon =
-    showPublicStatus &&
-    (isPublic || isShared ? (
-      <Tooltip
-        openDelay={300}
-        label={(isPublic ? "Public " : "Shared ") + contentTypeName}
-      >
-        <Flex alignItems="center" marginLeft={sharedIconMarginLeft}>
-          <Icon
-            as={BsPeople}
-            color="#666699"
-            width={sharedIconSize}
-            height={sharedIconSize}
-          />
-        </Flex>
-      </Tooltip>
-    ) : (
-      <Flex width={sharedIconSize} marginLeft={sharedIconMarginLeft} />
-    ));
+  const visibilityBadge = showPublicStatus ? (
+    <VisibilityPill visibility={visibility} />
+  ) : null;
 
   // Title
   const titleBox = (
     <Tooltip openDelay={500} label={title} placement="bottom-start">
       <Flex alignItems="center" flexGrow={1} width={titleWidth}>
-        <Text paddingLeft={[".5rem", "1.5rem"]} flexGrow={3} noOfLines={1}>
+        <Text paddingLeft={[".5rem", "1.5rem"]} noOfLines={1}>
           {title}
         </Text>
+        {visibilityBadge}
       </Flex>
     </Tooltip>
   );
@@ -302,7 +287,7 @@ export default function Card({
         <Flex alignItems="center" width={variantsBadgeWidth}>
           <Icon
             as={IoDiceOutline}
-            color="#666699"
+            color="iconAccent"
             width={variantsIconHeight}
             height={variantsIconHeight}
           />
@@ -417,22 +402,26 @@ export default function Card({
     );
 
   const menuMarginLeft = ["0em", "3em"];
-  const menuDisplay = menuItems && (
-    <Flex ml={menuMarginLeft}>
-      <Menu>
-        <MenuButton
-          data-test="Card Menu Button"
-          _focus={{ boxShadow: "outline" }}
-          ref={cardContent.menuRef}
-          aria-label={`Options menu for item ${idx + 1}: ${title}`}
-        >
-          <Flex alignItems="center">
-            <Icon color="#949494" as={FaEllipsisVertical} />
-          </Flex>
-        </MenuButton>
-        <MenuList zIndex="1000">{menuItems}</MenuList>
-      </Menu>
-    </Flex>
+  const menuDisplay = cardContent.inlineActions ? (
+    <Flex ml={menuMarginLeft}>{cardContent.inlineActions}</Flex>
+  ) : (
+    menuItems && (
+      <Flex ml={menuMarginLeft}>
+        <Menu>
+          <MenuButton
+            data-test="Card Menu Button"
+            _focus={{ boxShadow: "outline" }}
+            ref={cardContent.menuRef}
+            aria-label={`Options menu for item ${idx + 1}: ${title}`}
+          >
+            <Flex alignItems="center">
+              <Icon color="textMuted" as={FaEllipsisVertical} />
+            </Flex>
+          </MenuButton>
+          <MenuList zIndex="1000">{menuItems}</MenuList>
+        </Menu>
+      </Flex>
+    )
   );
 
   return (
@@ -442,26 +431,48 @@ export default function Card({
       marginLeft={`${indentLevel * indentWidth}rem`}
       data-test="Content Card"
       variant="unstyled"
-      borderBottom="2px solid gray"
+      borderBottom="2px solid"
+      borderBottomColor="border"
       borderRadius={0}
-      _hover={{ backgroundColor: cardLink ? "#eeeeee" : "ffffff" }}
+      // Theme-aware hover: the old fixed light values (#eeeeee / "ffffff", the
+      // latter also missing its #) became white-on-white in dark mode. Semantic
+      // tokens flip: interact #EFEFEF/#31353f, surface #FFFFFF/#20232b.
+      _hover={{ backgroundColor: cardLink ? "interact" : "surface" }}
     >
       <CardBody>
         <Flex height={itemHeight} alignItems="center">
           {/* Left-aligned, not main link */}
           {selectCheckbox}
-          <ChakraLink
-            as={ReactRouterLink}
-            to={cardLink}
-            _hover={{ textDecoration: "none" }}
-            cursor={cardLink ? "pointer" : "default"}
-            flexGrow={1}
-          >
-            <Flex>
+          {cardLink ? (
+            <ChakraLink
+              as={ReactRouterLink}
+              to={cardLink}
+              _hover={{ textDecoration: "none" }}
+              cursor="pointer"
+              flexGrow={1}
+            >
+              <Flex>
+                {contentTypeIcon}
+                <Hide below="md">{categoryIcons}</Hide>
+                {titleBox}
+                <Spacer />
+                {libraryEditorInfo}
+                <Spacer />
+                <Hide below="sm">{blurbDisplay}</Hide>
+                <Spacer />
+                {ownerInfo}
+                <Spacer />
+                <Show above="lg">{variantsDisplay}</Show>
+                {licenseBadges}
+                {showAddButton && <Spacer />}
+                {addMenu}
+              </Flex>
+            </ChakraLink>
+          ) : (
+            <Flex flexGrow={1} cursor="default">
               {contentTypeIcon}
               <Hide below="md">{categoryIcons}</Hide>
               {/* <Hide below="lg">{categoryIcons}</Hide> */}
-              {sharedIcon}
               {titleBox}
               <Spacer />
               {libraryEditorInfo}
@@ -471,12 +482,11 @@ export default function Card({
               {ownerInfo}
               <Spacer />
               <Show above="lg">{variantsDisplay}</Show>
-              {/* <Hide below="xl">{licenseBadges}</Hide> */}
               {licenseBadges}
               {showAddButton && <Spacer />}
               {addMenu}
             </Flex>
-          </ChakraLink>
+          )}
           {/* Right-aligned, not main link */}
           {repeatInProblemSet}
           {menuDisplay}
