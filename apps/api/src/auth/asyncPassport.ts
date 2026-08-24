@@ -1,4 +1,4 @@
-type DoneCallback = (err: unknown, result?: unknown) => void;
+export type DoneCallback = (err: unknown, result?: unknown) => void;
 
 /**
  * Wraps an `async` Passport callback so a rejection can never escape.
