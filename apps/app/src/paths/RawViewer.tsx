@@ -35,13 +35,7 @@ export async function loader({ params }: any) {
         contentId,
       };
     } else {
-      const activityJsonFromRevision = activityData.activityJson
-        ? JSON.parse(activityData.activityJson)
-        : null;
-
-      const activityJson = isActivitySource(activityJsonFromRevision)
-        ? activityJsonFromRevision
-        : compileActivityFromContent(activityData);
+      const activityJson = compileActivityFromContent(activityData);
 
       return {
         type: activityData.type,

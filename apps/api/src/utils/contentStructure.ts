@@ -15,7 +15,7 @@ import {
 import { sortClassifications } from "./classificationsCategories";
 import { fromUUID, isEqualUUID } from "./uuid";
 import { DateTime } from "luxon";
-import { ActivitySource } from "@doenet-tools/shared";
+import { ActivitySource, repeatCountInProblemSet } from "@doenet-tools/shared";
 import { InvalidRequestError } from "./error";
 import { imageSourceFromStorageKey } from "../media/upload.schema";
 
@@ -151,7 +151,6 @@ export function returnContentSelect({
   includeClassifications = false,
   includeShareDetails = false,
   includeOwnerDetails = false,
-  includeRepeatInProblemSet = false,
 }) {
   const sharedWith = {
     select: includeShareDetails
@@ -253,10 +252,15 @@ export function returnContentSelect({
     _count: { select: { contentStates: true } },
   };
 
+  // `repeatInProblemSet` is a setting for a document inside a problem set. It
+  // determines the item structure of the compiled activity, so it is always
+  // selected: every caller that compiles an activity — including for
+  // revisions, cids, and assigned content — needs it.
   const docSelect = {
     numVariants: true,
     source: true,
     doenetmlVersion: true,
+    repeatInProblemSet: true,
   };
 
   const questionBankSelect = {
@@ -269,16 +273,11 @@ export function returnContentSelect({
     paginate: true,
   };
 
-  const repeatInProblemSetSelect = includeRepeatInProblemSet && {
-    repeatInProblemSet: true,
-  };
-
   return {
     ...baseSelect,
     ...docSelect,
     ...questionBankSelect,
     ...problemSetSelect,
-    ...repeatInProblemSetSelect,
     ...assignmentSelect,
   };
 }
@@ -645,16 +644,21 @@ export function returnClassificationListSelect() {
  * rather than the full doenetml version. Useful for generating a cid from the source
  * that won't change if we upgrade the minor version for all documents (though it does not
  * produce a valid source for viewing the activity).
+ *
+ * `inProblemSet` says whether `activity` is a child of a problem set, which is
+ * where the document setting `repeatInProblemSet` applies.
  */
 export function compileActivityFromContent(
   activity: Content,
   useVersionIds = false,
+  inProblemSet = false,
 ): ActivitySource {
   switch (activity.type) {
     case "singleDoc": {
       const documentJson = {
         id: fromUUID(activity.contentId),
         type: activity.type,
+        title: activity.name,
         isDescription: false,
         doenetML: activity.doenetML!,
         version: useVersionIds
@@ -662,14 +666,15 @@ export function compileActivityFromContent(
           : activity.doenetmlVersion.fullVersion,
         numVariants: activity.numVariants,
       };
-      if (activity.repeatInProblemSet && activity.repeatInProblemSet > 1) {
+      const repeatCount = inProblemSet ? repeatCountInProblemSet(activity) : 1;
+      if (repeatCount > 1) {
         // If the document repeats, wrap this document in
         // a `select` which can select that many variants.
         return {
           id: `select_for_${fromUUID(activity.contentId)}`,
           type: "select",
-          title: `Repeat ${activity.repeatInProblemSet} times`,
-          numToSelect: activity.repeatInProblemSet,
+          title: `Repeat ${repeatCount} times`,
+          numToSelect: repeatCount,
           selectByVariant: true,
           items: [documentJson],
         };
@@ -685,7 +690,7 @@ export function compileActivityFromContent(
         numToSelect: activity.numToSelect,
         selectByVariant: activity.selectByVariant,
         items: activity.children.map((child) =>
-          compileActivityFromContent(child, useVersionIds),
+          compileActivityFromContent(child, useVersionIds, false),
         ),
       };
     }
@@ -696,7 +701,7 @@ export function compileActivityFromContent(
         title: activity.name,
         shuffle: activity.shuffle,
         items: activity.children.map((child) =>
-          compileActivityFromContent(child, useVersionIds),
+          compileActivityFromContent(child, useVersionIds, true),
         ),
       };
     }
