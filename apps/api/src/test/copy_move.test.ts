@@ -1037,6 +1037,7 @@ test("copying a folder containing an assignment drops the assignment data", asyn
       "doc 1": doc(""),
     }),
   });
+  // creates the assignment as a copy of the problem set inside `folder 1`
   const { assignmentId } = await createAssignment({
     contentId: problemSetId,
     loggedInUserId: ownerId,
@@ -1050,24 +1051,32 @@ test("copying a folder containing an assignment drops the assignment data", asyn
     parentId: null,
   });
 
-  const newFolder = await getContent({
-    contentId: newContentIds[0],
+  const folderResults = await getMyContent({
+    parentId: newContentIds[0],
+    ownerId,
     loggedInUserId: ownerId,
   });
-  if (newFolder.type !== "folder") {
+  if (folderResults.notMe) {
     throw Error("shouldn't happen");
   }
-  expect(newFolder.children.length).eq(1);
-  const copiedAssignment = newFolder.children[0];
-  expect(copiedAssignment.name).eq("problem set 1");
+  expect(folderResults.content.length).eq(1);
+  expect(folderResults.content[0].name).eq("problem set 1");
+
+  // the copy is a regular problem set, with no assignment data
+  const copiedAssignment = await getContent({
+    contentId: folderResults.content[0].contentId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
   expect(copiedAssignment.assignmentInfo).eq(undefined);
 
   // the original assignment is untouched
   const originalAssignment = await getContent({
     contentId: assignmentId,
     loggedInUserId: ownerId,
+    includeAssignInfo: true,
   });
-  expect(originalAssignment.assignmentInfo).not.eq(undefined);
+  expect(originalAssignment.assignmentInfo?.assignmentStatus).eq("Open");
 });
 
 test("MoveCopyContent does not allow singleDoc` as parent type", async () => {
