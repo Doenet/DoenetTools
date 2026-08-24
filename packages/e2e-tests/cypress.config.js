@@ -2,6 +2,8 @@ import { defineConfig } from "cypress";
 import addAccessibilityTasks from "wick-a11y/accessibility-tasks";
 import { plugin as cypressGrepPlugin } from "@cypress/grep/plugin";
 
+import { appPort } from "../../scripts/worktree-env.js";
+
 // // This is for db data testing/checking (CANNOT GET DATA AND CHECK VIA CYPRESS)
 // //For connecting to SQL Server
 // const mysql = require("mysql2");
@@ -41,6 +43,14 @@ export default defineConfig({
 
       addAccessibilityTasks(on);
 
+      // Diagnostic helper (issue #2957): prints a message to the CI job stdout.
+      on("task", {
+        log(message) {
+          console.log(message);
+          return null;
+        },
+      });
+
       // on("task", {
       //   queryDb: (query) => {
       //     return queryTestDb(query, config);
@@ -52,8 +62,9 @@ export default defineConfig({
     },
     supportFile: "support/e2e.ts",
     specPattern: "e2e/**/*.cy.ts",
+    fixturesFolder: "fixtures",
 
-    baseUrl: "http://localhost:8000",
+    baseUrl: `http://localhost:${appPort}`,
   },
   // env: {
   //   db: {

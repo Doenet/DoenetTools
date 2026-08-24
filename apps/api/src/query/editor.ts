@@ -18,12 +18,35 @@ import {
 import { ActivitySource } from "@doenet-tools/shared";
 import { getContent } from "./activity_edit_view";
 import { recordRecentContent } from "./recent";
-import { getAllDoenetmlVersions, getContentSource } from "./activity";
+import {
+  getAllDoenetmlVersions,
+  getContentSource,
+  getDescendantIds,
+} from "./activity";
 import {
   InvalidRequestError,
   PermissionDeniedRedirectError,
 } from "../utils/error";
+import { fromUUID } from "../utils/uuid";
 import { StatusCodes } from "http-status-codes";
+import { getPublicShareViolations, type PublicShareIssue } from "../access";
+
+// Fixed display priority so `publicShareIssues` ordering is stable regardless
+// of the (unordered) row order returned by the descendant audit query.
+const publicShareIssueOrder: PublicShareIssue[] = [
+  "errorsCheck",
+  "errorsCheckPending",
+  "accessibilityCheck",
+  "accessibilityCheckPending",
+  "missingRequiredCategories",
+];
+
+function sortPublicShareIssues(issues: PublicShareIssue[]): PublicShareIssue[] {
+  return [...issues].sort(
+    (a, b) =>
+      publicShareIssueOrder.indexOf(a) - publicShareIssueOrder.indexOf(b),
+  );
+}
 
 /**
  * Gets the general metadata relevant to editing for an activity.
@@ -282,7 +305,6 @@ export async function getCompoundEditorView({
     isEditor,
     skipPermissionCheck: true,
     includeAssignInfo: true,
-    includeRepeatInProblemSet: true,
   });
 
   return {
@@ -327,7 +349,6 @@ export async function getCompoundEditorEdit({
     loggedInUserId,
     isEditor,
     skipPermissionCheck: true,
-    includeRepeatInProblemSet: true,
   });
 
   return { content };
@@ -353,6 +374,8 @@ export async function getEditorShareStatus({
       ...filterEditableContent(loggedInUserId, false),
     },
     select: {
+      type: true,
+      ownerId: true,
       isPublic: true,
       visibility: true,
       sharedWith: {
@@ -394,11 +417,35 @@ export async function getEditorShareStatus({
     parentSharedWith = processSharedWith(results.parent.sharedWith).sharedWith;
   }
 
+  const descendantIds = await getDescendantIds(contentId, {
+    excludeAssignments: true,
+  });
+  const contentIds = [contentId, ...descendantIds];
+  const publicShareViolations = await getPublicShareViolations({ contentIds });
+  const publicShareIssues = sortPublicShareIssues([
+    ...new Set(publicShareViolations.flatMap((violation) => violation.issues)),
+  ]);
+
+  // Per-content breakdown so the sharing UI can point at the specific
+  // document(s) blocking a compound item (problem set / question bank) rather
+  // than just reporting an aggregate issue.
+  const publicShareBlockers = publicShareViolations.map((violation) => ({
+    contentId: fromUUID(violation.contentId),
+    name: violation.name,
+    contentType: violation.type,
+    issues: sortPublicShareIssues(violation.issues),
+  }));
+
   return {
     isPublic: results.isPublic,
+    ownerId: fromUUID(results.ownerId),
     visibility: results.visibility,
     parentIsPublic: results.parent?.isPublic ?? false,
     parentVisibility: results.parent?.visibility ?? "private",
+    canSharePublicly:
+      results.type !== "folder" && publicShareViolations.length === 0,
+    publicShareIssues,
+    publicShareBlockers,
     sharedWith,
     parentSharedWith,
   };

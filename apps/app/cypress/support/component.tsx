@@ -8,6 +8,23 @@ Cypress.on("uncaught:exception", (err) => {
   if (err.message?.includes("Typesetting failed")) {
     return false; // Suppress the error
   }
+  // Suppress the Vite dev-server dependency-reoptimization artifact. When a spec
+  // first imports a heavy dep (e.g. math-expressions via AnswerResponseDrawer),
+  // Vite can re-optimize and full-reload the page, which aborts the in-flight
+  // dynamic import of the Cypress support file and surfaces as "Failed to fetch
+  // dynamically imported module: .../support/component.tsx" reported "outside of
+  // a test". optimizeDeps.include (cypress.config.ts) makes this rare, but it can
+  // still race under CI load. It is purely a dev-server artifact — never a
+  // product bug — so suppress it here as a safety net. Scope the match to the
+  // Cypress support module specifically, so a genuine failed dynamic import in
+  // product code still fails the test. See issue #2957.
+  if (
+    /Failed to fetch dynamically imported module[\s\S]*support\/component/i.test(
+      err.message ?? "",
+    )
+  ) {
+    return false; // Suppress the error
+  }
   // Let other errors fail the test
   return true;
 });
@@ -32,8 +49,20 @@ import { ChakraProvider } from "@chakra-ui/react";
 import "./commands";
 import "cypress-axe";
 import "wick-a11y";
+import { MotionGlobalConfig } from "framer-motion";
 import { register as registerCypressGrep } from "@cypress/grep";
 registerCypressGrep();
+
+// Make all animations instant in component tests. Chakra menus/modals/tooltips
+// fade in via framer-motion; when `cy.checkAccessibility` runs during the
+// open-transition, the foreground text and its background both blend toward the
+// page color, so axe's color-contrast check can momentarily measure a sub-AA
+// ratio and report an intermittent, false violation (e.g. ContributorsMenu
+// "displays author menu item with activity name and owner" — issue #2957).
+// Jumping framer-motion animations straight to their final keyframe removes that
+// race for every a11y assertion. The CSS override injected in `mount` does the
+// same for plain CSS transitions/animations.
+MotionGlobalConfig.skipAnimations = true;
 
 // Configure cypress-axe to use the correct path for axe-core in monorepo
 // axe-core is installed in the root node_modules, not in client/node_modules
@@ -57,6 +86,7 @@ import {
   createMemoryRouter,
   RouterProvider,
   MemoryRouterProps,
+  Outlet,
 } from "react-router";
 import { MathJaxContext } from "better-react-mathjax";
 import { mathjaxConfig } from "@doenet/doenetml-iframe";
@@ -69,17 +99,38 @@ import { theme } from "../../src/theme";
 
 // Cypress.Commands.add('mount', mount)
 
+// A ColorModeManager that pins Chakra to a fixed mode, so component tests can
+// render in dark mode (for accessibility/contrast checks) without the app's
+// runtime theme plumbing. See `colorMode` option / `colorMode` Cypress env.
+function fixedColorModeManager(mode: "light" | "dark") {
+  return {
+    type: "localStorage" as const,
+    ssr: false,
+    get: () => mode,
+    set: () => {},
+  };
+}
+
 Cypress.Commands.add("mount", (component, options = {}) => {
   const {
     routerProps = { initialEntries: ["/"] },
     action,
     routes,
+    colorMode,
+    outletContext,
+    loaderData,
     ...mountOptions
   } = options as MountOptions & {
     routerProps?: MemoryRouterProps;
     action?: (data: { request: Request }) => Promise<any>;
     routes?: any[];
+    colorMode?: "light" | "dark";
+    outletContext?: unknown;
+    loaderData?: unknown;
   };
+
+  const resolvedColorMode: "light" | "dark" =
+    colorMode ?? (Cypress.env("colorMode") === "dark" ? "dark" : "light");
 
   const safeActionWithDefault = async ({ request }: { request: Request }) => {
     try {
@@ -109,30 +160,70 @@ Cypress.Commands.add("mount", (component, options = {}) => {
     }
   };
 
+  const withProviders = (children: any) => (
+    <ChakraProvider
+      theme={theme}
+      colorModeManager={fixedColorModeManager(resolvedColorMode)}
+    >
+      <MathJaxContext
+        version={4}
+        config={mathjaxConfig}
+        src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-svg.js"
+      >
+        {children}
+      </MathJaxContext>
+    </ChakraProvider>
+  );
+
+  // A route `loader` supplying `loaderData` to the mounted component, for pages
+  // that read `useLoaderData()` (defined only when the test passes loaderData).
+  const componentLoader =
+    loaderData !== undefined ? () => loaderData : undefined;
+
+  // When the test passes `outletContext`, render the component as an index child
+  // of a route that provides `<Outlet context={...}>`, so pages that call
+  // `useOutletContext()` (e.g. those reading the site's `{ user }`) mount.
+  // Otherwise the component renders directly at "/".
+  const rootRoute =
+    outletContext !== undefined
+      ? {
+          path: "/",
+          element: withProviders(<Outlet context={outletContext} />),
+          children: [
+            {
+              index: true,
+              element: component as any,
+              action: safeActionWithDefault,
+              loader: componentLoader,
+            },
+          ],
+        }
+      : {
+          path: "/",
+          element: withProviders(component as any),
+          action: safeActionWithDefault,
+          loader: componentLoader,
+        };
+
   // Build the routes array
   const routesArray = [
-    {
-      path: "/",
-      element: (
-        <ChakraProvider theme={theme}>
-          <MathJaxContext
-            version={4}
-            config={mathjaxConfig}
-            src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-svg.js"
-          >
-            {component as any}
-          </MathJaxContext>
-        </ChakraProvider>
-      ),
-      action: safeActionWithDefault,
-    },
+    rootRoute,
     // Add any additional routes provided by the test
     ...(routes || []),
   ];
 
   const router = createMemoryRouter(routesArray, routerProps as any);
 
-  const wrapped = <RouterProvider router={router} />;
+  const wrapped = (
+    <>
+      {/* Belt-and-suspenders for plain CSS transitions/animations (framer-motion
+          is handled by MotionGlobalConfig.skipAnimations): keep their end state
+          but make them instant, so axe never samples a transitional frame and
+          color-contrast checks don't flake. See issue #2957. */}
+      <style>{`*, *::before, *::after { transition-duration: 0s !important; transition-delay: 0s !important; animation-duration: 0s !important; animation-delay: 0s !important; }`}</style>
+      <RouterProvider router={router} />
+    </>
+  );
 
   return mount(wrapped, mountOptions);
 });
