@@ -194,7 +194,6 @@ export type Doc = ContentBase & {
 
 export type QuestionBank = ContentBase & {
   type: "select";
-  activityJson?: string;
   revisionNum?: number;
   numToSelect: number;
   selectByVariant: boolean;
@@ -203,7 +202,6 @@ export type QuestionBank = ContentBase & {
 
 export type ProblemSet = ContentBase & {
   type: "sequence";
-  activityJson?: string;
   revisionNum?: number;
   shuffle: boolean;
   paginate: boolean;
