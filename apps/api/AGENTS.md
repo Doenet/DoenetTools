@@ -52,6 +52,22 @@ When adding endpoints that read or modify content, check whether visibility gati
 
 Four content types throughout the domain model: `"singleDoc"`, `"select"` (question bank), `"sequence"` (problem set), `"folder"`. These appear in Prisma enums and TypeScript union types.
 
+## Feature Flags
+
+Changes that span the API and client ship behind a flag: merge with the flag
+off, deploy each side independently, then turn it on with no redeploy.
+
+- The flag list lives in `packages/shared/src/types/featureFlags.ts` (typed, so a
+  misspelled flag is a build error); the database only stores overrides.
+- Read a flag with `isFeatureEnabled("name")` from `src/feature-flags`
+  (client side: `useFeatureFlag` in `apps/app/src/utils/featureFlags.ts`).
+- Flip one with `npx tsx scripts/feature-flag.ts on <flag>` — there is no HTTP
+  write endpoint.
+
+Write the flag's **off** path as today's behavior and the **on** path as
+additive; that is what keeps expand-migrate-contract intact. See
+`src/feature-flags/README.md`.
+
 ## Environment Variables
 
 `DATABASE_URL` must be kept in sync with the individual `DATABASE_*` vars manually — Prisma uses `DATABASE_URL` while Docker uses the individual vars. Update both if any connection detail changes.

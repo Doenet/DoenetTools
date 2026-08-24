@@ -11,6 +11,8 @@ import {
 import { Navbar } from "../features/navbar";
 import { MaintenanceBanner } from "../widgets/MaintenanceBanner";
 import { ThemeSettingProvider, useThemeSetting } from "../utils/theme";
+import { fetchFeatureFlags } from "../utils/featureFlags";
+import type { FeatureFlagValues } from "@doenet-tools/shared";
 
 const navBarHeight = "40px";
 
@@ -22,9 +24,14 @@ export type SiteContext = {
   setAddTo: (_: ContentDescription | null) => void;
   allLicenses: License[];
   allDoenetmlVersions: DoenetmlVersion[];
+  /** Read these with `useFeatureFlag()` from `utils/featureFlags`. */
+  featureFlags: FeatureFlagValues;
 };
 
 export async function loader() {
+  // Kicked off first and awaited last, so flags cost no extra round trip.
+  const featureFlagsPromise = fetchFeatureFlags();
+
   const {
     data: { user },
   } = await axios.get("/api/user/getMyUserInfo");
@@ -37,7 +44,9 @@ export async function loader() {
     data: { allDoenetmlVersions },
   } = await axios.get("/api/info/getAllDoenetmlVersions");
 
-  return { user, allLicenses, allDoenetmlVersions };
+  const featureFlags = await featureFlagsPromise;
+
+  return { user, allLicenses, allDoenetmlVersions, featureFlags };
 }
 
 /**
@@ -47,11 +56,13 @@ export async function loader() {
  * Includes skip navigation link for accessibility.
  */
 export function SiteHeader() {
-  const { user, allLicenses, allDoenetmlVersions } = useLoaderData() as {
-    user?: UserInfoWithEmail;
-    allLicenses: License[];
-    allDoenetmlVersions: DoenetmlVersion[];
-  };
+  const { user, allLicenses, allDoenetmlVersions, featureFlags } =
+    useLoaderData() as {
+      user?: UserInfoWithEmail;
+      allLicenses: License[];
+      allDoenetmlVersions: DoenetmlVersion[];
+      featureFlags: FeatureFlagValues;
+    };
 
   const [exploreTab, setExploreTab] = useState<number | null>(null);
 
@@ -67,6 +78,7 @@ export function SiteHeader() {
     setAddTo,
     allLicenses,
     allDoenetmlVersions,
+    featureFlags,
   };
 
   return (

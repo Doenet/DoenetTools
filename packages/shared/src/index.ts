@@ -1,5 +1,6 @@
 export * from "./types/activityViewer.js";
 export * from "./types/categories.js";
+export * from "./types/featureFlags.js";
 export * from "./utils/ipfs.js";
 export * from "./utils/test.js";
 export * from "./apiTypes.js";

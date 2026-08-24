@@ -41,6 +41,10 @@ In production, `app` is built as static files served by Express.
 
 Development uses a fork workflow. Push branches to `origin` (your fork), then open a PR targeting `upstream/main`. Merged PRs deploy to production after human sign-off.
 
+Ship cross-cutting API + client changes behind a **feature flag** so each side
+can deploy on its own and the feature is switched on afterwards — see
+`apps/api/src/feature-flags/README.md`.
+
 Database and API changes must follow the **expand-migrate-contract** pattern: each merged PR must be safe to deploy on its own, so add new columns/endpoints before removing old ones across separate PRs.
 
 ## Cross-cutting Conventions
