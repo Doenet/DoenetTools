@@ -102,6 +102,7 @@ export type UserInfoWithEmail = UserInfo & {
   isAuthor?: boolean;
   isEditor?: boolean;
   canUploadImages?: boolean;
+  theme?: Theme;
 };
 
 export type ContentClassification = {
@@ -178,6 +179,9 @@ export type AssignmentMode = "formative" | "summative";
 
 export type Visibility = "private" | "unlisted" | "public";
 
+/** This type must match the Prisma-defined enum `Theme` */
+export type Theme = "system" | "light" | "dark";
+
 export type ContentBase = {
   contentId: Uuid;
   ownerId: Uuid;
@@ -221,7 +225,6 @@ export type Doc = ContentBase & {
 
 export type QuestionBank = ContentBase & {
   type: "select";
-  activityJson?: string;
   revisionNum?: number;
   numToSelect: number;
   selectByVariant: boolean;
@@ -230,7 +233,6 @@ export type QuestionBank = ContentBase & {
 
 export type ProblemSet = ContentBase & {
   type: "sequence";
-  activityJson?: string;
   revisionNum?: number;
   shuffle: boolean;
   paginate: boolean;

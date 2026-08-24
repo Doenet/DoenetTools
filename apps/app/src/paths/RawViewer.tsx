@@ -7,6 +7,7 @@ import { Content, DoenetmlVersion } from "../types";
 import { compileActivityFromContent } from "../utils/activity";
 import { useEffect } from "react";
 import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";
+import { effectiveDarkMode } from "../utils/theme";
 import short from "short-uuid";
 
 export async function loader({ params }: any) {
@@ -34,13 +35,7 @@ export async function loader({ params }: any) {
         contentId,
       };
     } else {
-      const activityJsonFromRevision = activityData.activityJson
-        ? JSON.parse(activityData.activityJson)
-        : null;
-
-      const activityJson = isActivitySource(activityJsonFromRevision)
-        ? activityJsonFromRevision
-        : compileActivityFromContent(activityData);
+      const activityJson = compileActivityFromContent(activityData);
 
       return {
         type: activityData.type,
@@ -170,6 +165,9 @@ export function RawViewer() {
       <DoenetViewer
         doenetML={data.doenetML}
         doenetmlVersion={data.doenetmlVersion.fullVersion}
+        // Embed follows the host/OS ("system"), but still force light for
+        // versions that predate dark-mode support so old docs aren't defective.
+        darkMode={effectiveDarkMode("system", data.doenetmlVersion.fullVersion)}
         attemptNumber={1}
         doenetViewerUrl={doenetViewerUrl}
         doenetImagesUrl={doenetImagesUrl}
@@ -182,6 +180,9 @@ export function RawViewer() {
     return (
       <DoenetActivityViewer
         source={data.activityJson}
+        // Compound activity: per-leaf version, so we can't gate here; keep the
+        // embed's "system" behavior.
+        darkMode={effectiveDarkMode("system")}
         requestedVariantIndex={1}
         paginate={
           activityData.type === "sequence" ? activityData.paginate : false
