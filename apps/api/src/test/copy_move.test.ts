@@ -1042,7 +1042,7 @@ test("copying a folder containing an assignment drops the assignment data", asyn
     contentId: problemSetId,
     loggedInUserId: ownerId,
     destinationParentId: folderId,
-    closedOn: DateTime.now(),
+    closedOn: DateTime.now().plus({ days: 1 }),
   });
 
   const { newContentIds } = await copyContent({
