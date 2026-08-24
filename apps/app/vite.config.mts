@@ -7,7 +7,7 @@ import { defineConfig } from "vite";
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 
-import { apiPort, appPort } from "../../scripts/worktree-env.js";
+import { apiPort, appPort, webPort } from "../../scripts/worktree-env.js";
 
 export default defineConfig(({ command }) => ({
   // Quiet the dev server: `command === "serve"` suppresses info-level chatter
@@ -43,6 +43,11 @@ export default defineConfig(({ command }) => ({
   server: {
     port: appPort,
     proxy: {
+      // Route blog pages and Astro-generated assets through the same frontend
+      // entry point used by the app in production.
+      "/blog": `http://localhost:${webPort}`,
+      "/_astro": `http://localhost:${webPort}`,
+      "/_image": `http://localhost:${webPort}`,
       "/cyapi": "http://apache",
       //"/media": "http://apache",
       "/api": `http://localhost:${apiPort}`,

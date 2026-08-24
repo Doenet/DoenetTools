@@ -34,11 +34,16 @@ migrates, and seeds the database. It is idempotent — safe to re-run at any tim
 
 - Shared package watcher
 - Express API → http://localhost:3000
-- React SPA → http://localhost:8000 (proxies `/api/*` to the API)
+- React SPA → http://localhost:8000 (proxies `/api/*` to the API and `/blog/*` to Astro)
 - Astro site → http://localhost:4321
 
 If you need to edit connection details, see the comments in `apps/api/.env`.
 If the database container is stopped later, re-run `npm run setup` to start it.
+
+Both frontends are reachable from the app origin, so local URLs match production:
+
+- app pages → `http://localhost:8000/...`
+- blog pages → `http://localhost:8000/blog/...`
 
 #### Running dev servers individually
 
