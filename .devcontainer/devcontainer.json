@@ -6,6 +6,12 @@
   "workspaceFolder": "/home/node/workspace",
   "remoteUser": "node",
 
+  // The base image is a slim Node image with no SSH server, which the
+  // `gh codespace ssh|logs|cp` commands need. Harmless locally.
+  "features": {
+    "ghcr.io/devcontainers/features/sshd:1": {}
+  },
+
   "hostRequirements": {
     "cpus": 2,
     "memory": "8gb",
