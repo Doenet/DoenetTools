@@ -536,3 +536,16 @@ enum LibraryEventType {
   ADD_COMMENT
   // EDIT_COMMENT
 }
+
+/// Runtime overrides for the feature-flag registry in `@doenet-tools/shared`.
+/// A row exists only for a flag that has been explicitly turned on or off; with
+/// no row, the registry's `defaultEnabled` applies. Rows for flags no longer in
+/// the registry are ignored (safe to leave behind, cleaned up with
+/// `feature-flag prune`). See `apps/api/src/feature-flags/README.md`.
+model featureFlags {
+  name      String   @id @db.VarChar(191)
+  enabled   Boolean
+  /// Why it was flipped, and by whom — free text, for the audit trail.
+  note      String?  @db.Text
+  updatedAt DateTime @default(now()) @updatedAt
+}

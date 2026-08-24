@@ -51,6 +51,7 @@ import { codeRouter } from "./routes/code";
 import { metricsRouter } from "./routes/metricsRoutes";
 import { contentRouter } from "./routes/content.route";
 import { loadMediaConfig, mediaRouter } from "./media";
+import { featureFlagsRouter } from "./feature-flags";
 import { getEnvVar, isTestAuthBypassEnabled } from "./utils/env";
 import { asyncPassport, toGoogleAccount } from "./auth";
 import type { DoneCallback, SessionUser } from "./auth";
@@ -457,6 +458,7 @@ app.use("/api/code", codeRouter);
 app.use("/api/metrics", metricsRouter);
 app.use("/api/content", contentRouter);
 app.use("/api/media", mediaRouter);
+app.use("/api/featureFlags", featureFlagsRouter);
 
 // Discourse uses this endpoint to sign on
 app.use("/api/discourse", discourseRouter);
