@@ -53,6 +53,11 @@ export const webPort = BASE.web + offset;
 // file. Both dotenv and the Prisma CLI resolve it the same way, so this stays
 // in step with what the API actually connects to — which matters in the dev
 // container, where docker-compose.yml points these at the `mysql` service.
+// The app's public base URL. Normally localhost on this checkout's port, but in
+// a codespace it is the forwarded host, and links printed for a human (or baked
+// into a sign-in email) have to match what the browser is actually pointed at.
+export const appUrl =
+  process.env.APP_URL || env.APP_URL || `http://localhost:${appPort}`;
 export const dbHost =
   process.env.DATABASE_HOST || env.DATABASE_HOST || "127.0.0.1";
 export const dbPort =

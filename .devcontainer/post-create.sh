@@ -32,11 +32,19 @@ if [ "${CODESPACES:-}" = "true" ] && [ -f "$codespaces_env" ]; then
   cs_name=$(read_cs CODESPACE_NAME)
   cs_domain=$(read_cs GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN)
   if [ -n "$cs_name" ] && [ -n "$cs_domain" ]; then
+    app_origin="https://${cs_name}-8000.${cs_domain}"
     {
-      echo "PUBLIC_APP_URL=https://${cs_name}-8000.${cs_domain}"
+      echo "PUBLIC_APP_URL=${app_origin}"
       echo "PUBLIC_SITE_URL=https://${cs_name}-4321.${cs_domain}"
     } > apps/web/.env.local
     echo "✅ Created apps/web/.env.local (blog links point at the forwarded app)"
+
+    # The API builds sign-in links from APP_URL, and `npm run dev` prints an
+    # auto-login link from the same value. Both are followed in a browser, so
+    # they must be the forwarded origin. Safe to edit here: a codespace's
+    # checkout is not shared with a host.
+    sed -i "s#^APP_URL=.*#APP_URL=\"${app_origin}\"#" apps/api/.env
+    echo "✅ Pointed APP_URL at ${app_origin} (sign-in links)"
   fi
 fi
 
