@@ -1,0 +1,117 @@
+# Dev container internals
+
+Reference for the container itself. For getting started, see
+[Setting up a development environment](../CONTRIBUTING.md#setting-up-a-development-environment)
+— in VS Code it is **Reopen in Container**, and with the CLI:
+
+```bash
+npx @devcontainers/cli up --workspace-folder .
+npx @devcontainers/cli exec --workspace-folder . bash -lc 'npm run dev'
+```
+
+Plain `docker compose` works as well, though it does not run the post-create
+step for you:
+
+```bash
+docker compose -p doenet-dev -f .devcontainer/docker-compose.yml up -d --build --wait
+docker compose -p doenet-dev -f .devcontainer/docker-compose.yml exec dev bash -lc 'bash .devcontainer/post-create.sh'
+docker compose -p doenet-dev -f .devcontainer/docker-compose.yml exec dev bash
+```
+
+## The stack
+
+| Service  | What it is                        | Address inside the container |
+| -------- | --------------------------------- | ---------------------------- |
+| `dev`    | Node 24.15, Chrome, the workspace | —                            |
+| `mysql`  | MySQL 8.0, seeded with dev data   | `mysql:3306`                 |
+| `s3mock` | S3-compatible store for uploads   | `s3mock:9090`                |
+
+`post-create.sh` runs once when the container is created: it creates
+`apps/api/.env` if missing, installs dependencies, fetches the Cypress binary,
+builds `packages/shared`, and migrates and seeds the database. It ends by
+printing the ports this checkout uses.
+
+Every test suite runs here with no external services — see
+[Running the tests](../CONTRIBUTING.md#running-the-tests). Cypress uses headless
+Chrome, and `xvfb` is installed for the cases where it wants a display; watching
+a run interactively (`cypress open`) needs an X server of your own.
+
+## Claude Code
+
+[Claude Code](https://claude.com/claude-code) is installed in the image, so
+`claude` works in any terminal in the container. Sign in once with `claude`;
+credentials live in a named volume (`CLAUDE_CONFIG_DIR=/home/node/.claude`) and
+survive rebuilds. Alternatively set `ANTHROPIC_API_KEY` — the container inherits
+it from the host, and Codespaces exposes a repository or user secret of that
+name automatically. The VS Code extension is installed alongside it.
+
+## How it is wired
+
+**Service addresses come from the environment, not `apps/api/.env`.**
+`docker-compose.yml` sets `DATABASE_URL`, `DATABASE_HOST`, and
+`MEDIA_S3_LOCAL_ENDPOINT`. Both `dotenv` and the Prisma CLI leave already-set
+variables alone, so these win over the file — which means the checkout's `.env`,
+shared with the host through the bind mount, is never rewritten and the same
+checkout works on the host and in the container.
+
+**The dev servers listen on all interfaces.** Vite and Astro otherwise bind to
+`127.0.0.1`, which published ports cannot reach, so the container sets
+`DEV_SERVER_HOST=0.0.0.0`. It is unset on a normal checkout, leaving host-based
+development on localhost. The ports are published on the host's loopback only.
+
+**In a codespace the blog links back to the forwarded host.** The blog builds
+absolute links to the app from `PUBLIC_APP_URL`, which defaults to
+`http://localhost:8000` — meaningless in a browser pointed at
+`*.app.github.dev`. `post-create.sh` detects Codespaces and writes
+`apps/web/.env.local` with the forwarded URLs, the same override mechanism
+`npm run setup` uses for worktrees.
+
+**`node_modules` are named volumes**, so the container's Linux-native installs
+never collide with the host's. Only the workspaces npm actually populates get
+one; `initializeCommand` pre-creates those mount points as the host user,
+because Docker would otherwise create them as root and a later host-side
+`npm ci` could not write to them. A consequence of the volumes is that host-side
+editors cannot see `node_modules` — run tooling inside the container.
+
+The Cypress binary and the npm cache live in volumes too, so rebuilding does not
+re-download them.
+
+## Ports
+
+Ports come from `apps/api/.env`: a fresh checkout gets app 8000, api 3000, blog
+4321, while a [worktree](../CONTRIBUTING.md#working-in-multiple-worktrees) is
+assigned an offset. Compose cannot read that file, so pass the ports when they
+are not the defaults — also the fix if something on the host already holds one:
+
+```bash
+APP_PORT=8002 API_PORT=3002 WEB_PORT=4323 \
+  npx @devcontainers/cli up --workspace-folder .
+```
+
+## Rebuilding and cleaning up
+
+`up` is idempotent; re-running it reuses the container. To force a fresh one:
+
+```bash
+npx @devcontainers/cli up --workspace-folder . \
+  --remove-existing-container --build-no-cache
+```
+
+That keeps the named volumes, so the database and Cypress binary survive. To
+discard those too, remove the stack. The CLI names its compose project after the
+folder, so a checkout in `apps` gives `apps_devcontainer`:
+
+```bash
+docker compose -p apps_devcontainer -f .devcontainer/docker-compose.yml down -v
+```
+
+## Known limitations
+
+- **Linked git worktrees**: git does not work inside the container, because
+  `.git` is a file pointing outside the bind mount. Everything else works; use
+  the main checkout or a clone for committing.
+- **arm64 hosts**: Google ships no arm64 Chrome build, so Chromium is installed
+  instead and Cypress needs `-b chromium`. The package scripts hardcode
+  `-b chrome`.
+- This stack is separate from the repo-root `docker-compose.yml`, which exists
+  for host-based development. The two can run at the same time.

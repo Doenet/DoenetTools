@@ -10,69 +10,37 @@ We would love to hear from you! Join our [Discord](https://discord.gg/PUduwtKJ5h
 
 ---
 
-## Dev Environment Setup
+## Getting started
 
-### Prerequisites
+Three ways to get a development environment, easiest first. Full instructions —
+including running the tests and opening a pull request — are in
+[CONTRIBUTING.md](./CONTRIBUTING.md).
 
-- [Node.js](https://nodejs.org/) 24+
-- [Docker](https://www.docker.com/) with Compose v2 (for the MySQL database)
+**1. GitHub Codespaces.** Nothing to install; everything runs in the browser.
 
-### Steps
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/Doenet/DoenetApps)
+
+**2. Dev container on your machine.** Docker is the only prerequisite — the
+container brings its own Node, MySQL, S3 mock, and Chrome for the Cypress
+suites. Open the repository in VS Code and choose **Reopen in Container**, or:
 
 ```bash
-git clone https://github.com/Doenet/DoenetTools.git
-cd DoenetTools
+npx @devcontainers/cli up --workspace-folder .
+```
+
+**3. The toolchain on your machine.** Node 24 and Docker, for the fastest inner
+loop:
+
+```bash
+git clone https://github.com/Doenet/DoenetApps.git
+cd DoenetApps
 npm install
-npm run setup
-npm run dev
+npm run setup     # creates apps/api/.env, starts MySQL, migrates and seeds
+npm run dev       # app :8000, api :3000, blog :4321
 ```
 
-`npm run setup` creates `apps/api/.env`, starts the MySQL container, and creates,
-migrates, and seeds the database. It is idempotent — safe to re-run at any time.
-
-`npm run dev` starts all dev processes:
-
-- Shared package watcher
-- Express API → http://localhost:3000
-- React SPA → http://localhost:8000 (proxies `/api/*` to the API and `/blog/*` to Astro)
-- Astro site → http://localhost:4321
-
-If you need to edit connection details, see the comments in `apps/api/.env`.
-If the database container is stopped later, re-run `npm run setup` to start it.
-
-Both frontends are reachable from the app origin, so local URLs match production:
-
-- app pages → `http://localhost:8000/...`
-- blog pages → `http://localhost:8000/blog/...`
-
-#### Running dev servers individually
-
-Instead of `npm run dev`, you can run each process in a separate terminal:
-
-```bash
-npm run dev --workspace @doenet-tools/shared   # Shared package watcher
-npm run dev --workspace @doenet-tools/api   # Express API
-npm run dev --workspace @doenet-tools/app   # React SPA
-npm run dev --workspace @doenet-tools/web   # Astro site
-```
-
-### Working in multiple worktrees
-
-Running `npm run dev` from several [git worktrees](https://git-scm.com/docs/git-worktree)
-at once would collide on ports and on the database. The same setup command
-handles this — it detects a linked worktree and assigns it the next free set
-of ports and a dedicated database:
-
-```bash
-git worktree add ../doenet-feature feature-branch
-cd ../doenet-feature
-npm install
-npm run setup
-npm run dev
-```
-
-The MySQL container is shared across all worktrees — only the database
-(and the ports) differ.
+However you start it, the app is at http://localhost:8000 and the blog is at
+`/blog` on the same origin, matching production.
 
 ---
 
