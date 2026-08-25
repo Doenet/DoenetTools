@@ -18,6 +18,28 @@ else
   echo "✅ Created apps/api/.env from .env.example"
 fi
 
+# 1b. In a codespace the browser is on a forwarded *.app.github.dev host, so the
+# blog's links back to the app (Header logo, in-content links) must use that
+# origin rather than localhost. Vite and Astro load .env.local ahead of .env,
+# which is the same mechanism `npm run setup` uses for worktrees.
+#
+# CODESPACES is in the container environment, but CODESPACE_NAME and the
+# forwarding domain are only exported to login shells, so read them from the
+# file Codespaces writes.
+codespaces_env=/workspaces/.codespaces/shared/.env
+if [ "${CODESPACES:-}" = "true" ] && [ -f "$codespaces_env" ]; then
+  read_cs() { grep -m1 "^$1=" "$codespaces_env" | cut -d= -f2-; }
+  cs_name=$(read_cs CODESPACE_NAME)
+  cs_domain=$(read_cs GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN)
+  if [ -n "$cs_name" ] && [ -n "$cs_domain" ]; then
+    {
+      echo "PUBLIC_APP_URL=https://${cs_name}-8000.${cs_domain}"
+      echo "PUBLIC_SITE_URL=https://${cs_name}-4321.${cs_domain}"
+    } > apps/web/.env.local
+    echo "✅ Created apps/web/.env.local (blog links point at the forwarded app)"
+  fi
+fi
+
 # 2. Dependencies. `npm ci` also runs the postinstall `prisma generate`.
 echo "📦 Installing dependencies..."
 npm ci

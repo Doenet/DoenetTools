@@ -59,6 +59,13 @@ checkout works on the host and in the container.
 `DEV_SERVER_HOST=0.0.0.0`. It is unset on a normal checkout, leaving host-based
 development on localhost. The ports are published on the host's loopback only.
 
+**In a codespace the blog links back to the forwarded host.** The blog builds
+absolute links to the app from `PUBLIC_APP_URL`, which defaults to
+`http://localhost:8000` — meaningless in a browser pointed at
+`*.app.github.dev`. `post-create.sh` detects Codespaces and writes
+`apps/web/.env.local` with the forwarded URLs, the same override mechanism
+`npm run setup` uses for worktrees.
+
 **`node_modules` are named volumes**, so the container's Linux-native installs
 never collide with the host's. Only the workspaces npm actually populates get
 one; `initializeCommand` pre-creates those mount points as the host user,
