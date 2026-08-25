@@ -36,6 +36,15 @@ Every test suite runs here with no external services — see
 Chrome, and `xvfb` is installed for the cases where it wants a display; watching
 a run interactively (`cypress open`) needs an X server of your own.
 
+## Claude Code
+
+[Claude Code](https://claude.com/claude-code) is installed in the image, so
+`claude` works in any terminal in the container. Sign in once with `claude`;
+credentials live in a named volume (`CLAUDE_CONFIG_DIR=/home/node/.claude`) and
+survive rebuilds. Alternatively set `ANTHROPIC_API_KEY` — the container inherits
+it from the host, and Codespaces exposes a repository or user secret of that
+name automatically. The VS Code extension is installed alongside it.
+
 ## How it is wired
 
 **Service addresses come from the environment, not `apps/api/.env`.**

@@ -22,6 +22,8 @@ services:
       # Cypress binary and npm cache survive rebuilds.
       - cypress_cache:/home/node/.cache
       - npm_cache:/home/node/.npm
+      # Claude Code's config, so you log in once rather than once per rebuild.
+      - claude_config:/home/node/.claude
     # Published on the host's loopback only. The port numbers come from
     # apps/api/.env (a fresh checkout uses the defaults below); override them
     # in the shell if that file assigns this checkout an offset, or if
@@ -36,6 +38,9 @@ services:
       # the published ports above reach them. Both default to localhost-only
       # when this is unset, which is what a normal checkout wants.
       DEV_SERVER_HOST: 0.0.0.0
+      # Keeps Claude Code's credentials and settings inside the volume above,
+      # rather than in ~/.claude.json alongside it.
+      CLAUDE_CONFIG_DIR: /home/node/.claude
       # These win over apps/api/.env: both dotenv and the Prisma CLI leave
       # already-set variables alone. That keeps the checkout's .env file — which
       # is shared with the host through the bind mount — untouched, while the
@@ -111,5 +116,6 @@ volumes:
   web_node_modules:
   cypress_cache:
   npm_cache:
+  claude_config:
   mysql_data:
   s3mock_data:

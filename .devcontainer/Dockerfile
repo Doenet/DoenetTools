@@ -34,6 +34,10 @@ RUN set -eux; \
     fi; \
     rm -rf /var/lib/apt/lists/*
 
+# Claude Code, installed globally while we are still root. Its config directory
+# is a named volume (see docker-compose.yml), so a login survives rebuilds.
+RUN npm install -g @anthropic-ai/claude-code
+
 # The Cypress binary lives outside node_modules; a named volume is mounted here
 # so it survives container rebuilds.
 ENV CYPRESS_CACHE_FOLDER=/home/node/.cache/Cypress
@@ -47,6 +51,7 @@ ENV CYPRESS_CACHE_FOLDER=/home/node/.cache/Cypress
 RUN mkdir -p \
         /home/node/.cache/Cypress \
         /home/node/.npm \
+        /home/node/.claude \
         /home/node/workspace/node_modules \
         /home/node/workspace/apps/api/node_modules \
         /home/node/workspace/apps/app/node_modules \

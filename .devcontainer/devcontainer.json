@@ -32,6 +32,13 @@
   // host user avoids that.
   "initializeCommand": "mkdir -p node_modules apps/api/node_modules apps/app/node_modules apps/web/node_modules",
 
+  // Passes an API key through when the host has one set. Claude Code also
+  // signs in interactively with `claude`, and Codespaces exposes a repository
+  // or user secret of this name automatically.
+  "remoteEnv": {
+    "ANTHROPIC_API_KEY": "${localEnv:ANTHROPIC_API_KEY}"
+  },
+
   "postCreateCommand": "bash .devcontainer/post-create.sh",
 
   // Stop MySQL and s3mock along with the dev container.
@@ -40,6 +47,7 @@
   "customizations": {
     "vscode": {
       "extensions": [
+        "anthropic.claude-code",
         "esbenp.prettier-vscode",
         "dbaeumer.vscode-eslint",
         "Prisma.prisma",

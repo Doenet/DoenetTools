@@ -52,6 +52,9 @@ npx @devcontainers/cli exec --workspace-folder . bash -lc 'npm run dev'
 
 Either way, open http://localhost:8000 when the dev servers are up.
 
+[Claude Code](https://claude.com/claude-code) is installed in the container —
+run `claude` in any terminal there, or use the bundled VS Code extension.
+
 Plain `docker compose` works too, and the container's internals — how the
 services fit together, rebuilding, cleaning up, and the arm64 caveat — are
 documented in [.devcontainer/README.md](./.devcontainer/README.md).
