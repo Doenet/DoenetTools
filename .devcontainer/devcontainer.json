@@ -20,10 +20,17 @@
 
   // api, app (open this one), blog
   "forwardPorts": [3000, 8000, 4321],
+  // The app is the one to open: it proxies /api to the API and /blog to Astro,
+  // so it is the only port worth clicking. The other two are labelled for the
+  // Ports panel but stay quiet, since landing on the API's debug root instead
+  // of the app is a confusing first impression.
   "portsAttributes": {
-    "3000": { "label": "api" },
-    "8000": { "label": "app", "onAutoForward": "notify" },
-    "4321": { "label": "blog" }
+    "8000": { "label": "app (open this one)", "onAutoForward": "openBrowser" },
+    "3000": { "label": "api", "onAutoForward": "silent" },
+    "4321": {
+      "label": "blog (served via the app at /blog)",
+      "onAutoForward": "silent"
+    }
   },
 
   // Runs on the host before the container is created. Docker creates a missing
