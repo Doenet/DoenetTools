@@ -41,7 +41,7 @@ In production, `app` is built as static files served by Express.
 
 ## Pull Requests
 
-Development uses a fork workflow. Push branches to `origin` (your fork), then open a PR targeting `upstream/main`. Merged PRs deploy to production after human sign-off.
+Development uses a fork workflow. Push branches to `origin` (your fork), then open a PR targeting `upstream/main`. PRs merge after human sign-off, and each merge deploys to production automatically once CI passes on `main` (see [infra/README.md](./infra/README.md#rolling-back-prod)).
 
 Database and API changes must follow the **expand-migrate-contract** pattern: each merged PR must be safe to deploy on its own, so add new columns/endpoints before removing old ones across separate PRs.
 
