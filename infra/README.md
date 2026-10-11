@@ -66,8 +66,10 @@ the newer one.) There are two ways back:
 - **Revert the PR** — the real fix. Prod redeploys once the revert's checks
   pass. Use this unless prod is badly broken right now.
 - **Re-run the last good deploy** — the emergency stopgap while a revert's CI
-  runs. In Actions → `Prod Deploy`, find the last green run and click
-  "Re-run all jobs"; it redeploys that run's SHA. This does not change `main`,
+  runs. In Actions → `Prod Deploy`, find the last good run whose `deploy`
+  job ran (a green run can also be one that skipped deploying because its
+  commit was no longer the tip of `main`) and click "Re-run all jobs"; it
+  redeploys that run's SHA. This does not change `main`,
   so the next merge ships whatever is on `main` again — always follow up with
   a revert.
 

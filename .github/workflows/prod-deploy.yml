@@ -104,8 +104,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      # A queued deploy that a newer one displaced (see `deploy`'s
-      # concurrency) never ran, so it is neither live nor failed.
+      # Usually a queued deploy that a newer one displaced (see `deploy`'s
+      # concurrency): it never ran, so it is neither live nor failed. A run
+      # cancelled by hand mid-deploy lands here too and may have left prod
+      # half-updated, so the description names both.
       - name: Mark a superseded deployment inactive
         if: needs.deploy.result == 'cancelled'
         env:
@@ -114,7 +116,7 @@ jobs:
         run: |
           gh api -X POST "repos/${GITHUB_REPOSITORY}/deployments/${DEPLOYMENT_ID}/statuses" \
             -f state=inactive \
-            -f description="superseded by a newer prod deploy" \
+            -f description="cancelled: superseded by a newer prod deploy, or by hand" \
             -f environment=prod \
             -f environment_url=https://doenet.org
 

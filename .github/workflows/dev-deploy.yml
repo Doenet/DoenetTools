@@ -109,8 +109,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      # A deploy that a newer one cancelled (see `deploy`'s concurrency) isn't
-      # what's live, and didn't fail on its own.
+      # Usually a deploy that a newer one cancelled (see `deploy`'s
+      # concurrency): it isn't what's live, and didn't fail on its own. A run
+      # cancelled by hand lands here too, so the description names both.
       - name: Mark a superseded deployment inactive
         if: needs.deploy.result == 'cancelled'
         env:
@@ -119,7 +120,7 @@ jobs:
         run: |
           gh api -X POST "repos/${GITHUB_REPOSITORY}/deployments/${DEPLOYMENT_ID}/statuses" \
             -f state=inactive \
-            -f description="superseded by a newer dev3 deploy" \
+            -f description="cancelled: superseded by a newer dev3 deploy, or by hand" \
             -f environment=dev3 \
             -f environment_url=https://dev3.doenet.org
 
