@@ -82,3 +82,9 @@ Backend deploys that fail to boot or pass health checks roll themselves back
 (see `update-cluster-with-rollback`); manual rollback is for code that deploys
 healthy but is functionally broken. Confirm what prod is actually running at
 `https://doenet.org/api/health` and `https://doenet.org/version.json`.
+
+There is no way to deploy `main` to prod while CI on `main` is failing.
+`Prod Deploy` has no manual trigger, re-running a `Prod Deploy` run whose CI
+failed deploys nothing, and running CI by hand (workflow_dispatch) doesn't
+deploy either. Re-run the failed CI jobs if the failure is flaky; otherwise
+merge a fix or a revert.
