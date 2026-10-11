@@ -71,7 +71,13 @@ the newer one.) There are two ways back:
   commit was no longer the tip of `main`) and click "Re-run all jobs"; it
   redeploys that run's SHA. This does not change `main`,
   so the next merge ships whatever is on `main` again — always follow up with
-  a revert.
+  a revert. GitHub only re-runs runs from the last 30 days; for anything
+  older, revert.
+
+Don't use "Re-run failed jobs" on a `Prod Deploy` run whose deploy failed
+unless its commit is still the tip of `main`. It reuses the run's original
+tip check, so it deploys that commit even after `main` has moved on and a
+newer commit is live — rolling prod back.
 
 Neither path undoes database migrations: `prisma migrate deploy` runs at
 container boot and is never rolled back, so after a rollback the old code runs
