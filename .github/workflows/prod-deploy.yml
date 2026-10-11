@@ -27,6 +27,10 @@ jobs:
   # manual rollback in infra/README.md, which redeploys an older run's SHA.
   gate:
     runs-on: ubuntu-latest
+    # Only reads the tip of main; it needs neither AWS (id-token) nor
+    # deployment records.
+    permissions:
+      contents: read
     if: >-
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.event == 'push' &&
@@ -104,24 +108,33 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      # Usually a queued deploy that a newer one displaced (see `deploy`'s
-      # concurrency): it never ran, so it is neither live nor failed. A run
-      # cancelled by hand mid-deploy lands here too and may have left prod
-      # half-updated, so the description names both.
-      - name: Mark a superseded deployment inactive
-        if: needs.deploy.result == 'cancelled'
+      # A deploy cancelled before it started: a queued one that a newer one
+      # displaced (see `deploy`'s concurrency), or one cancelled by hand while
+      # still queued. Nothing ran, so it is neither live nor failed. A deploy
+      # cancelled by hand after it started has component results, and is
+      # finalized below as a failure: it may have left prod half-updated.
+      - name: Mark a deployment that never started inactive
+        if: >-
+          needs.deploy.result == 'cancelled' &&
+          needs.deploy.outputs.backend_result == '' &&
+          needs.deploy.outputs.frontend_result == '' &&
+          needs.deploy.outputs.site_result == ''
         env:
           GH_TOKEN: ${{ github.token }}
           DEPLOYMENT_ID: ${{ needs.create-deployment.outputs.deployment_id }}
         run: |
           gh api -X POST "repos/${GITHUB_REPOSITORY}/deployments/${DEPLOYMENT_ID}/statuses" \
             -f state=inactive \
-            -f description="cancelled: superseded by a newer prod deploy, or by hand" \
+            -f description="cancelled before it started: superseded by a newer prod deploy, or by hand" \
             -f environment=prod \
             -f environment_url=https://doenet.org
 
       - name: Finalize GitHub deployment status
-        if: needs.deploy.result != 'cancelled'
+        if: >-
+          needs.deploy.result != 'cancelled' ||
+          needs.deploy.outputs.backend_result != '' ||
+          needs.deploy.outputs.frontend_result != '' ||
+          needs.deploy.outputs.site_result != ''
         uses: ./.github/actions/finalize-deployment
         with:
           deployment-id: ${{ needs.create-deployment.outputs.deployment_id }}
