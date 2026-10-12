@@ -119,6 +119,10 @@ export async function maskLibraryUserInfo({
  *
  * Use this instead of `maskLibraryUserInfo` when the source owner was already
  * selected along with the content.
+ *
+ * Unlike `maskLibraryUserInfo`, this does not check that `owner` is actually the
+ * library account: it always masks. Call it only for content known to be a
+ * library activity, e.g., content with a `libraryActivityInfo` record.
  */
 export function applyLibraryMask({
   owner,
