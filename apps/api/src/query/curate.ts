@@ -20,17 +20,27 @@ import { getAllCategories } from "../categories";
 import { getAllLicenses } from "./license";
 import { InvalidRequestError } from "../utils/error";
 
+// The library account never changes, so look it up once per process.
+let libraryAccountIdPromise: Promise<Uint8Array> | null = null;
+
 export async function getLibraryAccountId() {
-  const library = await prisma.users.findFirstOrThrow({
-    where: {
-      isLibrary: true,
-    },
-    select: {
-      userId: true,
-    },
-  });
-  const libraryId = library!.userId;
-  return libraryId;
+  if (libraryAccountIdPromise === null) {
+    libraryAccountIdPromise = prisma.users
+      .findFirstOrThrow({
+        where: {
+          isLibrary: true,
+        },
+        select: {
+          userId: true,
+        },
+      })
+      .then((library) => library.userId);
+    // Don't cache a failed lookup
+    libraryAccountIdPromise.catch(() => {
+      libraryAccountIdPromise = null;
+    });
+  }
+  return libraryAccountIdPromise;
 }
 
 /**
@@ -104,17 +114,35 @@ export async function maskLibraryUserInfo({
       },
     });
 
-    const maskInfo = user.libraryActivityInfo!.source.owner;
-    const newOwner = {
-      ...owner,
-      // Mask info replaces original user info
-      ...maskInfo,
-      isMaskForLibrary: true,
-    };
-    return newOwner;
+    return applyLibraryMask({
+      owner,
+      sourceOwner: user.libraryActivityInfo!.source.owner,
+    });
   } else {
     return owner;
   }
+}
+
+/**
+ * Replace the library account's info in `owner` with the info of `sourceOwner`,
+ * the owner of the content the library activity was curated from.
+ *
+ * Use this instead of `maskLibraryUserInfo` when the source owner was already
+ * selected along with the content.
+ */
+export function applyLibraryMask({
+  owner,
+  sourceOwner,
+}: {
+  owner: UserInfo;
+  sourceOwner: UserInfo;
+}): UserInfo {
+  return {
+    ...owner,
+    // Mask info replaces original user info
+    ...sourceOwner,
+    isMaskForLibrary: true,
+  };
 }
 
 /**

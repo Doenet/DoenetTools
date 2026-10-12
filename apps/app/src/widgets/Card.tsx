@@ -24,7 +24,7 @@ import {
   NumberInputStepper,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink, useOutletContext } from "react-router";
-import { Content } from "../types";
+import { ContentCard } from "../types";
 import { FaEllipsisVertical } from "react-icons/fa6";
 import { VisibilityPill } from "./VisibilityPill";
 import {
@@ -40,7 +40,7 @@ import { AccessibleAvatar } from "./AccessibleAvatar";
 export type CardContent = {
   menuRef?: (arg: HTMLButtonElement) => void;
   cardLink?: string;
-  content: Content;
+  content: ContentCard;
   ownerName?: string;
   // This will replace `ownerName` in the avatar
   ownerAvatarName?: string;

@@ -3,6 +3,7 @@ import {
   AssignmentStatus,
   ContentClassification,
   Content,
+  ContentCard,
   License,
   LicenseCode,
   UserInfo,
@@ -280,6 +281,18 @@ export function returnContentSelect({
     ...problemSetSelect,
     ...assignmentSelect,
   };
+}
+
+/**
+ * Like `returnContentSelect`, but without the DoenetML `source` of documents,
+ * for lists of cards that never display it. Process the results with
+ * `processContentCard`.
+ */
+export function returnContentCardSelect(
+  options: Parameters<typeof returnContentSelect>[0],
+) {
+  const { source: _source, ...select } = returnContentSelect(options);
+  return select;
 }
 
 type PreliminaryLicense = {
@@ -591,6 +604,25 @@ export function processContent(
       };
     }
   }
+}
+
+/**
+ * Like `processContent`, but for content selected with `returnContentCardSelect`,
+ * so documents come back without `doenetML`.
+ */
+export function processContentCard(
+  preliminaryContent: PreliminaryContent,
+  forUserId?: Uint8Array,
+): ContentCard {
+  const content = processContent(
+    { ...preliminaryContent, source: "" },
+    forUserId,
+  );
+  if (content.type === "singleDoc") {
+    const { doenetML: _doenetML, ...card } = content;
+    return card;
+  }
+  return content;
 }
 
 /**
