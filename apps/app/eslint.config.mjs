@@ -15,9 +15,15 @@ export default tseslint.config(
   // Talk to /api only through the typed client in src/api/client.ts, so
   // every call is checked against the API contract. Existing untyped calls
   // are recorded in eslint-suppressions.json; that list may only shrink.
+  // src/utils/clientBuild.ts is exempt: it adds a header to every axios
+  // request, including the typed client's.
   {
     files: ["src/**/*.{ts,tsx}"],
-    ignores: ["src/api/client.ts", "src/**/*.cy.tsx"],
+    ignores: [
+      "src/api/client.ts",
+      "src/utils/clientBuild.ts",
+      "src/**/*.cy.{ts,tsx}",
+    ],
     rules: {
       "no-restricted-imports": [
         "error",

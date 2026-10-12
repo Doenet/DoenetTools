@@ -19,8 +19,8 @@ branch is behind. A PR with conflicts is blocked with a hint to update it first.
 
 ## What is currently on dev3?
 
-dev3 is a single shared environment. Every deploy (a push to `main`, a
-`Dev Deploy` workflow_dispatch, or a `/deploy-dev` PR command) records a GitHub
+dev3 is a single shared environment. Every deploy (`main` once CI passes on
+it, a `Dev Deploy` workflow_dispatch, or a `/deploy-dev` PR command) records a GitHub
 deployment against the `dev3` environment, so the live ref is visible without
 AWS access:
 
@@ -44,7 +44,7 @@ for id in $(gh api "repos/$repo/deployments?environment=dev3&per_page=20" --jq '
 done
 ```
 
-A PR deploy supersedes `main`, and the next push to `main` supersedes the PR.
+A PR deploy supersedes `main`, and the next deploy of `main` supersedes the PR.
 
 The Environments tab reflects the _ref that was deployed_, not proof the running
 container matches it. For ground truth, ask the running services what they are —
@@ -55,23 +55,75 @@ each is stamped with its ref and commit at build time:
 
 ## Rolling back prod
 
-Every merge to `main` deploys to prod automatically, so `main` is the source of
-truth for what prod should be running. There are two ways back:
+Every merge to `main` deploys to prod automatically once CI passes on `main`,
+so `main` is the source of truth for what prod should be running. (PRs don't
+have to be up to date with `main` to merge, so CI on `main` is the first run
+that tests a merge together with the ones before it. If it fails, nothing
+deploys; re-running the failed jobs deploys once they pass. Only the tip of
+`main` deploys, so a commit whose CI finishes after a newer merge's is left to
+the newer one.) There are two ways back:
 
 - **Revert the PR** — the real fix. Prod redeploys once the revert's checks
   pass. Use this unless prod is badly broken right now.
 - **Re-run the last good deploy** — the emergency stopgap while a revert's CI
-  runs. In Actions → `Prod Deploy`, find the last green run and click
-  "Re-run all jobs"; it redeploys that run's SHA. This does not change `main`,
+  runs. In Actions → `Prod Deploy`, find the last good run whose `deploy`
+  job ran (a green run can also be one that skipped deploying because its
+  commit was no longer the tip of `main`) and click "Re-run all jobs"; it
+  redeploys that run's SHA. This does not change `main`,
   so the next merge ships whatever is on `main` again — always follow up with
-  a revert.
+  a revert. GitHub only re-runs runs from the last 30 days; for anything
+  older, revert.
+
+Don't use "Re-run failed jobs" on a `Prod Deploy` run whose deploy failed
+unless its commit is still the tip of `main`. It reuses the run's original
+tip check, so it deploys that commit even after `main` has moved on and a
+newer commit is live — rolling prod back.
 
 Neither path undoes database migrations: `prisma migrate deploy` runs at
 container boot and is never rolled back, so after a rollback the old code runs
 against the new schema. This is why migrations must be backward compatible
 (expand/contract: add columns/tables in one release, remove in a later one).
 
+A deploy updates the backend first and the frontend only once the backend's
+rollout has stabilized. On a rollback that means the newer app talks to the
+older API: for a few minutes for new page loads, and until they are reloaded
+for tabs already open, since open tabs aren't reloaded on a deploy. If one of
+those tabs fails, the error page suggests a reload.
+
 Backend deploys that fail to boot or pass health checks roll themselves back
 (see `update-cluster-with-rollback`); manual rollback is for code that deploys
 healthy but is functionally broken. Confirm what prod is actually running at
 `https://doenet.org/api/health` and `https://doenet.org/version.json`.
+
+There is no way to deploy `main` to prod while CI on `main` is failing.
+`Prod Deploy` has no manual trigger, re-running a `Prod Deploy` run whose CI
+failed deploys nothing, and running CI by hand (workflow_dispatch) doesn't
+deploy either. Re-run the failed CI jobs if the failure is flaky; otherwise
+merge a fix or a revert.
+
+## Removing an API shape
+
+Open tabs keep running the build they loaded until the user reloads or opens
+a new page, and a tab left open can call the API for days. So before a PR
+removes an API route, field or behaviour that an older app build used (the
+"contract" step of expand/migrate/contract), confirm that no build still using
+it is calling.
+
+Each API request's `perf.request` log line records the app build that sent it
+(`clientBuild`, from the `X-Client-Build` header). In CloudWatch Logs Insights,
+on the prod log group, over the last 7 days:
+
+```text
+fields @timestamp
+| filter type = 'perf.request'
+| stats count(*) as requests, max(@timestamp) as lastSeen by clientBuild
+| sort lastSeen desc
+```
+
+Every build listed must already include the change that stopped using the old
+shape: `git merge-base --is-ancestor <that commit> <clientBuild>` succeeds. A
+row with an empty `clientBuild` is a request without the header: from a build
+older than the header itself, from something other than the app, or from the
+browser itself loading an `/api` URL, which no build sends the header on
+(signing in with Google and signing out do this). So that row never goes away;
+to see what is in it, add `route` to the `by` clause.
