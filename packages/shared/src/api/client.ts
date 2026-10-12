@@ -34,13 +34,21 @@ type BodyParams<K extends OperationName> = operations[K] extends {
   ? B
   : object;
 
-/**
- * Everything an operation accepts, as one object: path parameters, query
- * parameters and body fields together, as the server reads them.
- */
-export type OperationParams<K extends OperationName> = Simplify<
+type AllParams<K extends OperationName> = Simplify<
   PathParams<K> & QueryParams<K> & BodyParams<K>
 >;
+
+/**
+ * Everything an operation accepts, as one object: path parameters, query
+ * parameters and body fields together, as the server reads them. For an
+ * operation that takes none it is `Record<string, never>` rather than `{}`,
+ * which would accept any object, e.g. options passed in the params slot.
+ */
+export type OperationParams<K extends OperationName> = [
+  keyof AllParams<K>,
+] extends [never]
+  ? Record<string, never>
+  : AllParams<K>;
 
 /** The JSON body of an operation's successful response (`void` if none). */
 export type OperationResponse<K extends OperationName> =
@@ -52,7 +60,7 @@ export type OperationResponse<K extends OperationName> =
 
 /** Arguments after the operation name: `params` may be omitted if empty. */
 export type OperationArgs<K extends OperationName> =
-  object extends OperationParams<K>
+  Record<string, never> extends OperationParams<K>
     ? [params?: OperationParams<K>]
     : [params: OperationParams<K>];
 
