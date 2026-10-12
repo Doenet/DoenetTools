@@ -49,9 +49,10 @@ dependencies, and seeds the database. After that the dev servers start on
 their own, in the background, every time the container starts, and the app
 opens in a browser tab when it is listening. Their output goes to
 `/tmp/dev.log`: `tail -f /tmp/dev.log` shows the auto-login link, which already
-points at a codespace's forwarded address. To run them in a terminal instead,
-stop them with `kill -- -$(cat /tmp/dev.pid)`, then use **Terminal → Run Build Task**
-(Ctrl/Cmd+Shift+B). Git,
+points at a codespace's forwarded address. Stop them with
+`kill -- -$(cat /tmp/dev.pid)`; `bash .devcontainer/start-dev.sh` starts them
+again in the background, or **Terminal → Run Build Task** (Ctrl/Cmd+Shift+B)
+runs them in a terminal. Git,
 `gh`, and Claude Code all work inside with your own identity and credentials,
 which the editor forwards.
 
