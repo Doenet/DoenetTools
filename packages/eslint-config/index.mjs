@@ -89,7 +89,10 @@ export function createBaseConfig(dirname) {
               "**/*.cy.tsx",
               "**/test/**",
               "**/__tests__/**",
-              "**/scripts/**",
+              // The contract generator runs only in dev. Other scripts can run
+              // in the prod image (`node dist/scripts/...`), which has no
+              // devDependencies.
+              "**/scripts/contract/**",
               "**/cypress/**",
               "cypress.config.ts",
             ],
