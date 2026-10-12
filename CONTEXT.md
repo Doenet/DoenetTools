@@ -84,7 +84,7 @@ A model or field marked with Prisma's `@ignore`: the column stays in the databas
 
 - The **API contract** lists the **Covered operations**; each one is either **Internal** or **External**
 - Every new **Operation** is a **Covered operation**; the number of uncovered ones may only go down
-- A **Stale client** may still call **Operations** that newer code has changed; it picks up the latest build on its next navigation
+- A **Stale client** may still call **Operations** that newer code has changed; it keeps running until the user reloads or opens a new page
 - A **Breaking change** or **Destructive migration** is the second of two PRs: the first adds the replacement and migrates every caller
 - An **External operation** never becomes safe to remove by migrating our own callers
 

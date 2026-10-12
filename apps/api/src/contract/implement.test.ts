@@ -117,3 +117,16 @@ describe("operationsRouter", () => {
     vi.unstubAllEnvs();
   });
 });
+
+// Type-level: checked by `tsc` (the build), not at runtime.
+describe("implement", () => {
+  test("a handler returning the wrong shape does not compile", () => {
+    // @ts-expect-error `count` must be a number
+    implement(broken, async () => ({ count: "many" }));
+    // @ts-expect-error `count` is required
+    implement(broken, async () => ({}));
+    // A UUID as bytes or a Date may stand in for a string.
+    implement(echo, async () => ({ id: new Uint8Array(16), times: 1 }));
+    implement(echo, async () => ({ id: new Date(), times: 1 }));
+  });
+});

@@ -19,10 +19,10 @@ Outside production, a response that doesn't match its schema returns 500; in pro
 
 ## Expand-Migrate-Contract
 
-Every merge deploys, and the app builds already open in browsers keep calling the API the way they were built to (they switch to the new build on their next navigation after a deploy). Backend tasks running the previous code keep serving while migrations run. So a change that removes or narrows something takes two PRs:
+Every merge deploys, and the app builds already open in browsers keep calling the API the way they were built to (until the user reloads or opens a new page, which can be days). Backend tasks running the previous code keep serving while migrations run. So a change that removes or narrows something takes two PRs:
 
 1. **Expand + migrate:** add the replacement, and move every caller to it. Removing something from the contract stops its callers compiling, so the type checker finds them all.
-2. **Contract**, once (1) has been deployed for at least a day: remove the old shape.
+2. **Contract**, once nothing running still uses the old shape: remove it. For the API, check that no app build still using it is calling (`infra/README.md`, "Removing an API shape"); for the database, (1) must be deployed.
 
 Terms are in `CONTEXT.md`; background in `docs/adr/0003-expand-migrate-contract.md`.
 
