@@ -8063,6 +8063,63 @@ describe("countMatchingContentByCategory", () => {
     expect(sawCurated).eq(true);
   });
 
+  test("excludes deleted content and content the viewer can't see", async () => {
+    const { userId: viewerId } = await createTestUser();
+    const { userId: otherId } = await createTestUser();
+    const { userId: ownerId } = await createTestUser();
+    const code = Date.now().toString();
+
+    const [publicId, privateId, deletedId, sharedId] = await setupTestContent(
+      ownerId,
+      {
+        [`vis${code}1`]: doc(""),
+        [`vis${code}2`]: doc(""),
+        [`vis${code}3`]: doc(""),
+        [`vis${code}4`]: doc(""),
+      },
+    );
+    for (const contentId of [publicId, privateId, deletedId, sharedId]) {
+      await updateCategories({
+        contentId,
+        loggedInUserId: ownerId,
+        categories: { isInteractive: true },
+      });
+    }
+    for (const contentId of [publicId, deletedId]) {
+      await setContentIsPublic({
+        contentId,
+        loggedInUserId: ownerId,
+        isPublic: true,
+      });
+    }
+    await deleteContent({ contentId: deletedId, loggedInUserId: ownerId });
+    await modifyContentSharedWith({
+      action: "share",
+      contentId: sharedId,
+      loggedInUserId: ownerId,
+      users: [viewerId],
+    });
+
+    // The viewer sees the public and the shared activity; another user sees
+    // only the public one. Neither sees the private or the deleted activity.
+    for (const [loggedInUserId, numVisible] of [
+      [viewerId, 2],
+      [otherId, 1],
+    ] as const) {
+      for (const filters of [{ ownerId }, { query: `vis${code}` }]) {
+        const counts = await countMatchingContentByCategory({
+          loggedInUserId,
+          ...filters,
+        });
+        expect(counts.isInteractive).eqls({
+          numCommunity: numVisible,
+          numCurated: 0,
+        });
+        expect(counts.containsVideo).eqls({ numCommunity: 0, numCurated: 0 });
+      }
+    }
+  });
+
   test("counts per category for a single owner without query", async () => {
     const { userId: viewerId } = await createTestUser();
     const { userId: ownerId } = await createTestUser();
