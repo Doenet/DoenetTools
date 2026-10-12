@@ -1,6 +1,7 @@
 import { Container, Button, Heading, Text } from "@chakra-ui/react";
 
 import { useNavigate, useRouteError } from "react-router";
+import { ApiError } from "../api/client";
 
 import { OutdatedBuildNotice } from "../components/OutdatedBuildNotice";
 
@@ -32,13 +33,13 @@ function ErrorPage({ build }: { build?: string } = {}) {
   const error: any = useRouteError();
   console.error(error);
 
+  // `api()` throws `ApiError`; raw axios calls throw an `AxiosError`.
+  const status: number | undefined =
+    error instanceof ApiError ? error.status : error.response?.status;
+
   let errorDescription;
 
-  if (
-    !error.response ||
-    error.response.status === 404 ||
-    error.response.status === 403
-  ) {
+  if (status === undefined || status === 404 || status === 403) {
     errorDescription = (
       <Text>
         We are very sorry for the inconvenience. It looks like you&apos;re

@@ -1,9 +1,24 @@
-import { ContentType, UserInfo } from "@doenet-tools/shared";
+import {
+  ContentType,
+  OperationArgs,
+  OperationName,
+  OperationResponse,
+  UserInfo,
+} from "@doenet-tools/shared";
 import type { AllowedApiError } from "./apiErrors";
 
 declare global {
   namespace Cypress {
     interface Chainable {
+      /**
+       * Call an API operation by name, typed from the API contract.
+       * Yields the response body. Use this instead of `cy.request` to `/api`.
+       */
+      api<K extends OperationName>(
+        name: K,
+        ...args: OperationArgs<K>
+      ): Chainable<OperationResponse<K>>;
+
       /**
        * Declare API error responses that this test expects, so they don't
        * fail the test. See `support/apiErrors.ts`.

@@ -9,6 +9,9 @@
     "apps/*",
     "packages/*"
   ],
+  "scarfSettings": {
+    "enabled": false
+  },
   "lint-staged": {
     "**/*.{ts,tsx,js,jsx,json,css,md,mdx,yaml,yml,astro}": "prettier --write"
   },
