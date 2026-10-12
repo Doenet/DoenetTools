@@ -16,7 +16,8 @@ import { apiOperations } from "../apiOperations";
 /**
  * Ratchet: every `/api` route must be in the API contract, except those
  * listed in `contract-uncovered.json`. The list may only shrink: a listed
- * route that is now covered (or gone) must be removed from it.
+ * route that is now covered (or gone) must be removed from it. Adding an
+ * entry is not detected here; it shows only in the diff, for review.
  */
 
 const UNCOVERED_PATH = path.resolve(__dirname, "../../contract-uncovered.json");
@@ -108,7 +109,7 @@ describe("API contract coverage", () => {
     ).toEqual([]);
   });
 
-  test("contract-uncovered.json only lists uncovered routes (it may only shrink)", () => {
+  test("contract-uncovered.json lists no covered or missing route", () => {
     const covered = coveredRoutes();
     const all = new Set(allApiRoutes());
     const listed: string[] = JSON.parse(

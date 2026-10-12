@@ -13,7 +13,7 @@ To add or change an operation:
 3. Run `npm run contract:generate --workspace @doenet-tools/api` and commit the generated files.
 4. Call it from the app with `api("name", params)` or `submitOperation(fetcher, "name", params)`, and from e2e tests with `cy.api("name", params)`.
 
-Routes listed in `contract-uncovered.json` predate the contract and still use the `queryLoggedIn`/`queryOptionalLoggedIn` wrappers. Bring a route into the contract before changing its inputs or outputs, then remove it from that list. Tests fail on any new route outside the contract.
+Routes listed in `contract-uncovered.json` predate the contract and still use the `queryLoggedIn`/`queryOptionalLoggedIn` wrappers. Bring a route into the contract before changing its inputs or outputs, then remove it from that list. Tests fail on a route that is in neither the contract nor that list, and on a listed route that is now covered or gone. Nothing but review stops a new route being added to the list, so don't.
 
 Outside production, a response that doesn't match its schema returns 500; in production it is logged.
 
