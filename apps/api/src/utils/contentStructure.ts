@@ -9,7 +9,6 @@ import {
   UserInfo,
   ContentBase,
   AssignmentInfo,
-  DoenetmlVersion,
   UserInfoWithEmail,
   Visibility,
 } from "../types";
@@ -439,10 +438,15 @@ export function processClassifications(
   );
 }
 
-export function processContent(
+/**
+ * Process content selected with `returnContentSelect` or
+ * `returnContentCardSelect` into a `ContentCard`: everything except the
+ * DoenetML source of documents. `processContent` adds the source.
+ */
+export function processContentCard(
   preliminaryContent: PreliminaryContent,
   forUserId?: Uint8Array,
-): Content {
+): ContentCard {
   const {
     id,
     type,
@@ -463,8 +467,8 @@ export function processContent(
     assignmentClosedOn,
     _count,
 
-    // from doc select
-    source: sourceOrig,
+    // from doc select (`processContent` adds the source)
+    source: _source,
     numVariants: numVariantsOrig,
     doenetmlVersion: doenetmlVersionOrig,
 
@@ -529,32 +533,15 @@ export function processContent(
 
   switch (type) {
     case "singleDoc": {
-      let docInfo: {
-        doenetML: string;
-        numVariants: number;
-        doenetmlVersion: DoenetmlVersion;
-        revisionNum?: number;
-        repeatInProblemSet?: number;
-      };
-
-      if (
-        sourceOrig != null &&
-        numVariantsOrig !== undefined &&
-        doenetmlVersionOrig != null
-      ) {
-        docInfo = {
-          doenetML: sourceOrig,
-          numVariants: numVariantsOrig,
-          doenetmlVersion: doenetmlVersionOrig,
-          repeatInProblemSet,
-        };
-      } else {
+      if (numVariantsOrig === undefined || doenetmlVersionOrig == null) {
         throw new InvalidRequestError("Invalid document");
       }
 
       return {
         type: "singleDoc",
-        ...docInfo,
+        numVariants: numVariantsOrig,
+        doenetmlVersion: doenetmlVersionOrig,
+        repeatInProblemSet,
         ...baseContent,
       };
     }
@@ -607,22 +594,21 @@ export function processContent(
 }
 
 /**
- * Like `processContent`, but for content selected with `returnContentCardSelect`,
- * so documents come back without `doenetML`.
+ * Process content selected with `returnContentSelect` into `Content`: the
+ * `ContentCard` plus, for documents, the DoenetML source.
  */
-export function processContentCard(
+export function processContent(
   preliminaryContent: PreliminaryContent,
   forUserId?: Uint8Array,
-): ContentCard {
-  const content = processContent(
-    { ...preliminaryContent, source: "" },
-    forUserId,
-  );
-  if (content.type === "singleDoc") {
-    const { doenetML: _doenetML, ...card } = content;
-    return card;
+): Content {
+  const card = processContentCard(preliminaryContent, forUserId);
+  if (card.type === "singleDoc") {
+    if (preliminaryContent.source == null) {
+      throw new InvalidRequestError("Invalid document");
+    }
+    return { ...card, doenetML: preliminaryContent.source };
   }
-  return content;
+  return card;
 }
 
 /**
