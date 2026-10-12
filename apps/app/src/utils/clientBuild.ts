@@ -22,9 +22,9 @@ export const CLIENT_BUILD = import.meta.env.VITE_COMMIT_SHA as
   | undefined;
 
 /**
- * Add `X-Client-Build` to requests to our own `/api`. Only those: the app also
- * sends files straight to S3, where a custom header would force a CORS
- * preflight the bucket isn't set up for.
+ * Add `X-Client-Build` to requests to our own `/api`, whose request log is the
+ * only reader. Not to other origins, such as the presigned PUTs that upload
+ * files straight to S3.
  */
 export function sendClientBuild(
   instance: AxiosInstance = axios,
