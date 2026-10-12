@@ -15,6 +15,7 @@ import { PartialContentClassification, UserInfo } from "../types";
 import { getClassificationInfo } from "./classification";
 import { getAllCategories } from "../categories";
 import { getAuthorInfo } from "./user";
+import { CategoryGroup } from "@doenet-tools/shared";
 
 function returnExploreVisibilityWhere(loggedInUserId: Uint8Array) {
   return {
@@ -1991,6 +1992,30 @@ export async function countMatchingContentByCategory({
   return matchesPerCategory;
 }
 
+/**
+ * Keep only the entries of `names` that are category codes.
+ *
+ * The Explore page sends the names of all its URL search parameters as
+ * `categories`, rather than first fetching the categories to find out which
+ * names are category codes. (It then gets the categories in the response.)
+ */
+function keepCategoryCodes(
+  names: Set<string> | undefined,
+  allCategories: CategoryGroup[],
+) {
+  const codes = new Set<string>();
+  if (names) {
+    for (const categoryGroup of allCategories) {
+      for (const category of categoryGroup.categories) {
+        if (names.has(category.code)) {
+          codes.add(category.code);
+        }
+      }
+    }
+  }
+  return codes;
+}
+
 export async function searchExplore({
   loggedInUserId = new Uint8Array(16),
   query,
@@ -2018,6 +2043,9 @@ export async function searchExplore({
     subCategoryId === undefined &&
     categoryId === undefined &&
     systemId === undefined;
+
+  const { allCategories } = await getAllCategories();
+  categories = keepCategoryCodes(categories, allCategories);
 
   const topAuthorsPromise = ownerId
     ? new Promise((resolve, _) => resolve(null))
@@ -2259,6 +2287,7 @@ export async function searchExplore({
     classificationInfo,
     totalCount,
     countByCategory,
+    allCategories,
   };
 }
 
@@ -2287,6 +2316,9 @@ export async function browseExplore({
     subCategoryId === undefined &&
     categoryId === undefined &&
     systemId === undefined;
+
+  const { allCategories } = await getAllCategories();
+  categories = keepCategoryCodes(categories, allCategories);
 
   const topAuthorsPromise = ownerId
     ? new Promise((resolve, _) => resolve(null))
@@ -2472,5 +2504,6 @@ export async function browseExplore({
     classificationInfo,
     totalCount,
     countByCategory,
+    allCategories,
   };
 }
