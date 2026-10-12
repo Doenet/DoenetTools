@@ -20,27 +20,17 @@ import { getAllCategories } from "../categories";
 import { getAllLicenses } from "./license";
 import { InvalidRequestError } from "../utils/error";
 
-// The library account never changes, so look it up once per process.
-let libraryAccountIdPromise: Promise<Uint8Array> | null = null;
-
 export async function getLibraryAccountId() {
-  if (libraryAccountIdPromise === null) {
-    libraryAccountIdPromise = prisma.users
-      .findFirstOrThrow({
-        where: {
-          isLibrary: true,
-        },
-        select: {
-          userId: true,
-        },
-      })
-      .then((library) => library.userId);
-    // Don't cache a failed lookup
-    libraryAccountIdPromise.catch(() => {
-      libraryAccountIdPromise = null;
-    });
-  }
-  return libraryAccountIdPromise;
+  const library = await prisma.users.findFirstOrThrow({
+    where: {
+      isLibrary: true,
+    },
+    select: {
+      userId: true,
+    },
+  });
+  const libraryId = library!.userId;
+  return libraryId;
 }
 
 /**

@@ -15,7 +15,7 @@ import {
   returnContentSelect,
 } from "../utils/contentStructure";
 import { fromUUID } from "../utils/uuid";
-import { applyLibraryMask, getLibraryAccountId } from "./curate";
+import { applyLibraryMask } from "./curate";
 import { PartialContentClassification, UserInfo } from "../types";
 import { getClassificationInfo } from "./classification";
 import { getAllCategories } from "../categories";
@@ -298,8 +298,6 @@ export async function browseTrendingContent({
   const includeSubCategory = matchSubCategory;
   const includeCategory = matchCategory;
 
-  const libraryId = await getLibraryAccountId();
-
   const matches = await prisma.$queryRaw<
     {
       id: Uint8Array;
@@ -320,7 +318,7 @@ export async function browseTrendingContent({
     contentViews ON contentViews.contentId = content.id
   WHERE
     content.isDeletedOn IS NULL
-    AND content.ownerId <> ${libraryId}
+    AND users.isLibrary = FALSE
     AND (
        ${returnExploreVisibilityWhereClause(loggedInUserId)}
     )
@@ -383,8 +381,6 @@ export async function searchUsersWithSharedContent({
 }) {
   const pageSize = 100;
 
-  const libraryId = await getLibraryAccountId();
-
   const query_as_prefixes = sanitizeQuery(query);
 
   const includeClassification =
@@ -409,7 +405,7 @@ export async function searchUsersWithSharedContent({
     users
   WHERE
     users.isAnonymous = FALSE
-    AND users.userId <> ${libraryId}
+    AND users.isLibrary = FALSE
     AND users.userId IN (
       SELECT ownerId 
         FROM content 
