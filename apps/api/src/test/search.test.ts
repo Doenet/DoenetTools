@@ -32,7 +32,7 @@ import {
 } from "../query/explore";
 import { searchMyContent } from "../query/content_list";
 import { updateUser } from "../query/user";
-import { Content } from "../types";
+import { ContentCard } from "../types";
 import { updateVisibility } from "../access";
 
 describe("searchSharedContent Tests", function () {
@@ -1284,7 +1284,7 @@ describe("searchSharedContent Tests", function () {
       isPublic: true,
     });
 
-    const testIds = function (results: Content[]) {
+    const testIds = function (results: ContentCard[]) {
       return results
         .map((c) => c.contentId)
         .filter(

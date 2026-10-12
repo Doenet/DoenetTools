@@ -12,4 +12,40 @@ export default tseslint.config(
       "react/no-unescaped-entities": "off", // Allow apostrophes and quotes in text
     },
   },
+  // Talk to /api only through the typed client in src/api/client.ts, so
+  // every call is checked against the API contract. Existing untyped calls
+  // are recorded in eslint-suppressions.json; that list may only shrink.
+  // src/utils/clientBuild.ts is exempt: it adds a header to every axios
+  // request, including the typed client's.
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    ignores: [
+      "src/api/client.ts",
+      "src/utils/clientBuild.ts",
+      "src/**/*.cy.{ts,tsx}",
+    ],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "axios",
+              message:
+                'Call the API with api("operationName", params) from src/api/client.ts. If the route is not in the API contract yet, add it first.',
+            },
+          ],
+        },
+      ],
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector:
+            "CallExpression[callee.name='fetch'] > :first-child[value=/^\\/api/], CallExpression[callee.name='fetch'] > TemplateLiteral:first-child[quasis.0.value.raw=/^\\/api/]",
+          message:
+            'Call the API with api("operationName", params) from src/api/client.ts.',
+        },
+      ],
+    },
+  },
 );

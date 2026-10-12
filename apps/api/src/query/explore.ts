@@ -8,9 +8,14 @@ import {
   returnCategoryJoins,
   returnCategoryWhereClauses,
 } from "../utils/classificationsCategories";
-import { processContent, returnContentSelect } from "../utils/contentStructure";
+import {
+  processContent,
+  processContentCard,
+  returnContentCardSelect,
+  returnContentSelect,
+} from "../utils/contentStructure";
 import { fromUUID } from "../utils/uuid";
-import { getLibraryAccountId, maskLibraryUserInfo } from "./curate";
+import { applyLibraryMask } from "./curate";
 import { PartialContentClassification, UserInfo } from "../types";
 import { getClassificationInfo } from "./classification";
 import { getAllCategories } from "../categories";
@@ -36,6 +41,53 @@ function returnExploreVisibilityWhereClause(loggedInUserId: Uint8Array) {
     content.visibility = 'public'
     OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
   `;
+}
+
+/**
+ * Select for the content on Explore cards. Omits the DoenetML source and the
+ * classifications, which the cards never display, and includes the owner of
+ * the source of curated content, which is shown in place of the library account.
+ * Process the results with `processExploreCard`.
+ */
+function returnExploreCardSelect() {
+  return {
+    ...returnContentCardSelect({ includeOwnerDetails: true }),
+    libraryActivityInfo: {
+      select: {
+        source: {
+          select: {
+            owner: {
+              select: {
+                userId: true,
+                firstNames: true,
+                lastNames: true,
+              },
+            },
+          },
+        },
+      },
+    },
+  };
+}
+
+function processExploreCard(
+  {
+    libraryActivityInfo,
+    ...preliminaryContent
+  }: Parameters<typeof processContentCard>[0] & {
+    libraryActivityInfo: { source: { owner: UserInfo } } | null;
+  },
+  loggedInUserId: Uint8Array,
+) {
+  const card = processContentCard(preliminaryContent, loggedInUserId);
+  if (libraryActivityInfo) {
+    // Curated content: show the owner of the source rather than the library
+    card.owner = applyLibraryMask({
+      owner: card.owner!,
+      sourceOwner: libraryActivityInfo.source.owner,
+    });
+  }
+  return card;
 }
 
 export async function searchSharedContent({
@@ -124,10 +176,7 @@ export async function searchSharedContent({
     where: {
       id: { in: matches.map((m) => m.id) },
     },
-    select: returnContentSelect({
-      includeOwnerDetails: true,
-      includeClassifications: true,
-    }),
+    select: returnExploreCardSelect(),
   });
 
   // TODO: better way to sort! (For free if combine queries)
@@ -138,7 +187,7 @@ export async function searchSharedContent({
   const sharedContent = preliminarySharedContent
     .sort((a, b) => relevance[fromUUID(b.id)] - relevance[fromUUID(a.id)])
     //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
-    .map((content) => processContent(content, loggedInUserId));
+    .map((content) => processExploreCard(content, loggedInUserId));
 
   return sharedContent;
 }
@@ -209,10 +258,7 @@ export async function browseSharedContent({
       ownerId,
       classifications: classificationsFilter,
     },
-    select: returnContentSelect({
-      includeOwnerDetails: true,
-      includeClassifications: true,
-    }),
+    select: returnExploreCardSelect(),
     orderBy: { createdAt: "desc" },
     take: pageSize,
     skip: (page - 1) * pageSize,
@@ -220,7 +266,7 @@ export async function browseSharedContent({
 
   const sharedContent = preliminarySharedContent.map((content) =>
     //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
-    processContent(content, loggedInUserId),
+    processExploreCard(content, loggedInUserId),
   );
 
   return sharedContent;
@@ -258,8 +304,6 @@ export async function browseTrendingContent({
   const includeSubCategory = matchSubCategory;
   const includeCategory = matchCategory;
 
-  const libraryId = await getLibraryAccountId();
-
   const matches = await prisma.$queryRaw<
     {
       id: Uint8Array;
@@ -280,7 +324,7 @@ export async function browseTrendingContent({
     contentViews ON contentViews.contentId = content.id
   WHERE
     content.isDeletedOn IS NULL
-    AND content.ownerId <> ${libraryId}
+    AND users.isLibrary = FALSE
     AND (
        ${returnExploreVisibilityWhereClause(loggedInUserId)}
     )
@@ -301,7 +345,7 @@ export async function browseTrendingContent({
     where: {
       id: { in: matches.map((m) => m.id) },
     },
-    select: returnContentSelect({ includeOwnerDetails: true }),
+    select: returnExploreCardSelect(),
     orderBy: { createdAt: "desc" },
   });
 
@@ -315,7 +359,7 @@ export async function browseTrendingContent({
   const sharedContent = preliminarySharedContent
     .sort((a, b) => numViews[fromUUID(b.id)] - numViews[fromUUID(a.id)])
     //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
-    .map((content) => processContent(content, loggedInUserId));
+    .map((content) => processExploreCard(content, loggedInUserId));
 
   return sharedContent;
 }
@@ -343,8 +387,6 @@ export async function searchUsersWithSharedContent({
 }) {
   const pageSize = 100;
 
-  const libraryId = await getLibraryAccountId();
-
   const query_as_prefixes = sanitizeQuery(query);
 
   const includeClassification =
@@ -369,7 +411,7 @@ export async function searchUsersWithSharedContent({
     users
   WHERE
     users.isAnonymous = FALSE
-    AND users.userId <> ${libraryId}
+    AND users.isLibrary = FALSE
     AND users.userId IN (
       SELECT ownerId 
         FROM content 
@@ -2238,17 +2280,6 @@ export async function searchExplore({
     countByCategoryPromise,
   ]);
 
-  // Replace library owner info with source owner info
-  const curatedSourceUsers = await Promise.all(
-    curatedContent.map(
-      async (c) =>
-        await maskLibraryUserInfo({ contentId: c.contentId, owner: c.owner! }),
-    ),
-  );
-  for (let i = 0; i < curatedContent.length; i++) {
-    curatedContent[i].owner = curatedSourceUsers[i];
-  }
-
   return {
     topAuthors,
     matchedAuthors,
@@ -2453,17 +2484,6 @@ export async function browseExplore({
     totalCountPromise,
     countByCategoryPromise,
   ]);
-
-  // Replace library owner info with source owner info
-  const curatedSourceUsers = await Promise.all(
-    curatedContent.map(
-      async (c) =>
-        await maskLibraryUserInfo({ contentId: c.contentId, owner: c.owner! }),
-    ),
-  );
-  for (let i = 0; i < curatedContent.length; i++) {
-    curatedContent[i].owner = curatedSourceUsers[i];
-  }
 
   return {
     topAuthors,

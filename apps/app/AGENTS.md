@@ -8,9 +8,9 @@ All routes are defined in `src/index.tsx` via `createBrowserRouter`. Each route 
 
 ## Mutation Pattern
 
-Most mutations go through **`genericAction`** in `src/index.tsx`: reads `{ path, ...body }` from the request JSON and calls `axios.post('/api/${path}', body)`, optionally redirecting on success. All API calls use **axios** to relative `/api/` paths.
+Call the API through the typed client in `src/api/`: `api("operationName", params)` in loaders, and `submitOperation(fetcher, "operationName", params, { redirectOnSuccess })` for mutations, which go through **`genericAction`** in `src/index.tsx` so loaders revalidate. Params and responses are typed from the API contract. Routes not yet in the contract are still called with raw `axios` or `{ path, ...body }` submissions to `genericAction`; the files that import `axios` for this are recorded in `eslint-suppressions.json`, which may only shrink.
 
-Keep it that way: make API calls with the default `axios` import and a relative `/api/...` url. Only those carry the `X-Client-Build` header (`sendClientBuild` in `src/utils/clientBuild.ts`), which the API logs so that, before an API shape is removed, we can check no build that uses it is still calling (`infra/README.md`, "Removing an API shape"). A `fetch`, an `axios.create()` instance or an absolute url goes without it.
+The typed client and those remaining raw calls use the default `axios` import and a relative `/api/...` url; keep it that way. Only such requests carry the `X-Client-Build` header (`sendClientBuild` in `src/utils/clientBuild.ts`), which the API logs so that, before an API shape is removed, we can check no build that uses it is still calling (`infra/README.md`, "Removing an API shape"). A `fetch`, an `axios.create()` instance or an absolute url goes without it.
 
 ## DoenetML
 

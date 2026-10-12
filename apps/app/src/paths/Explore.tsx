@@ -36,7 +36,7 @@ import Searchbar from "../widgets/SearchBar";
 import { Form, useFetcher } from "react-router";
 import { CardContent } from "../widgets/Card";
 import { createNameNoTag, createNameCheckCurateTag } from "../utils/names";
-import { Content, UserInfo, PartialContentClassification } from "../types";
+import { ContentCard, UserInfo, PartialContentClassification } from "../types";
 import { CategoryGroup } from "@doenet-tools/shared";
 import CardList from "../widgets/CardList";
 import { intWithCommas } from "../utils/formatting";
@@ -167,10 +167,10 @@ export function Explore() {
     topAuthors: UserInfo[] | null;
     matchedAuthors: UserInfo[] | undefined;
     authorInfo: UserInfo | null;
-    recentContent?: Content[];
-    trendingContent?: Content[];
-    curatedContent?: Content[];
-    searchedContent?: Content[];
+    recentContent?: ContentCard[];
+    trendingContent?: ContentCard[];
+    curatedContent?: ContentCard[];
+    searchedContent?: ContentCard[];
     matchedClassifications: PartialContentClassification[] | null | undefined;
     matchedSubCategories: PartialContentClassification[] | null | undefined;
     matchedCategories: PartialContentClassification[] | null | undefined;
@@ -204,7 +204,7 @@ export function Explore() {
   const createContentMenuCreateFetcher = useFetcher();
   const createContentMenuSaveNameFetcher = useFetcher();
 
-  const allContent: Content[] = useMemo(
+  const allContent: ContentCard[] = useMemo(
     () => [
       ...(recentContent ?? []),
       ...(trendingContent ?? []),
@@ -221,7 +221,7 @@ export function Explore() {
 
   const cardSelections = useCardSelections({ ids: allContentIds });
 
-  const selectedContentDescriptions: Content[] = [];
+  const selectedContentDescriptions: ContentCard[] = [];
   const seenContentIds = new Set<string>();
   for (const content of allContent) {
     if (
@@ -942,7 +942,7 @@ export function Explore() {
   );
 }
 
-function toCardContent(matches: Content[]): CardContent[] {
+function toCardContent(matches: ContentCard[]): CardContent[] {
   return matches.map((itemObj) => {
     const { contentId, owner, type: contentType } = itemObj;
     const cardLink = contentViewerUrl(contentType, contentId, owner?.userId);

@@ -236,6 +236,12 @@ export type Activity = Doc | QuestionBank | ProblemSet;
 
 export type Content = Doc | QuestionBank | ProblemSet | Folder | ImageItem;
 
+/**
+ * `Content` as shown on a card (e.g., on Explore): documents omit their
+ * DoenetML source, which can be large and which cards never display.
+ */
+export type ContentCard = Exclude<Content, Doc> | Omit<Doc, "doenetML">;
+
 export type AssignmentInfo = {
   assignmentStatus: AssignmentStatus;
   classCode: number | null;

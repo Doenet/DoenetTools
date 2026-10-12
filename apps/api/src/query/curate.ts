@@ -104,17 +104,39 @@ export async function maskLibraryUserInfo({
       },
     });
 
-    const maskInfo = user.libraryActivityInfo!.source.owner;
-    const newOwner = {
-      ...owner,
-      // Mask info replaces original user info
-      ...maskInfo,
-      isMaskForLibrary: true,
-    };
-    return newOwner;
+    return applyLibraryMask({
+      owner,
+      sourceOwner: user.libraryActivityInfo!.source.owner,
+    });
   } else {
     return owner;
   }
+}
+
+/**
+ * Replace the library account's info in `owner` with the info of `sourceOwner`,
+ * the owner of the content the library activity was curated from.
+ *
+ * Use this instead of `maskLibraryUserInfo` when the source owner was already
+ * selected along with the content.
+ *
+ * Unlike `maskLibraryUserInfo`, this does not check that `owner` is actually the
+ * library account: it always masks. Call it only for content known to be a
+ * library activity, e.g., content with a `libraryActivityInfo` record.
+ */
+export function applyLibraryMask({
+  owner,
+  sourceOwner,
+}: {
+  owner: UserInfo;
+  sourceOwner: UserInfo;
+}): UserInfo {
+  return {
+    ...owner,
+    // Mask info replaces original user info
+    ...sourceOwner,
+    isMaskForLibrary: true,
+  };
 }
 
 /**
