@@ -36,7 +36,7 @@ import Searchbar from "../widgets/SearchBar";
 import { Form, useFetcher } from "react-router";
 import { CardContent } from "../widgets/Card";
 import { createNameNoTag, createNameCheckCurateTag } from "../utils/names";
-import { Content, UserInfo, PartialContentClassification } from "../types";
+import { ContentCard, UserInfo, PartialContentClassification } from "../types";
 import { CategoryGroup } from "@doenet-tools/shared";
 import CardList from "../widgets/CardList";
 import { intWithCommas } from "../utils/formatting";
@@ -167,10 +167,10 @@ export function Explore() {
     topAuthors: UserInfo[] | null;
     matchedAuthors: UserInfo[] | undefined;
     authorInfo: UserInfo | null;
-    recentContent?: Content[];
-    trendingContent?: Content[];
-    curatedContent?: Content[];
-    searchedContent?: Content[];
+    recentContent?: ContentCard[];
+    trendingContent?: ContentCard[];
+    curatedContent?: ContentCard[];
+    searchedContent?: ContentCard[];
     matchedClassifications: PartialContentClassification[] | null | undefined;
     matchedSubCategories: PartialContentClassification[] | null | undefined;
     matchedCategories: PartialContentClassification[] | null | undefined;
@@ -204,7 +204,7 @@ export function Explore() {
   const createContentMenuCreateFetcher = useFetcher();
   const createContentMenuSaveNameFetcher = useFetcher();
 
-  const allContent: Content[] = [
+  const allContent: ContentCard[] = [
     ...(recentContent ?? []),
     ...(trendingContent ?? []),
     ...(curatedContent ?? []),
@@ -215,7 +215,7 @@ export function Explore() {
     ids: allContent.map((c) => c.contentId),
   });
 
-  const selectedContentDescriptions: Content[] = [];
+  const selectedContentDescriptions: ContentCard[] = [];
   const seenContentIds = new Set<string>();
   for (const content of allContent) {
     if (
@@ -334,7 +334,7 @@ export function Explore() {
   // TODO: figure out functions inside hooks
   // eslint-disable-next-line react-hooks/exhaustive-deps
   function displayMatchingContent(
-    matches: Content[],
+    matches: ContentCard[],
     minHeight?: string | { base: string; lg: string },
   ) {
     const cardContent: CardContent[] = matches.map((itemObj) => {

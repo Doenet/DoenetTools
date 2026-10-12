@@ -3,12 +3,12 @@ import {
   AssignmentStatus,
   ContentClassification,
   Content,
+  ContentCard,
   License,
   LicenseCode,
   UserInfo,
   ContentBase,
   AssignmentInfo,
-  DoenetmlVersion,
   UserInfoWithEmail,
   Visibility,
 } from "../types";
@@ -282,6 +282,18 @@ export function returnContentSelect({
   };
 }
 
+/**
+ * Like `returnContentSelect`, but without the DoenetML `source` of documents,
+ * for lists of cards that never display it. Process the results with
+ * `processContentCard`.
+ */
+export function returnContentCardSelect(
+  options: Parameters<typeof returnContentSelect>[0],
+) {
+  const { source: _source, ...select } = returnContentSelect(options);
+  return select;
+}
+
 type PreliminaryLicense = {
   composedOf: {
     composedOf: {
@@ -426,10 +438,15 @@ export function processClassifications(
   );
 }
 
-export function processContent(
+/**
+ * Process content selected with `returnContentSelect` or
+ * `returnContentCardSelect` into a `ContentCard`: everything except the
+ * DoenetML source of documents. `processContent` adds the source.
+ */
+export function processContentCard(
   preliminaryContent: PreliminaryContent,
   forUserId?: Uint8Array,
-): Content {
+): ContentCard {
   const {
     id,
     type,
@@ -450,8 +467,8 @@ export function processContent(
     assignmentClosedOn,
     _count,
 
-    // from doc select
-    source: sourceOrig,
+    // from doc select (`processContent` adds the source)
+    source: _source,
     numVariants: numVariantsOrig,
     doenetmlVersion: doenetmlVersionOrig,
 
@@ -516,32 +533,15 @@ export function processContent(
 
   switch (type) {
     case "singleDoc": {
-      let docInfo: {
-        doenetML: string;
-        numVariants: number;
-        doenetmlVersion: DoenetmlVersion;
-        revisionNum?: number;
-        repeatInProblemSet?: number;
-      };
-
-      if (
-        sourceOrig != null &&
-        numVariantsOrig !== undefined &&
-        doenetmlVersionOrig != null
-      ) {
-        docInfo = {
-          doenetML: sourceOrig,
-          numVariants: numVariantsOrig,
-          doenetmlVersion: doenetmlVersionOrig,
-          repeatInProblemSet,
-        };
-      } else {
+      if (numVariantsOrig === undefined || doenetmlVersionOrig == null) {
         throw new InvalidRequestError("Invalid document");
       }
 
       return {
         type: "singleDoc",
-        ...docInfo,
+        numVariants: numVariantsOrig,
+        doenetmlVersion: doenetmlVersionOrig,
+        repeatInProblemSet,
         ...baseContent,
       };
     }
@@ -591,6 +591,24 @@ export function processContent(
       };
     }
   }
+}
+
+/**
+ * Process content selected with `returnContentSelect` into `Content`: the
+ * `ContentCard` plus, for documents, the DoenetML source.
+ */
+export function processContent(
+  preliminaryContent: PreliminaryContent,
+  forUserId?: Uint8Array,
+): Content {
+  const card = processContentCard(preliminaryContent, forUserId);
+  if (card.type === "singleDoc") {
+    if (preliminaryContent.source == null) {
+      throw new InvalidRequestError("Invalid document");
+    }
+    return { ...card, doenetML: preliminaryContent.source };
+  }
+  return card;
 }
 
 /**
