@@ -122,5 +122,8 @@ fields @timestamp
 
 Every build listed must already include the change that stopped using the old
 shape: `git merge-base --is-ancestor <that commit> <clientBuild>` succeeds. A
-row with an empty `clientBuild` is a request without the header, from a build
-older than the header itself or from something other than the app.
+row with an empty `clientBuild` is a request without the header: from a build
+older than the header itself, from something other than the app, or from the
+browser itself loading an `/api` URL, which no build sends the header on
+(signing in with Google and signing out do this). So that row never goes away;
+to see what is in it, add `route` to the `by` clause.

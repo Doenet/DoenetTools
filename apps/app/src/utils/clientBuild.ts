@@ -7,10 +7,11 @@ import axios, { type AxiosInstance } from "axios";
  * `/version.json` with the same commit. Open tabs are not reloaded when a new
  * build is deployed. Instead:
  *
- * - every `/api` request says which build sent it (`X-Client-Build`), and the
- *   API logs it, so before removing an old API shape we can confirm no build
- *   that still uses it is calling (see "Removing an API shape" in
- *   infra/README.md);
+ * - every `/api` request the app makes with axios says which build sent it
+ *   (`X-Client-Build`), and the API logs it, so before removing an old API
+ *   shape we can confirm no build that still uses it is calling (see
+ *   "Removing an API shape" in infra/README.md). Pages the browser loads from
+ *   `/api` itself (signing in and out) carry no header;
  * - when a page fails, the error page checks whether the tab is out of date
  *   and, if so, suggests a reload (`OutdatedBuildNotice`).
  *
