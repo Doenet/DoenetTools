@@ -27,7 +27,16 @@ test("browseTrendingContent ranks by views in the last 30 days", async () => {
     });
   }
 
-  // Many views, all before the window
+  // The unviewed activity is newer, so it ranks above `oldFavoriteId`
+  // only if views from before the window count for nothing
+  const createdAt = new Date();
+  createdAt.setDate(createdAt.getDate() - 1);
+  await prisma.content.update({
+    where: { id: oldFavoriteId },
+    data: { createdAt },
+  });
+
+  // Three views, all before the window
   const longAgo = new Date();
   longAgo.setDate(longAgo.getDate() - 40);
   for (let i = 0; i < 3; i++) {
@@ -52,10 +61,9 @@ test("browseTrendingContent ranks by views in the last 30 days", async () => {
     ownerId,
   });
 
-  // `newFavoriteId` has two recent views; the others have none
-  expect(results.length).eq(3);
-  expect(fromUUID(results[0].contentId)).eq(fromUUID(newFavoriteId));
-  expect(results.slice(1).map((c) => fromUUID(c.contentId))).toEqual(
-    expect.arrayContaining([oldFavoriteId, unviewedId].map(fromUUID)),
+  // `newFavoriteId` has two recent views; the others have none, so they
+  // fall back to newest first
+  expect(results.map((c) => fromUUID(c.contentId))).toEqual(
+    [newFavoriteId, unviewedId, oldFavoriteId].map(fromUUID),
   );
 });

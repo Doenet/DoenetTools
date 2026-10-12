@@ -222,12 +222,11 @@ export async function browseSharedContent({
 
 /**
  * Trending content is ranked by the number of distinct users who viewed it in
- * this many days. Counting only recent views keeps "trending" about recent
- * activity and bounds the cost of the query as views accumulate.
+ * the last `TRENDING_WINDOW_DAYS` days. Counting only recent views keeps "trending" about
+ * recent activity and keeps the query's cost from growing with all-time views.
  */
 const TRENDING_WINDOW_DAYS = 30;
 
-// TODO: add tests of this api if we're sure we want to keep it
 export async function browseTrendingContent({
   loggedInUserId,
   systemId,
