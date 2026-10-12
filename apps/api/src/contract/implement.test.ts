@@ -30,6 +30,17 @@ const broken = defineOperation({
   response: z.object({ count: z.number() }),
 });
 
+// Accepts any extra field, so only `implement` stands between a
+// client-supplied `loggedInUserId` and the handler.
+const whoami = defineOperation({
+  name: "whoami",
+  method: "post",
+  path: "/test/whoami",
+  auth: "optional",
+  request: z.looseObject({}),
+  response: z.object({ loggedInUserId: z.string().nullable() }),
+});
+
 let server: Server;
 let baseUrl: string;
 
@@ -43,6 +54,9 @@ beforeAll(async () => {
       implement(secret, async () => {}),
       // Deliberately wrong at runtime, as if a query returned bad data.
       implement(broken, async () => ({ count: "many" }) as never),
+      implement(whoami, async ({ loggedInUserId }) => ({
+        loggedInUserId: loggedInUserId ? "set" : null,
+      })),
     ]),
   );
   server = app.listen(0);
@@ -70,6 +84,16 @@ describe("operationsRouter", () => {
   test("requires sign-in when auth is required", async () => {
     const res = await fetch(`${baseUrl}/test/secret`, { method: "POST" });
     expect(res.status).toBe(403);
+  });
+
+  test("a client cannot supply loggedInUserId", async () => {
+    const res = await fetch(`${baseUrl}/test/whoami?loggedInUserId=q`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ loggedInUserId: "b" }),
+    });
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ loggedInUserId: null });
   });
 
   test("a response that breaks its contract is a 500 outside production", async () => {
