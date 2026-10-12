@@ -8,14 +8,17 @@ import openapiTS, { astToString, type OpenAPI3 } from "openapi-typescript";
 import * as prettier from "prettier";
 import { apiSpec } from "../../src/apiOperations";
 import { forEachOperation, OpenApiDocument } from "../../src/contract";
-import {
-  CLIENT_OPERATIONS_PATH,
-  CLIENT_SCHEMA_PATH,
-  repoRoot,
-  SPEC_PATH,
-} from "./paths";
 
-export { repoRoot };
+/** The repository root. Generated file paths below are relative to it. */
+export const repoRoot = path.resolve(__dirname, "../../../..");
+
+/** Committed OpenAPI document. */
+const SPEC_PATH = "apps/api/openapi.json";
+/** Client types generated from the contract. */
+const CLIENT_SCHEMA_PATH = "packages/shared/src/api/generated/schema.ts";
+/** Runtime map from operation name to method and path. */
+const CLIENT_OPERATIONS_PATH =
+  "packages/shared/src/api/generated/operations.ts";
 
 const HEADER =
   "// Generated from the API contract by\n" +
