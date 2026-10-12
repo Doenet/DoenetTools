@@ -7,9 +7,14 @@ import {
 } from "../query/classification";
 import { createContent } from "../query/activity";
 import { setContentIsPublic } from "../query/share";
-import { browseExplore, searchExplore } from "../query/explore";
+import {
+  browseExplore,
+  searchExplore,
+  searchUsersWithSharedContent,
+} from "../query/explore";
 import {
   claimOwnershipOfReview,
+  getLibraryAccountId,
   publishActivityToLibrary,
   suggestToBeCurated,
 } from "../query/curate";
@@ -87,4 +92,21 @@ test("Explore cards omit DoenetML and classifications, and show the source owner
   expect(browseResults.recentContent[0].owner!.isMaskForLibrary).toBeFalsy();
   expect(browseResults.trendingContent.length).eq(1);
   expectIsCard(browseResults.trendingContent[0], contentId);
+
+  // The library's curated copy is public, yet the library account itself is
+  // never a trending owner or a matched author
+  const libraryId = await getLibraryAccountId();
+  const libraryBrowse = await browseExplore({
+    loggedInUserId: viewerId,
+    ownerId: libraryId,
+  });
+  expect(libraryBrowse.trendingContent).eqls([]);
+
+  const matchedAuthors = await searchUsersWithSharedContent({
+    query: "Library",
+    loggedInUserId: viewerId,
+  });
+  expect(
+    matchedAuthors.some((author) => isEqualUUID(author.userId, libraryId)),
+  ).eq(false);
 });
