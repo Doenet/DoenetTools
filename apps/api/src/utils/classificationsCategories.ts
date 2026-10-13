@@ -189,14 +189,26 @@ export function returnClassificationFilterWhereClauses({
 }
 
 /**
+ * The most category codes that each get their own subquery in
+ * `returnCategoryWhereClauses`. Larger sets share one grouped subquery.
+ */
+const MAX_CATEGORY_SUBQUERIES = 30;
+
+/**
  * Generates a SQL WHERE clause to match content that has ALL specified categories.
+ * Codes that are not category codes match nothing, so they exclude all content.
  *
- * A single subquery finds the content tagged with all the categories, so the
- * query's shape doesn't depend on how many categories are specified. Codes
- * that are not category codes match nothing, so they exclude all content.
+ * Up to `MAX_CATEGORY_SUBQUERIES` codes, each code gets its own `IN` subquery.
+ * MySQL turns these into semijoins, so it can start from the content with the
+ * rarest category, and it runs any that don't fit in its limit of 61 tables
+ * in a join as subqueries instead of failing.
+ *
+ * More codes share one subquery that groups by content, so a long list of
+ * codes doesn't make a long query. MySQL can't turn a grouped subquery into a
+ * semijoin, so it checks every content row against it.
  *
  * @param categories - A set of category codes that must all be present. If undefined or empty, returns Prisma.empty.
- * @returns Prisma.Sql object containing an AND clause on `content.id`, or Prisma.empty if no categories specified.
+ * @returns Prisma.Sql object containing AND clauses on `content.id`, or Prisma.empty if no categories specified.
  *
  * @example
  * // For categories = new Set(["math", "algebra"])
@@ -204,14 +216,31 @@ export function returnClassificationFilterWhereClauses({
  * // AND content.id IN (
  * //   SELECT categoriesTocontent.B FROM _categoriesTocontent AS categoriesTocontent
  * //   JOIN categories ON categories.id = categoriesTocontent.A
- * //   WHERE categories.code IN ('math', 'algebra')
- * //   GROUP BY categoriesTocontent.B
- * //   HAVING COUNT(*) = 2
+ * //   WHERE categories.code = 'math'
+ * // )
+ * // AND content.id IN (
+ * //   SELECT categoriesTocontent.B FROM _categoriesTocontent AS categoriesTocontent
+ * //   JOIN categories ON categories.id = categoriesTocontent.A
+ * //   WHERE categories.code = 'algebra'
  * // )
  */
 export function returnCategoryWhereClauses(categories?: Set<string>) {
   if (categories === undefined || categories.size === 0) {
     return Prisma.empty;
+  }
+
+  if (categories.size <= MAX_CATEGORY_SUBQUERIES) {
+    return Prisma.join(
+      [...categories].map(
+        (code) => Prisma.sql`AND content.id IN (
+          SELECT categoriesTocontent.B
+          FROM _categoriesTocontent AS categoriesTocontent
+          JOIN categories ON categories.id = categoriesTocontent.A
+          WHERE categories.code = ${code}
+        )`,
+      ),
+      " ",
+    );
   }
 
   // A category is attached to a content at most once and codes are unique,

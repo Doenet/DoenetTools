@@ -25,12 +25,15 @@ test("browseExplore and searchExplore filter by many categories without exceedin
   });
 
   // Each category used to add two joins, so 26 or more could exceed MySQL's
-  // limit of 61 tables in a join
-  const unknownCodes = Array.from({ length: 40 }, (_, i) => `unknown${i}`);
+  // limit of 61 tables in a join. 30 codes is the most that each get their own
+  // subquery; 42 share one grouped subquery.
+  const unknownCodes = (n: number) =>
+    Array.from({ length: n }, (_, i) => `unknown${i}`);
 
   for (const categories of [
     new Set(["isInteractive", "containsVideo"]),
-    new Set(["isInteractive", "containsVideo", ...unknownCodes]),
+    new Set(["isInteractive", "containsVideo", ...unknownCodes(28)]),
+    new Set(["isInteractive", "containsVideo", ...unknownCodes(40)]),
   ]) {
     const expected = categories.size === 2 ? [fromUUID(contentId)] : [];
 
