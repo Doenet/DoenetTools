@@ -200,8 +200,9 @@ const MAX_CATEGORY_SUBQUERIES = 30;
  *
  * Up to `MAX_CATEGORY_SUBQUERIES` codes, each code gets its own `IN` subquery.
  * MySQL turns these into semijoins, so it can start from the content with the
- * rarest category, and it runs any that don't fit in its limit of 61 tables
- * in a join as subqueries instead of failing.
+ * rarest category. Past about 20 codes it runs the rest as subqueries instead
+ * of joining more tables, so the query stays under its limit of 61 tables in
+ * a join.
  *
  * More codes share one subquery that groups by content, so a long list of
  * codes doesn't make a long query. MySQL can't turn a grouped subquery into a
