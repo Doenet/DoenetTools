@@ -5,6 +5,7 @@ import {
   returnClassificationFilterWhereClauses,
   returnClassificationJoins,
   returnClassificationMatchClauses,
+  returnCategoryJoins,
   returnCategoryWhereClauses,
 } from "../utils/classificationsCategories";
 import { processContent, returnContentSelect } from "../utils/contentStructure";
@@ -87,6 +88,7 @@ export async function searchSharedContent({
   LEFT JOIN
     users ON content.ownerId = users.userId
   ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
+  ${returnCategoryJoins(categories)}
   WHERE
     content.isDeletedOn IS NULL
     AND users.isLibrary = ${isCurated ? Prisma.sql`TRUE` : Prisma.sql`FALSE`}
@@ -268,6 +270,7 @@ export async function browseTrendingContent({
   LEFT JOIN
     users ON content.ownerId = users.userId
   ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
+  ${returnCategoryJoins(categories)}
   LEFT JOIN
     contentViews ON contentViews.contentId = content.id
   WHERE
@@ -366,6 +369,7 @@ export async function searchUsersWithSharedContent({
       SELECT ownerId 
         FROM content 
         ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
+        ${returnCategoryJoins(categories)}
         WHERE
           isDeletedOn IS NULL AND (
             ${returnExploreVisibilityWhereClause(loggedInUserId)}
@@ -448,6 +452,7 @@ export async function browseUsersWithSharedContent({
           SELECT content.id
           FROM content
           ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
+          ${returnCategoryJoins(categories)}
           WHERE
             content.isDeletedOn IS NULL
             AND (
@@ -498,6 +503,7 @@ export async function browseUsersWithSharedContent({
           SELECT content.id
           FROM content
           ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
+          ${returnCategoryJoins(categories)}
           WHERE
             content.isDeletedOn IS NULL
             AND (
@@ -591,6 +597,7 @@ export async function searchClassificationsWithSharedContent({
   FROM
     content
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
+  ${returnCategoryJoins(categories)}
   WHERE
     content.isDeletedOn IS NULL
     AND (
@@ -687,6 +694,7 @@ export async function searchClassificationSubCategoriesWithSharedContent({
   FROM
     content
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
+  ${returnCategoryJoins(categories)}
   WHERE
     content.isDeletedOn IS NULL
     AND (
@@ -770,6 +778,7 @@ export async function searchClassificationCategoriesWithSharedContent({
   FROM
     content
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
+  ${returnCategoryJoins(categories)}
   WHERE
     content.isDeletedOn IS NULL
     AND (
@@ -1154,6 +1163,7 @@ export async function browseClassificationsWithSharedContent({
     libraryActivityInfos ON content.id = libraryActivityInfos.contentId
   ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
+  ${returnCategoryJoins(categories)}
   WHERE
     content.isDeletedOn IS NULL
     AND (
@@ -1217,6 +1227,7 @@ export async function browseClassificationsWithSharedContent({
   LEFT JOIN
     libraryActivityInfos ON content.id = libraryActivityInfos.contentId
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
+  ${returnCategoryJoins(categories)}
   WHERE
     content.isDeletedOn IS NULL
     AND (
@@ -1316,6 +1327,7 @@ export async function browseClassificationSubCategoriesWithSharedContent({
     libraryActivityInfos ON content.id = libraryActivityInfos.contentId        
   ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
+  ${returnCategoryJoins(categories)}
   WHERE
     content.isDeletedOn IS NULL
     AND (
@@ -1373,6 +1385,7 @@ export async function browseClassificationSubCategoriesWithSharedContent({
   LEFT JOIN
     libraryActivityInfos ON content.id = libraryActivityInfos.contentId    
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
+  ${returnCategoryJoins(categories)}
   WHERE
     content.isDeletedOn IS NULL
     AND (
@@ -1462,6 +1475,7 @@ export async function browseClassificationCategoriesWithSharedContent({
       libraryActivityInfos ON content.id = libraryActivityInfos.contentId
   ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
+  ${returnCategoryJoins(categories)}
   WHERE
     content.isDeletedOn IS NULL
     AND (
@@ -1514,6 +1528,7 @@ export async function browseClassificationCategoriesWithSharedContent({
   LEFT JOIN
     libraryActivityInfos ON content.id = libraryActivityInfos.contentId
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
+  ${returnCategoryJoins(categories)}
   WHERE
     content.isDeletedOn IS NULL
     AND (
@@ -1595,6 +1610,7 @@ export async function browseClassificationSystemsWithSharedContent({
       libraryActivityInfos ON content.id = libraryActivityInfos.contentId
   ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
+  ${returnCategoryJoins(categories)}
   WHERE
     content.isDeletedOn IS NULL
     AND (
@@ -1644,6 +1660,7 @@ export async function browseClassificationSystemsWithSharedContent({
   LEFT JOIN
     libraryActivityInfos ON content.id = libraryActivityInfos.contentId    
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
+  ${returnCategoryJoins(categories)}
   WHERE
     content.isDeletedOn IS NULL
     AND (
@@ -1735,6 +1752,7 @@ export async function getSharedContentMatchCount({
       LEFT JOIN
         libraryActivityInfos ON content.id = libraryActivityInfos.contentId
       ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
+      ${returnCategoryJoins(categories)}
       WHERE
         content.isDeletedOn IS NULL
         AND (
@@ -1776,6 +1794,7 @@ export async function getSharedContentMatchCount({
       LEFT JOIN
         libraryActivityInfos ON content.id = libraryActivityInfos.contentId
       ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
+      ${returnCategoryJoins(categories)}
       WHERE
         content.isDeletedOn IS NULL
         AND (
@@ -1891,6 +1910,7 @@ export async function countMatchingContentByCategory({
       LEFT JOIN
         libraryActivityInfos ON content.id = libraryActivityInfos.contentId
       ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
+      ${returnCategoryJoins(newCategories)}
       WHERE
         content.isDeletedOn IS NULL
         AND (
@@ -1948,6 +1968,7 @@ export async function countMatchingContentByCategory({
       LEFT JOIN
         libraryActivityInfos ON content.id = libraryActivityInfos.contentId
       ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
+      ${returnCategoryJoins(newCategories)}
       WHERE
         content.isDeletedOn IS NULL
         AND (
