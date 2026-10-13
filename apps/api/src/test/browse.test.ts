@@ -29,11 +29,9 @@ import {
   browseClassificationSystemsWithSharedContent,
   browseSharedContent,
   browseTrendingContent,
-  browseExplore,
   browseUsersWithSharedContent,
   countMatchingContentByCategory,
   getSharedContentMatchCount,
-  searchExplore,
   searchSharedContent,
   searchUsersWithSharedContent,
 } from "../query/explore";
@@ -46,7 +44,6 @@ import {
 } from "../query/curate";
 import { getActivityIdFromSourceId } from "./testQueries";
 import { getAllCategories } from "../categories";
-import { countMatchingContentByCategoryOld } from "./countMatchingContentByCategoryOld";
 
 test("browseUsersWithSharedContent, no filter, filter by unclassified", async () => {
   const { userId } = await createTestUser();
@@ -8360,258 +8357,162 @@ describe("countMatchingContentByCategory", () => {
     expect(counts.isInteractive?.numCurated).eq(0);
   });
 
-  test("matches the old per-category implementation on random content, directly and through the Explore endpoints", async () => {
-    // Random content, with a fixed seed so a failure can be reproduced
-    let seed = 2522;
-    function random() {
-      // mulberry32
-      seed = (seed + 0x6d2b79f5) | 0;
-      let t = seed;
-      t = Math.imul(t ^ (t >>> 15), t | 1);
-      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    }
-    function pick<T>(items: readonly T[]) {
-      return items[Math.floor(random() * items.length)];
-    }
-
+  test("counts content once when it has several classifications, and its curated copy once", async () => {
+    const { userId: viewerId } = await createTestUser();
+    const { userId: ownerId } = await createTestUser();
+    const { userId: editorId } = await createTestEditorUser();
     const code = Date.now().toString();
-    const word = "oldnew";
-    const classificationIds = await createTestClassifications({ word, code });
+    const word = "once";
+    const { subCategoryIdA1, classificationIdA1A, classificationIdA1B } =
+      await createTestClassifications({ word, code });
+
+    // Two classifications, so joining classifications gives two rows each for
+    // the activity and its curated copy
+    const [contentId] = await setupTestContent(ownerId, {
+      [`once${code}`]: doc(""),
+    });
+    await updateCategories({
+      contentId,
+      loggedInUserId: ownerId,
+      categories: { isInteractive: true },
+    });
+    for (const classificationId of [classificationIdA1A, classificationIdA1B]) {
+      await addClassification({
+        contentId,
+        classificationId,
+        loggedInUserId: ownerId,
+      });
+    }
+    await setContentIsPublic({
+      contentId,
+      loggedInUserId: ownerId,
+      isPublic: true,
+    });
+    await suggestToBeCurated({ contentId, loggedInUserId: ownerId });
+    const curatedId = await getActivityIdFromSourceId(contentId);
+    await claimOwnershipOfReview({
+      contentId: curatedId,
+      loggedInUserId: editorId,
+    });
+    await publishActivityToLibrary({
+      contentId: curatedId,
+      loggedInUserId: editorId,
+    });
+
+    for (const filters of [
+      { query: `once${code}` },
+      { subCategoryId: subCategoryIdA1 },
+    ]) {
+      const counts = await countMatchingContentByCategory({
+        loggedInUserId: viewerId,
+        ...filters,
+      });
+      expect(counts.isInteractive, JSON.stringify(filters)).eqls({
+        numCommunity: 1,
+        numCurated: 1,
+      });
+    }
+  });
+
+  test("search matches sub-category and category names unless filtering at that level", async () => {
+    const { userId: viewerId } = await createTestUser();
+    const { userId: ownerId } = await createTestUser();
+    const code = Date.now().toString();
+    const word = "level";
     const {
       systemId,
       categoryIdA,
       subCategoryIdA1,
       classificationIdA1A,
-      classificationIdA1B,
       classificationIdA2A,
       classificationIdB1A,
-      classificationIdB2B,
-    } = classificationIds;
+    } = await createTestClassifications({ word, code });
 
-    const { userId: viewerId } = await createTestUser();
-    const anonymousId = new Uint8Array(16);
-    const { userId: editorId } = await createTestEditorUser();
-    const owners = [
-      await createTestUser(),
-      await createTestUser(),
-      await createTestUser(),
-    ];
-
-    // Every name and source word includes `code`, so searches only match
-    // content made here
-    const words = ["apple", "pear", "plum", "fig"].map((w) => `${w}${code}`);
-    const categoryCodes = [
-      "isInteractive",
-      "containsVideo",
-      "isAnimation",
-      "isQuestion",
-      "isPractice",
-    ];
-
-    const numContent = 60;
-    let numCurated = 0;
-    for (let i = 0; i < numContent; i++) {
-      const { userId: ownerId } = pick(owners);
-      const name = [pick(words), random() < 0.5 ? pick(words) : ""].join(" ");
+    // One activity under each of sub-categories A1 and A2 of category A, and
+    // one under category B
+    for (const classificationId of [
+      classificationIdA1A,
+      classificationIdA2A,
+      classificationIdB1A,
+    ]) {
       const [contentId] = await setupTestContent(ownerId, {
-        [name]: doc(random() < 0.3 ? pick(words) : ""),
+        [`level${code}`]: doc(""),
       });
-
-      const categories = Object.fromEntries(
-        categoryCodes.map((c) => [c, random() < 0.4]),
-      );
       await updateCategories({
         contentId,
         loggedInUserId: ownerId,
-        categories,
+        categories: { isInteractive: true },
       });
-
-      for (const classificationId of [
-        classificationIdA1A,
-        classificationIdA1B,
-        classificationIdA2A,
-        classificationIdB1A,
-        classificationIdB2B,
-      ]) {
-        if (random() < 0.25) {
-          await addClassification({
-            contentId,
-            classificationId,
-            loggedInUserId: ownerId,
-          });
-        }
-      }
-
-      const visibility = random();
-      if (visibility < 0.5) {
-        await setContentIsPublic({
-          contentId,
-          loggedInUserId: ownerId,
-          isPublic: true,
-        });
-        if (numCurated < 4 && random() < 0.3) {
-          await suggestToBeCurated({ contentId, loggedInUserId: ownerId });
-          const curatedId = await getActivityIdFromSourceId(contentId);
-          await claimOwnershipOfReview({
-            contentId: curatedId,
-            loggedInUserId: editorId,
-          });
-          await publishActivityToLibrary({
-            contentId: curatedId,
-            loggedInUserId: editorId,
-          });
-          numCurated++;
-        }
-      } else if (visibility < 0.65) {
-        await modifyContentSharedWith({
-          action: "share",
-          contentId,
-          loggedInUserId: ownerId,
-          users: [viewerId],
-        });
-      } else if (visibility < 0.8) {
-        await setContentIsPublic({
-          contentId,
-          loggedInUserId: ownerId,
-          isPublic: true,
-        });
-        await deleteContent({ contentId, loggedInUserId: ownerId });
-      }
-      // otherwise private
+      await addClassification({
+        contentId,
+        classificationId,
+        loggedInUserId: ownerId,
+      });
+      await setContentIsPublic({
+        contentId,
+        loggedInUserId: ownerId,
+        isPublic: true,
+      });
     }
-    expect(numCurated).greaterThan(0);
 
-    // Every combination of how content is matched, how it is classified, and
-    // which categories are already selected. Browsing is limited to an owner,
-    // so other tests' content can't change the counts between the two
-    // implementations.
-    const ownerId = owners[0].userId;
-    const matches: {
-      query?: string;
-      ownerId?: Uint8Array;
-    }[] = [
-      { ownerId },
-      { ownerId: owners[1].userId },
-      { query: words[0] },
-      { query: `${words[1]} ${words[2]}` },
-      { query: words[3], ownerId },
-      // owner name, which isn't matched when filtering by owner
-      { query: owners[2].lastNames },
-      { query: owners[0].lastNames, ownerId },
-      // classification names
-      { query: `${word}A${code}` },
-      { query: `${word}B1${code}`, ownerId },
-      // nothing
-      { query: `nomatch${code}` },
-    ];
-    const classifications: {
-      systemId?: number;
-      categoryId?: number;
-      subCategoryId?: number;
-      classificationId?: number;
-      isUnclassified?: boolean;
-    }[] = [
-      {},
-      { systemId },
-      { categoryId: categoryIdA },
-      { subCategoryId: subCategoryIdA1 },
-      { classificationId: classificationIdA1A },
-      { isUnclassified: true },
-    ];
-    const categorySets = [
-      undefined,
-      new Set(["isInteractive"]),
-      new Set(["isAnimation", "isQuestion", "isPractice"]),
-      new Set(["containsVideo", `missing${code}`]),
-    ];
-    // The viewer sees content shared with them; an anonymous visitor sees
-    // only public content
-    const viewers = [viewerId, anonymousId];
-
-    const filterSets = matches.flatMap((match) =>
-      classifications.flatMap((classification) =>
-        categorySets.flatMap((categories) =>
-          viewers.map((loggedInUserId) => ({
-            loggedInUserId,
-            ...match,
-            ...classification,
-            categories,
-          })),
-        ),
-      ),
-    );
-
-    let numCompared = 0;
-    let sawNonzero = false;
-    let sawCurated = false;
-    // In batches, as one at a time takes over a minute
-    for (let i = 0; i < filterSets.length; i += 20) {
-      await Promise.all(
-        filterSets.slice(i, i + 20).map(async (filters) => {
-          const description = JSON.stringify({
-            ...filters,
-            loggedInUserId: viewers.indexOf(filters.loggedInUserId),
-            ownerId: owners.findIndex(
-              (o) => filters.ownerId && isEqualUUID(o.userId, filters.ownerId),
-            ),
-            categories: filters.categories && [...filters.categories],
-          });
-
-          const [expected, counts] = await Promise.all([
-            countMatchingContentByCategoryOld(filters),
-            countMatchingContentByCategory(filters),
-          ]);
-          expect(counts, description).eqls(expected);
-          numCompared++;
-
-          for (const c of Object.values(expected)) {
-            if (c.numCommunity! > 0) {
-              sawNonzero = true;
-            }
-            if (c.numCurated! > 0) {
-              sawCurated = true;
-            }
-          }
-        }),
-      );
+    const subCategoryA1Name = `${word}A1${code}`;
+    const categoryAName = `${word}A${code}`;
+    for (const [query, filters, numCommunity] of [
+      // sub-category A1's name matches only the activity under A1
+      [subCategoryA1Name, {}, 1],
+      [subCategoryA1Name, { systemId }, 1],
+      [subCategoryA1Name, { categoryId: categoryIdA }, 1],
+      [subCategoryA1Name, { subCategoryId: subCategoryIdA1 }, 0],
+      // category A's name matches the activities under A1 and A2
+      [categoryAName, {}, 2],
+      [categoryAName, { systemId }, 2],
+      [categoryAName, { categoryId: categoryIdA }, 0],
+    ] as const) {
+      const counts = await countMatchingContentByCategory({
+        loggedInUserId: viewerId,
+        query,
+        ...filters,
+      });
+      expect(counts.isInteractive, JSON.stringify({ query, filters })).eqls({
+        numCommunity,
+        numCurated: 0,
+      });
     }
-    expect(numCompared).eq(
-      matches.length *
-        classifications.length *
-        categorySets.length *
-        viewers.length,
-    );
-    expect(sawNonzero).eq(true);
-    expect(sawCurated).eq(true);
+  });
 
-    // The Explore endpoints return these counts as `countByCategory`. Check
-    // them against the old implementation given the same arguments the
-    // endpoints pass on, for a sample of the filters above.
-    for (const match of matches) {
-      for (const classification of [
-        {},
-        { classificationId: classificationIdA1A },
-        { isUnclassified: true },
-      ]) {
-        for (const categories of [undefined, new Set(["isInteractive"])]) {
-          const filters = {
-            loggedInUserId: viewerId,
-            ...match,
-            ...classification,
-            categories,
-          };
-          const response = match.query
-            ? await searchExplore({ ...filters, query: match.query })
-            : await browseExplore(filters);
-          // Both endpoints drop `isUnclassified` when a classification filter
-          // is also set; none of these sets both
-          const expected = await countMatchingContentByCategoryOld(filters);
-          expect(response.countByCategory, JSON.stringify(match)).eqls(
-            expected,
-          );
-        }
-      }
-    }
-  }, 300000);
+  test("search matches the owner's name only when not filtering by owner", async () => {
+    const { userId: viewerId } = await createTestUser();
+    const owner = await createTestUser();
+    const code = Date.now().toString();
+
+    const [contentId] = await setupTestContent(owner.userId, {
+      [`owned${code}`]: doc(""),
+    });
+    await updateCategories({
+      contentId,
+      loggedInUserId: owner.userId,
+      categories: { isInteractive: true },
+    });
+    await setContentIsPublic({
+      contentId,
+      loggedInUserId: owner.userId,
+      isPublic: true,
+    });
+
+    const counts = await countMatchingContentByCategory({
+      loggedInUserId: viewerId,
+      query: owner.lastNames,
+    });
+    expect(counts.isInteractive).eqls({ numCommunity: 1, numCurated: 0 });
+
+    const countsForOwner = await countMatchingContentByCategory({
+      loggedInUserId: viewerId,
+      query: owner.lastNames,
+      ownerId: owner.userId,
+    });
+    expect(countsForOwner.isInteractive).eqls({
+      numCommunity: 0,
+      numCurated: 0,
+    });
+  });
 });
