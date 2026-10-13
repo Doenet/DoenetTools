@@ -209,6 +209,7 @@ const MAX_CATEGORY_SUBQUERIES = 30;
  * semijoin, so it checks every content row against it.
  *
  * @param categories - A set of category codes that must all be present. If undefined or empty, returns Prisma.empty.
+ * @param maxSubqueries - The most codes that each get their own subquery. Only tests change it, to check the grouped subquery with fewer codes.
  * @returns Prisma.Sql object containing AND clauses on `content.id`, or Prisma.empty if no categories specified.
  *
  * @example
@@ -225,12 +226,15 @@ const MAX_CATEGORY_SUBQUERIES = 30;
  * //   WHERE categories.code = 'algebra'
  * // )
  */
-export function returnCategoryWhereClauses(categories?: Set<string>) {
+export function returnCategoryWhereClauses(
+  categories?: Set<string>,
+  maxSubqueries = MAX_CATEGORY_SUBQUERIES,
+) {
   if (categories === undefined || categories.size === 0) {
     return Prisma.empty;
   }
 
-  if (categories.size <= MAX_CATEGORY_SUBQUERIES) {
+  if (categories.size <= maxSubqueries) {
     return Prisma.join(
       [...categories].map(
         (code) => Prisma.sql`AND content.id IN (
