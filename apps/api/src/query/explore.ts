@@ -266,7 +266,14 @@ export async function browseSharedContent({
   return sharedContent;
 }
 
-// TODO: add tests of this api if we're sure we want to keep it
+/**
+ * Trending content is ranked by the number of distinct users who viewed it in
+ * the last `TRENDING_WINDOW_DAYS` days. Counting only recent views keeps
+ * "trending" about recent activity and keeps the query's cost from growing
+ * with all-time views.
+ */
+const TRENDING_WINDOW_DAYS = 30;
+
 export async function browseTrendingContent({
   loggedInUserId,
   systemId,
@@ -306,7 +313,7 @@ export async function browseTrendingContent({
   >(Prisma.sql`
   SELECT
     content.id,
-    COUNT(distinct contentViews.userId) AS numViews,
+    COALESCE(MAX(recentViews.numViews), 0) AS numViews,
     content.createdAt
   FROM
     content
@@ -314,8 +321,17 @@ export async function browseTrendingContent({
     users ON content.ownerId = users.userId
   ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
   ${returnCategoryJoins(categories)}
-  LEFT JOIN
-    contentViews ON contentViews.contentId = content.id
+  LEFT JOIN (
+    SELECT
+      contentId,
+      COUNT(distinct userId) AS numViews
+    FROM
+      contentViews
+    WHERE
+      date >= CURDATE() - INTERVAL ${TRENDING_WINDOW_DAYS} DAY
+    GROUP BY
+      contentId
+  ) AS recentViews ON recentViews.contentId = content.id
   WHERE
     content.isDeletedOn IS NULL
     AND users.isLibrary = FALSE
