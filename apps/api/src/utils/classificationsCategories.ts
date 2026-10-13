@@ -189,83 +189,39 @@ export function returnClassificationFilterWhereClauses({
 }
 
 /**
- * Generates SQL LEFT JOIN clauses to filter content by multiple categories.
+ * Generates a SQL WHERE clause to match content that has ALL specified categories.
  *
- * For each category in the set, this creates:
- * 1. A LEFT JOIN to the many-to-many relation table (_categoriesTocontent)
- * 2. A LEFT JOIN to the categories table
- *
- * The joins are aliased as ccf1, ccf2, ccf3... and categories1, categories2, categories3...
- * to support multiple category filters simultaneously.
- *
- * @param categories - A set of category codes to filter by. If undefined or empty, returns Prisma.empty.
- * @returns Prisma.Sql object containing the LEFT JOIN clauses, or Prisma.empty if no categories specified.
- *
- * @example
- * // For categories = new Set(["math", "algebra"])
- * // Generates:
- * // LEFT JOIN _categoriesTocontent AS ccf1 ON ccf1.B = content.id
- * // LEFT JOIN categories as categories1 on categories1.id = ccf1.A
- * // LEFT JOIN _categoriesTocontent AS ccf2 ON ccf2.B = content.id
- * // LEFT JOIN categories as categories2 on categories2.id = ccf2.A
- */
-export function returnCategoryJoins(categories?: Set<string>) {
-  const numCategories = categories === undefined ? 0 : categories.size;
-
-  if (numCategories === 0) {
-    return Prisma.empty;
-  }
-
-  // Build join clauses dynamically for any number of categories
-  const joinClauses: Prisma.Sql[] = [];
-
-  for (let i = 0; i < numCategories; i++) {
-    joinClauses.push(Prisma.sql`
-      LEFT JOIN _categoriesTocontent AS ${Prisma.raw(`ccf${i + 1}`)} ON ${Prisma.raw(`ccf${i + 1}`)}.B = content.id
-      LEFT JOIN categories as ${Prisma.raw(`categories${i + 1}`)} on ${Prisma.raw(`categories${i + 1}`)}.id = ${Prisma.raw(`ccf${i + 1}`)}.A
-    `);
-  }
-
-  return Prisma.sql`${Prisma.join(joinClauses, " ")}`;
-}
-
-/**
- * Generates SQL WHERE clauses to match content that has ALL specified categories.
- *
- * Works in conjunction with returnCategoryJoins() to filter content. Each category
- * must match one of the joined category tables (categories1, categories2, etc.).
- * This creates an AND condition ensuring content is tagged with all specified categories.
+ * A single subquery finds the content tagged with all the categories, so the
+ * query's shape doesn't depend on how many categories are specified. Codes
+ * that are not category codes match nothing, so they exclude all content.
  *
  * @param categories - A set of category codes that must all be present. If undefined or empty, returns Prisma.empty.
- * @returns Prisma.Sql object containing AND clauses for each category, or Prisma.empty if no categories specified.
+ * @returns Prisma.Sql object containing an AND clause on `content.id`, or Prisma.empty if no categories specified.
  *
  * @example
  * // For categories = new Set(["math", "algebra"])
  * // Generates:
- * // AND categories1.code = 'math'
- * // AND categories2.code = 'algebra'
+ * // AND content.id IN (
+ * //   SELECT categoriesTocontent.B FROM _categoriesTocontent AS categoriesTocontent
+ * //   JOIN categories ON categories.id = categoriesTocontent.A
+ * //   WHERE categories.code IN ('math', 'algebra')
+ * //   GROUP BY categoriesTocontent.B
+ * //   HAVING COUNT(*) = 2
+ * // )
  */
 export function returnCategoryWhereClauses(categories?: Set<string>) {
-  if (categories === undefined) {
+  if (categories === undefined || categories.size === 0) {
     return Prisma.empty;
   }
 
-  const categoriesToRequire = [...categories.keys()];
-
-  const numCategories = categoriesToRequire.length;
-
-  if (numCategories === 0) {
-    return Prisma.empty;
-  }
-
-  // Build where clauses dynamically for any number of categories
-  const whereClauses: Prisma.Sql[] = [];
-
-  for (let i = 0; i < numCategories; i++) {
-    whereClauses.push(
-      Prisma.sql`AND ${Prisma.raw(`categories${i + 1}`)}.code = ${categoriesToRequire[i]}`,
-    );
-  }
-
-  return Prisma.sql`${Prisma.join(whereClauses, " ")}`;
+  // A category is attached to a content at most once and codes are unique,
+  // so COUNT(*) counts the distinct requested categories each content has.
+  return Prisma.sql`AND content.id IN (
+    SELECT categoriesTocontent.B
+    FROM _categoriesTocontent AS categoriesTocontent
+    JOIN categories ON categories.id = categoriesTocontent.A
+    WHERE categories.code IN (${Prisma.join([...categories])})
+    GROUP BY categoriesTocontent.B
+    HAVING COUNT(*) = ${categories.size}
+  )`;
 }
