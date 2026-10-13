@@ -24,7 +24,7 @@ test("browseExplore and searchExplore filter by many categories without exceedin
     categories: { isInteractive: true, containsVideo: true },
   });
 
-  // Each category used to add two joins, so 30 or more exceeded MySQL's
+  // Each category used to add two joins, so 26 or more could exceed MySQL's
   // limit of 61 tables in a join
   const unknownCodes = Array.from({ length: 40 }, (_, i) => `unknown${i}`);
 
