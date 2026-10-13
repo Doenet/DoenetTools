@@ -1906,17 +1906,16 @@ export async function countMatchingContentByCategory({
   categories?: Set<string>;
   ownerId?: Uint8Array;
 }): Promise<Record<string, { numCommunity?: number; numCurated?: number }>> {
-  const matchesPerCategory: Record<
-    string,
-    { numCommunity?: number; numCurated?: number }
-  > = {};
+  // Count, for each category, the content that matches the current filters with
+  // that category added. Rather than one query per category, join each matching
+  // content row to every category it has and group by category. Adding a category
+  // that is already in `categories` doesn't change the filters, which is also
+  // what grouping gives for that category.
 
-  const { allCategories } = await getAllCategories();
-
-  // Note: these queries iterate through all categories and, for each category, temporarily adds it
-  // to the existing filter set to count how many content items would match. This is used to populate
-  // category filter UI elements with counts showing users how many results they would get if they
-  // selected each additional category.
+  let matchClause = Prisma.empty;
+  let includeClassification: boolean;
+  let includeSubCategory: boolean;
+  let includeCategory: boolean;
 
   if (query) {
     const query_as_prefixes = sanitizeQuery(query);
@@ -1926,80 +1925,38 @@ export async function countMatchingContentByCategory({
     const matchSubCategory = matchClassification && subCategoryId === undefined;
     const matchCategory = matchSubCategory && categoryId === undefined;
 
-    const includeClassification = true;
-    const includeSubCategory = matchSubCategory;
-    const includeCategory = matchCategory;
+    includeClassification = true;
+    includeSubCategory = matchSubCategory;
+    includeCategory = matchCategory;
 
-    for (const categoryGroup of allCategories) {
-      for (const category of categoryGroup.categories) {
-        const newCategories = new Set(categories);
-        newCategories.add(category.code);
-
-        const matches = await prisma.$queryRaw<
-          {
-            numContent: bigint;
-            numCurated: bigint;
-          }[]
-        >(Prisma.sql`
-      SELECT
-        COUNT(distinct content.id) as numContent,
-        COUNT(distinct libraryActivityInfos.contentId) as numCurated
-      FROM
-        content
-      LEFT JOIN
-        users ON content.ownerId = users.userId
-      LEFT JOIN
-        libraryActivityInfos ON content.id = libraryActivityInfos.contentId
-      ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
-      ${returnCategoryJoins(newCategories)}
-      WHERE
-        content.isDeletedOn IS NULL
-        AND (
-           ${returnExploreVisibilityWhereClause(loggedInUserId)}
-        )
+    matchClause = Prisma.sql`
         AND
         (
           MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
           OR MATCH(content.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
           ${ownerId === undefined ? Prisma.sql`OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
           ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification, matchSubCategory, matchCategory, prependOperator: true, operator: "OR" })}
-        )
-        ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
-        ${returnCategoryWhereClauses(newCategories)}
-        ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
-      `);
-
-        if (matches.length > 0) {
-          const numTotal = Number(matches[0].numContent);
-          const numCurated = Number(matches[0].numCurated);
-          matchesPerCategory[category.code] = {
-            numCommunity: numTotal - numCurated,
-            numCurated: numCurated,
-          };
-        }
-      }
-    }
+        )`;
   } else {
-    const includeClassification =
+    includeClassification =
       isUnclassified ||
       classificationId !== undefined ||
       subCategoryId !== undefined;
-    const includeSubCategory =
-      !includeClassification && categoryId !== undefined;
-    const includeCategory = !includeSubCategory && systemId !== undefined;
+    includeSubCategory = !includeClassification && categoryId !== undefined;
+    includeCategory = !includeSubCategory && systemId !== undefined;
+  }
 
-    for (const categoryGroup of allCategories) {
-      for (const category of categoryGroup.categories) {
-        const newCategories = new Set(categories);
-        newCategories.add(category.code);
-
-        const matches = await prisma.$queryRaw<
-          {
-            numContent: bigint;
-            numCurated: bigint;
-          }[]
-        >(Prisma.sql`
+  const [{ allCategories }, matches] = await Promise.all([
+    getAllCategories(),
+    prisma.$queryRaw<
+      {
+        code: string;
+        numContent: bigint;
+        numCurated: bigint;
+      }[]
+    >(Prisma.sql`
       SELECT
+        countCategories.code AS code,
         COUNT(distinct content.id) as numContent,
         COUNT(distinct libraryActivityInfos.contentId) as numCurated
       FROM
@@ -2009,27 +1966,44 @@ export async function countMatchingContentByCategory({
       LEFT JOIN
         libraryActivityInfos ON content.id = libraryActivityInfos.contentId
       ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
-      ${returnCategoryJoins(newCategories)}
+      ${returnCategoryJoins(categories)}
+      INNER JOIN
+        _categoriesTocontent AS countCcf ON countCcf.B = content.id
+      INNER JOIN
+        categories AS countCategories ON countCategories.id = countCcf.A
       WHERE
         content.isDeletedOn IS NULL
         AND (
            ${returnExploreVisibilityWhereClause(loggedInUserId)}
         )
+        ${matchClause}
         ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
-        ${returnCategoryWhereClauses(newCategories)}
+        ${returnCategoryWhereClauses(categories)}
         ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
-      `);
-        if (matches.length > 0) {
-          const numTotal = Number(matches[0].numContent);
-          const numCurated = Number(matches[0].numCurated);
-          matchesPerCategory[category.code] = {
-            numCommunity: numTotal - numCurated,
-            numCurated: numCurated,
-          };
-        }
-      }
+      GROUP BY
+        countCategories.code
+      `),
+  ]);
+
+  const countsByCode = Object.fromEntries(matches.map((m) => [m.code, m]));
+
+  // Categories that no matching content has get zero counts
+  const matchesPerCategory: Record<
+    string,
+    { numCommunity?: number; numCurated?: number }
+  > = {};
+  for (const categoryGroup of allCategories) {
+    for (const category of categoryGroup.categories) {
+      const counts = countsByCode[category.code];
+      const numTotal = counts ? Number(counts.numContent) : 0;
+      const numCurated = counts ? Number(counts.numCurated) : 0;
+      matchesPerCategory[category.code] = {
+        numCommunity: numTotal - numCurated,
+        numCurated: numCurated,
+      };
     }
   }
+
   return matchesPerCategory;
 }
 
