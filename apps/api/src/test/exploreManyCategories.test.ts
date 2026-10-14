@@ -3,7 +3,11 @@ import { createTestUser, doc, setupTestContent } from "./utils";
 import { fromUUID } from "../utils/uuid";
 import { setContentIsPublic } from "../query/share";
 import { updateCategories } from "../query/activity";
-import { browseExplore, searchExplore } from "../query/explore";
+import {
+  browseExplore,
+  resolveCategoryCodes,
+  searchExplore,
+} from "../query/explore";
 import { browseExploreSchema } from "../schemas/exploreSchema";
 import { getAllCategories } from "../categories";
 
@@ -79,6 +83,14 @@ test("explore category codes that differ only in letter case name the same categ
   // both codes name isInteractive, as when each code was joined on
   const categories = new Set(["isInteractive", "ISINTERACTIVE"]);
 
+  // They resolve to the one id that isInteractive alone resolves to, so the
+  // filter probes that category once
+  const isInteractiveOnly = await resolveCategoryCodes(
+    new Set(["isInteractive"]),
+  );
+  expect(isInteractiveOnly?.ids).toHaveLength(1);
+  expect(await resolveCategoryCodes(categories)).eqls(isInteractiveOnly);
+
   const browseResults = await browseExplore({
     loggedInUserId: viewerId,
     ownerId,
@@ -126,16 +138,22 @@ test("explore with an unknown category code finds nothing and counts zero for ev
 
   const categories = new Set(["isInteractive", `unknown${code}`]);
 
+  // Other test files create and delete categories concurrently, so check the
+  // codes that exist both before and after the request
+  const allCodes = async () =>
+    (await getAllCategories()).allCategories.flatMap((g) =>
+      g.categories.map((c) => c.code),
+    );
+  const codesBefore = await allCodes();
   const browseResults = await browseExplore({ ownerId, categories });
+  const codesAfter = await allCodes();
   expect(browseResults.recentContent).eqls([]);
   expect(browseResults.trendingContent).eqls([]);
   expect(browseResults.totalCount).eqls({ numCommunity: 0, numCurated: 0 });
-  const { allCategories } = await getAllCategories();
-  const allCodes = allCategories.flatMap((g) =>
-    g.categories.map((c) => c.code),
-  );
-  expect(Object.keys(browseResults.countByCategory).sort()).eqls(
-    allCodes.sort(),
+  const stableCodes = codesBefore.filter((c) => codesAfter.includes(c));
+  expect(stableCodes).toContain("isInteractive");
+  expect(Object.keys(browseResults.countByCategory)).toEqual(
+    expect.arrayContaining(stableCodes),
   );
   for (const counts of Object.values(browseResults.countByCategory)) {
     expect(counts).eqls({ numCommunity: 0, numCurated: 0 });
