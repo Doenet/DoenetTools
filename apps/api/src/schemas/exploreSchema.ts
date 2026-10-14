@@ -7,7 +7,12 @@ export const browseExploreSchema = z.object({
   subCategoryId: z.int().optional(),
   classificationId: z.int().optional(),
   isUnclassified: z.boolean().optional(),
-  categories: z.array(z.string()).transform((val) => new Set(val)),
+  // Each code becomes a parameter of the category filter's IN list, so cap how
+  // many a request can send. Clients only send codes of existing categories.
+  categories: z
+    .array(z.string())
+    .max(100)
+    .transform((val) => new Set(val)),
   ownerId: uuidSchema.optional(),
 });
 

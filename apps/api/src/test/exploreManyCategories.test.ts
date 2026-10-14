@@ -4,6 +4,7 @@ import { fromUUID } from "../utils/uuid";
 import { setContentIsPublic } from "../query/share";
 import { updateCategories } from "../query/activity";
 import { browseExplore, searchExplore } from "../query/explore";
+import { browseExploreSchema } from "../schemas/exploreSchema";
 
 test("browseExplore and searchExplore filter by many categories without exceeding the join limit", async () => {
   const { userId: ownerId } = await createTestUser();
@@ -52,4 +53,15 @@ test("browseExplore and searchExplore filter by many categories without exceedin
       expected,
     );
   }
+});
+
+test("browseExploreSchema caps the number of category codes", () => {
+  const codes = (n: number) => Array.from({ length: n }, (_, i) => `code${i}`);
+
+  expect(
+    browseExploreSchema.safeParse({ categories: codes(100) }).success,
+  ).toBe(true);
+  expect(
+    browseExploreSchema.safeParse({ categories: codes(101) }).success,
+  ).toBe(false);
 });
