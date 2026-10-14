@@ -17,7 +17,10 @@ permissions:
   contents: read
 
 env:
+  # Update both together; the hash is the linux_amd64 tarball's line in the
+  # release's checksums.txt.
   OASDIFF_VERSION: "1.33.0"
+  OASDIFF_SHA256: "43a4e328e2d13ba1552d760aa68d2485c75c5621f309f6ff64ae895188345247"
 
 jobs:
   api-breaking:
@@ -38,8 +41,10 @@ jobs:
       - name: Install oasdiff
         run: |
           mkdir -p "$HOME/.local/bin"
-          curl -fsSL "https://github.com/oasdiff/oasdiff/releases/download/v${OASDIFF_VERSION}/oasdiff_${OASDIFF_VERSION}_linux_amd64.tar.gz" \
-            | tar -xz -C "$HOME/.local/bin" oasdiff
+          tarball="$RUNNER_TEMP/oasdiff.tar.gz"
+          curl -fsSL -o "$tarball" "https://github.com/oasdiff/oasdiff/releases/download/v${OASDIFF_VERSION}/oasdiff_${OASDIFF_VERSION}_linux_amd64.tar.gz"
+          echo "${OASDIFF_SHA256}  $tarball" | sha256sum -c -
+          tar -xzf "$tarball" -C "$HOME/.local/bin" oasdiff
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
       - name: Check tests
@@ -48,7 +53,8 @@ jobs:
       - name: Check for breaking API changes
         env:
           ALLOW_BREAKING: ${{ contains(github.event.pull_request.labels.*.name, 'api-breaking') && '1' || '' }}
-        run: npm run contract:check-breaking --workspace @doenet-tools/api -- --base "origin/${{ github.base_ref }}"
+          BASE_REF: ${{ github.base_ref }}
+        run: npm run contract:check-breaking --workspace @doenet-tools/api -- --base "origin/$BASE_REF"
 
   db-destructive:
     runs-on: ubuntu-latest
@@ -67,4 +73,5 @@ jobs:
       - name: Check for destructive migrations
         env:
           ALLOW_DESTRUCTIVE: ${{ contains(github.event.pull_request.labels.*.name, 'db-destructive') && '1' || '' }}
-        run: npm run db:check-migrations --workspace @doenet-tools/api -- --base "origin/${{ github.base_ref }}"
+          BASE_REF: ${{ github.base_ref }}
+        run: npm run db:check-migrations --workspace @doenet-tools/api -- --base "origin/$BASE_REF"
