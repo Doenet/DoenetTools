@@ -10,9 +10,10 @@ export const browseExploreSchema = z.object({
   // Codes are resolved to category ids, and codes that name the same category
   // give one id, so the filter's size is bounded by the number of categories.
   // The cap only guards against oversized request bodies. Clients only send
-  // codes of existing categories.
+  // codes of existing categories. Each code is also capped: `categories.code`
+  // is VARCHAR(191), and 400 UTF-16 units is more than any value it can hold.
   categories: z
-    .array(z.string())
+    .array(z.string().max(400))
     .max(100)
     .transform((val) => new Set(val)),
   ownerId: uuidSchema.optional(),

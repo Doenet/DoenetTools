@@ -2114,9 +2114,7 @@ export async function searchExplore({
     categoryId === undefined &&
     systemId === undefined;
 
-  // Resolve the category codes once for all the queries below. Recent and
-  // curated content in browseExplore are found with Prisma's ORM instead, which
-  // filters by the codes themselves.
+  // Resolve the category codes once for all the queries below
   const resolvedCategories = await resolveCategoryCodes(categories);
 
   const topAuthorsPromise = ownerId

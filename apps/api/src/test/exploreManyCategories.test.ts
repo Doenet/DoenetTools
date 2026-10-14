@@ -177,3 +177,12 @@ test("browseExploreSchema caps the number of category codes", () => {
     browseExploreSchema.safeParse({ categories: codes(101) }).success,
   ).toBe(false);
 });
+
+test("browseExploreSchema caps the length of each category code", () => {
+  expect(
+    browseExploreSchema.safeParse({ categories: ["x".repeat(400)] }).success,
+  ).toBe(true);
+  expect(
+    browseExploreSchema.safeParse({ categories: ["x".repeat(401)] }).success,
+  ).toBe(false);
+});
