@@ -18,7 +18,9 @@ import * as fs from "fs";
 import * as path from "path";
 import type { OpenApiDocument } from "../../src/contract";
 import { breakingChanges, describeChange } from "./gate";
-import { repoRoot, SPEC_PATH } from "./paths";
+
+const repoRoot = path.resolve(__dirname, "../../../..");
+const SPEC_PATH = "apps/api/openapi.json";
 
 function readSpecAt(ref: string): OpenApiDocument | null {
   // A bad ref is an error, not "no spec on the base branch".
