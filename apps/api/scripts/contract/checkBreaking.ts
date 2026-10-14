@@ -3,10 +3,11 @@
  * change relative to the base branch (default `origin/main`), unless
  * ALLOW_BREAKING=1 (CI sets it when the PR has the `api-breaking` label).
  *
- * A breaking change is safe only once no deployed client still needs the old
- * shape: the replacement has been deployed (for at least a day, so open tabs
- * have reloaded) and nothing in the repo calls the old one. The type checker
- * proves the second; the label records that someone checked the first.
+ * A breaking change is safe only once no running client still needs the old
+ * shape: nothing in the repo calls it, and no app build that did is still
+ * calling (open tabs keep their build until reloaded; see "Removing an API
+ * shape" in infra/README.md). The type checker proves the first; the label
+ * records that someone checked the second.
  *
  * Usage:
  *   npm run contract:check-breaking --workspace @doenet-tools/api [-- --base <git-ref>]
@@ -68,9 +69,10 @@ function main(): number {
   console.error(
     `Breaking changes to the API contract:\n${list}\n\n` +
       "Clients already running in browsers still use the old shape. Add the " +
-      "replacement first and migrate every caller in one PR; once that has " +
-      "been deployed for at least a day, remove the old shape in a PR " +
-      "labelled `api-breaking`. See apps/api/AGENTS.md.",
+      "replacement first and migrate every caller in one PR; once no app " +
+      "build using the old shape is still calling it (infra/README.md, " +
+      '"Removing an API shape"), remove it in a PR labelled `api-breaking`. ' +
+      "See apps/api/AGENTS.md.",
   );
   return 1;
 }

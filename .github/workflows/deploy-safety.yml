@@ -3,7 +3,7 @@ name: Deploy safety
 # Every merge to main deploys, so each PR must work with the code already
 # running: app builds open in browsers, and backend tasks still serving
 # while a deploy rolls out. These checks flag changes that break them.
-# A labelled PR overrides a check once the replacement has been deployed;
+# A label overrides a check once nothing running still uses the old shape;
 # see apps/api/AGENTS.md.
 #
 # Its own workflow so that adding or removing a label re-runs just these
