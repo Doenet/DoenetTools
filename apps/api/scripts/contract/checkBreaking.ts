@@ -1,7 +1,8 @@
 /**
  * CI check: fails if the committed `apps/api/openapi.json` makes a breaking
- * change relative to the base branch (default `origin/main`), unless
- * ALLOW_BREAKING=1 (CI sets it when the PR has the `api-breaking` label).
+ * change relative to where HEAD forked from the base branch (default
+ * `origin/main`), unless ALLOW_BREAKING=1 (CI sets it when the PR has the
+ * `api-breaking` label).
  *
  * A breaking change is safe only once no running client still needs the old
  * shape: nothing in the repo calls it, and no app build that did is still
@@ -24,13 +25,18 @@ const repoRoot = path.resolve(__dirname, "../../../..");
 const SPEC_PATH = "apps/api/openapi.json";
 
 function readSpecAt(ref: string): OpenApiDocument | null {
-  // A bad ref is an error, not "no spec on the base branch".
-  execFileSync("git", ["rev-parse", "--verify", "--quiet", `${ref}^{commit}`], {
+  // Compare against where HEAD forked from `ref`, as checkMigrations does
+  // with `ref...HEAD`: in CI, HEAD is the PR's merge commit, and
+  // `origin/<base>` may have moved past its parent by the time the job runs,
+  // which would report operations added there as removed. A bad ref is an
+  // error (merge-base throws), not "no spec on the base branch".
+  const forkPoint = execFileSync("git", ["merge-base", ref, "HEAD"], {
     cwd: repoRoot,
-    stdio: "ignore",
-  });
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "ignore"],
+  }).trim();
   try {
-    const json = execFileSync("git", ["show", `${ref}:${SPEC_PATH}`], {
+    const json = execFileSync("git", ["show", `${forkPoint}:${SPEC_PATH}`], {
       cwd: repoRoot,
       encoding: "utf8",
       stdio: ["ignore", "pipe", "ignore"],
