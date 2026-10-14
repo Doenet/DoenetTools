@@ -52,7 +52,9 @@ function main(): number {
   const baseRef = baseIndex >= 0 ? process.argv[baseIndex + 1] : "origin/main";
   const base = readSpecAt(baseRef);
   if (!base) {
-    console.log(`No ${SPEC_PATH} on ${baseRef}; nothing to compare against.`);
+    console.log(
+      `No ${SPEC_PATH} where HEAD forked from ${baseRef}; nothing to compare against.`,
+    );
     return 0;
   }
   const head = JSON.parse(

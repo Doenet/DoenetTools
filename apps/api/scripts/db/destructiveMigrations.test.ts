@@ -7,7 +7,7 @@ const reasons = (sql: string) =>
   findDestructiveStatements(sql).map((f) => f.reason);
 
 describe("findDestructiveStatements", () => {
-  test("flags drops, renames, narrowing and unsafe additions", () => {
+  test("flags drops, renames, type changes and unsafe additions", () => {
     expect(reasons("DROP TABLE `old`;")).toHaveLength(1);
     expect(
       reasons("ALTER TABLE `t` DROP COLUMN `a`, DROP COLUMN `b`;"),
@@ -15,9 +15,18 @@ describe("findDestructiveStatements", () => {
     expect(reasons("ALTER TABLE `t` RENAME COLUMN `a` TO `b`;")).toHaveLength(
       1,
     );
+    expect(reasons("RENAME TABLE `a` TO `b`;")).toHaveLength(1);
     expect(
       reasons("ALTER TABLE `t` MODIFY `a` VARCHAR(10) NOT NULL;"),
     ).toHaveLength(1);
+    // Widening is flagged too: the scan doesn't compare types.
+    expect(
+      reasons("ALTER TABLE `t` MODIFY `a` VARCHAR(255) NULL;"),
+    ).toHaveLength(1);
+    expect(reasons("ALTER TABLE `t` CHANGE `a` `b` INTEGER;")).toHaveLength(1);
+    expect(reasons("TRUNCATE TABLE `t`;")).toEqual([
+      "deletes all rows of a table",
+    ]);
     expect(reasons("ALTER TABLE `t` ADD COLUMN `a` INTEGER NOT NULL;")).toEqual(
       [
         "adds a NOT NULL column without a default, so the running code's inserts fail",
