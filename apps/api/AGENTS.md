@@ -24,6 +24,11 @@ Every merge deploys, and the app builds already open in browsers keep calling th
 1. **Expand + migrate:** add the replacement, and move every caller to it. Removing something from the contract stops its callers compiling, so the type checker finds them all.
 2. **Contract**, once nothing running still uses the old shape: remove it. For the API, check that no app build still using it is calling (`infra/README.md`, "Removing an API shape"); for the database, (1) must be deployed.
 
+CI (`.github/workflows/deploy-safety.yml`) flags these changes, and a label records that someone checked:
+
+- **API**: oasdiff, against `openapi.json` where the PR forked from `main`, fails on removed operations or fields, newly required inputs, and responses that can return new values. Label the PR `api-breaking` once (2) holds. Prefer a server-side default over making an input required: then no contract step is needed.
+- **Database**: any change under `prisma/migrations` fails, since a migration can break the previous code while it runs. Label the PR `db-migration` once you have checked it can't: additive changes (new tables, nullable columns or columns with a default, non-unique indexes) are safe; dropping or renaming a table or column, changing a column's type or nullability, adding `NOT NULL` without a default, adding a unique constraint, or `TRUNCATE` need (1) deployed first. To drop a column, first mark the field `@ignore` in `schema.prisma` (it must be optional or have a default) and remove its uses, including raw SQL; drop it in the contract PR. To rename, add the new column, write both, backfill, switch reads, then drop the old one.
+
 Terms are in `CONTEXT.md`; background in `docs/adr/0003-expand-migrate-contract.md`.
 
 ## Error Handling

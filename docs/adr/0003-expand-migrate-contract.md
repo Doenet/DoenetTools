@@ -1,6 +1,6 @@
 # Expand-migrate-contract: typed contract plus labelled breaking changes
 
-Every merge to `main` deploys, so each PR must work with what is already running: app builds open in browsers, and backend tasks that keep serving while migrations run. We describe the API as a Zod contract, generate an OpenAPI document and typed clients from it, and let CI flag changes that would break running code (oasdiff for the API, a scan of new migrations for the database). A flagged PR needs an `api-breaking` or `db-destructive` label, which records that nothing still running uses the old shape. The type checker already proves no caller in the repo still uses what is removed; the label covers what it can't see, which is whether the migrated code is live.
+Every merge to `main` deploys, so each PR must work with what is already running: app builds open in browsers, and backend tasks that keep serving while migrations run. We describe the API as a Zod contract, generate an OpenAPI document and typed clients from it, and let CI flag changes that would break running code (oasdiff for the API; for the database, any migration change, since scanning SQL for destructive statements can miss one and migrations are rare). A flagged PR needs an `api-breaking` or `db-migration` label, which records that someone checked nothing still running needs the old shape. The type checker already proves no caller in the repo still uses what is removed; the label covers what it can't see, which is whether the migrated code is live.
 
 ## Consequences
 
