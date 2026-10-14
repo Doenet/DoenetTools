@@ -50,10 +50,18 @@ jobs:
           # and operations added there would show as removed.
           fork_point=$(git merge-base "origin/$BASE_REF" HEAD)
           git show "$fork_point:apps/api/openapi.json" > "$RUNNER_TEMP/base.json"
-          if oasdiff breaking "$RUNNER_TEMP/base.json" apps/api/openapi.json \
-              --severity-levels apps/api/scripts/contract/oasdiff-severity.txt \
-              --fail-on WARN; then
+          # Exit 1 means breaking changes; anything else is an oasdiff error,
+          # which the label must not override.
+          status=0
+          oasdiff breaking "$RUNNER_TEMP/base.json" apps/api/openapi.json \
+            --severity-levels apps/api/scripts/contract/oasdiff-severity.txt \
+            --fail-on WARN || status=$?
+          if [ "$status" -eq 0 ]; then
             exit 0
+          fi
+          if [ "$status" -ne 1 ]; then
+            echo "::error::oasdiff failed (exit $status)."
+            exit "$status"
           fi
           if [ "$ALLOWED" = "true" ]; then
             echo "Breaking changes allowed by the api-breaking label."
@@ -77,8 +85,8 @@ jobs:
           ALLOWED: ${{ contains(github.event.pull_request.labels.*.name, 'db-migration') }}
           BASE_REF: ${{ github.base_ref }}
         run: |
-          # --no-renames: a renamed migration directory is applied again as a
-          # new migration.
+          # --no-renames lists a renamed migration directory as the new
+          # migration it is (Prisma applies it again), not as a rename.
           changed=$(git diff --name-status --no-renames "origin/$BASE_REF...HEAD" -- apps/api/prisma/migrations)
           if [ -z "$changed" ]; then
             echo "No migration changes."
