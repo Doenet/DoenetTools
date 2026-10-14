@@ -43,7 +43,7 @@ In production, `app` is built as static files served by Express.
 
 Development uses a fork workflow. Push branches to `origin` (your fork), then open a PR targeting `upstream/main`. PRs merge after human sign-off, and each merge deploys to production automatically once CI passes on `main` (see [infra/README.md](./infra/README.md#rolling-back-prod)).
 
-Database and API changes must follow the **expand-migrate-contract** pattern: each merged PR must be safe to deploy on its own, so add new columns/endpoints before removing old ones across separate PRs. CI flags the contract step for both; see "Expand-Migrate-Contract" in `apps/api/AGENTS.md`. Domain terms are in `CONTEXT.md`.
+Database and API changes must follow the **expand-migrate-contract** pattern: each merged PR must be safe to deploy on its own, so add new columns/endpoints before removing old ones across separate PRs. CI flags breaking API changes and every migration change; see "Expand-Migrate-Contract" in `apps/api/AGENTS.md`. Domain terms are in `CONTEXT.md`.
 
 PR descriptions follow the `pr` skill's format (Summary, Evidence, Merge Danger), plus one rule specific to this repo:
 

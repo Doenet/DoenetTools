@@ -2,9 +2,9 @@ name: Deploy safety
 
 # Every merge to main deploys, so each PR must work with the code already
 # running: app builds open in browsers, and backend tasks still serving
-# while a deploy rolls out. These checks flag changes that break them.
-# A label overrides a check once nothing running still uses the old shape;
-# see apps/api/AGENTS.md.
+# while a deploy rolls out. These checks flag changes that can break them.
+# A label overrides a check once someone has confirmed it is safe; see
+# "Expand-Migrate-Contract" in apps/api/AGENTS.md.
 #
 # Its own workflow so that adding or removing a label re-runs just these
 # checks.
@@ -31,13 +31,6 @@ jobs:
           # Needs the base branch to compare against.
           fetch-depth: 0
 
-      - uses: actions/setup-node@v6
-        with:
-          node-version-file: ".nvmrc"
-          cache: npm
-
-      - run: npm ci
-
       - name: Install oasdiff
         run: |
           mkdir -p "$HOME/.local/bin"
@@ -47,31 +40,54 @@ jobs:
           tar -xzf "$tarball" -C "$HOME/.local/bin" oasdiff
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
-      - name: Check tests
-        run: npm test --workspace @doenet-tools/api -- --run scripts/contract
-
       - name: Check for breaking API changes
         env:
-          ALLOW_BREAKING: ${{ contains(github.event.pull_request.labels.*.name, 'api-breaking') && '1' || '' }}
+          ALLOWED: ${{ contains(github.event.pull_request.labels.*.name, 'api-breaking') }}
           BASE_REF: ${{ github.base_ref }}
-        run: npm run contract:check-breaking --workspace @doenet-tools/api -- --base "origin/$BASE_REF"
+        run: |
+          # Compare against where the PR forked from the base branch, not its
+          # tip: the base may have moved on since this merge commit was made,
+          # and operations added there would show as removed.
+          fork_point=$(git merge-base "origin/$BASE_REF" HEAD)
+          git show "$fork_point:apps/api/openapi.json" > "$RUNNER_TEMP/base.json"
+          if oasdiff breaking "$RUNNER_TEMP/base.json" apps/api/openapi.json \
+              --severity-levels apps/api/scripts/contract/oasdiff-severity.txt \
+              --fail-on WARN; then
+            exit 0
+          fi
+          if [ "$ALLOWED" = "true" ]; then
+            echo "Breaking changes allowed by the api-breaking label."
+            exit 0
+          fi
+          echo "::error::Breaking changes to the API contract. App builds already open in browsers still use the old shape. Add the replacement and migrate every caller in one PR; once no app build using the old shape is still calling it (infra/README.md, \"Removing an API shape\"), remove it in a PR labelled api-breaking. See apps/api/AGENTS.md."
+          exit 1
 
-  db-destructive:
+  db-migration:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@v6
-        with:
-          node-version-file: ".nvmrc"
-          cache: npm
-
-      - run: npm ci
-
-      - name: Check for destructive migrations
+      # Every migration change needs the label, rather than scanning the SQL
+      # for destructive statements: migrations are rare, and a scan can miss
+      # one.
+      - name: Check for migration changes
         env:
-          ALLOW_DESTRUCTIVE: ${{ contains(github.event.pull_request.labels.*.name, 'db-destructive') && '1' || '' }}
+          ALLOWED: ${{ contains(github.event.pull_request.labels.*.name, 'db-migration') }}
           BASE_REF: ${{ github.base_ref }}
-        run: npm run db:check-migrations --workspace @doenet-tools/api -- --base "origin/$BASE_REF"
+        run: |
+          # --no-renames: a renamed migration directory is applied again as a
+          # new migration.
+          changed=$(git diff --name-status --no-renames "origin/$BASE_REF...HEAD" -- apps/api/prisma/migrations)
+          if [ -z "$changed" ]; then
+            echo "No migration changes."
+            exit 0
+          fi
+          echo "$changed"
+          if [ "$ALLOWED" = "true" ]; then
+            echo "Migration changes allowed by the db-migration label."
+            exit 0
+          fi
+          echo "::error::This PR changes migrations, which run while the previous backend is still serving. Check that the previous code keeps working while they run, then label the PR db-migration. See apps/api/AGENTS.md."
+          exit 1
