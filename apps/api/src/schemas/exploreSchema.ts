@@ -7,8 +7,10 @@ export const browseExploreSchema = z.object({
   subCategoryId: z.int().optional(),
   classificationId: z.int().optional(),
   isUnclassified: z.boolean().optional(),
-  // Each code becomes a parameter of the category filter's IN list, so cap how
-  // many a request can send. Clients only send codes of existing categories.
+  // Codes are resolved to category ids, and codes that name the same category
+  // give one id, so the filter's size is bounded by the number of categories.
+  // The cap only guards against oversized request bodies. Clients only send
+  // codes of existing categories.
   categories: z
     .array(z.string())
     .max(100)

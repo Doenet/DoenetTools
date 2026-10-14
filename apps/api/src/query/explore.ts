@@ -6,6 +6,7 @@ import {
   returnClassificationJoins,
   returnClassificationMatchClauses,
   returnCategoryWhereClauses,
+  ResolvedCategories,
 } from "../utils/classificationsCategories";
 import {
   processContent,
@@ -19,6 +20,49 @@ import { PartialContentClassification, UserInfo } from "../types";
 import { getClassificationInfo } from "./classification";
 import { getAllCategories } from "../categories";
 import { getAuthorInfo } from "./user";
+
+/**
+ * Resolves the category codes an explore request filters by to category ids,
+ * so that the explore queries filter by id. Each code is compared with
+ * `categories.code` by MySQL, so codes match as they would in a join on the
+ * code (the column's collation ignores letter case). Codes that name the same
+ * category give one id.
+ *
+ * Already resolved categories are returned unchanged, so `browseExplore` and
+ * `searchExplore` resolve the codes once for all their queries.
+ */
+export async function resolveCategoryCodes(
+  categories?: Set<string> | ResolvedCategories,
+): Promise<ResolvedCategories | undefined> {
+  if (categories === undefined || !(categories instanceof Set)) {
+    return categories;
+  }
+  if (categories.size === 0) {
+    return { ids: [], hasUnknownCode: false };
+  }
+
+  // One row per requested code, with the id of the category it matches or null
+  const matches = await prisma.$queryRaw<{ id: number | null }[]>(
+    Prisma.join(
+      [...categories].map(
+        (code) =>
+          Prisma.sql`SELECT (SELECT id FROM categories WHERE code = ${code}) AS id`,
+      ),
+      " UNION ALL ",
+    ),
+  );
+
+  const ids = new Set<number>();
+  let hasUnknownCode = false;
+  for (const { id } of matches) {
+    if (id === null) {
+      hasUnknownCode = true;
+    } else {
+      ids.add(id);
+    }
+  }
+  return { ids: [...ids], hasUnknownCode };
+}
 
 function returnExploreVisibilityWhere(loggedInUserId: Uint8Array) {
   return {
@@ -104,10 +148,13 @@ export async function searchSharedContent({
   subCategoryId?: number;
   classificationId?: number;
   isUnclassified?: boolean;
-  categories?: Set<string>;
+  categories?: Set<string> | ResolvedCategories;
   ownerId?: Uint8Array;
   page?: number;
 }) {
+  const categoryClause = returnCategoryWhereClauses(
+    await resolveCategoryCodes(categories),
+  );
   const pageSize = 100;
 
   const query_as_prefixes = sanitizeQuery(query);
@@ -152,7 +199,7 @@ export async function searchSharedContent({
       ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification, matchSubCategory, matchCategory, prependOperator: true, operator: "OR" })}
     )
     ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
-    ${returnCategoryWhereClauses(categories)}
+    ${categoryClause}
     ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
   GROUP BY
     content.id
@@ -290,11 +337,14 @@ export async function browseTrendingContent({
   subCategoryId?: number;
   classificationId?: number;
   isUnclassified?: boolean;
-  categories?: Set<string>;
+  categories?: Set<string> | ResolvedCategories;
   ownerId?: Uint8Array;
   page?: number;
   pageSize?: number;
 }) {
+  const categoryClause = returnCategoryWhereClauses(
+    await resolveCategoryCodes(categories),
+  );
   const matchClassification = !isUnclassified && classificationId === undefined;
   const matchSubCategory = matchClassification && subCategoryId === undefined;
   const matchCategory = matchSubCategory && categoryId === undefined;
@@ -336,7 +386,7 @@ export async function browseTrendingContent({
        ${returnExploreVisibilityWhereClause(loggedInUserId)}
     )
     ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
-    ${returnCategoryWhereClauses(categories)}
+    ${categoryClause}
     ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
   GROUP BY
     content.id
@@ -389,9 +439,12 @@ export async function searchUsersWithSharedContent({
   subCategoryId?: number;
   classificationId?: number;
   isUnclassified?: boolean;
-  categories?: Set<string>;
+  categories?: Set<string> | ResolvedCategories;
   page?: number;
 }) {
+  const categoryClause = returnCategoryWhereClauses(
+    await resolveCategoryCodes(categories),
+  );
   const pageSize = 100;
 
   const query_as_prefixes = sanitizeQuery(query);
@@ -428,7 +481,7 @@ export async function searchUsersWithSharedContent({
             ${returnExploreVisibilityWhereClause(loggedInUserId)}
           )
           ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
-          ${returnCategoryWhereClauses(categories)}
+          ${categoryClause}
       
     )
     AND
@@ -466,10 +519,13 @@ export async function browseUsersWithSharedContent({
   subCategoryId?: number;
   classificationId?: number;
   isUnclassified?: boolean;
-  categories?: Set<string>;
+  categories?: Set<string> | ResolvedCategories;
   take?: number;
   skip?: number;
 }) {
+  const categoryClause = returnCategoryWhereClauses(
+    await resolveCategoryCodes(categories),
+  );
   let usersWithShared;
 
   if (query) {
@@ -516,7 +572,7 @@ export async function browseUsersWithSharedContent({
               ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification, matchSubCategory, matchCategory, prependOperator: true, operator: "OR" })}
             )
             ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
-            ${returnCategoryWhereClauses(categories)}
+            ${categoryClause}
         )
       GROUP BY
         users.userId
@@ -561,7 +617,7 @@ export async function browseUsersWithSharedContent({
               ${returnExploreVisibilityWhereClause(loggedInUserId)}
             )
             ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
-            ${returnCategoryWhereClauses(categories)}
+            ${categoryClause}
         )
       GROUP BY
         users.userId
@@ -596,9 +652,12 @@ export async function searchClassificationsWithSharedContent({
   systemId?: number;
   categoryId?: number;
   subCategoryId?: number;
-  categories?: Set<string>;
+  categories?: Set<string> | ResolvedCategories;
   ownerId?: Uint8Array;
 }): Promise<PartialContentClassification[]> {
+  const categoryClause = returnCategoryWhereClauses(
+    await resolveCategoryCodes(categories),
+  );
   const query_as_prefixes = sanitizeQuery(query);
   const queryRegEx = query
     .replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
@@ -659,7 +718,7 @@ export async function searchClassificationsWithSharedContent({
       OR classifications.code REGEXP ${queryRegEx}
     )
     ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId })}
-    ${returnCategoryWhereClauses(categories)}
+    ${categoryClause}
     ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
   GROUP BY
     classificationId, descriptionId
@@ -707,9 +766,12 @@ export async function searchClassificationSubCategoriesWithSharedContent({
   loggedInUserId: Uint8Array;
   systemId?: number;
   categoryId?: number;
-  categories?: Set<string>;
+  categories?: Set<string> | ResolvedCategories;
   ownerId?: Uint8Array;
 }): Promise<PartialContentClassification[]> {
+  const categoryClause = returnCategoryWhereClauses(
+    await resolveCategoryCodes(categories),
+  );
   const query_as_prefixes = sanitizeQuery(query);
 
   const matches = await prisma.$queryRaw<
@@ -752,7 +814,7 @@ export async function searchClassificationSubCategoriesWithSharedContent({
     AND
     ${returnClassificationMatchClauses({ query_as_prefixes, matchSubCategory: true })}
     ${returnClassificationFilterWhereClauses({ systemId, categoryId })}
-    ${returnCategoryWhereClauses(categories)}
+    ${categoryClause}
     ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
 
   GROUP BY
@@ -793,9 +855,12 @@ export async function searchClassificationCategoriesWithSharedContent({
   query: string;
   loggedInUserId: Uint8Array;
   systemId?: number;
-  categories?: Set<string>;
+  categories?: Set<string> | ResolvedCategories;
   ownerId?: Uint8Array;
 }): Promise<PartialContentClassification[]> {
+  const categoryClause = returnCategoryWhereClauses(
+    await resolveCategoryCodes(categories),
+  );
   const query_as_prefixes = sanitizeQuery(query);
 
   const matches = await prisma.$queryRaw<
@@ -835,7 +900,7 @@ export async function searchClassificationCategoriesWithSharedContent({
     AND
     ${returnClassificationMatchClauses({ query_as_prefixes, matchCategory: true })}
     ${returnClassificationFilterWhereClauses({ systemId })}
-    ${returnCategoryWhereClauses(categories)}
+    ${categoryClause}
     ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
 
   GROUP BY
@@ -1158,9 +1223,12 @@ export async function browseClassificationsWithSharedContent({
   query?: string;
   loggedInUserId: Uint8Array;
   subCategoryId: number;
-  categories?: Set<string>;
+  categories?: Set<string> | ResolvedCategories;
   ownerId?: Uint8Array;
 }): Promise<PartialContentClassification[]> {
+  const categoryClause = returnCategoryWhereClauses(
+    await resolveCategoryCodes(categories),
+  );
   let matches;
 
   if (query) {
@@ -1222,7 +1290,7 @@ export async function browseClassificationsWithSharedContent({
       ${ownerId === undefined ? Prisma.sql`OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
     )
     ${returnClassificationFilterWhereClauses({ subCategoryId })}
-    ${returnCategoryWhereClauses(categories)}
+    ${categoryClause}
     ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
   GROUP BY
     classifications.id, classificationDescriptions.id
@@ -1280,7 +1348,7 @@ export async function browseClassificationsWithSharedContent({
        ${returnExploreVisibilityWhereClause(loggedInUserId)}
     )
     ${returnClassificationFilterWhereClauses({ subCategoryId })}
-    ${returnCategoryWhereClauses(categories)}
+    ${categoryClause}
     ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
   GROUP BY
     classifications.id, classificationDescriptions.id
@@ -1328,9 +1396,12 @@ export async function browseClassificationSubCategoriesWithSharedContent({
   query?: string;
   loggedInUserId: Uint8Array;
   categoryId: number;
-  categories?: Set<string>;
+  categories?: Set<string> | ResolvedCategories;
   ownerId?: Uint8Array;
 }): Promise<PartialContentClassification[]> {
+  const categoryClause = returnCategoryWhereClauses(
+    await resolveCategoryCodes(categories),
+  );
   let matches;
 
   if (query) {
@@ -1385,7 +1456,7 @@ export async function browseClassificationSubCategoriesWithSharedContent({
       ${ownerId === undefined ? Prisma.sql`OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
     )
     ${returnClassificationFilterWhereClauses({ categoryId })}
-    ${returnCategoryWhereClauses(categories)}
+    ${categoryClause}
     ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
   GROUP BY
     classificationSubCategories.id
@@ -1436,7 +1507,7 @@ export async function browseClassificationSubCategoriesWithSharedContent({
        ${returnExploreVisibilityWhereClause(loggedInUserId)}
     )
     ${returnClassificationFilterWhereClauses({ categoryId })}
-    ${returnCategoryWhereClauses(categories)}
+    ${categoryClause}
     ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
   GROUP BY
     classificationSubCategories.id
@@ -1478,9 +1549,12 @@ export async function browseClassificationCategoriesWithSharedContent({
   query?: string;
   loggedInUserId: Uint8Array;
   systemId: number;
-  categories?: Set<string>;
+  categories?: Set<string> | ResolvedCategories;
   ownerId?: Uint8Array;
 }): Promise<PartialContentClassification[]> {
+  const categoryClause = returnCategoryWhereClauses(
+    await resolveCategoryCodes(categories),
+  );
   let matches;
 
   if (query) {
@@ -1531,7 +1605,7 @@ export async function browseClassificationCategoriesWithSharedContent({
       ${ownerId === undefined ? Prisma.sql`OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
     )
     ${returnClassificationFilterWhereClauses({ systemId })}
-    ${returnCategoryWhereClauses(categories)}
+    ${categoryClause}
     ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
   GROUP BY
     classificationCategories.id
@@ -1577,7 +1651,7 @@ export async function browseClassificationCategoriesWithSharedContent({
        ${returnExploreVisibilityWhereClause(loggedInUserId)}
     )
     ${returnClassificationFilterWhereClauses({ systemId })}
-    ${returnCategoryWhereClauses(categories)}
+    ${categoryClause}
     ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
   GROUP BY
     classificationCategories.id
@@ -1613,9 +1687,12 @@ export async function browseClassificationSystemsWithSharedContent({
 }: {
   query?: string;
   loggedInUserId: Uint8Array;
-  categories?: Set<string>;
+  categories?: Set<string> | ResolvedCategories;
   ownerId?: Uint8Array;
 }): Promise<PartialContentClassification[]> {
+  const categoryClause = returnCategoryWhereClauses(
+    await resolveCategoryCodes(categories),
+  );
   let matches;
 
   if (query) {
@@ -1663,7 +1740,7 @@ export async function browseClassificationSystemsWithSharedContent({
       ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification: true, matchSubCategory: true, matchCategory: true, prependOperator: true, operator: "OR" })}
       ${ownerId === undefined ? Prisma.sql`OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
     )
-    ${returnCategoryWhereClauses(categories)}
+    ${categoryClause}
     ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
   GROUP BY
     classificationSystems.id
@@ -1706,7 +1783,7 @@ export async function browseClassificationSystemsWithSharedContent({
     AND (
        ${returnExploreVisibilityWhereClause(loggedInUserId)}
     )
-    ${returnCategoryWhereClauses(categories)}
+    ${categoryClause}
     ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
   GROUP BY
     classificationSystems.id
@@ -1759,9 +1836,12 @@ export async function getSharedContentMatchCount({
   subCategoryId?: number;
   classificationId?: number;
   isUnclassified?: boolean;
-  categories?: Set<string>;
+  categories?: Set<string> | ResolvedCategories;
   ownerId?: Uint8Array;
 }): Promise<{ numCommunity: number; numCurated: number }> {
+  const categoryClause = returnCategoryWhereClauses(
+    await resolveCategoryCodes(categories),
+  );
   let matches;
 
   if (query) {
@@ -1805,7 +1885,7 @@ export async function getSharedContentMatchCount({
           ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification, matchSubCategory, matchCategory, prependOperator: true, operator: "OR" })}
         )
         ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
-        ${returnCategoryWhereClauses(categories)}
+        ${categoryClause}
         ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
       `);
   } else {
@@ -1839,7 +1919,7 @@ export async function getSharedContentMatchCount({
            ${returnExploreVisibilityWhereClause(loggedInUserId)}
         )
         ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
-        ${returnCategoryWhereClauses(categories)}
+        ${categoryClause}
         ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
       `);
   }
@@ -1866,7 +1946,7 @@ export async function getSharedContentMatchCount({
  * @param subCategoryId - Optional classification sub-category ID to filter by
  * @param classificationId - Optional specific classification ID to filter by
  * @param isUnclassified - If true, filters to content without any classifications
- * @param categories - Set of category codes that are already applied as filters
+ * @param categories - Category codes that are already applied as filters, or those codes resolved by `resolveCategoryCodes`
  * @param ownerId - Optional owner ID to filter content by a specific author
  *
  * @returns A record mapping category codes to objects containing:
@@ -1900,9 +1980,12 @@ export async function countMatchingContentByCategory({
   subCategoryId?: number;
   classificationId?: number;
   isUnclassified?: boolean;
-  categories?: Set<string>;
+  categories?: Set<string> | ResolvedCategories;
   ownerId?: Uint8Array;
 }): Promise<Record<string, { numCommunity?: number; numCurated?: number }>> {
+  const categoryClause = returnCategoryWhereClauses(
+    await resolveCategoryCodes(categories),
+  );
   // Count, for each category, the content that matches the current filters with
   // that category added. Rather than one query per category, join each matching
   // content row to every category it has and group by category. Adding a category
@@ -1974,7 +2057,7 @@ export async function countMatchingContentByCategory({
         )
         ${matchClause}
         ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
-        ${returnCategoryWhereClauses(categories)}
+        ${categoryClause}
         ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
       GROUP BY
         countCategories.code
@@ -2031,6 +2114,11 @@ export async function searchExplore({
     categoryId === undefined &&
     systemId === undefined;
 
+  // Resolve the category codes once for all the queries below. Recent and
+  // curated content in browseExplore are found with Prisma's ORM instead, which
+  // filters by the codes themselves.
+  const resolvedCategories = await resolveCategoryCodes(categories);
+
   const topAuthorsPromise = ownerId
     ? new Promise((resolve, _) => resolve(null))
     : browseUsersWithSharedContent({
@@ -2041,7 +2129,7 @@ export async function searchExplore({
         subCategoryId,
         classificationId,
         isUnclassified,
-        categories,
+        categories: resolvedCategories,
         take: 10,
       });
 
@@ -2055,7 +2143,7 @@ export async function searchExplore({
         subCategoryId,
         classificationId,
         isUnclassified,
-        categories,
+        categories: resolvedCategories,
       });
 
   const authorInfoPromise = ownerId
@@ -2071,7 +2159,7 @@ export async function searchExplore({
     subCategoryId,
     classificationId,
     isUnclassified,
-    categories,
+    categories: resolvedCategories,
     ownerId,
   });
 
@@ -2084,7 +2172,7 @@ export async function searchExplore({
     subCategoryId,
     classificationId,
     isUnclassified,
-    categories,
+    categories: resolvedCategories,
     ownerId,
   });
 
@@ -2114,7 +2202,7 @@ export async function searchExplore({
       systemId,
       categoryId,
       subCategoryId,
-      categories,
+      categories: resolvedCategories,
       ownerId,
     });
 
@@ -2123,7 +2211,7 @@ export async function searchExplore({
         query,
         loggedInUserId,
         subCategoryId,
-        categories,
+        categories: resolvedCategories,
         ownerId,
       });
     } else {
@@ -2133,7 +2221,7 @@ export async function searchExplore({
           loggedInUserId,
           systemId,
           categoryId,
-          categories,
+          categories: resolvedCategories,
           ownerId,
         });
       if (categoryId !== undefined) {
@@ -2142,7 +2230,7 @@ export async function searchExplore({
             query,
             loggedInUserId,
             categoryId,
-            categories,
+            categories: resolvedCategories,
             ownerId,
           });
       } else {
@@ -2151,7 +2239,7 @@ export async function searchExplore({
             query,
             loggedInUserId,
             systemId,
-            categories,
+            categories: resolvedCategories,
             ownerId,
           });
 
@@ -2161,14 +2249,14 @@ export async function searchExplore({
               query,
               loggedInUserId,
               systemId,
-              categories,
+              categories: resolvedCategories,
               ownerId,
             });
         } else {
           systemBrowsePromise = browseClassificationSystemsWithSharedContent({
             query,
             loggedInUserId,
-            categories,
+            categories: resolvedCategories,
             ownerId,
           });
         }
@@ -2194,7 +2282,7 @@ export async function searchExplore({
     subCategoryId,
     classificationId,
     isUnclassified,
-    categories,
+    categories: resolvedCategories,
     ownerId,
   });
 
@@ -2206,7 +2294,7 @@ export async function searchExplore({
     subCategoryId,
     classificationId,
     isUnclassified,
-    categories,
+    categories: resolvedCategories,
     ownerId,
   });
 
@@ -2289,6 +2377,11 @@ export async function browseExplore({
     categoryId === undefined &&
     systemId === undefined;
 
+  // Resolve the category codes once for all the queries below. Recent and
+  // curated content in browseExplore are found with Prisma's ORM instead, which
+  // filters by the codes themselves.
+  const resolvedCategories = await resolveCategoryCodes(categories);
+
   const topAuthorsPromise = ownerId
     ? new Promise((resolve, _) => resolve(null))
     : browseUsersWithSharedContent({
@@ -2298,7 +2391,7 @@ export async function browseExplore({
         subCategoryId,
         classificationId,
         isUnclassified,
-        categories,
+        categories: resolvedCategories,
         take: 10,
       });
 
@@ -2337,7 +2430,7 @@ export async function browseExplore({
     subCategoryId,
     classificationId,
     isUnclassified,
-    categories,
+    categories: resolvedCategories,
     ownerId,
     pageSize: 10,
   });
@@ -2357,7 +2450,7 @@ export async function browseExplore({
       classificationBrowsePromise = browseClassificationsWithSharedContent({
         loggedInUserId,
         subCategoryId,
-        categories,
+        categories: resolvedCategories,
         ownerId,
       });
     } else {
@@ -2366,7 +2459,7 @@ export async function browseExplore({
           browseClassificationSubCategoriesWithSharedContent({
             loggedInUserId,
             categoryId,
-            categories,
+            categories: resolvedCategories,
             ownerId,
           });
       } else {
@@ -2375,13 +2468,13 @@ export async function browseExplore({
             browseClassificationCategoriesWithSharedContent({
               loggedInUserId,
               systemId,
-              categories,
+              categories: resolvedCategories,
               ownerId,
             });
         } else {
           systemBrowsePromise = browseClassificationSystemsWithSharedContent({
             loggedInUserId,
-            categories,
+            categories: resolvedCategories,
             ownerId,
           });
         }
@@ -2406,7 +2499,7 @@ export async function browseExplore({
     subCategoryId,
     classificationId,
     isUnclassified,
-    categories,
+    categories: resolvedCategories,
     ownerId,
   });
 
@@ -2417,7 +2510,7 @@ export async function browseExplore({
     subCategoryId,
     classificationId,
     isUnclassified,
-    categories,
+    categories: resolvedCategories,
     ownerId,
   });
 

@@ -189,39 +189,55 @@ export function returnClassificationFilterWhereClauses({
 }
 
 /**
+ * The categories an explore request filters by, with their codes resolved to
+ * category ids by `resolveCategoryCodes`.
+ */
+export type ResolvedCategories = {
+  /** Distinct ids of the categories the requested codes match */
+  ids: number[];
+  /** True if some requested code matches no category, so no content can match */
+  hasUnknownCode: boolean;
+};
+
+/**
  * Generates a SQL WHERE clause to match content that has ALL specified categories.
  *
- * A single subquery finds the content tagged with all the categories, so the
- * query's shape doesn't depend on how many categories are specified. Codes
- * that are not category codes match nothing, so they exclude all content.
+ * Each category adds one `EXISTS` probe of `_categoriesTocontent` for the
+ * content row, which uses its unique (A, B) index. The ids are deduplicated
+ * when the codes are resolved, so codes that name the same category (such as
+ * codes differing only in letter case) add one probe.
  *
- * @param categories - A set of category codes that must all be present. If undefined or empty, returns Prisma.empty.
+ * @param categories - The resolved categories that must all be present. If
+ * undefined or with no ids, returns Prisma.empty. If a requested code matched no
+ * category, returns a clause that excludes all content.
  * @returns Prisma.Sql object containing an AND clause on `content.id`, or Prisma.empty if no categories specified.
  *
  * @example
- * // For categories = new Set(["math", "algebra"])
+ * // For categories = { ids: [3, 7], hasUnknownCode: false }
  * // Generates:
- * // AND content.id IN (
- * //   SELECT categoriesTocontent.B FROM _categoriesTocontent AS categoriesTocontent
- * //   JOIN categories ON categories.id = categoriesTocontent.A
- * //   WHERE categories.code IN ('math', 'algebra')
- * //   GROUP BY categoriesTocontent.B
- * //   HAVING COUNT(*) = 2
- * // )
+ * // AND EXISTS (SELECT 1 FROM _categoriesTocontent AS categoriesTocontent
+ * //   WHERE categoriesTocontent.B = content.id AND categoriesTocontent.A = 3)
+ * // AND EXISTS (SELECT 1 FROM _categoriesTocontent AS categoriesTocontent
+ * //   WHERE categoriesTocontent.B = content.id AND categoriesTocontent.A = 7)
  */
-export function returnCategoryWhereClauses(categories?: Set<string>) {
-  if (categories === undefined || categories.size === 0) {
+export function returnCategoryWhereClauses(categories?: ResolvedCategories) {
+  if (categories === undefined) {
+    return Prisma.empty;
+  }
+  if (categories.hasUnknownCode) {
+    return Prisma.sql`AND FALSE`;
+  }
+  if (categories.ids.length === 0) {
     return Prisma.empty;
   }
 
-  // A category is attached to a content at most once and codes are unique,
-  // so COUNT(*) counts the distinct requested categories each content has.
-  return Prisma.sql`AND content.id IN (
-    SELECT categoriesTocontent.B
-    FROM _categoriesTocontent AS categoriesTocontent
-    JOIN categories ON categories.id = categoriesTocontent.A
-    WHERE categories.code IN (${Prisma.join([...categories])})
-    GROUP BY categoriesTocontent.B
-    HAVING COUNT(*) = ${categories.size}
-  )`;
+  return Prisma.join(
+    categories.ids.map(
+      (id) => Prisma.sql`AND EXISTS (
+    SELECT 1 FROM _categoriesTocontent AS categoriesTocontent
+    WHERE categoriesTocontent.B = content.id AND categoriesTocontent.A = ${id}
+  )`,
+    ),
+    "\n    ",
+  );
 }
