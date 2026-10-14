@@ -24,10 +24,9 @@
                     "assignments": {
                       "type": "array",
                       "items": { "$ref": "#/components/schemas/Content" }
-                    },
-                    "user": { "$ref": "#/components/schemas/UserInfo" }
+                    }
                   },
-                  "required": ["assignments", "user"]
+                  "required": ["assignments"]
                 }
               }
             }
