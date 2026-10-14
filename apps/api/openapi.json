@@ -10,7 +10,7 @@
     "/assign/getAssigned": {
       "get": {
         "operationId": "getAssigned",
-        "summary": "List the assignments the signed-in user has been assigned",
+        "summary": "List the assignments the signed-in user has been assigned (test edit)",
         "tags": ["assign"],
         "security": [{ "session": [] }],
         "responses": {
