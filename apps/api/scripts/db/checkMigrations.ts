@@ -23,6 +23,8 @@ function main(): number {
     [
       "diff",
       "--name-only",
+      // A renamed migration directory is applied again as a new migration.
+      "--no-renames",
       "--diff-filter=A",
       `${baseRef}...HEAD`,
       "--",

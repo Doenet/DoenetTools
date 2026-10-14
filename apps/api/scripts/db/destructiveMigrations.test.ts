@@ -28,6 +28,27 @@ describe("findDestructiveStatements", () => {
     );
   });
 
+  test("flags hand-written forms", () => {
+    expect(reasons("ALTER TABLE t DROP COLUMN a;")).toHaveLength(1);
+    expect(reasons("alter table t drop a;")).toHaveLength(1);
+    expect(reasons("ALTER TABLE t ADD COLUMN a INT NOT NULL;")).toHaveLength(1);
+    expect(
+      reasons("ALTER TABLE `t` ADD CONSTRAINT `u` UNIQUE (`a`);"),
+    ).toHaveLength(1);
+    expect(reasons("# a comment\nDROP TABLE `old`;")).toHaveLength(1);
+  });
+
+  test("allows index and default changes", () => {
+    expect(
+      reasons(`
+        ALTER TABLE \`t\` DROP INDEX \`a\`, DROP FOREIGN KEY \`b\`,
+            ADD CONSTRAINT \`c\` FOREIGN KEY (\`d\`) REFERENCES \`u\`(\`id\`);
+        ALTER TABLE \`t\` RENAME INDEX \`a\` TO \`b\`;
+        ALTER TABLE \`t\` ALTER COLUMN \`a\` SET DEFAULT 1;
+      `),
+    ).toEqual([]);
+  });
+
   test("allows additive changes", () => {
     expect(
       reasons(`

@@ -13,11 +13,14 @@ const rules: { pattern: RegExp; reason: string }[] = [
     reason: "drops a table the running code may still use",
   },
   {
-    pattern: /^ALTER\s+TABLE\b.*\bDROP\s+(COLUMN\s+)?`/,
+    // `DROP COLUMN a` or `DROP a`, but not `DROP INDEX`, `DROP DEFAULT`, ...
+    pattern:
+      /^ALTER\s+TABLE\s+\S+\s+DROP\s+(?!(INDEX|KEY|FOREIGN|PRIMARY|CONSTRAINT|CHECK|DEFAULT|PARTITION)\b)/,
     reason: "drops a column the running code may still use",
   },
   {
-    pattern: /\bRENAME\b/,
+    // Renaming an index does not affect queries.
+    pattern: /\bRENAME\b(?!\s+(INDEX|KEY)\b)/,
     reason: "renames a table or column the running code uses by its old name",
   },
   {
@@ -26,12 +29,14 @@ const rules: { pattern: RegExp; reason: string }[] = [
       "changes a column's type or nullability, which can reject the running code's writes",
   },
   {
-    pattern: /\bADD\s+(COLUMN\s+)?`[^`]+`(?!.*\bDEFAULT\b).*\bNOT\s+NULL\b/,
+    pattern:
+      /^ALTER\s+TABLE\s+\S+\s+ADD\s+(COLUMN\s+)?(?!(INDEX|KEY|UNIQUE|CONSTRAINT|PRIMARY|FOREIGN|FULLTEXT|SPATIAL|CHECK|PARTITION)\b)(?!.*\bDEFAULT\b).*\bNOT\s+NULL\b/,
     reason:
       "adds a NOT NULL column without a default, so the running code's inserts fail",
   },
   {
-    pattern: /\b(ADD\s+UNIQUE|CREATE\s+UNIQUE\s+INDEX)\b/,
+    pattern:
+      /\b(ADD\s+(CONSTRAINT\s+(\S+\s+)?)?UNIQUE|CREATE\s+UNIQUE\s+INDEX)\b/,
     reason: "adds a unique constraint the running code's writes may violate",
   },
   { pattern: /^TRUNCATE\b/, reason: "deletes all rows of a table" },
@@ -40,6 +45,7 @@ const rules: { pattern: RegExp; reason: string }[] = [
 function statements(sql: string): string[] {
   return sql
     .replace(/--.*$/gm, "")
+    .replace(/^\s*#.*$/gm, "")
     .replace(/\/\*[\s\S]*?\*\//g, "")
     .split(";")
     .map((s) => s.replace(/\s+/g, " ").trim())
