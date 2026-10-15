@@ -334,18 +334,54 @@ The gate is the query count snapshot per perf scenario, taken before each page m
 
 ## Migration
 
-Every step is its own expand-migrate-contract cycle; the old routes stay until the client-build log shows no caller.
+The old routes and the new operations coexist under `/api` (legacy) and `/api/v1` (new) until the last stale client is gone. Nothing is renamed in place; every old route is replaced by a new operation, every caller is moved, and the old route is deleted later. That is the expand-migrate-contract cycle of ADR 0003 applied about a hundred times, so the mechanics have to be cheap and the same each time.
 
-1. **Contract machinery.** `audience`, `include` parsing with per-operation allow-lists, pagination helpers, `ETag`/`Cache-Control` for reference data, the ESLint rule, the session cache with `isEditor` on the cached user. The two perf proxies in the harness.
-2. **Reference data and `users/me`.** Root loader goes to one operation plus cached lists; `shouldRevalidate`. Cheapest win, touches every page's request count.
-3. **`getContent` with includes.** Migrate the editor header, settings, compound tabs, viewer, breadcrumbs, image details and the assign modal onto it. Retire seven routes.
-4. **Lists.** `listUserContent`, `listContentChildren`, trash, shared-with-me, library folders, move/copy dialog, add-to menu.
-5. **Source and revisions, sharing, categories, classifications, remixes, comparison.**
-6. **Assignments.** Scores, attempts, responses, roster, gradebook, class codes, the viewer.
-7. **Library submissions, search and explore, images.**
-8. **Contract phase** for each retired route after the stale-client check, and shrink `contract-uncovered.json` to empty.
+### The lifecycle of one route
 
-Step 3 is the one to do first after the machinery: it retires the most screen-shaped routes and proves the `include` design on the heaviest resource.
+Each migrated route goes through four states, usually across three PRs:
+
+1. **Expand.** Define the new operation with `defineOperation` in `src/schemas/<resource>Contract.ts` (request schema, response schema, `audience`, `include` list), implement it with `implement`, add it to `apiOperations`, run `contract:generate`. The handler is usually the existing query function, trimmed: the bundled handler keeps serving the old route from the same function until the old route goes. Unit-test the new operation's permissions (the inventory's authorization gaps are fixed here, each named in the PR).
+2. **Migrate.** Move every caller: the page loader or component in `apps/app` to `api("name", params)` or `submitOperation`, and the e2e tests to `cy.api`. Delete the file from `eslint-suppressions.json` (it may only shrink). The `untypedCallers` test fails if any string in the app still names a covered operation's path, so a missed caller fails CI. Same PR as the expand, since the frontend deploys after the backend (ADR 0003).
+3. **Wait.** The old route still serves stale clients. Nothing to do.
+4. **Contract.** Once the request log shows no build calling the old route (`infra/README.md`, "Removing an API shape"), delete the route, its schema and its entry in `contract-uncovered.json`; the coverage test fails if the entry outlives the route. One PR can retire several routes.
+
+Mutations are migrated the same way; they are simpler because a mutation's caller is one component and its revalidation is handled by `genericAction`.
+
+### Machinery first
+
+Three PRs before any page moves, each small:
+
+- **Contract extensions.** `HttpMethod` gains `patch`, `put` and `delete`; `OperationContract` gains `audience` and `includes`; `implement` parses `include=` against the list and `limit`/`cursor` for collections; the OpenAPI generator emits the public document and the full one; `operationsRouter` mounts under `/api/v1` as well as `/api` (the legacy prefix only for already-covered operations like `getAssigned`, which keep their URL). Reference-data responses get `ETag` and `Cache-Control`.
+- **Session cache.** [Session caching](#session-caching), with its effect shown in the `Server-Timing` query count before and after on the dev environment.
+- **Perf proxies.** `apiRequests` and `apiDepth` per perf scenario in the harness of #3059, plus the ESLint rule for loaders. Baseline snapshots are taken from the current pages before the first page migrates. Without the harness, "no slower" cannot be shown per PR, so this is a prerequisite, not a nice-to-have. ADR 0003's breaking-change gate (`oasdiff` with the `api-breaking` label) is also not wired into CI yet; the contract phase relies on it, so it goes in here.
+
+### Order of the resource work
+
+Ordered by what each step retires and what it unblocks. Sizes are rough PR counts for the expand-plus-migrate step; contract PRs come later and are small.
+
+| Step | Scope                                                                                                                                                                                                    | Retires (routes) | PRs | Why here                                                                                                                  |
+| ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- | --- | ------------------------------------------------------------------------------------------------------------------------- |
+| 1    | Reference data (`licenses`, `doenetml-versions`, `categories`, `classification-systems`, `classifications`), `getUser(me)`, `updateUser`; root loader to one call; `shouldRevalidate`                    | 9                | 2   | Touches every page's request count; proves `ETag` caching and the typed-client path in the root loader.                   |
+| 2    | `getContent` with includes, `updateContent`, `recordUserRecent`; editor header, settings, compound tabs, viewer, breadcrumbs, image details, assign modal                                                | 12               | 3–4 | Retires the most screen-shaped routes; proves `include` on the heaviest resource.                                         |
+| 3    | Lists: `listUserContent`, `listContentChildren`, trash, shared-with-me, library folders, move/copy dialog, add-to menu; `createContent`, `copyContent`, `moveContent`, `deleteContent`, `restoreContent` | 16               | 3   | Lists stop shipping DoenetML; the create-then-rename pair becomes one mutation.                                           |
+| 4    | Source and revisions, audit, sharing, categories, classifications, remixes, comparison                                                                                                                   | 22               | 4   | Mostly one-to-one renames behind the editor tabs.                                                                         |
+| 5    | Assignments: `createAssignment`, scores, attempts, responses, roster, gradebook, class codes, the viewer                                                                                                 | 20               | 4   | The viewer is the riskiest page (students mid-attempt); it goes last within the step, behind a feature flag on the route. |
+| 6    | Library submissions, search and explore, images, auth renames                                                                                                                                            | 24               | 3   | Independent of the rest; can run in parallel with step 5.                                                                 |
+
+Each step's first PR takes the baseline snapshots for the pages it touches; each page PR shows `apiDepth` 1 and the query-count delta, with any rise explained in the PR's Approach section. A PR that moves a page also moves that page's e2e tests to `cy.api`.
+
+### What stays the same during the migration
+
+- A page is migrated whole: its loader and all its mutations in one PR, so a page never mixes old and new reads of the same resource.
+- Query functions are not rewritten for their own sake. A new operation's handler calls the existing function, with the bundling removed; refactors of `query/*.ts` are separate PRs.
+- The database does not change. Every new operation reads the tables that exist; `isEditor` on the cached session user is the only data that moves, and it moves into memory, not into the schema.
+- The old URLs keep their behaviour until deleted, including their quirks (`notMe`, bare arrays), because stale clients expect them.
+
+### Risks
+
+- **The assignment viewer.** A student with a tab open across the deploy keeps calling `saveScoreAndState` on the old route; that route stays until the log is clean, which for a semester-long course can be weeks. The contract step for score and attempt routes waits accordingly.
+- **Two URL spaces for months.** Public documentation is generated from the public OpenAPI document only, so `/api/v1` is all an outside reader sees; the legacy routes are in the full document until they go.
+- **The ratchets only shrink.** `contract-uncovered.json` and `eslint-suppressions.json` are what keep the migration from stalling halfway: a review that lets either grow reopens the gap this design closes.
 
 ## Decisions needed
 
