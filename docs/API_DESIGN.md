@@ -268,15 +268,32 @@ The alternative that was considered and dropped is a `POST /batch` operation tha
 
 ### Conventions
 
-- Prefix `/api/v1`. The operation name remains the contract identity; the path is what the public sees, so it is fixed from the first public release and evolves additively under expand-migrate-contract rather than by version bump.
+- Prefix `/api/v1`. The method and path are the identity of an operation, for the public and for our own callers (see [Calling the API](#calling-the-api)); they are fixed from the first public release and evolve additively under expand-migrate-contract rather than by version bump. The `name` in `defineOperation` becomes the OpenAPI `operationId`, used by the generated documentation, by SDK generators and as the label in the request log; no caller in our code says it.
 - Ids are short UUIDs as today. Timestamps are ISO 8601 with offset.
 - Every collection takes `limit` and `cursor` and returns `nextCursor`. The default `limit` is large enough that the app's current single call still returns everything it shows today (folders, scores); the cap protects the public surface, not the app.
 - `include` values are validated against the operation's list; an unknown one is `400`.
 - Errors keep the existing `ErrorResponse` body; `404` for not found or not viewable, `403` for viewable but not permitted, `401` for a guest where a user is required, `409` for a stale `ifRevision`.
 
+### Calling the API
+
+The app and the e2e tests call an operation by its route string, the method and path template in one literal, with the types taken from the `paths` interface that `openapi-typescript` already generates from the contract:
+
+```ts
+const { content } = await api("GET /v1/content/{contentId}", {
+  contentId,
+  include: ["children", "ancestors"],
+});
+submit(fetcher, "PATCH /v1/content/{contentId}", { contentId, name });
+cy.api("GET /v1/users/me");
+```
+
+A template-literal type over `paths` checks the string: a path that is not in the contract, a method the path doesn't have, a missing path parameter or a wrong body is a compile error, and the response type is the one the contract declares. Path parameters are substituted from the params object; for a `GET` the rest are the query, for the other methods the JSON body (what `buildOperationRequest` does today, minus the name lookup). The generated `operations.ts` and the `OperationName` type go away; `schema.ts` is the only generated file.
+
+This keeps the expand-migrate-contract proof and makes it more honest. Removing an operation removes its key from `paths`, so every caller fails the type check, as today. Changing a path, which today could be done with every caller still compiling, is now a removal plus an addition, which is what it is to a stale client. The `untypedCallers` test changes from "no string in the app names a covered path" to "no `axios`, `fetch`, `cy.request` or `genericAction` `path:` call names one", since the typed calls now carry the path themselves. The precedent is GitHub's own SDK, whose `request("GET /repos/{owner}/{repo}", …)` is typed the same way from the same kind of OpenAPI document.
+
 ## Page composition under the new API
 
-Each page's loader issues all its requests at once (`Promise.all`). Reference data is in memory after first use. Depth is 1 everywhere; the last column compares the number of HTTP requests on the critical path today with the number of parallel requests under the new API.
+Each page's loader issues all its requests at once (`Promise.all`). The operation names in the table are shorthand for their route strings. Reference data is in memory after first use. Depth is 1 everywhere; the last column compares the number of HTTP requests on the critical path today with the number of parallel requests under the new API.
 
 | Page                                        | Requests, all in parallel                                                                                                                                                                                           | Today → new       |
 | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
@@ -314,7 +331,7 @@ Each page's loader issues all its requests at once (`Promise.all`). Reference da
 
 Every chain of today becomes a fan-out. The count falls on the pages the root loader and the editor dominate, and rises on the pages that today get one bundle: the history tab, the assignment overview, the one-student page, the student scores page and Explore. Those rises are parallel requests on one connection, not round trips, and with the session cache each extra request costs the server only its own data queries.
 
-**Mutations.** Every mutation becomes one typed `submitOperation` through `genericAction`. Create-then-rename (`createContentCopyInChildren` + `updateContentSettings`) becomes one `createContent` with `name` and `childrenCopiedFrom`. After a mutation the app revalidates the loaders it affects: `shouldRevalidate` on the root route returns `false` unless the mutation touched the user, and reference data never revalidates. That alone removes the three root calls from every mutation and every search-parameter change today.
+**Mutations.** Every mutation becomes one typed `submit(fetcher, "PATCH /v1/…", params)` through `genericAction`. Create-then-rename (`createContentCopyInChildren` + `updateContentSettings`) becomes one `createContent` with `name` and `childrenCopiedFrom`. After a mutation the app revalidates the loaders it affects: `shouldRevalidate` on the root route returns `false` unless the mutation touched the user, and reference data never revalidates. That alone removes the three root calls from every mutation and every search-parameter change today.
 
 ## Performance accounting
 
@@ -341,7 +358,7 @@ The old routes and the new operations coexist under `/api` (legacy) and `/api/v1
 Each migrated route goes through four states, usually across three PRs:
 
 1. **Expand.** Define the new operation with `defineOperation` in `src/schemas/<resource>Contract.ts` (request schema, response schema, `audience`, `include` list), implement it with `implement`, add it to `apiOperations`, run `contract:generate`. The handler is usually the existing query function, trimmed: the bundled handler keeps serving the old route from the same function until the old route goes. Unit-test the new operation's permissions (the inventory's authorization gaps are fixed here, each named in the PR).
-2. **Migrate.** Move every caller: the page loader or component in `apps/app` to `api("name", params)` or `submitOperation`, and the e2e tests to `cy.api`. Delete the file from `eslint-suppressions.json` (it may only shrink). The `untypedCallers` test fails if any string in the app still names a covered operation's path, so a missed caller fails CI. Same PR as the expand, since the frontend deploys after the backend (ADR 0003).
+2. **Migrate.** Move every caller: the page loader or component in `apps/app` to `api("GET /v1/…", params)` or `submit(fetcher, "POST /v1/…", params)`, and the e2e tests to `cy.api`. Delete the file from `eslint-suppressions.json` (it may only shrink). The `untypedCallers` test fails if a raw `axios`, `fetch`, `cy.request` or `genericAction` `path:` call still names a covered operation's path, so a missed caller fails CI. Same PR as the expand, since the frontend deploys after the backend (ADR 0003).
 3. **Wait.** The old route still serves stale clients. Nothing to do.
 4. **Contract.** Once the request log shows no build calling the old route (`infra/README.md`, "Removing an API shape"), delete the route, its schema and its entry in `contract-uncovered.json`; the coverage test fails if the entry outlives the route. One PR can retire several routes.
 
@@ -351,7 +368,7 @@ Mutations are migrated the same way; they are simpler because a mutation's calle
 
 Three PRs before any page moves, each small:
 
-- **Contract extensions.** `HttpMethod` gains `patch`, `put` and `delete`; `OperationContract` gains `audience` and `includes`; `implement` parses `include=` against the list and `limit`/`cursor` for collections; the OpenAPI generator emits the public document and the full one; `operationsRouter` mounts under `/api/v1` as well as `/api` (the legacy prefix only for already-covered operations like `getAssigned`, which keep their URL). Reference-data responses get `ETag` and `Cache-Control`.
+- **Contract extensions.** `HttpMethod` gains `patch`, `put` and `delete`; `OperationContract` gains `audience` and `includes`; `implement` parses `include=` against the list and `limit`/`cursor` for collections; the OpenAPI generator emits the public document and the full one; `operationsRouter` mounts under `/api/v1` as well as `/api` (the legacy prefix only for already-covered operations like `getAssigned`, which keep their URL). Reference-data responses get `ETag` and `Cache-Control`. On the client side, `api`, `submit` and `cy.api` take route strings typed from `paths` ([Calling the API](#calling-the-api)), `operations.ts` is no longer generated, and the `untypedCallers` test scans raw call sites instead of all strings.
 - **Session cache.** [Session caching](#session-caching), with its effect shown in the `Server-Timing` query count before and after on the dev environment.
 - **Perf proxies.** `apiRequests` and `apiDepth` per perf scenario in the harness of #3059, plus the ESLint rule for loaders. Baseline snapshots are taken from the current pages before the first page migrates. Without the harness, "no slower" cannot be shown per PR, so this is a prerequisite, not a nice-to-have. ADR 0003's breaking-change gate (`oasdiff` with the `api-breaking` label) is also not wired into CI yet; the contract phase relies on it, so it goes in here.
 
