@@ -1,0 +1,101 @@
+name: Deploy safety
+
+# Every merge to main deploys, so each PR must work with the code already
+# running: app builds open in browsers, and backend tasks still serving
+# while a deploy rolls out. These checks flag changes that can break them.
+# A label overrides a check once someone has confirmed it is safe; see
+# "Expand-Migrate-Contract" in apps/api/AGENTS.md.
+#
+# Its own workflow so that adding or removing a label re-runs just these
+# checks.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  contents: read
+
+env:
+  # Update both together; the hash is the linux_amd64 tarball's line in the
+  # release's checksums.txt.
+  OASDIFF_VERSION: "1.33.0"
+  OASDIFF_SHA256: "43a4e328e2d13ba1552d760aa68d2485c75c5621f309f6ff64ae895188345247"
+
+jobs:
+  api-breaking:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          # Needs the base branch to compare against.
+          fetch-depth: 0
+
+      - name: Install oasdiff
+        run: |
+          mkdir -p "$HOME/.local/bin"
+          tarball="$RUNNER_TEMP/oasdiff.tar.gz"
+          curl -fsSL -o "$tarball" "https://github.com/oasdiff/oasdiff/releases/download/v${OASDIFF_VERSION}/oasdiff_${OASDIFF_VERSION}_linux_amd64.tar.gz"
+          echo "${OASDIFF_SHA256}  $tarball" | sha256sum -c -
+          tar -xzf "$tarball" -C "$HOME/.local/bin" oasdiff
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Check for breaking API changes
+        env:
+          ALLOWED: ${{ contains(github.event.pull_request.labels.*.name, 'api-breaking') }}
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          # Compare against where the PR forked from the base branch, not its
+          # tip: the base may have moved on since this merge commit was made,
+          # and operations added there would show as removed.
+          fork_point=$(git merge-base "origin/$BASE_REF" HEAD)
+          git show "$fork_point:apps/api/openapi.json" > "$RUNNER_TEMP/base.json"
+          # Exit 1 means breaking changes; anything else is an oasdiff error,
+          # which the label must not override.
+          status=0
+          oasdiff breaking "$RUNNER_TEMP/base.json" apps/api/openapi.json \
+            --severity-levels apps/api/scripts/contract/oasdiff-severity.txt \
+            --fail-on WARN || status=$?
+          if [ "$status" -eq 0 ]; then
+            exit 0
+          fi
+          if [ "$status" -ne 1 ]; then
+            echo "::error::oasdiff failed (exit $status)."
+            exit "$status"
+          fi
+          if [ "$ALLOWED" = "true" ]; then
+            echo "Breaking changes allowed by the api-breaking label."
+            exit 0
+          fi
+          echo "::error::Breaking changes to the API contract. App builds already open in browsers still use the old shape. Add the replacement and migrate every caller in one PR; once no app build using the old shape is still calling it (infra/README.md, \"Removing an API shape\"), remove it in a PR labelled api-breaking. See apps/api/AGENTS.md."
+          exit 1
+
+  db-migration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      # Every migration change needs the label, rather than scanning the SQL
+      # for destructive statements: migrations are rare, and a scan can miss
+      # one.
+      - name: Check for migration changes
+        env:
+          ALLOWED: ${{ contains(github.event.pull_request.labels.*.name, 'db-migration') }}
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          # --no-renames lists a renamed migration directory as the new
+          # migration it is (Prisma applies it again), not as a rename.
+          changed=$(git diff --name-status --no-renames "origin/$BASE_REF...HEAD" -- apps/api/prisma/migrations)
+          if [ -z "$changed" ]; then
+            echo "No migration changes."
+            exit 0
+          fi
+          echo "$changed"
+          if [ "$ALLOWED" = "true" ]; then
+            echo "Migration changes allowed by the db-migration label."
+            exit 0
+          fi
+          echo "::error::This PR changes migrations, which run while the previous backend is still serving. Check that the previous code keeps working while they run, then label the PR db-migration. See apps/api/AGENTS.md."
+          exit 1

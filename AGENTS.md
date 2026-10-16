@@ -43,7 +43,7 @@ In production, `app` is built as static files served by Express.
 
 Development uses a fork workflow. Push branches to `origin` (your fork), then open a PR targeting `upstream/main`. PRs merge after human sign-off, and each merge deploys to production automatically once CI passes on `main` (see [infra/README.md](./infra/README.md#rolling-back-prod)).
 
-Database and API changes must follow the **expand-migrate-contract** pattern: each merged PR must be safe to deploy on its own, so add new columns/endpoints before removing old ones across separate PRs. See "Expand-Migrate-Contract" in `apps/api/AGENTS.md`. Domain terms are in `CONTEXT.md`.
+Database and API changes must follow the **expand-migrate-contract** pattern: each merged PR must be safe to deploy on its own, so add new columns/endpoints before removing old ones across separate PRs. CI flags breaking API changes and every migration change; see "Expand-Migrate-Contract" in `apps/api/AGENTS.md`. Domain terms are in `CONTEXT.md`.
 
 **Before writing code for a non-trivial change, name the simplest alternative.** Ask what small change, inside or outside the planned diff, would make most of it unnecessary: a missing database index, a shared helper, a field sent with every request, a change at a different layer. If one exists, either make that change instead (often as its own prerequisite PR) or say why it is not enough. A plan that needs new machinery to work around something is usually a plan to fix that something first. "This is already the simplest approach" is an answer only when it names what was considered.
 
