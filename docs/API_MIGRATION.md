@@ -46,7 +46,6 @@ The root loader runs on every page and on every revalidation, so an editor setti
 - Shape inconsistencies: five routes return bare arrays; many mutations return an empty body (`createCurationFolder` doesn't return the id it made); the same id is called `contentId`, `assignmentId`, `parentId`, `folderId`, `compareId`, `id`.
 - Reads as `POST`: `searchExplore`, `browseExplore`, `getClassifications`.
 - `getMyUserInfo` returns an empty body for a guest; `login/anonymous` returns `{ anonymous: true }` rather than the user it created; `logout` is a `GET` with side effects.
-- ADR 0003's breaking-change gate (`oasdiff` with the `api-breaking` label) is described but not wired into CI.
 
 ## Route mapping
 
@@ -232,7 +231,7 @@ Three PRs before any page moves, each small, after the data-model changes above:
 
 - **Contract extensions.** `HttpMethod` gains `patch`, `put` and `delete`; `OperationContract` loses `name` and is keyed by method and path (the OpenAPI `operationId` is derived by the generator); it gains `audience` and `includes`; `implement` parses `include=` against the list and `limit`/`cursor` for collections; the OpenAPI generator emits the public document and the full one; `operationsRouter` mounts under `/api/v1` as well as `/api` (the legacy prefix only for `getAssigned`, which keeps its URL until retired). Reference-data responses get `ETag` and `Cache-Control`. On the client side, `request`, `submit` and `cy.apiRequest` take route strings typed from `paths`, `operations.ts` is no longer generated, and the `untypedCallers` test scans raw call sites instead of all strings.
 - **Session cache.** As in the design, with its effect shown in the `Server-Timing` query count before and after on the dev environment.
-- **Perf proxies.** `apiRequests` and `apiDepth` per perf scenario in the harness of #3059, plus the ESLint rule for loaders. Baseline snapshots are taken from the current pages before the first page migrates. Without the harness, "no slower" cannot be shown per PR, so this is a prerequisite. ADR 0003's breaking-change gate (`oasdiff` with the `api-breaking` label) goes in here too, since the contract phase relies on it.
+- **Perf proxies.** `apiRequests` and `apiDepth` per perf scenario in the harness of #3059, plus the ESLint rule for loaders. Baseline snapshots are taken from the current pages before the first page migrates. Without the harness, "no slower" cannot be shown per PR, so this is a prerequisite. ADR 0003's breaking-change gate (`oasdiff` in `.github/workflows/deploy-safety.yml`, overridden by the `api-breaking` label) already exists and is what the contract phase relies on.
 
 ### Order of the resource work
 
