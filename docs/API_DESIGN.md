@@ -37,14 +37,13 @@ Every operation declares an `audience`: `public` or `internal`. Internal is only
 
 Three directions shape the model even though the current data does not need them yet:
 
-- **Content is held by a drive, authored by people.** A folder tree belongs to a root, which today is a user's personal root or the library, and later may be a group's. Listings are addressed by folder, not by user. Sharing grants carry a role. Authorship is a separate list from the holding account, so assistant authors and co-authors are an additive change.
+- **A group folder is a shared folder.** Any folder someone shares with others at an editing level is a group folder; nothing needs to be a root, an account or a drive for that. So sharing grants carry a role from the start, grants on a folder apply to everything under it, and listings are addressed by folder, not by user. Ownership follows the folder (content is held by the account whose tree it is in) while authorship is a list of people, so co-authors and assistant authors are an additive change.
 - **Content operations take sets.** Move, copy, trash and restore accept many ids and are atomic, so the app's multi-select and a public caller's bulk job are the same operation.
 - **An assignment is a resource that references content, not a kind of content.** Scores, attempts, responses and the class code hang off the assignment. Today an assignment is implemented as a copied content subtree; when assigning becomes an aspect of the same item, the assignment resource keeps its shape and its `contentId` simply stops pointing at a copy.
 
 ## Model
 
 ```
-drives                              the roots the caller can see
 content/{contentId|root|library}    doc, problem set, question bank, folder, image
   /children                         folder listing (paginated); activity structure via include=children
   /source, /revisions, /audit
@@ -70,21 +69,21 @@ auth/*                              internal
 
 ### Content
 
-`Content` is a discriminated union on `type` (`singleDoc`, `select`, `sequence`, `folder`, `image`). Its own fields: `contentId`, `type`, `name`, `ownerId` (the account whose drive holds it), `parentId`, `visibility`, `licenseCode`, `createdAt`, `lastEdited`, the type-specific settings (`numVariants`, `shuffle`, `paginate`, `numToSelect`, `selectByVariant`, `repeatInProblemSet`, image attribution), `inLibrary`, and `permissions: { canView, canEdit, canShare, canAssign, canDelete, isOwner }`. DoenetML source and children are never in the base form.
+`Content` is a discriminated union on `type` (`singleDoc`, `select`, `sequence`, `folder`, `image`). Its own fields: `contentId`, `type`, `name`, `ownerId` (the account whose tree it is in, inherited from the parent on create and on move), `parentId`, `visibility`, `licenseCode`, `createdAt`, `lastEdited`, the type-specific settings (`numVariants`, `shuffle`, `paginate`, `numToSelect`, `selectByVariant`, `repeatInProblemSet`, image attribution), `inLibrary`, and `permissions: { canView, canEdit, canShare, canAssign, canDelete, isOwner }`. DoenetML source and children are never in the base form.
 
 Includes: `children` (the activity structure, recursive through `sequence` and `select`, never into folders), `parent`, `ancestors` (the chain to the root), `owner`, `authors`, `shares`, `categories`, `classifications`, `library`, `assignments`, `remixStatus` (whether a remix source has changed), `source`.
 
-| Operation             | Method and path                                                     | Auth     | Notes                                                                                                                                                                                                                            |
-| --------------------- | ------------------------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `getContent`          | `GET /content/{contentId}?include=`                                 | optional | Public, unlisted, shared or own content.                                                                                                                                                                                         |
-| `createContent`       | `POST /content`                                                     | required | `{ type, name?, parentId, source?, childrenCopiedFrom?: contentId[] }` → `Content`. `parentId` may be `root` or `library` (editor only).                                                                                         |
-| `updateContent`       | `PATCH /content/{contentId}`                                        | required | Any settable scalar of the type: `name`, `licenseCode`, `visibility`, `doenetmlVersionId`, the type-specific settings, image attribution. A field the type doesn't have is `400`. Visibility changes apply the publishing gates. |
-| `deleteContent`       | `DELETE /content/{contentId}`                                       | required | Moves to the trash; sugar for `trashContent` with one id.                                                                                                                                                                        |
-| `listContentChildren` | `GET /content/{folderId}/children?q=&type=&limit=&cursor=&include=` | optional | The folder listing. `folderId` may be `root` or `library`. `include=parent,ancestors,library,shares,assignments` for an owner's view.                                                                                            |
-| `moveContent`         | `POST /content/move`                                                | required | `{ contentIds, parentId, position? }`. Atomic. Cascades sharing to match the destination.                                                                                                                                        |
-| `copyContent`         | `POST /content/copies`                                              | required | `{ contentIds, parentId, prependCopy? }` → `{ contentIds }`. Atomic.                                                                                                                                                             |
-| `trashContent`        | `POST /content/trash`                                               | required | `{ contentIds }`. Atomic.                                                                                                                                                                                                        |
-| `restoreContent`      | `POST /content/restore`                                             | required | `{ contentIds }`. Atomic.                                                                                                                                                                                                        |
+| Operation             | Method and path                                                     | Auth     | Notes                                                                                                                                                                                                                                       |
+| --------------------- | ------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `getContent`          | `GET /content/{contentId}?include=`                                 | optional | Public, unlisted, shared or own content.                                                                                                                                                                                                    |
+| `createContent`       | `POST /content`                                                     | required | `{ type, name?, parentId, source?, authors?, childrenCopiedFrom?: contentId[] }` → `Content`. `parentId` may be `root` or `library` (editor only). The caller needs `editor` on the parent; the new content is held by the parent's owner.  |
+| `updateContent`       | `PATCH /content/{contentId}`                                        | required | Any settable scalar of the type: `name`, `licenseCode`, `visibility`, `doenetmlVersionId`, `authors`, the type-specific settings, image attribution. A field the type doesn't have is `400`. Visibility changes apply the publishing gates. |
+| `deleteContent`       | `DELETE /content/{contentId}`                                       | required | Moves to the trash; sugar for `trashContent` with one id.                                                                                                                                                                                   |
+| `listContentChildren` | `GET /content/{folderId}/children?q=&type=&limit=&cursor=&include=` | optional | The folder listing. `folderId` may be `root` or `library`. `include=parent,ancestors,library,shares,assignments` for an owner's view.                                                                                                       |
+| `moveContent`         | `POST /content/move`                                                | required | `{ contentIds, parentId, position? }`. Atomic. Cascades sharing to match the destination.                                                                                                                                                   |
+| `copyContent`         | `POST /content/copies`                                              | required | `{ contentIds, parentId, prependCopy? }` → `{ contentIds }`. Atomic.                                                                                                                                                                        |
+| `trashContent`        | `POST /content/trash`                                               | required | `{ contentIds }`. Atomic.                                                                                                                                                                                                                   |
+| `restoreContent`      | `POST /content/restore`                                             | required | `{ contentIds }`. Atomic.                                                                                                                                                                                                                   |
 
 #### Source and revisions
 
@@ -101,7 +100,7 @@ Includes: `children` (the activity structure, recursive through `sequence` and `
 
 #### Sharing, authorship, categories, classifications
 
-Sharing is a list of grants, each `{ user, role, inherited }`. The only role today is `viewer`; `editor` is an additive change. `authors` is the list of people credited for the content, separate from the holding account; today it is the owner.
+Sharing is a list of grants, each `{ user, role, inherited }`, with `role` one of `viewer` or `editor`. A grant on a folder applies to everything under it and shows as `inherited` there. A folder shared at `editor` is a group folder: its editors read, edit and create inside it, and what they create is held by the folder's owner like everything else in that tree. Only `viewer` grants are issued today; `editor` is a new allowed value, not a new shape. `authors` is the list of people credited for the content, separate from the account that holds it; today it is the owner.
 
 | Operation                     | Method and path                                                  | Notes                                                                                                                                                                                  |
 | ----------------------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -138,16 +137,6 @@ A course is a folder whose students are rostered to it. Until courses become the
 | `listContentStudents`   | `GET /content/{folderId}/students`  | required | The roster; owner only.                                                                  |
 | `createContentStudents` | `POST /content/{folderId}/students` | required | `{ count }` → the accounts made, with handles and one-time passwords.                    |
 | `getContentGradebook`   | `GET /content/{folderId}/gradebook` | required | `{ students, assignments, scores }`: every student on every assignment under the folder. |
-
-### Drives
-
-A drive is a root the caller can see: their personal root, the library, and later any group drive. It exists so the app can list roots without assuming they belong to users.
-
-| Operation    | Method and path | Notes                                                                                     |
-| ------------ | --------------- | ----------------------------------------------------------------------------------------- |
-| `listDrives` | `GET /drives`   | `{ items: [{ driveId, kind: "personal" \| "library" \| "group", name, rootFolderId }] }`. |
-
-`root` and `library` are aliases for the two drives every caller has; a group drive is addressed by its `rootFolderId` like any folder.
 
 ### Assignments
 
@@ -197,7 +186,7 @@ Library folders are ordinary content under the `library` root.
 | `updateUser`        | `PATCH /users/me`                                       | required | `{ firstNames?, lastNames?, isAuthor?, theme? }`.                                                                                     |
 | `listUserContent`   | `GET /users/{userId}/content?parent=&q=&limit=&cursor=` | optional | The content this user owns that the caller may see: an author's public listing. The caller's own tree is `listContentChildren(root)`. |
 | `listUserTrash`     | `GET /users/me/trash`                                   | required | `{ items: [{ content, deletedOn }] }`.                                                                                                |
-| `listSharedWithMe`  | `GET /users/me/shared-with-me`                          | required |                                                                                                                                       |
+| `listSharedWithMe`  | `GET /users/me/shared-with-me?role=`                    | required | The folders and items others have granted the caller; with `role=editor`, the group folders the caller can work in.                   |
 | `listUserRecent`    | `GET /users/me/recent?mode=&types=`                     | required |                                                                                                                                       |
 | `recordUserRecent`  | `POST /users/me/recent`                                 | required | `{ contentId, mode }`.                                                                                                                |
 | `recordContentView` | `POST /content/{contentId}/views`                       | optional |                                                                                                                                       |
@@ -309,7 +298,7 @@ The recommendation is first in each.
 4. **One `updateContent` or several?** One `PATCH /content/{id}` for every scalar field, with per-field permission checks inside. The alternative, one operation per concern, keeps each route's rule obvious but recreates sprawl.
 5. **Commands versus state fields.** `POST …/claim|publish|reject|unpublish` and `POST /content/move`, because each has side effects and a distinct permission.
 6. **Class codes.** `GET /codes/{code}` resolves to an assignment and the student page is `/assignment/:assignmentId`; entry by code costs one extra round trip once. The alternative, accepting `code:12345` wherever an assignment id goes, avoids that at the cost of two id forms.
-7. **Drives now or later.** Ship `listDrives` and the `root`/`library` aliases now, with only the two kinds; group drives are a new row later. The alternative is to leave `drives` out until a group feature exists, which means the app keeps assuming a root is a user.
+7. **Who holds content created in a shared folder.** The folder's owner: `ownerId` is a property of the tree, inherited on create and on move, and `authors` records who wrote it. The alternative, creator-owns (Google Drive's default for ordinary shared folders), needs a transfer-ownership operation and a rule for what happens when the creator's access is revoked, and makes the visibility cascade and the move command reason about mixed-owner trees.
 8. **Assignment identity.** `assignmentId` is the assignment root's content id for now; when assigning stops copying, it becomes its own id and `contentId` points at the authored content. Public callers see no change in shape.
 9. **Bulk atomicity.** All-or-nothing, with a per-id outcome list. The alternative, best-effort with partial success, is simpler to implement and harder to reason about from the app.
 10. **Lists without source.** List items never carry DoenetML.
